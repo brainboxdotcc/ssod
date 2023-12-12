@@ -1,0 +1,205 @@
+<p><font face="Arial">Note: <b>All tags are case sensitive</b>. Spacing between flags is <b>essential</b>,
+<b>one space only between items</b>. You MUST have at least one space between
+the leading or terminating &lt; &gt; and any text outside the tag, e.g. &quot;Go
+to &lt;LINK=5&gt;&quot; and not &quot;Go to&lt;LINK=5&gt;&quot;. <b>Ordering of
+items within a tag is important (e.g. with the &lt;I&gt; tag)</b>.</font></p>
+<table border="1" width="100%">
+  <tr>
+    <td width="28%" align="center"><b><u><i><font face="Arial">Tag</font></i></u></b></td>
+    <td width="45%" align="center"><b><u><i><font face="Arial">Description</font></i></u></b></td>
+    <td width="27%" align="center"><b><u><i><font face="Arial">Example</font></i></u></b></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>LINK</b>=<i>ID</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Link to another location</font></td>
+    <td width="27%"><font size="2" face="Fixedsys">&lt;LINK=111&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>AUTOLINK</b>=<i>ID</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Link to another location. These are used with score tests,
+      you must use two of them after each &lt;TEST&gt; tag. The tag for the
+      failing condition will be grayed.</font></td>
+    <td width="27%"><font size="2" face="Fixedsys">&lt;TEST LUCK&gt; are you
+      lucky &lt;AUTOLINK=1&gt; or unlucky &lt;AUTOLINK=2&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>paylink</b>=<i>X</i>,<i>ID</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Link to another location. Upon clicking the link, X gold is
+      subtracted from the purse of the player. If the player does not have
+      enough gold the link is grayed.</font></td>
+    <td width="27%"><font size="2" face="Fixedsys">&lt;paylink=10,150&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>pickup</b><i> ITEM</i> [<i>STAT</i>+-<i>N</i>]&gt;</font></td>
+    <td width="45%"><font face="Arial">Automatically add an item to a players possessions list. The
+      item name <i>ITEM</i> is shown in the backpack, <i>STAT</i> is the score
+      it modifies (<i>optional</i>) followed by a +<i>N</i> or -<i>N</i> value
+      for that score. See the example for information.</font>
+      <p><font face="Arial">Special: &lt;<b>pickup</b> <b>gold</b> <i>X</i>&gt; to pick up gold,
+      &lt;<b>pickup</b> <b>silver</b> <i>X</i>&gt; to pick up silver. Negative
+      figures drop gold or silver.</font></p>
+      <p><font face="Arial">Spells are special items where <i>STAT</i>+-<i>N</i> == &quot;<b>SPELL</b>&quot;.</font></p>
+      <p><font face="Arial">Herbs are special items where <i>STAT</i>+-<i>N</i> == &quot;<b>HERB</b>&quot;</font></td>
+    <td width="27%"><font size="2" face="Fixedsys">&lt;pickup Special item that
+      adds stm [ST+6]&gt;</font>
+      <p><font size="2" face="Fixedsys">&lt;pickup Rating 5 Sword [W5]&gt;</font></p>
+      <p><font size="2" face="Fixedsys">&lt;pickup gold 6&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>drop</b> <i>ITEM</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Drops <i>ITEM</i> from the backpack of the player, case
+      insensitive. If the item does not exist nothing happens.</font></td>
+    <td width="27%"><font size="2" face="Fixedsys">&lt;drop sword&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>mod</b> <i>STAT</i> +-<i>N</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Modify a player score. Valid values for <i>STAT</i> are: <i>stm</i>
+      - stamina; <i>skl</i> - skill; <i>wpn</i> - weapon; <i>arm</i> - armour; <i>exp</i>
+      - experience; <i>luck</i> - luck; <i>spd</i> - speed</font></td>
+    <td width="27%"><font size="2" face="Fixedsys">&lt;mod stm -5&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>if</b> <i>STAT</i> eq|gt|lt|ne <i>N</i>&gt; ... [&lt;<b>else</b>&gt;]
+      ... &lt;<b>endif</b>&gt;</font>
+      <p><font face="Arial">&lt;<b>if</b> <b>flag</b> <i>FLAG_ID</i>&gt; ... [&lt;<b>else</b>&gt;]
+      .. &lt;<b>endif</b>&gt;</font></p>
+      <p><font face="Arial">&lt;<b>if</b> <b>dice</b> eq|gt|lt|ne <i>N</i>&gt; ... [&lt;<b>else</b>&gt;]
+      ... &lt;<b>endif</b>&gt;</font></p>
+      <p><font face="Arial">&lt;<b>if</b> <i>STAT</i> eq|gt|lt|ne <b>dice</b>&gt; ... [&lt;<b>else</b>&gt;]
+      ... &lt;<b>endif</b>&gt;</font></p>
+      <p><font face="Arial">&lt;<b>if</b> <b>race</b> <b>orc</b>&gt;, &lt;<b>if</b> <b>race</b> <b>human</b>&gt;....</font></p>
+      <p><font face="Arial">&lt;<b>if</b> <b>prof</b> <b>wizard</b>&gt;, &lt;<b>if</b> <b>prof</b> <b>warrior</b>&gt;</font></td>
+    <td width="45%"><font face="Arial">Display next part of the paragraph if STAT is equal (<i>eq</i>),
+      greater than (<i>gt</i>), less than (<i>lt</i>) or not equal (<i>ne</i>)
+      to the value you provide. Valid values for <i>STAT</i> are: <i>stm</i> -
+      stamina; <i>skl</i> - skill; <i>wpn</i> - weapon; <i>arm</i> - armour; <i>exp</i>
+      - experience; <i>luck</i> - luck; <i>spd</i> - speed</font>
+      <p><font face="Arial">When checking with the &lt;<b>if flag</b>&gt; tag,
+      you may check against a local flag (set with &lt;<b>set</b>&gt;) or a
+      global flag (set with &lt;<b>setglobal</b>&gt;).</font></p>
+      <p><font face="Arial">With the &lt;<b>if</b> <b>dice</b>&gt; tag, you must have used the &lt;<b>dice</b>&gt;
+      tag previously to have a result to check against. <i>N</i> must be in the
+      range 1-6.</font></p>
+      <p><font face="Arial">When using the &lt;<b>if</b> <b>prof</b>&gt; or &lt;<b>if</b> <b>race</b>&gt;
+      tags, these compare against the current players race or profession, only
+      use the ones valid in the game, in lower case <b>only</b>.</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;if stm lt 5&gt; you have less than
+      5 stamina &lt;else&gt; you have 5 or more stamina &lt;endif&gt;</font>
+      <p><font face="Fixedsys">&lt;if stm gt 20&gt; you're a hard bastard
+      &lt;endif&gt;</font></p>
+      <p><font face="Fixedsys">&lt;if dice eq 1&gt; You rolled a 1 &lt;endif&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>I</b> NAME=&quot;<i>Item Name</i>&quot; COST=&quot;<i>X</i>&quot;&gt;</font><p><font face="Arial">&lt;<b>I</b> NAME=&quot;<i>Item Name</i>&quot;
+      VALUE=&quot;<i>STAT</i>+-<i>N</i>&quot; COST=&quot;<i>X</i>&quot;&gt;</font></td>
+    <td width="45%"><font face="Arial">A buyable item, e.g. from a shop. Item Name will be
+      displayed in backpack if bought. The cost value <i>X</i> is the cost in
+      gold of the item. If a <i>VALUE</i> parameter is included it indicates the
+      special <i>STAT</i> value of the item. Valid values for <i>STAT</i> are: <i>ST</i>
+      - stamina; <i>SK</i> - skill; <i>W</i> - weapon; <i>A</i> - armour; <i>EX</i>
+      - experience; <i>LK</i> - luck; <i>SD</i> - speed.</font>
+      <p><font face="Arial">Spells are special items where <i>STAT</i>+-<i>N </i>== &quot;<b>SPELL</b>&quot;.</font></p>
+      <p><font face="Arial">Herbs are special items where <i>STAT</i>+-<i>N</i> == &quot;<b>HERB</b>&quot;</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;I NAME=&quot;Stamina restorer
+      +6&quot; VALUE=&quot;ST+6&quot; COST=&quot;10&quot;&gt;</font>
+      <p><font face="Fixedsys">&lt;I NAME=&quot;Pointless junk&quot;
+      COST=&quot;100&quot;&gt;</font></p>
+      <p><font face="Fixedsys">&lt;I NAME=&quot;fly&quot;
+      VALUE=&quot;SPELL&quot; COST=&quot;1&quot;&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>TEST</b> <i>STAT</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Used to test a stat. See <b>AUTOLINK</b>. Valid values for <i>STAT</i>
+      are <b>SKILL</b>, <b>STAMINA</b>, <b>ARMOUR</b>, <b>WEAPON</b>, <b>LUCK</b></font></td>
+    <td width="27%"><font face="Fixedsys">&lt;TEST LUCK&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>set</b> <i>FLAG_ID</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Sets a flag which you can later check against with the &lt;<b>if</b>&gt;
+      tag.</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;set killed_some_boss&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>COMBAT</b> NAME=&quot;<i>monster</i>&quot; SKILL=<i>X</i>
+      STAMINA=<i>Y</i> ARMOUR=<i>Z</i> WEAPON=<i>T</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Creates a monster to fight, with the stats X, Y, Z and T.
+      The name &quot;<i>monster</i>&quot; is shown to the player on their
+      screen. Progress through the location will <b>not</b> continue until after
+      the monster is defeated. Multiple combats may be placed one after the
+      other.</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;COMBAT NAME=&quot;1ST ORC&quot;
+      SKILL=5 STAMINA=8 ARMOUR=6 WEAPON=6&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>pick</b> NAME=&quot;<i>item name</i>&quot; VALUE=<i>&quot;STAT+-N&quot;</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">A pickable item, for a &quot;you may take only one
+      item&quot; event. Item Name will be
+      displayed in backpack if bought. The <i>VALUE</i> parameter must be included
+      and it indicates the
+      special <i>STAT</i> value of the item. Valid values for <i>STAT</i> are: <i>ST</i>
+      - stamina; <i>SK</i> - skill; <i>W</i> - weapon; <i>A</i> - armour; <i>EX</i>
+      - experience; <i>LK</i> - luck; <i>SD</i> - speed.</font>
+      <p><font face="Arial">Spells are special items where <i>STAT</i>+-<i>N </i>== &quot;<b>SPELL</b>&quot;.</font></p>
+      <p><font face="Arial">Herbs are special items where <i>STAT</i>+-<i>N</i> == &quot;<b>HERB</b>&quot;</font></td>
+    <td width="27%"><font face="Fixedsys">You may take one item only:</font>
+      <p><font face="Fixedsys">&lt;pick name=&quot;Item 1&quot;
+      VALUE=&quot;ST+5&quot;&gt;</font></p>
+      <p><font face="Fixedsys">&lt;pick name=&quot;Item 2&quot;
+      VALUE=&quot;SK+5&quot;&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>eat</b>&gt;</font></td>
+    <td width="45%"><font face="Arial">Eats a ration from a players inventory, or subtracts two
+      stamina if there is not enough food for the player to eat.</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;eat&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>d12</b>&gt;</font></td>
+    <td width="45%"><font face="Arial">Roll a 12 sided dice, store score in engine for later.</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;d12&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>2d6</b>&gt;</font></td>
+    <td width="45%"><font face="Arial">Roll two dice, store total sum score in engine for later.</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;2d6&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>setglobal</b> <i>FLAG_ID</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">This tag sets a <i>global</i> flag. A <i>global</i>
+      flag is stored in a mysql table which all users can access, therefore if a
+      global flag is set for one user it is set for them all. Useful for game
+      persistence, e.g. if one user opens a door and it cannot be closed again,
+      you may want to use &lt;<b>setglobal</b>&gt; to mark the door as open to
+      all other users that encounter it. You may check against a global flag
+      with the &lt;<b>if</b>&gt; tag, in the same way you can check against a
+      flag which is specific to a user, placed with &lt;<b>set</b>&gt;. Note
+      that global flags, like user specific flags, cannot contain spaces, and
+      global and local flags may not conflict (have the same names) otherwise a
+      condition will occur if <b>either</b> of the two flags is set)</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;setglobal blew_up_the_door&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>unsetglobal</b> <i>FLAG_ID</i>&gt;</font></td>
+    <td width="45%"><font face="Arial">Use this tag to unset a <i>global</i>
+      flag that has been set with setglobal.</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;unsetglobal blew_up_the_door&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>input</b> prompt=&quot;<i>prompt line</i>&quot;
+      location=&quot;<i>ID</i>&quot; value="<i>correct_answer</i>&quot;&gt;</font></td>
+    <td width="45%"><font face="Arial">This tag asks the user for an answer to some form of text
+      riddle or question, e.g. &quot;how many fingers am i holding up&quot;. If
+      the user enters the correct answer (which cannot be more then one word)
+      then the location referred to by <i>ID<b> </b></i>is jumped to, same as if
+      they'd clicked a link. See the example. Note that the answer is <i> CaSe
+      SeNsiTiVe</i>!</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;input prompt=&quot;What creature
+      beginning with A eats ants?&quot; location=&quot;666&quot;
+      value=&quot;anteater&quot;&gt;</font></td>
+  </tr>
+  <tr>
+    <td width="28%"><font face="Arial">&lt;<b>dice</b>&gt;</font></td>
+    <td width="45%"><font face="Arial">Roll a dice, store score in engine for later.</font></td>
+    <td width="27%"><font face="Fixedsys">&lt;dice&gt;</font></td>
+  </tr>
+</table>
