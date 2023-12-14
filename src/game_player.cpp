@@ -45,14 +45,16 @@ player::~player() {
 dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("The Seven Spells Of Destruction")
+		.set_title("New Character Creation")
 		.set_footer(dpp::embed_footer{ 
 			.text = "New player creation for " + event.command.usr.format_username(), 
 			.icon_url = cluster.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(0xd5b994)
-		.set_description(fmt::format("Welcome to the world of **Utopia**, {}!\n\nYour character is shown below. If you are not happy with your base stats, click **Re-Roll** for new ones. Once you commit to this character, you cannot change these base stats without **restarting**.", event.command.usr.get_mention()))
+		.set_description(fmt::format("Welcome to the world of **Utopia**, {}!\n\n\
+Your character is shown below. If you are not happy with your base stats, click **Re-Roll** for new ones.\n\
+### Once you commit to this character, you cannot change these base stats without __restarting__.", event.command.usr.get_mention()))
 		.add_field("Stamina", std::to_string(stamina) + bonuses(1, race, profession), true)
 		.add_field("Skill", std::to_string(skill) + bonuses(2, race, profession), true)
 		.add_field("Luck", std::to_string(luck) + bonuses(3, race, profession), true)
@@ -131,6 +133,15 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 bool player::has_herb(const std::string herb_name) {
 	for (const item& herb : herbs) {
 		if (herb.name == herb_name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool player::has_spell(const std::string spell_name) {
+	for (const item& spell : spells) {
+		if (spell.name == spell_name) {
 			return true;
 		}
 	}
@@ -251,7 +262,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 	size_t max_spells = (profession == prof_wizard ? 5 : 2);
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("The Seven Spells Of Destruction")
+		.set_title("Magic Selection")
 		.set_footer(dpp::embed_footer{ 
 			.text = "New player creation for " + event.command.usr.format_username(), 
 			.icon_url = cluster.me.get_avatar_url(), 
@@ -259,9 +270,9 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 		})
 		.set_colour(0xd5b994)
 		.set_description(fmt::format("Now, select your herbs and magic. Certain spells require herbs in your inventory to function.\n\n\
-		Read the descriptions of the herbs to determine which types of spells they might provide access to.\n\n\
-		**You have selected __{}__ of up to __{}__ herbs, and __{}__ of up to __{}__ spells.**\n\n\
-		Once you are happy with your choices, click **Continue** to name your character.", herbs.size(), 3, spells.size(), max_spells));
+Read the descriptions of the herbs to determine which types of spells they might provide access to.\n\
+### You have selected __{}__ of up to __{}__ herbs, and __{}__ of up to __{}__ spells.\n\n\
+Once you are happy with your choices, click **Continue** to name your character.", herbs.size(), 3, spells.size(), max_spells));
 
 	dpp::component herb_select_menu, spell_select_menu;
 	herb_select_menu.set_type(dpp::cot_selectmenu)
@@ -324,9 +335,9 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 	};
 	
 	size_t spell_count = 0;
-	for (const auto& spell : all_spells) {
+	for (auto spell : all_spells) {
 		if (has_component_herb(spell.value)) {
-			spell_select_menu.add_select_option(spell);
+			spell_select_menu.add_select_option(spell.set_default(has_spell(spell.value)));
 			spell_count++;
 		}
 	}
@@ -409,11 +420,11 @@ player::player(bool reroll) :
 
 player::player(dpp::snowflake user_id, bool get_backup) : player() {
 	db::resultset a_row = db::query(fmt::format("SELECT * FROM {} WHERE user_id = ?", get_backup ? "game_default_users" : "game_users"), {user_id});
-	if (a_row.size())
-	{
+	if (a_row.size()) {
 		race = (player_race)atoi(a_row[0].at("race").c_str());
 		profession = (player_profession)atoi(a_row[0].at("profession").c_str());
 		X = profession;
+		name = a_row[0].at("name");
 		stamina = atol(a_row[0].at("stamina").c_str());
 		skill = atol(a_row[0].at("skill").c_str());
 		luck = atol(a_row[0].at("luck").c_str());
@@ -441,8 +452,7 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 	}
 
 	auto res = db::query("SELECT item_desc, item_flags FROM game_owned_items WHERE user_id = ?", {user_id});
-	for (const auto& a_row : res)
-	{
+	for (const auto& a_row : res) {
 		const std::string& item_desc = a_row.at("item_desc");
 		const std::string& item_flags = a_row.at("item_flags");
 		if (item_flags == "SPELL" && !item_desc.empty()) {
@@ -480,10 +490,10 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 
 	last_use = time(nullptr);
 
-	db::query(fmt::format("INSERT INTO {} (user_id, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph, \
+	db::query(fmt::format("INSERT INTO {} (user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph, \
 	 armour, weapon, gotfrom, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick) \
 	VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", put_backup ? "game_default_users" : "game_users"),
-		{user_id, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
+		{user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
 		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick}
 	);
 

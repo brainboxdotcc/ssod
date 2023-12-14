@@ -24,6 +24,7 @@ enum game_state {
 struct player {
 	game_state state;
 	dpp::interaction_create_t event;
+	std::string name;
 	player_race race;
 	player_profession profession;
 	player_profession X;
@@ -85,6 +86,7 @@ struct player {
 
 	bool has_herb(const std::string herb_name);
 	bool has_component_herb(const std::string& spell);
+	bool has_spell(const std::string spell_name);
 
 	dpp::message get_registration_message(class dpp::cluster& cluster, const dpp::interaction_create_t &event);
 	dpp::message get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event);
