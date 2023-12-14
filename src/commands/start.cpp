@@ -24,11 +24,12 @@
 #include <ssod/commands/start.h>
 #include <ssod/database.h>
 #include <ssod/game_player.h>
+#include <ssod/game.h>
 
 dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 {
 	bot.on_button_click([&bot](const dpp::button_click_t &event) {
-		if (player_is_live(event.command.usr.id)) {
+		if (player_is_live(event)) {
 			return;
 		}
 		player p_old = get_registering_player(event);
@@ -43,13 +44,17 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		} else if (event.custom_id == "player_herb_spell_selection" && p_old.state == state_roll_stats) {
 			event.reply();
 			p_old.state = state_pick_magic;
+			p_old.stamina += bonuses_numeric(1, p_old.race, p_old.profession);
+			p_old.skill += bonuses_numeric(2, p_old.race, p_old.profession);
+			p_old.luck += bonuses_numeric(3, p_old.race, p_old.profession);
+			p_old.sneak += bonuses_numeric(4, p_old.race, p_old.profession);
+			p_old.speed += bonuses_numeric(5, p_old.race, p_old.profession);
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
 		} else if (event.custom_id == "player_name" && p_old.state == state_pick_magic) {
 			p_old.state = state_name_player;
 			update_registering_player(event, p_old);
-			dpp::interaction_modal_response modal("name_character", "Name Your Adventurer");
-			modal.add_component(
+			dpp::interaction_modal_response modal("name_character", "Name Your Adventurer",	{
 				dpp::component()
 				.set_label("Enter Your Character's Name")
 				.set_id("player_set_name")
@@ -59,14 +64,14 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 				.set_required(true)
 				.set_max_length(64)
 				.set_text_style(dpp::text_short)
-			);
+			});
 			event.dialog(modal);
 		} else {
 			event.reply("State error");
 		}
 	});
 	bot.on_select_click([&bot](const dpp::select_click_t &event) {
-		if (player_is_live(event.command.usr.id)) {
+		if (player_is_live(event)) {
 			return;
 		}
 		event.reply();
@@ -98,6 +103,23 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			event.reply("State error");
 		}
 	});
+	bot.on_form_submit([](const dpp::form_submit_t & event) {
+		if (player_is_live(event)) {
+			return;
+		}
+		player p_old = get_registering_player(event);
+		if (event.custom_id == "name_character" && p_old.state == state_name_player) {
+			p_old.event.delete_original_response();
+			p_old.name = std::get<std::string>(event.components[0].components[0].value);
+			p_old.state = state_play;
+			update_registering_player(event, p_old);
+			// Save to database and overwrite backup state
+			p_old.save(event.command.usr.id, true);
+			p_old.event = event;
+			move_from_registering_to_live(event, p_old);
+			continue_game(event, p_old);
+		}
+	});
 	return dpp::slashcommand("start", "Start a new character or resume game", bot.me.id);
 }
 
@@ -105,8 +127,9 @@ void start_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 
-	if (player_is_live(event.command.usr.id)) {
-		event.reply("Player live - Not implemented");
+	if (player_is_live(event)) {
+		player p = get_live_player(event);
+		continue_game(event, p);
 		return;
 	}
 
@@ -114,7 +137,6 @@ void start_command::route(const dpp::slashcommand_t &event)
 	p.state = state_roll_stats;
 	p.event = event;
 	update_registering_player(event, p);
-	//p.save(event.command.usr.id, true);
 
 	event.reply(p.get_registration_message(*bot, event));
 }

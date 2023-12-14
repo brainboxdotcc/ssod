@@ -25,6 +25,7 @@
 #include <ssod/logger.h>
 #include <ssod/config.h>
 #include <ssod/sentry.h>
+#include <ssod/game.h>
 
 int main(int argc, char const *argv[])
 {
@@ -45,7 +46,7 @@ int main(int argc, char const *argv[])
 	bot.on_guild_delete(&listeners::on_guild_delete);
 	bot.on_slashcommand(&listeners::on_slashcommand);
 	bot.on_message_create(&listeners::on_message_create);
-	bot.on_button_click(&listeners::on_button_click);
+	bot.on_button_click(&game_nav);
 	bot.on_ready(&listeners::on_ready);
 
 	db::init(bot);

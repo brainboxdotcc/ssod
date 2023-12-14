@@ -35,9 +35,7 @@ void route_command(const dpp::slashcommand_t &event)
 	auto ref = registered_commands.find(event.command.get_command_name());
 	if (ref != registered_commands.end()) {
 		auto ptr = ref->second;
-		std::thread([ptr, event]() {
-			(*ptr)(event);
-		}).detach();
+		(*ptr)(event);
 	} else {
 		event.from->creator->log(dpp::ll_error, "Unable to route command: " + event.command.get_command_name());
 	}

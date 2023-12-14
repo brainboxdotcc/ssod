@@ -13,6 +13,7 @@ aux_source_directory("src/3rdparty" coresrc)
 add_executable(${BOT_NAME} ${coresrc})
 
 target_precompile_headers(${BOT_NAME} INTERFACE "src/3rdparty/httplib.h")
+target_precompile_headers(${BOT_NAME} INTERFACE "/usr/include/fmt/format.h")
 
 string(ASCII 27 Esc)
 

@@ -11,8 +11,21 @@ bool player_is_registering(dpp::snowflake user_id) {
 	return registering_players.find(user_id) != registering_players.end();
 }
 
-bool player_is_live(dpp::snowflake user_id) {
-	return live_players.find(user_id) != live_players.end();
+bool player_is_live(const dpp::interaction_create_t& event) {
+	auto f = live_players.find(event.command.usr.id);
+	if (f != live_players.end()) {
+		return true;
+	}
+	auto rs = db::query("SELECT * FROM game_users WHERE user_id = ?", { event.command.usr.id });
+	if (!rs.empty()) {
+		/* Load the player into cache */
+		player p(event.command.usr.id);
+		p.event = event;
+		p.state = state_play;
+		live_players[event.command.usr.id] = p;
+		return true;
+	}
+	return false;
 }
 
 player get_registering_player(const dpp::interaction_create_t& event) {
@@ -23,20 +36,36 @@ player get_registering_player(const dpp::interaction_create_t& event) {
 	player p(true);
 	p.event = event;
 	registering_players[event.command.usr.id] = p;
-	return registering_players[event.command.usr.id];
+	return p;
 }
 
 void update_registering_player(const dpp::interaction_create_t& event, player p) {
 	registering_players[event.command.usr.id] = p;
 }
 
-player get_live_player(dpp::snowflake user_id) {
-	auto f = live_players.find(user_id);
+void update_live_player(const dpp::interaction_create_t& event, player p) {
+	live_players[event.command.usr.id] = p;
+}
+
+void move_from_registering_to_live(const dpp::interaction_create_t& event, player p) {
+	live_players[event.command.usr.id] = p;
+	auto f = registering_players.find(event.command.usr.id);
+	if (f != registering_players.end()) {
+		registering_players.erase(f);
+	}
+}
+
+player get_live_player(const dpp::interaction_create_t& event) {
+	auto f = live_players.find(event.command.usr.id);
 	if (f != live_players.end()) {
 		return f->second;
 	}
-	live_players.emplace(user_id, player(true));
-	return live_players[user_id];
+	/* Retrieve from database */
+	player p(event.command.usr.id);
+	p.event = event;
+	p.state = state_play;
+	live_players[event.command.usr.id] = p;
+	return p;
 }
 
 player::~player() {
@@ -65,10 +94,7 @@ Your character is shown below. If you are not happy with your base stats, click 
 		.add_field("Rations", std::to_string(rations), true)
 		.add_field("Notoriety", std::to_string(notoriety), true)
 		.add_field("Armour", fmt::format("{} (Rating {})", armour.name, armour.rating), true)
-		.add_field("Weapon", fmt::format("{} (Rating {})", weapon.name, weapon.rating), true)
-		;
-
-		cluster.log(dpp::ll_debug, "Display: " + std::to_string(race) + " prof: " + std::to_string(profession));
+		.add_field("Weapon", fmt::format("{} (Rating {})", weapon.name, weapon.rating), true);
 
 		dpp::component race_select_menu, profession_select_menu;
 		race_select_menu.set_type(dpp::cot_selectmenu)
@@ -142,6 +168,45 @@ bool player::has_herb(const std::string herb_name) {
 bool player::has_spell(const std::string spell_name) {
 	for (const item& spell : spells) {
 		if (spell.name == spell_name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool player::has_possession(const std::string name) {
+	for (const item& inv : possessions) {
+		if (inv.name == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool player::drop_possession(const item& i) {
+	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
+		if (inv->name == i.name) {
+			possessions.erase(inv);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool player::drop_spell(const item& i) {
+	for (auto inv = spells.begin(); inv != spells.end(); ++inv) {
+		if (inv->name == i.name) {
+			spells.erase(inv);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool player::drop_herb(const item& i) {
+	for (auto inv = herbs.begin(); inv != herbs.end(); ++inv) {
+		if (inv->name == i.name) {
+			herbs.erase(inv);
 			return true;
 		}
 	}
@@ -437,7 +502,7 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		notoriety = atol(a_row[0].at("notoriety").c_str());
 		days = atol(a_row[0].at("days").c_str());
 		scrolls = atol(a_row[0].at("scrolls").c_str());
-		paragraph = a_row[0].at("paragraph");
+		paragraph = atol(a_row[0].at("paragraph").c_str());
 		armour.name = a_row[0].at("armour");
 		weapon.name = a_row[0].at("weapon");
 		armour.rating = atol(a_row[0].at("armour_rating").c_str());
@@ -492,7 +557,7 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 
 	db::query(fmt::format("INSERT INTO {} (user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph, \
 	 armour, weapon, gotfrom, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick) \
-	VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", put_backup ? "game_default_users" : "game_users"),
+	VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", put_backup ? "game_default_users" : "game_users"),
 		{user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
 		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick}
 	);
@@ -514,20 +579,20 @@ void player::strike() {
 void player::reset_to_spawn_point() {
 	switch (race) {
 		case race_human:
-			paragraph = "1306";
+			paragraph = 1306;
 		break;
 		case race_orc:
-			paragraph = "1306";
+			paragraph = 1306;
 		break;
 		case race_lesser_orc:
-			paragraph = "1325";
+			paragraph = 1325;
 		break;
 		case race_elf:
-			paragraph = "1325";
+			paragraph = 1325;
 		break;
 		default:
 		case race_dwarf:
-			paragraph = "1332";
+			paragraph = 1332;
 		break;
 	}
 }

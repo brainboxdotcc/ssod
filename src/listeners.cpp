@@ -171,9 +171,6 @@ namespace listeners {
 		event.from->creator->log(dpp::ll_info, "Removed from guild: " + event.deleted.id.str());
 	}
 
-	void on_button_click(const dpp::button_click_t &event) {
-	}
-
 	void on_slashcommand(const dpp::slashcommand_t &event) {
 		event.from->creator->log(
 			dpp::ll_info,

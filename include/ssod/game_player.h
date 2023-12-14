@@ -40,7 +40,7 @@ struct player {
 	long notoriety;
 	long days;
 	long scrolls;
-	std::string paragraph;
+	uint32_t paragraph;
 	rated_item armour;
 	rated_item weapon;
 	std::vector<item> possessions;
@@ -87,6 +87,11 @@ struct player {
 	bool has_herb(const std::string herb_name);
 	bool has_component_herb(const std::string& spell);
 	bool has_spell(const std::string spell_name);
+	bool has_possession(const std::string name);
+
+	bool drop_possession(const item& i);
+	bool drop_spell(const item& i);
+	bool drop_herb(const item& i);
 
 	dpp::message get_registration_message(class dpp::cluster& cluster, const dpp::interaction_create_t &event);
 	dpp::message get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event);
@@ -97,8 +102,10 @@ using player_list = std::unordered_map<dpp::snowflake, player>;
 bool player_is_registering(dpp::snowflake user_id);
 player get_registering_player(const dpp::interaction_create_t& event);
 void update_registering_player(const dpp::interaction_create_t& event, player p);
-bool player_is_live(dpp::snowflake user_id);
-player get_live_player(dpp::snowflake user_id);
+void move_from_registering_to_live(const dpp::interaction_create_t& event, player p);
+bool player_is_live(const dpp::interaction_create_t& event);
+player get_live_player(const dpp::interaction_create_t& event);
+void update_live_player(const dpp::interaction_create_t& event, player p);
 
 long bonuses_numeric(int type, player_race R, player_profession P);
 std::string bonuses(int type, player_race R, player_profession P);
