@@ -20,6 +20,7 @@ void game_nav(const dpp::button_click_t& event) {
 		p.event.delete_original_response();
 		p.event = event;
 		update_live_player(event, p);
+		p.save(event.command.usr.id);
 		continue_game(event, p);
 	}
 };

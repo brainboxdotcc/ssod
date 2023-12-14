@@ -538,7 +538,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			if (m != modifier_list.end()) {
 				// No output if the player's been here before
 				if (not_got_yet(this->id, flag, current_player.gotfrom)) {
-					current_player.gotfrom += "[" + flag + std::to_string(this->id) + "]";
+					current_player.gotfrom += " [" + flag + std::to_string(this->id) + "]";
 				} else {
 					output << "***Make no changes to your " << m->first << "*** ";
 					continue;
