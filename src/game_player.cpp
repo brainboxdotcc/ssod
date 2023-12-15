@@ -3,6 +3,7 @@
 #include <ssod/database.h>
 #include <ssod/game_dice.h>
 #include <fmt/format.h>
+#include <ssod/game_util.h>
 
 player_list registering_players;
 player_list live_players;
@@ -146,13 +147,7 @@ Your character is shown below. If you are not happy with your base stats, click 
 				.set_label("Continue")
 				.set_style(dpp::cos_success)
 			)
-			.add_component(dpp::component()
-				.set_type(dpp::cot_button)
-				.set_id("player_nav_help")
-				.set_label("Get Help")
-				.set_url("https://discord.gg/brainbox")
-				.set_style(dpp::cos_link)
-			)
+			.add_component(help_button())
 		).set_flags(dpp::m_ephemeral);
 }
 
@@ -433,13 +428,7 @@ Once you are happy with your choices, click **Continue** to name your character.
 				.set_label("Continue")
 				.set_style(dpp::cos_success)
 			)
-			.add_component(dpp::component()
-				.set_type(dpp::cot_button)
-				.set_id("player_nav_help")
-				.set_label("Get Help")
-				.set_url("https://discord.gg/brainbox")
-				.set_style(dpp::cos_link)
-			)
+			.add_component(help_button())
 		).set_flags(dpp::m_ephemeral);
 }
 

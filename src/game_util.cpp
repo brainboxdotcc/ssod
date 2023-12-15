@@ -1,6 +1,16 @@
 #include <ssod/game_util.h>
 #include <fmt/format.h>
 #include <ssod/database.h>
+#include <dpp/dpp.h>
+
+dpp::component help_button() {
+	return dpp::component()
+		.set_type(dpp::cot_button)
+		.set_id("player_nav_help")
+		.set_label("Get Help")
+		.set_url("https://discord.gg/brainbox")
+		.set_style(dpp::cos_link);		
+}
 
 std::string describe_item(const std::string& modifier_flags, const std::string& name)
 {
