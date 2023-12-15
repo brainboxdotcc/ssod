@@ -39,23 +39,42 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		.set_description(location.text);
 
 	dpp::message m;
+	m.add_embed(embed).add_component(dpp::component());
+	size_t index = 0;
+	size_t component_parent = 0;
 	if (location.navigation_links.size()) {
-		m.add_embed(embed).add_component(dpp::component());
-		size_t index = 0;
-		size_t component_parent = 0;
 		for (const auto & n : location.navigation_links) {
-			m.components[component_parent].add_component(
-				dpp::component()
-					.set_type(dpp::cot_button)
-					.set_id("follow_nav;" + std::to_string(n) + ";" + std::to_string(p.paragraph))
-					.set_label("Travel")
-					.set_style(dpp::cos_primary)
-					.set_emoji(directions[++index], 0, false)
-			);
+			std::string label{"Travel"};
+			dpp::component comp;
+			if (n.type == nav_type_disabled_link || (p.gold < n.cost && n.type == nav_type_paylink)) {
+				comp.set_disabled(true);
+			}
+			if (n.type == nav_type_paylink) {
+				label = "Pay " + std::to_string(n.cost) + " Gold";
+			}
+			comp.set_type(dpp::cot_button)
+				.set_id("follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph))
+				.set_label(label)
+				.set_style(dpp::cos_primary)
+				.set_emoji(directions[++index], 0, false);
+
+			m.components[component_parent].add_component(comp);
 			if (index && (index % 5 == 0)) {
 				m.add_component(dpp::component());
 				component_parent++;
 			}
+		}
+		m.components[component_parent].add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id("player_nav_help")
+			.set_label("Get Help")
+			.set_url("https://discord.gg/brainbox")
+			.set_style(dpp::cos_link)
+		);
+		index++;
+		if (index && (index % 5 == 0)) {
+			m.add_component(dpp::component());
+			component_parent++;
 		}
 		if (m.components[component_parent].components.empty()) {
 			m.components.erase(m.components.end() - 1);

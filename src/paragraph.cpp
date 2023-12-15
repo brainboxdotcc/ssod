@@ -606,13 +606,12 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 				}
 				if (current_player.gold < atol(cost.c_str())) {
 					//Image("link_bad.jpg","You dont have enough gold to do this!");
-					output << " (Not enough gold to follow this path)";
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_disabled_link, .cost = 0 });
 				}
 				else {
-					// TODO: Pay link
 					links++;
 					output << directions[links];
-					navigation_links.push_back(atol(pnum.c_str()));
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_paylink, .cost = atol(cost.c_str()) });
 				}
 				output << " ";
 			} else if (tag.find("<link=") != std::string::npos && !last_was_link) {
@@ -625,11 +624,10 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
 					output << " (unable to follow this path)";
 				} else {
-					// TODO: Link!
 					links++;
 					LastLink = pnum;
 					output << directions[links];
-					navigation_links.push_back(atol(pnum.c_str()));
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_link, .cost = 0 });
 				}
 				output << " ";
 			} else if (tag.find("<autolink=") != std::string::npos && !last_was_link) {
@@ -644,13 +642,12 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 					output << " (unable to follow this path)";
 				} else {
 					if (auto_test) {
-						// TODO: Link!
 						links++;
 						LastLink = pnum;
 						output << directions[links];
-						navigation_links.push_back(atol(pnum.c_str()));
+						navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_autolink, .cost = 0 });
 					} else {
-						output << " (unable to follow this path)";
+						navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_disabled_link, .cost = 0 });
 					}
 				}
 				auto_test = !auto_test; // invert the next autolink...
