@@ -39,21 +39,31 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		.set_description(location.text);
 
 	dpp::message m;
-	m.add_embed(embed).add_component(dpp::component());
-	size_t index = 0;
-	for (const auto & n : location.navigation_links) {
-		m.components[0].add_component(
-			dpp::component()
-				.set_type(dpp::cot_button)
-				.set_id("follow_nav;" + std::to_string(n) + ";" + std::to_string(p.paragraph))
-				.set_label("Travel")
-				.set_style(dpp::cos_primary)
-				.set_emoji(directions[++index], 0, false)
-		);
+	if (location.navigation_links.size()) {
+		m.add_embed(embed).add_component(dpp::component());
+		size_t index = 0;
+		size_t component_parent = 0;
+		for (const auto & n : location.navigation_links) {
+			m.components[component_parent].add_component(
+				dpp::component()
+					.set_type(dpp::cot_button)
+					.set_id("follow_nav;" + std::to_string(n) + ";" + std::to_string(p.paragraph))
+					.set_label("Travel")
+					.set_style(dpp::cos_primary)
+					.set_emoji(directions[++index], 0, false)
+			);
+			if (index && (index % 5 == 0)) {
+				m.add_component(dpp::component());
+				component_parent++;
+			}
+		}
+		if (m.components[component_parent].components.empty()) {
+			m.components.erase(m.components.end() - 1);
+		}
 	}
-	event.reply(m.set_flags(dpp::m_ephemeral), [&bot](const auto& cc) {
+	event.reply(m.set_flags(dpp::m_ephemeral), [event, &bot, location](const auto& cc) {
 		if (cc.is_error()) {
-			std::cout << cc.http_info.body << "\n";
+			event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```");
 		}
 	});
 }
