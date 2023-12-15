@@ -3,6 +3,7 @@
 #include <ssod/database.h>
 #include <ssod/game_player.h>
 #include <ssod/game_dice.h>
+#include <ssod/game_util.h>
 
 paragraph::paragraph(uint32_t paragraph_id, player current, dpp::snowflake user_id) {
 	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});
@@ -89,6 +90,18 @@ bool not_got_yet(uint32_t paragraph, const std::string& item, const std::string&
 	return gotfrom.find(f) == std::string::npos;
 }
 
+void extract_to_quote(std::string& p_text, std::stringstream& content) {
+	while (p_text.length() && *p_text.rbegin() != '"') {
+		std::string extra;
+		content >> extra;
+		p_text += " " + extra;
+	}							
+}
+
+std::string remove_last_char(const std::string& s) {
+	return s.substr(0, s.length() - 1);	
+}
+
 void paragraph::parse(player current_player, dpp::snowflake user_id) {
 	std::stringstream paragraph_content(text);
 	std::stringstream output;
@@ -117,11 +130,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			links++;
 			paragraph_content >> p_text;
 
-			while (*p_text.rbegin() != '"') {
-				std::string extra;
-				paragraph_content >> extra;
-				p_text += " " + extra;
-			}							
+			extract_to_quote(p_text, paragraph_content);
 				
 			std::string MonsterName = extract_value(p_text);
 			paragraph_content >> p_text;
@@ -168,11 +177,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			// sneak test tag
 			paragraph_content >> p_text;
 
-			while (*p_text.rbegin() != '"') {
-				std::string extra;
-				paragraph_content >> extra;
-				p_text += " " + extra;
-			}
+			extract_to_quote(p_text, paragraph_content);
 
 			std::string MonsterName = extract_value(p_text);
 			paragraph_content >> p_text;
@@ -190,21 +195,20 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 		if (dpp::lowercase(p_text) == "<set") {
 			// set a state-flag
 			paragraph_content >> p_text;
-			p_text = dpp::lowercase(p_text.substr(0, p_text.length() - 1));
+			p_text = dpp::lowercase(remove_last_char(p_text));
 			current_player.gotfrom += " gamestate_" + p_text;
-			current_player.save(user_id);
 			continue;
 		}
 
 		if (dpp::lowercase(p_text) == "<setglobal") {
 			paragraph_content >> p_text;
-			p_text = dpp::lowercase(p_text.substr(0, p_text.length() - 1));
+			p_text = dpp::lowercase(remove_last_char(p_text));
 			db::query("REPLACE INTO game_global_flags (flag) VALUES(?)", {p_text});
 		}
 
 		if (dpp::lowercase(p_text) == "<unsetglobal") {
 			paragraph_content >> p_text;
-			p_text = dpp::lowercase(p_text.substr(0, p_text.length() - 1));
+			p_text = dpp::lowercase(remove_last_char(p_text));
 			db::query("DELETE FROM game_global_flags WHERE flag = ?", {p_text});
 		}
 
@@ -216,32 +220,27 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			if (p_text.find("luck>") != std::string::npos) {
 				output << " Test your __**luck**__. ";
 				auto_test = current_player.test_luck();
-				current_player.save(user_id);
 				continue;
 			}
 
 			if (p_text.find("stamina>") != std::string::npos) {
 				output << " Test your __**stamina**__. ";
 				auto_test = current_player.test_stamina();
-				current_player.save(user_id);
 				continue;
 			}
 			if (p_text.find("skill>") != std::string::npos) {
 				output << " Test your __**skill**__. ";
 				auto_test = current_player.test_skill();
-				current_player.save(user_id);
 				continue;
 			}
 			if (p_text.find("speed>") != std::string::npos) {
 				output << " Test your __**speed**__. ";
 				auto_test = current_player.test_speed();
-				current_player.save(user_id);
 				continue;
 			}
 			if (p_text.find("exp>") != std::string::npos) {
 				output << " Test your __**experience**__. ";
 				auto_test = current_player.test_experience();
-				current_player.save(user_id);
 				continue;
 			}
 		}
@@ -251,7 +250,6 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 				// time advancement
 				//current_player.remove_day();
 				current_player.eat_ration();
-				current_player.save(user_id);
 			}
 			continue;
 		}
@@ -260,7 +258,6 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			if (!didntmove) {
 				// just eat a ration, or loose stamina
 				current_player.eat_ration();
-				current_player.save(user_id);
 			}
 			continue;
 		}
@@ -282,11 +279,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			// pick up free items (one-choice)
 			paragraph_content >> p_text;
 
-			while (p_text.length() && *p_text.rbegin() != '"') {
-				std::string extra;
-				paragraph_content >> extra;
-				p_text += " " + extra;
-			}
+			extract_to_quote(p_text, paragraph_content);
 
 			std::string ItemName = extract_value(p_text);
 			paragraph_content >> p_text;
@@ -305,12 +298,10 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			// -------------------------------------------------------
 			if (dpp::lowercase(p_text) == "item") {
 				paragraph_content >> p_text;
-				while (p_text.length() && *p_text.rbegin() != '>') {
-					std::string extra;
-					paragraph_content >> extra;
-					p_text += " " + extra;
-				}
-				p_text = p_text.substr(0, p_text.length() - 1);
+
+				extract_to_quote(p_text, paragraph_content);
+
+				p_text = remove_last_char(p_text);
 
 				std::string flags;
 				display = current_player.has_herb(p_text) || current_player.has_spell(p_text) || current_player.has_possession(p_text);
@@ -321,14 +312,14 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			// -------------------------------------------------------
 			if (dpp::lowercase(p_text) == "flag") {
 				paragraph_content >> p_text;
-				p_text = p_text.substr(0, p_text.length() - 1);
+				p_text = remove_last_char(p_text);
 				std::string flag = " gamestate_" + p_text;
 				display = (current_player.gotfrom.find(flag) != std::string::npos || global_set(p_text));
 				continue;
 			}
 			if (dpp::lowercase(p_text) == "!flag") {
 				paragraph_content >> p_text;
-				p_text = p_text.substr(0, p_text.length() - 1);
+				p_text = remove_last_char(p_text);
 				std::string flag = " gamestate_" + p_text;
 				display = (current_player.gotfrom.find(flag) == std::string::npos && !global_set(p_text));
 				continue;
@@ -415,11 +406,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			// TODO: Modal Dialog!
 			links++;
 			paragraph_content >> p_text;
-			while (p_text.length() && *p_text.rbegin() != '"') {
-				std::string extra;
-				paragraph_content >> extra;
-				p_text += " " + extra;
-			}
+			extract_to_quote(p_text, paragraph_content);
 
 			std::string Prompt = extract_value(p_text);
 			paragraph_content >> p_text;
@@ -442,25 +429,22 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 					current_player.scrolls++;
 					current_player.gotfrom += " [SCROLL" + std::to_string(this->id) + "]";
 				}
-				current_player.save(user_id);
 				continue;
 			}
 
 			if (dpp::lowercase(p_text) == "gold")
 			{
 				paragraph_content >> p_text;
-				p_text = p_text.substr(0, p_text.length() - 1);
+				p_text = remove_last_char(p_text);
 				current_player.add_gold(atoi(p_text.c_str()));
-				current_player.save(user_id);
 				continue;
 			}
 
 			if (dpp::lowercase(p_text) == "silver")
 			{
 				paragraph_content >> p_text;
-				p_text = p_text.substr(0, p_text.length() - 1);
+				p_text = remove_last_char(p_text);
 				current_player.add_silver(atoi(p_text.c_str()));
-				current_player.save(user_id);
 				continue;
 			}
 
@@ -473,11 +457,11 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 					item_name += " " + p_text;
 				} else {
 					item_flags = p_text;
-					item_flags = item_flags.substr(0, item_flags.length() - 1);
+					item_flags = remove_last_char(item_flags);
 				}
 			}
 			if (item_name.length() && *item_name.rbegin() == '>') {
-				item_name = item_name.substr(0, item_flags.length() - 1);
+				item_name = remove_last_char(item_name);
 			}
 			// strip the [ and ] from the item flags...
 			for (size_t i = 1; i < item_flags.length() - 1; ++i) {
@@ -487,8 +471,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			if (!not_got_yet(this->id, item_name, current_player.gotfrom)) {
 				// crafty player trying to get the same item twice! Not good if its unique!
 				continue;
-			}
-			
+			}			
 			current_player.gotfrom += " [" + item_name + std::to_string(this->id) + "]";
 			if (flags == "SPELL") {
 				current_player.spells.push_back(item{ .name = item_name, .flags = flags });
@@ -497,8 +480,6 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			} else {
 				current_player.possessions.push_back(item{ .name = item_name, .flags = flags });
 			}
-
-			current_player.save(user_id);
 			continue;
 		}
 		
@@ -509,11 +490,10 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 				paragraph_content >> p_text;
 				i += " " + p_text;
 			}
-			i = i.substr(0, i.length() - 1); // remove '>'
+			i = remove_last_char(i); // remove '>'
 			current_player.drop_possession(item{ .name = i, .flags = "" });
 			current_player.drop_spell(item{ .name = i, .flags = "" });
 			current_player.drop_herb(item{ .name = i, .flags = "" });
-			current_player.save(user_id);
 			continue;
 		}
 		
@@ -521,7 +501,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 			std::string mod;
 			paragraph_content >> p_text;
 			paragraph_content >> mod;
-			mod = mod.substr(0, mod.length() - 1); // remove '>'
+			mod = remove_last_char(mod); // remove '>'
 			long modifier = atol(mod.c_str());
 			std::string flag = "MOD" + p_text + mod;
 
@@ -543,12 +523,8 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 					output << "***Make no changes to your " << m->first << "*** ";
 					continue;
 				}
-				current_player.save(user_id);
-
-				output << " ***" << (modifier < 1 ? "Subtract" : "Add") << abs(modifier) << " " << m->second.first << "*** ";
+				output << " ***" << (modifier < 1 ? "Subtract " : "Add ") << abs(modifier) << " " << m->second.first << "*** ";
 				*(m->second.second) += modifier;
-
-				current_player.save(user_id);
 			}
 			continue;
 
@@ -562,7 +538,8 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 		}
 
 		if (dpp::lowercase(p_text) == "<bank>") {
-			output << " ***TODO: Implement banking***\n\n";
+			links++;
+			navigation_links.push_back(nav_link{ .paragraph = this->id, .type = nav_type_bank, .cost = 0, .monster = {}, .buyable = {} });
 		}
 
 
@@ -576,7 +553,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 				ItemName += " " + p_text;
 				paragraph_content >> p_text;
 				if (ItemName.length() && *ItemName.rbegin() == '"') {
-					ItemName = ItemName.substr(0, ItemName.length() - 1);
+					ItemName = remove_last_char(ItemName);
 				}
 			}
 
@@ -588,7 +565,12 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 
 			// process COST token here: COST="cost">
 			Cost = extract_value(p_text);
-			output << "\n**Buy: " << Value << " " << ItemName << "** (*" << Cost << " gold*)\n";
+			output << "\n**Buy: " << ItemName << "** (*" << Cost << " gold*) - " << describe_item(Value, ItemName) << "\n";
+
+			links++;
+			output << directions[links] << "\n";
+			navigation_links.push_back(nav_link{ .paragraph = this->id, .type = nav_type_shop, .cost = atol(Cost.c_str()), .monster = {}, .buyable = { .name = ItemName, .flags = Value } });
+
 		} else {
 		
 			std::string tag = dpp::lowercase(p_text.substr(0, 20));
@@ -604,14 +586,13 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 				while (p_text[i] != '>') {
 					pnum += p_text[i++];
 				}
+				links++;
+				output << directions[links];
 				if (current_player.gold < atol(cost.c_str())) {
 					//Image("link_bad.jpg","You dont have enough gold to do this!");
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_disabled_link, .cost = 0 });
-				}
-				else {
-					links++;
-					output << directions[links];
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_paylink, .cost = atol(cost.c_str()) });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {} });
+				} else {
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_paylink, .cost = atol(cost.c_str()), .monster = {}, .buyable = {} });
 				}
 				output << " ";
 			} else if (tag.find("<link=") != std::string::npos && !last_was_link) {
@@ -627,7 +608,7 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 					links++;
 					LastLink = pnum;
 					output << directions[links];
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_link, .cost = 0 });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_link, .cost = 0, .monster = {}, .buyable = {} });
 				}
 				output << " ";
 			} else if (tag.find("<autolink=") != std::string::npos && !last_was_link) {
@@ -641,13 +622,13 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
 					output << " (unable to follow this path)";
 				} else {
+					links++;
+					LastLink = pnum;
+					output << directions[links];
 					if (auto_test) {
-						links++;
-						LastLink = pnum;
-						output << directions[links];
-						navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_autolink, .cost = 0 });
+						navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_autolink, .cost = 0, .monster = {}, .buyable = {} });
 					} else {
-						navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_disabled_link, .cost = 0 });
+						navigation_links.push_back(nav_link{ .paragraph = atol(pnum.c_str()), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {} });
 					}
 				}
 				auto_test = !auto_test; // invert the next autolink...
@@ -662,6 +643,5 @@ void paragraph::parse(player current_player, dpp::snowflake user_id) {
 		}
 
 	}
-
 	text = output.str();
 }

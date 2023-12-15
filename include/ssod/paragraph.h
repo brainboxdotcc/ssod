@@ -23,12 +23,26 @@ enum nav_link_type {
 	nav_type_link,
 	nav_type_paylink,
 	nav_type_autolink,
+	nav_type_modal,
+	nav_type_shop,
+	nav_type_combat,
+	nav_type_bank,
+};
+
+struct enemy {
+	std::string name;
+	long stamina{};
+	long skill{};
+	long armour{};
+	long weapon{};
 };
 
 struct nav_link {
 	long paragraph;
 	nav_link_type type;
 	long cost;
+	enemy monster;
+	item buyable;
 };
 
 struct paragraph {
