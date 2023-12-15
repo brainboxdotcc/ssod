@@ -32,5 +32,20 @@ dpp::slashcommand map_command::register_command(dpp::cluster& bot)
 void map_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
-	event.reply("Not implemented");
+	dpp::embed embed = dpp::embed()
+		.set_url("https://ssod.org/")
+		.set_title("Game World Map")
+		.set_footer(dpp::embed_footer{ 
+			.text = "Requested by " + event.command.usr.format_username(), 
+			.icon_url = bot->me.get_avatar_url(), 
+			.proxy_url = "",
+		})
+		.set_colour(0x7aff7a)
+		.set_image("attachment://map.jpg")
+		.set_description("");
+	event.reply(dpp::message()
+		.add_embed(embed)
+		.set_flags(dpp::m_ephemeral)
+		.add_file("map.jpg", dpp::utility::read_file("../resource/map.jpg"))
+	);
 }
