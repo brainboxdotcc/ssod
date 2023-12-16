@@ -55,6 +55,15 @@ struct paragraph {
 	bool theft_disabled{};
 	bool chat_disabled{};
 
+	size_t links{0}, words{0};
+	std::string tag;
+	bool last_was_link{false};
+	bool display{true};
+	long after_fragment{0}; // paragraph fragment to start at (each combat increments the current fragment by one)
+	long current_fragment{0};	
+	bool auto_test{false}, didntmove{false};
+	int g_dice{0};
+
 	paragraph() = default;
 	~paragraph() = default;
 	paragraph(uint32_t paragraph_id, player current, dpp::snowflake user_id);
@@ -62,3 +71,17 @@ struct paragraph {
 private:
 	void parse(player current_player, dpp::snowflake user_id);
 };
+
+std::string extract_value(const std::string& p_text);
+
+long extract_value_number(const std::string& p_text);
+
+bool global_set(const std::string& flag);
+
+bool comparison(std::string condition, long C1, const std::string& C2, int g_dice);
+
+bool not_got_yet(uint32_t paragraph, const std::string& item, const std::string& gotfrom);
+
+void extract_to_quote(std::string& p_text, std::stringstream& content);
+
+std::string remove_last_char(const std::string& s);

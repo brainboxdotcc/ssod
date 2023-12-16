@@ -93,9 +93,9 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			m.components.erase(m.components.end() - 1);
 		}
 	}
-	event.reply(m.set_flags(dpp::m_ephemeral), [event, &bot, location](const auto& cc) {
+	event.reply(m.set_flags(dpp::m_ephemeral), [m, event, &bot, location](const auto& cc) {
 		if (cc.is_error()) {
-			event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```");
+			event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
 		}
 	});
 }
