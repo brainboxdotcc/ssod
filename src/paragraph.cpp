@@ -6,7 +6,7 @@
 #include <ssod/game_util.h>
 #include <ssod/parser.h>
 
-paragraph::paragraph(uint32_t paragraph_id, player current, dpp::snowflake user_id) {
+paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id) {
 	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});
 	if (location.empty()) {
 		throw dpp::logic_exception("Invalid location, internal error");
@@ -69,22 +69,6 @@ bool global_set(const std::string& flag) {
 	return db::query("SELECT flag FROM game_global_flags WHERE flag = ?", {flag}).size() > 0;
 }
 
-bool comparison(std::string condition, long C1, const std::string& C2, int g_dice) {
-	long C = C2 == "dice" ? g_dice : atol(C2.c_str());
-	condition = dpp::lowercase(condition);
-	if (condition == "eq" && C1 == C) {
-		return true;
-	} else if (condition == "gt" && C1 > C) {
-		return true;
-	} else if (condition == "lt" && C1 < C) {
-		return true;
-	} else if (condition == "ne" && C1 != C) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
 // returns true if the user hasnt found an item before
 bool not_got_yet(uint32_t paragraph, const std::string& item, const std::string& gotfrom) {
 	std::string f{" [" + item + std::to_string(paragraph) + "]"};
@@ -103,7 +87,7 @@ std::string remove_last_char(const std::string& s) {
 	return s.substr(0, s.length() - 1);	
 }
 
-void paragraph::parse(player current_player, dpp::snowflake user_id) {
+void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 	std::stringstream paragraph_content(text);
 	std::stringstream output;
 	std::string p_text, LastLink;

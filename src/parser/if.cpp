@@ -1,5 +1,21 @@
 #include <ssod/parser.h>
 
+bool comparison(std::string condition, long C1, const std::string& C2, int g_dice) {
+	long C = C2 == "dice" ? g_dice : atol(C2.c_str());
+	condition = dpp::lowercase(condition);
+	if (condition == "eq" && C1 == C) {
+		return true;
+	} else if (condition == "gt" && C1 > C) {
+		return true;
+	} else if (condition == "lt" && C1 < C) {
+		return true;
+	} else if (condition == "ne" && C1 != C) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 struct if_tag : public tag {
 	if_tag() { register_tag<if_tag>(); }
 	static constexpr bool overrides_display{true};
