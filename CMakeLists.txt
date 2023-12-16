@@ -9,6 +9,7 @@ set(BOT_NAME "ssod")
 project(${BOT_NAME})
 aux_source_directory("src" coresrc)
 aux_source_directory("src/commands" coresrc)
+aux_source_directory("src/parser" coresrc)
 aux_source_directory("src/3rdparty" coresrc)
 add_executable(${BOT_NAME} ${coresrc})
 
