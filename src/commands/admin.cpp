@@ -50,6 +50,15 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
 		}
 	});
 
+	dpp::command_option duration(dpp::co_integer, "duration", "How long to mute the user for");
+	duration
+		.add_choice(dpp::command_option_choice("One Minute", (int64_t)60))
+		.add_choice(dpp::command_option_choice("Ten Minutes", (int64_t)600))
+		.add_choice(dpp::command_option_choice("One Hour", (int64_t)3600))
+		.add_choice(dpp::command_option_choice("One Day", (int64_t)86400))
+		.add_choice(dpp::command_option_choice("One Week", (int64_t)604800))
+		.add_choice(dpp::command_option_choice("Four Weeks", (int64_t)604800*4));
+
 	return dpp::slashcommand("admin", "Game Moderation Commands", bot.me.id)
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "teleport", "Teleport yourself to new location ID")
@@ -58,10 +67,12 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "mute", "Mute a user")
 			.add_option(dpp::command_option(dpp::co_string, "user", "User to mute", true).set_auto_complete(true))
+			.add_option(duration)
 		)
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "pin", "Pin a user")
 			.add_option(dpp::command_option(dpp::co_string, "user", "User to pin", true).set_auto_complete(true))
+			.add_option(duration)
 		)
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "reset", "Reset a user")
@@ -93,5 +104,13 @@ void admin_command::route(const dpp::slashcommand_t &event)
 		db::query("UPDATE game_users SET paragraph = ? WHERE user_id = ?", {location, event.command.usr.id});
 		event.reply(dpp::message("You have been teleported to location " + std::to_string(location)).set_flags(dpp::m_ephemeral));
 		bot.log(dpp::ll_info, "ADMIN TELEPORT " + event.command.usr.global_name + " to " + std::to_string(location));
+	}
+	if (subcommand.name == "mute" || subcommand.name == "pin") {
+		std::string user = std::get<std::string>(subcommand.options[0].value);
+		int64_t duration = std::get<int64_t>(subcommand.options[1].value);
+		std::string field{subcommand.name == "mute" ? "muted" : "pinned"};
+		db::query("UPDATE game_users SET " + field + " = ? WHERE name = ?", { duration + time(nullptr), user});
+		event.reply(dpp::message(user + " has been " + field + " until " + dpp::utility::timestamp(duration + time(nullptr))).set_flags(dpp::m_ephemeral));
+		bot.log(dpp::ll_info, "ADMIN " + dpp::uppercase(subcommand.name) + " by " + event.command.usr.global_name + " -> " + user);
 	}
 }
