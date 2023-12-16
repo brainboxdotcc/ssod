@@ -66,10 +66,10 @@ struct paragraph {
 
 	paragraph() = default;
 	~paragraph() = default;
-	paragraph(uint32_t paragraph_id, player current, dpp::snowflake user_id);
+	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id);
 
 private:
-	void parse(player current_player, dpp::snowflake user_id);
+	void parse(player& current_player, dpp::snowflake user_id);
 };
 
 std::string extract_value(const std::string& p_text);
@@ -77,8 +77,6 @@ std::string extract_value(const std::string& p_text);
 long extract_value_number(const std::string& p_text);
 
 bool global_set(const std::string& flag);
-
-bool comparison(std::string condition, long C1, const std::string& C2, int g_dice);
 
 bool not_got_yet(uint32_t paragraph, const std::string& item, const std::string& gotfrom);
 

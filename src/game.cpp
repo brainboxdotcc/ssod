@@ -39,6 +39,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		.set_colour(0xd5b994)
 		.set_description(location.text);
 	p.save(event.command.usr.id);
+	update_live_player(event, p);
 	dpp::message m;
 	m.add_embed(embed).add_component(dpp::component());
 	size_t index = 0;

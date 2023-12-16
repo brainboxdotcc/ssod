@@ -53,7 +53,7 @@ struct pickup_tag : public tag {
 		if (!not_got_yet(p.id, item_name, current_player.gotfrom)) {
 			// crafty player trying to get the same item twice! Not good if its unique!
 			return;
-		}			
+		}
 		current_player.gotfrom += " [" + item_name + std::to_string(p.id) + "]";
 		if (flags == "SPELL") {
 			current_player.spells.push_back(item{ .name = item_name, .flags = flags });
