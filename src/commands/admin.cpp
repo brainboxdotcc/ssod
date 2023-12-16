@@ -23,6 +23,7 @@
 #include <ssod/database.h>
 #include <ssod/sentry.h>
 #include <ssod/game_date.h>
+#include <ssod/game_player.h>
 
 void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
 	auto rs = db::query("SELECT lower(name) AS name FROM game_users WHERE name LIKE ?", {uservalue + "%"});
@@ -77,9 +78,7 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "reset", "Reset a user")
 			.add_option(dpp::command_option(dpp::co_string, "user", "User to reset", true).set_auto_complete(true))
-		)
-		;
-
+		);
 }
 
 void admin_command::route(const dpp::slashcommand_t &event)
@@ -112,5 +111,16 @@ void admin_command::route(const dpp::slashcommand_t &event)
 		db::query("UPDATE game_users SET " + field + " = ? WHERE name = ?", { duration + time(nullptr), user});
 		event.reply(dpp::message(user + " has been " + field + " until " + dpp::utility::timestamp(duration + time(nullptr))).set_flags(dpp::m_ephemeral));
 		bot.log(dpp::ll_info, "ADMIN " + dpp::uppercase(subcommand.name) + " by " + event.command.usr.global_name + " -> " + user);
+	}
+	if (subcommand.name == "reset") {
+		std::string user = std::get<std::string>(subcommand.options[0].value);
+		auto rs = db::query("SELECT id FROM game_users WHERE name = ?", {user});
+		uint64_t id = atoll(rs[0].at("id").c_str());
+		// Get the backup copy of the user
+		player p(id, true);
+		// Write the backup copy to the live copy
+		p.save(id, false);
+		event.reply(dpp::message(user + " has been reset.").set_flags(dpp::m_ephemeral));
+		bot.log(dpp::ll_info, "ADMIN RESET by " + event.command.usr.global_name + " -> " + user);
 	}
 }
