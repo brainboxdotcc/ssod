@@ -1,0 +1,9 @@
+In the turbulent landscapes of Cryptillia, mercenaries emerge as a distinct breed, often forged in the crucible of outcast status. Driven primarily by the allure of coin, these pragmatic warriors are beholden to none but the glint of gold. Their allegiance is fluid, and they willingly lend their services to any cause, be it virtuous or nefarious, as long as the coffers jingle enticingly.
+
+The mercenary's code is written in the language of currency, and the promise of a hefty purse can see them fighting for the forces of good, evil, or a perplexing blend of both. Loyalty is a malleable concept, bending to the whims of the highest bidder. The clink of gold coins often serves as the harmonizing melody that bridges seemingly contradictory causes.
+
+Preferentially, mercenaries gather in groups, forming loose alliances that can be as fleeting as the promise of payment. Despite their seemingly transient nature, these bands of warriors are bound by a common goal—usually, the acquisition of wealth. In the pursuit of shared profits, they pool their skills and resources, working collaboratively until the treasure trove is secured.
+
+The camaraderie among mercenaries, however, is tempered by the reality that their unity is only as strong as the promise of payment. Once the coin changes hands, alliances dissolve, and the mercenaries disperse, each venturing forth to seek new opportunities that glitter with the allure of riches.
+
+In the ever-shifting dynamics of Cryptillia, mercenaries carve a niche defined by pragmatism and a willingness to embrace the myriad shades of morality. Their journey through the realms is a tapestry woven with the threads of transient alliances, gold-laden aspirations, and the undying pursuit of fortune in a world fraught with peril and opportunity.
