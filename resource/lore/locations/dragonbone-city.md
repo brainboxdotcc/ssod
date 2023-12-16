@@ -1,0 +1,9 @@
+Dragonbone City, situated in the far northwest of Utopia with the ominous Forest of Night lying to the east, presents a unique and unsettling atmosphere. The city's architecture, built with an eerie combination of ancient stones and materials seemingly hewn from dragon bones, adds an otherworldly touch to the landscape.
+
+However, the true character of Dragonbone City lies in the dark undercurrents that flow beneath its mystical facade. The city's militia, given free rein and having crossed the line into becoming a violent secret police force, rules with an iron grip. While officially acting to maintain order, they have veered dangerously close to a coup, effectively shaping the town into a place of fear and oppression.
+
+The militia's methods are brutal and unforgiving. Suspected criminals are swiftly dealt with, often without proper investigation or trial. The city's streets echo with the ominous footsteps of the enforcers, and its citizens live in a constant state of apprehension. The once-thriving marketplace now stands as a shadow of its former self, with many merchants and traders driven away by the city's oppressive atmosphere.
+
+Surprisingly, the local lord, who should be the guardian of justice, has turned a blind eye to the militia's excesses. Rumors abound that the lord is willingly accepting bribes, allowing the militia to operate without restraint. This unholy alliance between the corrupt militia and the indifferent lord has plunged Dragonbone City into a state of lawlessness, where fear and intimidation reign supreme.
+
+Visitors to Dragonbone City are advised to tread carefully, for the air is thick with tension, and the city's secrets are buried deep within its dragonbone-laden streets.

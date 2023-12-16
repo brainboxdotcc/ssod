@@ -1,0 +1,9 @@
+In the realm of Cryptillia, banking operates through a network of secure establishments known as Guildbanks. These institutions serve as repositories for your hard-earned gold pieces and valuable items. When you decide to open an account at a Guildbank, you essentially secure a storage space within their fortified vaults.
+
+To initiate a transaction, you can visit any Guildbank branch across the land. Depositing gold or items involves a simple interaction with the bank teller, who will safely store your belongings within the vault. Each deposit is documented, and you receive a unique account identifier, ensuring the security of your assets.
+
+When the time comes to withdraw funds or retrieve stored items, return to any Guildbank and provide your account identifier. The bank teller will then facilitate the retrieval process from any other Guildbank using secure teleportation magic, ensuring that your wealth and possessions are handed back to you securely.
+
+Guildbanks also offer additional services, such as the ability to take out loans, exchange currencies, or even invest in various ventures. Interest rates and investment returns can fluctuate, providing opportunities for financial growth or potential risks. As an adventurer of limited means, most of these services remain closed to you at this time.
+
+Keep in mind that security measures are paramount in Cryptillian banking. Guildbanks employ magical wards, skilled guards, and advanced lock mechanisms to safeguard the treasures stored within their vaults. Whether you're a novice adventurer or a seasoned warrior, utilizing the services of a Guildbank ensures the safety and accessibility of your wealth throughout your perilous journey in Cryptillia.
