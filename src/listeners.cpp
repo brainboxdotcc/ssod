@@ -175,8 +175,10 @@ namespace listeners {
 	}
 
 	void on_guild_delete(const dpp::guild_delete_t &event) {
-		db::query("DELETE FROM guild_cache WHERE id = ?", { event.deleted.id });
-		event.from->creator->log(dpp::ll_info, "Removed from guild: " + event.deleted.id.str());
+		if (!event.deleted.is_unavailable()) {
+			db::query("DELETE FROM guild_cache WHERE id = ?", { event.deleted.id });
+			event.from->creator->log(dpp::ll_info, "Removed from guild: " + event.deleted.id.str());
+		}
 	}
 
 	void on_slashcommand(const dpp::slashcommand_t &event) {
