@@ -24,21 +24,21 @@ std::string describe_item(const std::string& modifier_flags, const std::string& 
 		return name;
 	}
 	if (modifier_flags.substr(0, 3) == "ST+") {
-		return fmt::format("Adds {} stamina when used.", modifier_flags.substr(3));
+		return fmt::format("Adds {} stamina when used", modifier_flags.substr(3));
 	} else if (modifier_flags.substr(0, 3) == "SK+") {
-		return fmt::format("Adds {} skill when used.", modifier_flags.substr(3));
+		return fmt::format("Adds {} skill when used", modifier_flags.substr(3));
 	} else if (modifier_flags.substr(0, 3) == "LK+") {
-		return fmt::format("Adds {} luck when used.", modifier_flags.substr(3));
+		return fmt::format("Adds {} luck when used", modifier_flags.substr(3));
 	} else if (modifier_flags.substr(0, 3) == "SN+") {
-		return fmt::format("Adds {} sneak when used.", modifier_flags.substr(3));
+		return fmt::format("Adds {} sneak when used", modifier_flags.substr(3));
 	} else if (modifier_flags.substr(0, 2) == "W+") {
-		return fmt::format("This item adds {} to your weapon score.", modifier_flags.substr(2));
+		return fmt::format("Adds {} to your weapon score", modifier_flags.substr(2));
 	} else if (modifier_flags.substr(0, 2) == "A+") {
-		return fmt::format("This item adds {} to your armour score.", modifier_flags.substr(2));
+		return fmt::format("Adds {} to your armour score", modifier_flags.substr(2));
 	} else if (modifier_flags[0] == 'W') {
-		return fmt::format("This is a weapon with a rating of {}.",modifier_flags.substr(1));
+		return fmt::format("Weapon, rating {}",modifier_flags.substr(1));
 	} else if (modifier_flags[0] == 'A') {
-		return fmt::format("This is armour with a rating of {}.",modifier_flags.substr(1));
+		return fmt::format("Armour, rating {}",modifier_flags.substr(1));
 	}
 	return name;
 }
