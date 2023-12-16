@@ -82,6 +82,6 @@ bool comparison(std::string condition, long C1, const std::string& C2, int g_dic
 
 bool not_got_yet(uint32_t paragraph, const std::string& item, const std::string& gotfrom);
 
-void extract_to_quote(std::string& p_text, std::stringstream& content);
+void extract_to_quote(std::string& p_text, std::stringstream& content, char end = '>');
 
 std::string remove_last_char(const std::string& s);

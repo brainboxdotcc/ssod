@@ -91,8 +91,8 @@ bool not_got_yet(uint32_t paragraph, const std::string& item, const std::string&
 	return gotfrom.find(f) == std::string::npos;
 }
 
-void extract_to_quote(std::string& p_text, std::stringstream& content) {
-	while (p_text.length() && *p_text.rbegin() != '"') {
+void extract_to_quote(std::string& p_text, std::stringstream& content, char end) {
+	while (!content.eof() && p_text.length() && *p_text.rbegin() != end) {
 		std::string extra;
 		content >> extra;
 		p_text += " " + extra;

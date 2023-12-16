@@ -12,12 +12,8 @@ struct if_tag : public tag {
 		// -------------------------------------------------------
 		if (dpp::lowercase(p_text) == "item") {
 			paragraph_content >> p_text;
-
-			extract_to_quote(p_text, paragraph_content);
-
+			extract_to_quote(p_text, paragraph_content, '>');
 			p_text = remove_last_char(p_text);
-
-			std::string flags;
 			p.display = current_player.has_herb(p_text) || current_player.has_spell(p_text) || current_player.has_possession(p_text);
 			return;
 		} else if (dpp::lowercase(p_text) == "flag") {
