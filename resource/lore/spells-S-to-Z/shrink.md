@@ -1,0 +1,3 @@
+## Spell: Shrink
+
+The Shrink spell, a mystical contract with dimensions, condenses the caster to a chosen size beneath their original stature. This metamorphic arcane feat requires caution, as the diminished sorcerer navigates the world in a miniature form. The shrunken state demands circumspection, urging the caster to tread lightly and be vigilant in avoiding perilous situations. The act of restoring one's original size through the dispelling of the spell demands strategic timing, a decision fraught with consequences in the face of potential adversaries.

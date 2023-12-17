@@ -1,0 +1,3 @@
+## Spell: Woodsmanship
+
+The Woodsmanship spell, a harmonious blend of nature's essence and arcane mastery, momentarily imparts the caster with the comprehensive skills of a woodsman. This enchanting infusion extends not only to the intricate knowledge of woodlands but seamlessly integrates with the caster's existing proficiency. The spell's influence spans precisely one day, offering a transient yet immersive connection with the sylvan arts. However, attuning to such woodland prowess demands a patient cycle, permitting the spell to be cast only once every game week.

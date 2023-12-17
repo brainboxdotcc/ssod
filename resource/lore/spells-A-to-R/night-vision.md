@@ -1,0 +1,3 @@
+## Spell: Night Vision
+
+In the tapestry of nocturnal enchantments, the Night Vision spell weaves an ethereal luminescence, allowing the caster to navigate darkness with adept clarity. Its radiance stands on par with the brilliance of a "light" spell, enabling a seamless substitution when illuminating the shadows. Unlike its luminous counterpart, the Night Vision spell, with its subdued radiance, operates discreetly, affording the caster a subtler presence in the obscurity.

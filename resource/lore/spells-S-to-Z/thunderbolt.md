@@ -1,0 +1,3 @@
+## Spell: Thunderbolt
+
+Ranked among the most devastating offensive incantations, the thunderbolt spell envelops the caster's arms in a crackling haze of electrical energy within a mere heartbeat of being cast. This electrifying force can be hurled towards any target, living or lifeless. The aftermath of its impact is severe, often leaving the victim critically injured or reduced to smoldering ashes, attesting to its formidable prowess within a spellcaster's arsenal.

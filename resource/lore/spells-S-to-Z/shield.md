@@ -1,0 +1,3 @@
+## Spell: Shield
+
+The Shield spell, a bastion of magical defense, conjures a protective bubble enveloping the caster and potential allies. This ethereal barrier boasts an armor score of 6 and endures for ten game paragraphs. However, its application is contingent on the availability of a substantial period of free time for casting. Attempting to invoke this spell in the throes of imminent combat, with adversaries closing in, is unwise. A prudent caster reserves its use for moments of strategic advantage during periods of respite.

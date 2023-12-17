@@ -1,0 +1,3 @@
+## Spell: Sneak
+
+The Sneak spell, a transient cloak of shadows, triples the caster's sneak score for ten paragraphs, rendering them virtually imperceptible. However, the arcane residue lingers, and for three subsequent locations after the spell dissipates, the caster's sneak score dwindles to half its original value. Astute practitioners of stealth must navigate this duality cautiously, for the consequences accumulate with each casting. Such spells prove indispensable to rogues and infiltrators seeking the shadows, sidestepping danger with each silhouetted step.

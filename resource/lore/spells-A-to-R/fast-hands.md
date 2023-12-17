@@ -1,0 +1,3 @@
+## Spell: Fast Hands
+
+The Fast Hands spell, a manifestation of temporal acceleration, empowers the caster to move their hands and arms at superhuman speeds during brief intervals. This enchantment finds practical application both in the chaos of combat and the clandestine world of gambling, where its adept wielders may employ it to gain an unfair advantage. Detection remains elusive, as the rapid movements of a caster under this spell typically escape notice unless observed by another vigilant spellcaster.

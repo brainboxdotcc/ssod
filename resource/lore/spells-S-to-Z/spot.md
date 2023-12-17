@@ -1,0 +1,3 @@
+## Spell: Spot
+
+The Spot spell, an illuminating beacon of revelation, unveils concealed treasures and hidden exits in the blink of an eye. Cast with a rapid incantation, it swiftly discerns obscured valuables and concealed pathways within a space. However, its application in combat scenarios is notably constrained, aligning more with the instincts of explorers, treasure hunters, and navigators. This spell, a boon for those traversing cryptic dungeons or seeking hidden troves, finds its prime utility in the hands of adventurers seeking untold fortunes and covert passages.

@@ -1,0 +1,3 @@
+## Spell: Open
+
+The Open spell, a master key conjured through arcane prowess, empowers the caster to explosively breach locks and sealed doors. By triggering a controlled explosion in locking mechanisms and seals, this enchantment propels doors from their hinges and cleaves boxes asunder. While a versatile utility in the hands of any adept spellcaster, its potential reaches its zenith in the nimble fingers of a skilled thief. Thieves, adept in the art of subterfuge, leverage the Open spell to unravel secrets, pilfer treasures, and navigate through secured passages with unparalleled finesse.
