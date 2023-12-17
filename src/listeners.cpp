@@ -52,7 +52,7 @@ namespace listeners {
 				dpp::embed()
 				.set_description("Detailed welcome message will go here in due course")
 				.set_title("Welcome, Adventurers!")
-				.set_color(colours::good)
+				.set_color(0xd5b994)
 				.set_url("https://ssod.org/")
 				.set_thumbnail(bot.me.get_avatar_url())
 				.set_footer("The Seven Spells Of Destruction", bot.me.get_avatar_url())
