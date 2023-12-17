@@ -1,0 +1,3 @@
+## Spell: Grow
+
+The Grow spell, a counterpoint to its shrinking counterpart, invokes the expansion of the caster to proportions limited only by their arcane proficiency. This magnification of form serves as a strategic advantage, affording the sorcerer greater physical presence and, ostensibly, enhanced prowess. However, the prudent wielder must exercise discernment in choosing the opportune moment for the spell's conclusion, especially when encircled by towering foes. The arcane augmentation, while formidable, demands judicious consideration to avoid unintended consequences and ensure the caster's seamless reintegration into the natural order of their environment.

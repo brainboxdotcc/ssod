@@ -1,0 +1,3 @@
+## Spell: Weapon Skill
+
+The Weapon Skill spell, akin to the elusive dance of the "sneak" incantation, influences the sorcerer's combat finesse. Upon invocation, the caster's skill score undergoes a spectacular quadrupling, rendering them a formidable force on the battlefield for a duration of five paragraphs. However, the aftermath is a transient slump, as the skill score plummets to half its original value for an equivalent duration. These effects accumulate with successive spellcasting, demanding a strategic approach to unleash the full potential of this combat-centric enchantment.

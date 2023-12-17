@@ -1,0 +1,3 @@
+## Spell: Air
+
+The Air spell, an ethereal lifebuoy in the sorcerer's repertoire, generates a resilient bubble of air rather than the conventional protective shield. This mystical air pocket becomes a vital conduit, facilitating prolonged survival beneath water's surface or in the unforgiving void of a vacuum. A strategic invocation of this spell transforms the caster into an amphibious marvel, navigating aquatic depths or extraterrestrial expanses with unparalleled resilience.

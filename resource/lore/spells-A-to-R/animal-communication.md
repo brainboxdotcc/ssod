@@ -1,0 +1,3 @@
+## Spell: Animal Communication
+
+The Animal Communication spell, a mystical communion with the natural world, opens a telepathic channel between the sorcerer and creatures of the wild. This spell transcends the limitations of conventional communication, allowing the caster to convey thoughts and emotions directly to animals. The intricacies of the animal mind, distinct from the cognitive processes of humans and other sentient beings, render the E.S.P. spell ineffective in such scenarios. The sorcerer, attuned to the nuances of the natural realm, becomes a harmonious presence, fostering a unique connection with the denizens of the wilderness.

@@ -1,0 +1,3 @@
+## Spell: X-Ray
+
+Embarking on the mystical penetration of barriers, the X-Ray spell bestows the caster with the vision to perceive through nearly any obstruction. Unlike its mundane namesake, this arcane ability transcends the limitations of heavy metals like lead. However, its utility extends beyond the immediate visual, delving into realms unseen. Though formidable, the casting demands time and renders it impractical for use in the heat of combat.

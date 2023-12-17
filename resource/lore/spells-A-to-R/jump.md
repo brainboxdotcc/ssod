@@ -1,0 +1,3 @@
+## Spell: Jump
+
+Functioning as a scaled-down counterpart to the "fly" spell, Jump propels the caster upward and forward in a graceful arc, facilitating evasion of ground-based hazards and adversaries. This enchantment is tailored for brief aerial maneuvers, offering a secure alternative to the prolonged flights afforded by the more advanced fly spell. Particularly suitable for fledgling spellcasters, Jump enhances mobility without entailing the complexities associated with extended airborne travel.

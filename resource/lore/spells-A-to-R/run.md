@@ -1,0 +1,3 @@
+## Spell: Run
+
+The Run spell, a transient surge of celerity, doubles a caster's speed score for ten paragraphs, transforming them into a fleeting blur on the battlefield. Yet, akin to the Sneak spell, a temporal backlash unfolds. After the spell's cessation, the caster's speed score plummets to half its original value for three paragraphs. The repercussions compound with each successive casting. In combat, this incantation becomes both a swift escape and an agile weapon, enabling spellcasters to confound foes and manipulate the ebb and flow of battle with their elusive grace.
