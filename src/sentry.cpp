@@ -146,7 +146,7 @@ namespace sentry {
 		sentry_options_t *options = sentry_options_new();
 		sentry_options_set_dsn(options, dsn.c_str());
 		sentry_options_set_database_path(options, ".sentry-native");
-		sentry_options_set_release(options, BEHOLDER_VERSION);
+		sentry_options_set_release(options, SSOD_VERSION);
 		sentry_options_set_debug(options, 0);
 		sentry_options_set_environment(options, env.c_str());
 		sentry_options_set_traces_sample_rate(options, sample_rate);
