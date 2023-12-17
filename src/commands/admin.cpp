@@ -101,6 +101,9 @@ void admin_command::route(const dpp::slashcommand_t &event)
 			return;
 		}
 		db::query("UPDATE game_users SET paragraph = ? WHERE user_id = ?", {location, event.command.usr.id});
+		player p(event.command.usr.id);
+		p.save(event.command.usr.id);
+		update_live_player(event, p);
 		event.reply(dpp::message("You have been teleported to location " + std::to_string(location)).set_flags(dpp::m_ephemeral));
 		bot.log(dpp::ll_info, "ADMIN TELEPORT " + event.command.usr.global_name + " to " + std::to_string(location));
 	}
