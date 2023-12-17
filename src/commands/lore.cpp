@@ -40,12 +40,12 @@ void lore_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0x7aff7a)
+		.set_colour(0xd5b994)
 		.set_image("attachment://app_logo.png")
 		.set_description("Select a choice from the options below to read information about the game world, its characters and your quest's background.");
 	event.reply(dpp::message()
 		.add_embed(embed)
 		.set_flags(dpp::m_ephemeral)
-		.add_file("map.jpg", dpp::utility::read_file("../resource/app_logo.png"))
+		.add_file("app_logo.png", dpp::utility::read_file("../resource/app_logo.png"))
 	);
 }
