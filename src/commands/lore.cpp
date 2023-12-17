@@ -32,5 +32,20 @@ dpp::slashcommand lore_command::register_command(dpp::cluster& bot)
 void lore_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
-	event.reply("Not implemented");
+	dpp::embed embed = dpp::embed()
+		.set_url("https://ssod.org/")
+		.set_title("Encyclopaedia Cryptillius")
+		.set_footer(dpp::embed_footer{ 
+			.text = "Requested by " + event.command.usr.format_username(), 
+			.icon_url = bot->me.get_avatar_url(), 
+			.proxy_url = "",
+		})
+		.set_colour(0x7aff7a)
+		.set_image("attachment://app_logo.png")
+		.set_description("Select a choice from the options below to read information about the game world, its characters and your quest's background.");
+	event.reply(dpp::message()
+		.add_embed(embed)
+		.set_flags(dpp::m_ephemeral)
+		.add_file("map.jpg", dpp::utility::read_file("../resource/app_logo.png"))
+	);
 }
