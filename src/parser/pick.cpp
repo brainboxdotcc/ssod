@@ -6,7 +6,7 @@ struct pick_tag : public tag {
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// pick up free items (one-choice)
 		paragraph_content >> p_text;
-		extract_to_quote(p_text, paragraph_content);
+		extract_to_quote(p_text, paragraph_content, '"');
 		std::string ItemName = extract_value(p_text);
 		paragraph_content >> p_text;
 		std::string ItemVal = extract_value(p_text);

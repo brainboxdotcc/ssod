@@ -8,8 +8,7 @@ struct input_tag : public tag {
 		// TODO: Modal Dialog!
 		p.links++;
 		paragraph_content >> p_text;
-		extract_to_quote(p_text, paragraph_content);
-
+		extract_to_quote(p_text, paragraph_content, '"');
 		std::string Prompt = extract_value(p_text);
 		paragraph_content >> p_text;
 		std::string Para = extract_value(p_text);

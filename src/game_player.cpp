@@ -1,3 +1,4 @@
+#include <ssod/ssod.h>
 #include <ssod/game_player.h>
 #include <fmt/format.h>
 #include <ssod/database.h>
@@ -479,29 +480,29 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		profession = (player_profession)atoi(a_row[0].at("profession").c_str());
 		X = profession;
 		name = a_row[0].at("name");
-		stamina = atol(a_row[0].at("stamina").c_str());
-		skill = atol(a_row[0].at("skill").c_str());
-		luck = atol(a_row[0].at("luck").c_str());
-		sneak = atol(a_row[0].at("sneak").c_str());
-		speed = atol(a_row[0].at("speed").c_str());
-		silver = atol(a_row[0].at("silver").c_str());
-		gold = atol(a_row[0].at("gold").c_str());
-		rations = atol(a_row[0].at("rations").c_str());
-		experience = atol(a_row[0].at("experience").c_str());
-		notoriety = atol(a_row[0].at("notoriety").c_str());
-		days = atol(a_row[0].at("days").c_str());
-		scrolls = atol(a_row[0].at("scrolls").c_str());
-		paragraph = atol(a_row[0].at("paragraph").c_str());
+		stamina = atol(a_row[0].at("stamina"));
+		skill = atol(a_row[0].at("skill"));
+		luck = atol(a_row[0].at("luck"));
+		sneak = atol(a_row[0].at("sneak"));
+		speed = atol(a_row[0].at("speed"));
+		silver = atol(a_row[0].at("silver"));
+		gold = atol(a_row[0].at("gold"));
+		rations = atol(a_row[0].at("rations"));
+		experience = atol(a_row[0].at("experience"));
+		notoriety = atol(a_row[0].at("notoriety"));
+		days = atol(a_row[0].at("days"));
+		scrolls = atol(a_row[0].at("scrolls"));
+		paragraph = atol(a_row[0].at("paragraph"));
 		armour.name = a_row[0].at("armour");
 		weapon.name = a_row[0].at("weapon");
-		armour.rating = atol(a_row[0].at("armour_rating").c_str());
-		weapon.rating = atol(a_row[0].at("weapon_rating").c_str());
+		armour.rating = atol(a_row[0].at("armour_rating"));
+		weapon.rating = atol(a_row[0].at("weapon_rating"));
 		// TODO: NOTES
 		last_use = atoll(a_row[0].at("lastuse").c_str());
 		last_strike = atoll(a_row[0].at("laststrike").c_str());
 		pinned = atoll(a_row[0].at("pinned").c_str());
 		muted = atoll(a_row[0].at("muted").c_str());
-		mana = atol(a_row[0].at("mana").c_str());
+		mana = atol(a_row[0].at("mana"));
 		mana_tick = atoll(a_row[0].at("manatick").c_str());
 	}
 

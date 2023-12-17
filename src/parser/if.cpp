@@ -1,7 +1,8 @@
+#include <ssod/ssod.h>
 #include <ssod/parser.h>
 
 bool comparison(std::string condition, long C1, const std::string& C2, int g_dice) {
-	long C = C2 == "dice" ? g_dice : atol(C2.c_str());
+	long C = C2 == "dice" ? g_dice : atol(C2);
 	condition = dpp::lowercase(condition);
 	if (condition == "eq" && C1 == C) {
 		return true;
