@@ -6,12 +6,14 @@
 #include <ssod/database.h>
 #include <ssod/paragraph.h>
 #include <ssod/game_util.h>
+#include <ssod/component_builder.h>
 
 void game_nav(const dpp::button_click_t& event) {
 	if (!player_is_live(event)) {
 		return;
 	}
 	player p = get_live_player(event);
+	bool claimed = false;
 	if (p.state != state_play || event.custom_id.empty()) {
 		return;
 	}
@@ -25,6 +27,7 @@ void game_nav(const dpp::button_click_t& event) {
 			p.gold -= link_cost;
 		} 
 		p.paragraph = atol(parts[1].c_str());
+		claimed = true;
 	} else if (parts[0] == "shop" && parts.size() >= 6) {
 		std::string flags = parts[3];
 		long cost = atol(parts[4].c_str());
@@ -40,12 +43,15 @@ void game_nav(const dpp::button_click_t& event) {
 				p.possessions.push_back(item{ .name = name, .flags = flags });
 			}
 		}
+		claimed = true;
 	}
-	p.event.delete_original_response();
-	p.event = event;
-	update_live_player(event, p);
-	p.save(event.command.usr.id);
-	continue_game(event, p);
+	if (claimed) {
+		p.event.delete_original_response();
+		p.event = event;
+		update_live_player(event, p);
+		p.save(event.command.usr.id);
+		continue_game(event, p);
+	}
 };
 
 void continue_game(const dpp::interaction_create_t& event, player p) {
@@ -63,62 +69,48 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	p.save(event.command.usr.id);
 	update_live_player(event, p);
 	dpp::message m;
-	m.add_embed(embed).add_component(dpp::component());
-	size_t index = 0;
-	size_t component_parent = 0;
-	if (location.navigation_links.size()) {
-		for (const auto & n : location.navigation_links) {
-			std::string label{"Travel"}, id;
-			dpp::component comp;
-			if (n.type == nav_type_disabled_link || (p.gold < n.cost && n.type == nav_type_paylink) || (p.gold < n.cost && n.type == nav_type_shop)) {
-				comp.set_disabled(true);
-			}
-			switch (n.type) {
-				case nav_type_paylink:
-					label = "Pay " + std::to_string(n.cost) + " Gold";
-					id = "follow_nav_pay;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(n.cost);
-					break;
-				case nav_type_shop:
-					label = "Buy " + n.buyable.name + " (" + std::to_string(n.cost) + " Gold)";
-					id = "shop;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::string(n.buyable.flags) + ";" + std::to_string(n.cost) + ";" + n.buyable.name;
-					if (p.has_herb(n.buyable.name) || p.has_spell(n.buyable.name) || p.gold < n.cost) {
-						comp.set_disabled(true);
-					}
-					break;
-				case nav_type_bank:
-					label = "Use Bank";
-					id = "bank;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph);
-					break;
-				case nav_type_combat:
-					label = "Fight " + n.monster.name;
-					id = "combat;" + std::to_string(n.paragraph) + ";" + n.monster.name + ";" + std::to_string(n.monster.stamina) + ";" + std::to_string(n.monster.skill) + ";" + std::to_string(n.monster.armour) + ";" + std::to_string(n.monster.weapon);
-					break;
-				default:
-					id = "follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph);
-					break;
-			}
-			comp.set_type(dpp::cot_button)
-				.set_id(id)
-				.set_label(label)
-				.set_style(n.type == nav_type_combat ? dpp::cos_danger : dpp::cos_primary)
-				.set_emoji(directions[++index], 0, false);
-
-			m.components[component_parent].add_component(comp);
-			if (index && (index % 5 == 0)) {
-				m.add_component(dpp::component());
-				component_parent++;
-			}
+	m.add_embed(embed);
+	component_builder cb(m);
+	size_t index{0};
+	for (const auto & n : location.navigation_links) {
+		std::string label{"Travel"}, id;
+		dpp::component comp;
+		if (n.type == nav_type_disabled_link || (p.gold < n.cost && n.type == nav_type_paylink) || (p.gold < n.cost && n.type == nav_type_shop)) {
+			comp.set_disabled(true);
 		}
-		m.components[component_parent].add_component(help_button());
-		index++;
-		if (index && (index % 5 == 0)) {
-			m.add_component(dpp::component());
-			component_parent++;
+		switch (n.type) {
+			case nav_type_paylink:
+				label = "Pay " + std::to_string(n.cost) + " Gold";
+				id = "follow_nav_pay;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(n.cost);
+				break;
+			case nav_type_shop:
+				label = "Buy " + n.buyable.name + " (" + std::to_string(n.cost) + " Gold)";
+				id = "shop;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::string(n.buyable.flags) + ";" + std::to_string(n.cost) + ";" + n.buyable.name;
+				if (p.has_herb(n.buyable.name) || p.has_spell(n.buyable.name) || p.gold < n.cost) {
+					comp.set_disabled(true);
+				}
+				break;
+			case nav_type_bank:
+				label = "Use Bank";
+				id = "bank;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph);
+				break;
+			case nav_type_combat:
+				label = "Fight " + n.monster.name;
+				id = "combat;" + std::to_string(n.paragraph) + ";" + n.monster.name + ";" + std::to_string(n.monster.stamina) + ";" + std::to_string(n.monster.skill) + ";" + std::to_string(n.monster.armour) + ";" + std::to_string(n.monster.weapon);
+				break;
+			default:
+				id = "follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph);
+				break;
 		}
-		if (m.components[component_parent].components.empty()) {
-			m.components.erase(m.components.end() - 1);
-		}
+		comp.set_type(dpp::cot_button)
+			.set_id(id)
+			.set_label(label)
+			.set_style(n.type == nav_type_combat ? dpp::cos_danger : dpp::cos_primary)
+			.set_emoji(directions[++index], 0, false);
+		cb.add_component(comp);
 	}
+	cb.add_component(help_button());
+	m = cb.get_message();
 	event.reply(m.set_flags(dpp::m_ephemeral), [m, event, &bot, location](const auto& cc) {
 		if (cc.is_error()) {
 			event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
