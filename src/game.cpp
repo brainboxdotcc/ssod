@@ -1,5 +1,6 @@
 #include <dpp/dpp.h>
 #include <string>
+#include <ssod/ssod.h>
 #include <ssod/game.h>
 #include <ssod/game_player.h>
 #include <ssod/game_enums.h>
@@ -20,19 +21,19 @@ void game_nav(const dpp::button_click_t& event) {
 	std::vector<std::string> parts = dpp::utility::tokenize(event.custom_id, ";");
 	if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay") && parts.size() >= 3) {
 		if (parts[0] == "follow_nav_pay" && parts.size() >= 4) {
-			long link_cost = atol(parts[3].c_str());
+			long link_cost = atol(parts[3]);
 			if (p.gold < link_cost) {
 				return;
 			}
 			p.gold -= link_cost;
 		} 
-		p.paragraph = atol(parts[1].c_str());
+		p.paragraph = atol(parts[1]);
 		claimed = true;
 	} else if (parts[0] == "shop" && parts.size() >= 6) {
 		std::string flags = parts[3];
-		long cost = atol(parts[4].c_str());
+		long cost = atol(parts[4]);
 		std::string name = parts[5];
-		p.paragraph = atol(parts[1].c_str());
+		p.paragraph = atol(parts[1]);
 		if (p.gold >= cost) {
 			p.gold -= cost;
 			if (flags == "SPELL") {

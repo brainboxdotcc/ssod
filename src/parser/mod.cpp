@@ -1,3 +1,4 @@
+#include <ssod/ssod.h>
 #include <ssod/parser.h>
 
 struct mod_tag : public tag {
@@ -8,7 +9,7 @@ struct mod_tag : public tag {
 		paragraph_content >> p_text;
 		paragraph_content >> mod;
 		mod = remove_last_char(mod); // remove '>'
-		long modifier = atol(mod.c_str());
+		long modifier = atol(mod);
 		std::string flag = "MOD" + p_text + mod;
 
 		const std::map<std::string, std::pair<std::string, long*>> modifier_list = {

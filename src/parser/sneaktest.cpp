@@ -6,13 +6,13 @@ struct sneaktest_tag : public tag {
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		paragraph_content >> p_text;
 
-		extract_to_quote(p_text, paragraph_content);
+		extract_to_quote(p_text, paragraph_content, '"');
 
-		std::string MonsterName = extract_value(p_text);
+		std::string monster_name = extract_value(p_text);
 		paragraph_content >> p_text;
-		long MonsterSneak = extract_value_number(p_text);
-		output << "\n***" << MonsterName << "** *Sneak " << MonsterSneak << "*,";
-		p.auto_test = current_player.sneak_test(MonsterSneak);
+		long monster_sneak = extract_value_number(p_text);
+		output << "\n***" << monster_name << "** *Sneak " << monster_sneak << "*,";
+		p.auto_test = current_player.sneak_test(monster_sneak);
 		output << (p.auto_test ? " **PASSED**!\n" : " **FAILED**!\n");
 	}
 };

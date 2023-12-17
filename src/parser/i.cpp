@@ -1,3 +1,4 @@
+#include <ssod/ssod.h>
 #include <ssod/parser.h>
 #include <ssod/game_util.h>
 
@@ -30,7 +31,7 @@ struct i_tag : public tag {
 
 		p.links++;
 		output << directions[p.links] << "\n";
-		p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_shop, .cost = atol(Cost.c_str()), .monster = {}, .buyable = { .name = ItemName, .flags = Value } });
+		p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_shop, .cost = atol(Cost), .monster = {}, .buyable = { .name = ItemName, .flags = Value } });
 
 	}
 };
