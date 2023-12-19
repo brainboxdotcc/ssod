@@ -47,7 +47,6 @@ void game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	}
 	if (claimed) {
-		p.event.delete_original_response();
 		p.event = event;
 		update_live_player(event, p);
 		p.save(event.command.usr.id);
@@ -112,9 +111,18 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	}
 	cb.add_component(help_button());
 	m = cb.get_message();
-	event.reply(m.set_flags(dpp::m_ephemeral), [m, event, &bot, location](const auto& cc) {
-		if (cc.is_error()) {
-			event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
-		}
-	});
+
+	if (event.command.type == dpp::it_component_button) {
+		event.reply(dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
+			if (cc.is_error()) {{
+				event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			}}
+		});
+	} else {
+		event.reply(m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
+			if (cc.is_error()) {
+				event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			}
+		});
+	}
 }
