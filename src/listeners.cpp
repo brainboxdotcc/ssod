@@ -50,7 +50,7 @@ namespace listeners {
 			dpp::message(channel_id, "")
 			.add_embed(
 				dpp::embed()
-				.set_description("Detailed welcome message will go here in due course")
+				.set_description("Welcome to the land of __Utopia__! To start your adventure use the `/start` command.\n\nTo read background information about the game world and its people at any time, use the `/lore` command.\n\nYou can get help by joining the [Brainbox.cc Discord](https://discord.gg/brainbox)")
 				.set_title("Welcome, Adventurers!")
 				.set_color(0xd5b994)
 				.set_url("https://ssod.org/")
