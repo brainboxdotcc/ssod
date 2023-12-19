@@ -6,7 +6,6 @@
 #include <ssod/game_dice.h>
 #include <ssod/game_util.h>
 #include <ssod/parser.h>
-#include <fmt/format.h>
 
 paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id) {
 	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});
@@ -101,63 +100,24 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 		if (paragraph_content.eof()) {
 			break;
 		}	
-		if (dpp::lowercase(p_text) == "<combat") {
-			// combat tag
-			links++;
-			paragraph_content >> p_text;
-			extract_to_quote(p_text, paragraph_content, '"');
-			std::string monster_name = extract_value(p_text);
-			paragraph_content >> p_text;
-			long monster_skill = extract_value_number(p_text);
-			paragraph_content >> p_text;
-			long monster_stamina = extract_value_number(p_text);
-			paragraph_content >> p_text;
-			long monster_armour = extract_value_number(p_text);
-			paragraph_content >> p_text;
-			long monster_weapon = extract_value_number(p_text);
-			if (current_fragment == after_fragment) {
-				// when combat link is finished it goes back to the
-				// paragraph it came from, but the next fragment of it.
-				// fragments can only be requested on a paragraph
-				// that contains at least one combat.
-				
-				output << fmt::format(
-					"\n```\n ⚔ {0:26s} STM:{1:2d} SKL:{2:2d} ARM:{3:2d} WPN:{4:2d}\n```\n",
-					monster_name.substr(0, 26),
-					monster_stamina,
-					monster_skill,
-					monster_armour,
-					monster_weapon
-					);
-				words++;
-				navigation_links.push_back(nav_link{
-					.paragraph = this->id,
-					.type = nav_type_combat,
-					.cost = 0,
-					.monster = { 
-						.name = monster_name,
-						.stamina = monster_stamina,
-						.skill = monster_skill,
-						.armour = monster_armour,
-						.weapon = monster_weapon,
-					},
-					.buyable = {}
-				});
-				break;
+
+		try {	
+			if (route_tag(*this, p_text, paragraph_content, output, current_player, display)) {
+				continue;
 			}
-			current_fragment++;
-			continue;
 		}
-			
-		if (current_fragment < after_fragment) {
-			// nothing should be displayed that comes before the desired fragment!
+		catch (const parse_end_exception&) {
+			/* If a tag router throws this, it means we are to break out of the parser loop 
+			 * and end parsing the content at this tag
+			 */
+			break;
+		}
+
+		if (current_fragment < current_player.after_fragment) {
+			/* nothing should be displayed that comes before the desired fragment! */
 			continue;
 		}
 
-		if (route_tag(*this, p_text, paragraph_content, output, current_player, display)) {
-			continue;
-		}
-		
 		if (display) {
 			std::string tag = dpp::lowercase(p_text.substr(0, 20));
 			if (tag.find("<paylink=") != std::string::npos && !last_was_link) {
@@ -174,7 +134,6 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 				links++;
 				output << directions[links];
 				if (current_player.gold < atol(cost)) {
-					//Image("link_bad.jpg","You dont have enough gold to do this!");
 					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {} });
 				} else {
 					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {} });

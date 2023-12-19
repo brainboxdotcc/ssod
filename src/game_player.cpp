@@ -434,7 +434,7 @@ Once you are happy with your choices, click **Continue** to name your character.
 }
 
 player::player(bool reroll) :
-	state(state_roll_stats),
+	state(state_roll_stats), in_combat(false), after_fragment(0),
 	race(player_race::race_error), profession(player_profession::prof_error),
 	X(player_profession::prof_error), stamina(0), skill(0), luck(0), sneak(0),
 	speed(0), silver(0), gold(0), rations(0), experience(0), notoriety(0),
@@ -504,6 +504,8 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		muted = atoll(a_row[0].at("muted").c_str());
 		mana = atol(a_row[0].at("mana"));
 		mana_tick = atoll(a_row[0].at("manatick").c_str());
+		after_fragment = 0;
+		in_combat = false;
 	}
 
 	auto res = db::query("SELECT item_desc, item_flags FROM game_owned_items WHERE user_id = ?", {user_id});

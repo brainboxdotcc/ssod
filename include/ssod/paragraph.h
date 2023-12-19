@@ -29,14 +29,6 @@ enum nav_link_type {
 	nav_type_bank,
 };
 
-struct enemy {
-	std::string name;
-	long stamina{};
-	long skill{};
-	long armour{};
-	long weapon{};
-};
-
 struct nav_link {
 	long paragraph;
 	nav_link_type type;
@@ -59,7 +51,6 @@ struct paragraph {
 	std::string tag;
 	bool last_was_link{false};
 	bool display{true};
-	long after_fragment{0}; // paragraph fragment to start at (each combat increments the current fragment by one)
 	long current_fragment{0};	
 	bool auto_test{false}, didntmove{false};
 	int g_dice{0};
