@@ -1,0 +1,19 @@
+Mere seconds pass. The Thing passes out of the room through the door where the pair of guards once stood. Tucked underneath what could be described as an arm is a package of parchment, seven pieces of tattered vellum, covered in arcane scripture. Pausing for a short amount of time, The Thing takes a sharp ninety-degree turn, exiting through the ceiling, mysteriously taking the package through the solid structure with him…
+Minutes pass. There is an unbelievable scream of anger and rage as the Thing is sucked through the magical void to a place far away. Its stolen goods are dispersed, as the creature is forced to let them drift away, through the darkness. One by one the seven items drop out of the ether, landing hundreds of miles apart, in unknown locations. The psychic blast created by the event wakes you, and everyone else within the Wizards Keep. Almost immediately, you begin packing your bags. Something terrible has happened. You must leave this place…
+Morning arrives at last to the Wizard’s Keep. Melting snow disguises a night of terror and pain, washing away bloodstains where once trained guards stood.
+A solitary wizard knocks on the door of the grand wizard’s room…
+“What is it? I thought I told you never to wake me at this time in a morning?”
+The grand wizard opens his door to an apprentice wizard who does not look like he is bringing good news. Immediately, the grand wizard senses the worry in the youngster’s eyes, and ushers him to a seat near his desk.
+“I’m sorry to disturb your sleep, sir, but it seems we have a big problem…”
+“Well, what problem is that? Stop procrastinating, man… you’re a wizard not an Orc…”
+The young wizard starts to explain the events of the previous night. During the morning they had managed to figure out much more information.
+
+“The great demon Lord Garneth has sent a demonic assassin here, sir. He attempted to remove the seven spells of destruction from the holy sanctum, but was banished by an unknown force, and dispersed the scrolls through Utopia during the banishment process..”
+
+A look of terror fills the grand wizard, and he becomes almost as pale as the young apprentice seated before him. The seven scrolls the Thing attempted to steal were the Seven Spells Of Destruction, elements of evil locked away for all time. The scrolls were created in days long past, meant to usher in a new era of prosperity known as the peace pact. Evil had corrupted that meeting and the scrolls, turning them to the darkness, and causing them to be locked away and hidden for all time. Anyone reading the scrolls was said to gain immense power, in exchange for a part of their very soul, which could never be reclaimed. Reading all seven of the scrolls would not be advisable for anyone who wanted to preserve any thread of humanity. They had recently been moved here from the central magical repository far to the north, and it was obvious the demon Lord Garneth wanted them for some otherworldly purpose… Given previous attempts staged by this menace, and the fact that the demon had no soul to lose by reading the scrolls, it probably wanted to take Utopia for itself and overrun it with his foul minions. The wizard also knows that time is of the essence. Unless they find the scrolls before Garneth can send out more monsters to obtain them, all will be lost. Utopia will be destroyed, starting from the Wizard’s Keep in a final showdown of magical power.
+
+“Those scrolls must be found!!! Garneth will find them first unless we hurry! Put a notice out to all adventurers and explorers… Ten thousand gold pieces to the one who brings back the scrolls and destroys the demon!”
+
+The assistant wizard rushes to your room to wake you, but when he opens the door the room is deserted. You have already gone… Are you already looking for the seven scrolls, or have you journeyed somewhere else?
+
+From here you take control. Decide the future of Utopia…

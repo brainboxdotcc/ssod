@@ -21,9 +21,20 @@ enum game_state {
 	state_play,
 };
 
+struct enemy {
+	std::string name;
+	long stamina{};
+	long skill{};
+	long armour{};
+	long weapon{};
+};
+
 struct player {
 	game_state state;
 	dpp::interaction_create_t event;
+	bool in_combat;
+	int after_fragment;
+	enemy combatant;
 	std::string name;
 	player_race race;
 	player_profession profession;

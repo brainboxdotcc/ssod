@@ -60,4 +60,7 @@ template <typename T> void register_tag()
 	}
 }
 
+struct parse_end_exception {
+};
+
 bool route_tag(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player, bool display);

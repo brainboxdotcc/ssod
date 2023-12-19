@@ -25,6 +25,7 @@
 #include <ssod/game_date.h>
 #include <ssod/component_builder.h>
 #include <filesystem>
+#include <set>
 
 namespace fs = std::filesystem;
 
@@ -39,15 +40,36 @@ std::string to_title(std::string s)
 	return s;
 }
 
+uint32_t word_count(const std::string& s) {
+	uint32_t count{1};
+	for (const char& c : s) {
+		if (std::isspace(c)) {
+			++count;
+		}
+	}
+	return count;
+}
+
+uint32_t mins_read_time(const std::string& s) {
+	return ceil((double)word_count(s) / 200.0);
+}
+
 void page(const dpp::interaction_create_t& event, bool document, const std::string& path = "") {
 	dpp::cluster* bot = event.from->creator;
+	fs::path fullpath(path);
+	size_t pages = 1;
+	std::string label = fullpath.filename();
+	std::string file_content = document ? dpp::utility::read_file(path) : "";
+	std::string whole_doc{file_content};
+	std::string title = replace_string(to_title(replace_string(label, "-", " ")), ".md", "");
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Encyclopaedia Cryptillius")
-		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 
-			.icon_url = bot->me.get_avatar_url(), 
-			.proxy_url = "",
+		.set_title(document ? title : "Encyclopaedia Cryptillius")
+		.set_author(dpp::embed_author{ 
+			.name = "Encyclopaedia Cryptillius", 
+			.url = "", 
+			.icon_url = "",
+			.proxy_icon_url = "",
 		})
 		.set_colour(0xd5b994)
 		.set_image("attachment://app_logo.png")
@@ -55,9 +77,32 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 	dpp::message m;
 	component_builder cb(m);
 	if (document) {
-		embed.set_description(dpp::utility::read_file(path));
+		embed.set_description(file_content);
 		fs::path fullpath(path);
 		fullpath.remove_filename();
+		if (isdigit(label[0])) {
+			/* Get name without number on start */
+			std::string partial_name = label.substr(label.find("-"), label.length() - label.find("-"));
+			size_t current_page = atoi(label);
+			/* Count pages */
+			while (fs::exists(fullpath.string() + std::to_string(pages) + partial_name)) {
+				pages++;
+			}
+			pages--;
+			whole_doc.clear();
+			for (size_t p = 1; p <= pages; ++p) {
+				cb.add_component(dpp::component()
+					.set_type(dpp::cot_button)
+					.set_id("lore-read;" + fullpath.string() + std::to_string(p) + partial_name)
+					.set_label("Page " + std::to_string(p) + " of " + std::to_string(pages))
+					.set_style(dpp::cos_secondary)
+					.set_emoji("📘", 0, false)
+					.set_disabled(current_page == p)
+				);
+				whole_doc.append(dpp::utility::read_file(fullpath.string() + std::to_string(p) + partial_name));
+			}
+			title = replace_string(title, std::to_string(current_page) + " ", "");
+		}
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id("lore;" + fullpath.string() + "/")
@@ -65,9 +110,20 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 			.set_style(dpp::cos_secondary)
 			.set_emoji("⬆", 0, false)
 		);
+		embed.set_title(title);
+		embed.set_footer(dpp::embed_footer{ 
+			.text = document ? std::to_string(pages) + " page" + (pages > 1 ? "s" : "") + ", " + std::to_string(mins_read_time(whole_doc)) + " minutes read time" : "Lore Information", 
+			.icon_url = bot->me.get_avatar_url(), 
+			.proxy_url = "",
+		});
+
 		m = cb.get_message();
 	} else {
+		std::set<fs::directory_entry> sorted_entries;
 		for (const auto& entry : fs::directory_iterator(path.empty() ? "../resource/lore/" : path)) {
+			sorted_entries.insert(entry);
+		}
+		for (const auto& entry : sorted_entries) {
 			if (entry.is_directory()) {
 				/* Show directories as categories */
 				cb.add_component(dpp::component()
@@ -81,6 +137,18 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 				/* Show regular files as entries */
 				fs::path fullpath(entry.path());
 				std::string label = fullpath.filename();
+				if (fullpath.extension() != ".md") {
+					continue;
+				}
+				if (isdigit(label[0])) {
+					/* Paginated content, split into 4k per page */
+					if (atoi(label) == 1) {
+						/* Only display the first page, take the page number off the name */
+						label = label.substr(2, label.length() - 2);
+					} else {
+						continue;
+					}
+				}
 				fullpath.remove_filename();
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
@@ -91,11 +159,28 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 				);
 			}
 		}
+		if (!document && path != "../resource/lore/" && path != "") {
+			cb.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id("lore;../resource/lore/")
+				.set_label("Back")
+				.set_style(dpp::cos_secondary)
+				.set_emoji("⬆", 0, false)
+			);
+		}
 		m = cb.get_message();
 		m.add_file("app_logo.png", dpp::utility::read_file("../resource/app_logo.png"));
 	}
 	m.add_embed(embed);
-	event.reply(m.set_flags(dpp::m_ephemeral));
+	if (event.command.type == dpp::it_component_button) {
+		event.reply(dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [bot](const auto& cc) {
+			if (cc.is_error()) {{
+				bot->log(dpp::ll_error, cc.http_info.body);
+			}}
+		});
+	} else {
+		event.reply(m.set_flags(dpp::m_ephemeral));
+	}
 }
 
 dpp::slashcommand lore_command::register_command(dpp::cluster& bot) {
