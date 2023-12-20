@@ -8,6 +8,7 @@
 #include <ssod/paragraph.h>
 #include <ssod/game_util.h>
 #include <ssod/component_builder.h>
+#include <ssod/combat.h>
 
 void game_nav(const dpp::button_click_t& event) {
 	if (!player_is_live(event)) {
@@ -19,6 +20,11 @@ void game_nav(const dpp::button_click_t& event) {
 		return;
 	}
 	std::vector<std::string> parts = dpp::utility::tokenize(event.custom_id, ";");
+	if (p.in_combat) {
+		if (combat_nav(event, p, parts)) {
+			return;
+		}
+	}
 	if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay") && parts.size() >= 3) {
 		if (parts[0] == "follow_nav_pay" && parts.size() >= 4) {
 			long link_cost = atol(parts[3]);
@@ -45,6 +51,18 @@ void game_nav(const dpp::button_click_t& event) {
 			}
 		}
 		claimed = true;
+	} else if (parts[0] == "combat" && parts.size() >= 7) {
+		// paragraph name stamina skill armour weapon
+		p.in_combat = true;
+		p.combatant = enemy{
+			.name = parts[2],
+			.stamina = atol(parts[3]),
+			.skill = atol(parts[4]),
+			.armour = atol(parts[5]),
+			.weapon = atol(parts[6]),
+		};
+		claimed = true;
+
 	}
 	if (claimed) {
 		p.event = event;
@@ -55,6 +73,10 @@ void game_nav(const dpp::button_click_t& event) {
 };
 
 void continue_game(const dpp::interaction_create_t& event, player p) {
+	if (p.in_combat) {
+		continue_combat(event, p);
+		return;
+	}
 	paragraph location(p.paragraph, p, event.command.usr.id);
 	dpp::cluster& bot = *(event.from->creator);
 	dpp::embed embed = dpp::embed()
