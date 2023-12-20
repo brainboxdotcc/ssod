@@ -113,18 +113,14 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (event.custom_id == "name_character" && p_old.state == state_name_player) {
 			p_old.event.delete_original_response();
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
-			neutrino swear_filter(&bot, config::get("neutrino_user"), config::get("neutrino_password"));
-			swear_filter.contains_bad_word(name, [name, p_old, event](const swear_filter_t& sf) {
-				player p = p_old;
-				p.name = sf.censored_content;
-				p.state = state_play;
-				update_registering_player(event, p);
-				// Save to database and overwrite backup state
-				p.save(event.command.usr.id, true);
-				p.event = event;
-				move_from_registering_to_live(event, p);
-				continue_game(event, p);
-			});
+			p_old.name = name;
+			p_old.state = state_play;
+			update_registering_player(event, p_old);
+			// Save to database and overwrite backup state
+			p_old.save(event.command.usr.id, true);
+			p_old.event = event;
+			move_from_registering_to_live(event, p_old);
+			continue_game(event, p_old);
 		}
 	});
 	return dpp::slashcommand("start", "Start a new character or resume game", bot.me.id);

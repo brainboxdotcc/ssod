@@ -19,6 +19,7 @@ void game_nav(const dpp::button_click_t& event) {
 	if (p.state != state_play || event.custom_id.empty()) {
 		return;
 	}
+	event.from->log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + event.custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(event.custom_id, ";");
 	if (p.in_combat) {
 		if (combat_nav(event, p, parts)) {
@@ -66,7 +67,13 @@ void game_nav(const dpp::button_click_t& event) {
 			.weapon = atol(parts[6]),
 		};
 		claimed = true;
-
+	} else if (parts[0] == "pick_one" && parts.size() >= 5) {
+		p.paragraph = atol(parts[1]);
+		if (not_got_yet(p.paragraph, "PICKED", p.gotfrom)) {
+			p.possessions.push_back(item{ .name = parts[3], .flags = parts[4] });
+			p.gotfrom += " [PICKED" + std::to_string(p.paragraph) + "]";
+		}
+		claimed = true;
 	} else if (parts[0] == "respawn" && p.stamina < 1) {
 		/* Load backup of player and save over the current */
 		player new_p = player(event.command.usr.id, true);
@@ -112,6 +119,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	component_builder cb(m);
 	size_t index{0}, enabled_links{0};
 	bool respawn_button_shown{false};
+	size_t unique{0};
 	for (const auto & n : location.navigation_links) {
 		std::string label{"Travel"}, id;
 		dpp::component comp;
@@ -124,12 +132,18 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		switch (n.type) {
 			case nav_type_paylink:
 				label = "Pay " + std::to_string(n.cost) + " Gold";
-				id = "follow_nav_pay;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(n.cost);
+				id = "follow_nav_pay;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(n.cost) + ";" + std::to_string(++unique);
+				enabled_links++;
+				break;
+			case nav_type_pick_one:
+				// PICKED
+				label = "Choose " + n.buyable.name;
+				id = "pick_one;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + n.buyable.name + ";" + n.buyable.flags + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
 			case nav_type_shop:
 				label = "Buy " + n.buyable.name + " (" + std::to_string(n.cost) + " Gold)";
-				id = "shop;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::string(n.buyable.flags) + ";" + std::to_string(n.cost) + ";" + n.buyable.name;
+				id = "shop;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::string(n.buyable.flags) + ";" + std::to_string(n.cost) + ";" + n.buyable.name + ";" + std::to_string(++unique);
 				if (p.has_herb(n.buyable.name) || p.has_spell(n.buyable.name) || p.gold < n.cost) {
 					comp.set_disabled(true);
 				} else {
@@ -138,12 +152,12 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				break;
 			case nav_type_bank:
 				label = "Use Bank";
-				id = "bank;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph);
+				id = "bank;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
 			case nav_type_combat:
 				label = "Fight " + n.monster.name;
-				id = "combat;" + std::to_string(n.paragraph) + ";" + n.monster.name + ";" + std::to_string(n.monster.stamina) + ";" + std::to_string(n.monster.skill) + ";" + std::to_string(n.monster.armour) + ";" + std::to_string(n.monster.weapon);
+				id = "combat;" + std::to_string(n.paragraph) + ";" + n.monster.name + ";" + std::to_string(n.monster.stamina) + ";" + std::to_string(n.monster.skill) + ";" + std::to_string(n.monster.armour) + ";" + std::to_string(n.monster.weapon) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
 			case nav_type_respawn:
@@ -151,7 +165,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				id = "respawn";
 				break;
 			default:
-				id = "follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph);
+				id = "follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
 		}
