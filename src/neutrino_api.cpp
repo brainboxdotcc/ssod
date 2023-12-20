@@ -15,6 +15,8 @@ void neutrino::contains_bad_word(const std::string& text, swear_filter_event_t c
         this->cluster->request("https://neutrinoapi.net/bad-word-filter", dpp::m_post, [this, text, callback](const auto& rv) {
                         swear_filter_t sf;
                         nlohmann::json j;
+			sf.clean = true;
+			sf.censored_content = text;
                         if (rv.error == dpp::h_success && !rv.body.empty()) {
                                 try {
                                         j = nlohmann::json::parse(rv.body);
