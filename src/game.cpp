@@ -34,7 +34,10 @@ void game_nav(const dpp::button_click_t& event) {
 			p.gold -= link_cost;
 		}
 		p.after_fragment = 0; // Resets current combat index
-		p.paragraph = atol(parts[1]);
+		long dest = atol(parts[1]);
+		if (paragraph::valid_next(p.paragraph, dest)) {
+			p.paragraph = dest;
+		}
 		claimed = true;
 	} else if (parts[0] == "shop" && parts.size() >= 6) {
 		std::string flags = parts[3];

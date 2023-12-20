@@ -60,6 +60,8 @@ struct paragraph {
 	~paragraph() = default;
 	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id);
 
+	static bool valid_next(long Current, long Next);
+
 private:
 	void parse(player& current_player, dpp::snowflake user_id);
 };

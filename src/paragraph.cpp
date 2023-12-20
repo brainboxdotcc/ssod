@@ -42,6 +42,56 @@ std::string extract_without_quotes(const std::string& p_text) {
 	return item_name;
 }
 
+bool paragraph::valid_next(long Current, long Next) {
+	std::set<long> Paralist;
+	std::string p_text;
+	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {Current});
+	if (location.empty()) {
+		return false;
+	}
+	std::stringstream paragraph_content(location[0].at("data") + "\r\n");
+
+	while (!paragraph_content.eof()) {
+		paragraph_content >> p_text;
+
+		if (paragraph_content.eof()) {
+			break;
+		}
+
+		std::string tag = dpp::lowercase(p_text.substr(0, 20));
+		if (tag.find("<paylink=") != std::string::npos) {
+			int i{0};
+			std::string pnum, cost;
+			while (p_text[i++] != '=');
+			while (p_text[i] != ',') {
+				cost += p_text[i++];
+			}
+			i++;
+			while (p_text[i] != '>') {
+				pnum += p_text[i++];
+			}
+			Paralist.insert(atol(pnum));
+		} else if (tag.find("<link=") != std::string::npos) {
+			int i{0};
+			std::string pnum;
+			while (p_text[i++] != '=');
+			while (p_text[i] != '>') {
+				pnum += p_text[i++];
+			}
+			Paralist.insert(atol(pnum));
+		} else if (tag.find("<autolink=") != std::string::npos) {
+			int i{0};
+			std::string pnum;
+			while (p_text[i++] != '=');
+			while (p_text[i] != '>') {
+				pnum += p_text[i++];
+			}
+			Paralist.insert(atol(pnum));
+		}
+	}
+	return Paralist.find(Next) != Paralist.end();
+}
+
 // extracts a value from any NAME="Value" pair
 std::string extract_value(const std::string& p_text) {
 	if (p_text.find("\"") == std::string::npos) {
