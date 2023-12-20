@@ -25,6 +25,8 @@
 #include <ssod/database.h>
 #include <ssod/game_player.h>
 #include <ssod/game.h>
+#include <ssod/neutrino_api.h>
+#include <ssod/config.h>
 
 dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 {
@@ -103,21 +105,28 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			event.reply("State error");
 		}
 	});
-	bot.on_form_submit([](const dpp::form_submit_t & event) {
+	bot.on_form_submit([&bot](const dpp::form_submit_t & event) {
 		if (player_is_live(event)) {
 			return;
 		}
 		player p_old = get_registering_player(event);
 		if (event.custom_id == "name_character" && p_old.state == state_name_player) {
 			p_old.event.delete_original_response();
-			p_old.name = std::get<std::string>(event.components[0].components[0].value);
-			p_old.state = state_play;
-			update_registering_player(event, p_old);
-			// Save to database and overwrite backup state
-			p_old.save(event.command.usr.id, true);
-			p_old.event = event;
-			move_from_registering_to_live(event, p_old);
-			continue_game(event, p_old);
+			std::string name = std::get<std::string>(event.components[0].components[0].value);
+			neutrino swear_filter(&bot, config::get("neutrino_user"), config::get("neutrino_password"));
+			event.thinking();
+			swear_filter.contains_bad_word(name, [name, p_old, event](const swear_filter_t& sf) {
+				event.reply();
+				player p = p_old;
+				p.name = sf.censored_content;
+				p.state = state_play;
+				update_registering_player(event, p);
+				// Save to database and overwrite backup state
+				p.save(event.command.usr.id, true);
+				p.event = event;
+				move_from_registering_to_live(event, p);
+				continue_game(event, p);
+			});
 		}
 	});
 	return dpp::slashcommand("start", "Start a new character or resume game", bot.me.id);
