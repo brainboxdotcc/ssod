@@ -29,9 +29,21 @@ struct enemy {
 	long weapon{};
 };
 
+enum combat_stance {
+	OFFENSIVE = 1,
+	DEFENSIVE = 2,
+};
+
+enum combat_strike {
+	CUTTING = 1,
+	PIERCING = 2,
+};
+
 struct player {
 	game_state state;
 	dpp::interaction_create_t event;
+	combat_stance stance;
+	combat_strike attack;
 	bool in_combat;
 	int after_fragment;
 	enemy combatant;
