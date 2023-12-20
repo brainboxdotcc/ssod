@@ -138,12 +138,8 @@ namespace listeners {
 			}, 537746810471448576);
 
 			auto set_presence = [&bot]() {
-				bot.current_application_get([&bot](const dpp::confirmation_callback_t& v) {
-					if (!v.is_error()) {
-						dpp::application app = std::get<dpp::application>(v.value);
-						bot.set_presence(dpp::presence(dpp::ps_online, dpp::at_game, fmt::format("on {} servers", app.approximate_guild_count)));
-					}
-				});
+				auto rs = db::query("SELECT (SELECT COUNT(id) FROM guild_cache) AS guild_count, (SELECT SUM(user_count) FROM guild_cache) AS discord_user_count, (SELECT COUNT(user_id) FROM game_users) AS game_user_count");
+				bot.set_presence(dpp::presence(dpp::ps_online, dpp::at_game, fmt::format("on {} servers with {} active players and {} users", rs[0].at("guild_count"), rs[0].at("game_user_count"), rs[0].at("discord_user_count"))));
 			};
 
 			bot.start_timer([&bot, set_presence](dpp::timer t) {
