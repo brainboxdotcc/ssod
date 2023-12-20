@@ -10,14 +10,12 @@ struct pick_tag : public tag {
 		std::string ItemName = extract_value(p_text);
 		paragraph_content >> p_text;
 		std::string ItemVal = extract_value(p_text);
-		// TODO: Action Button
-		//sprintf(New,"action=pick&guid=%s&item=%s&val=%s",formData[1],AddEscapes(ItemName),ItemVal);
 		if (not_got_yet(p.id, "PICKED", current_player.gotfrom)) {
 			output << "\n **" << ItemName << "** ";
 			output << directions[++p.links] << "\n";
 			p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_pick_one, .cost = 0, .monster = {}, .buyable = { .name = ItemName, .flags = ItemVal } });
 		} else {
-			output << "\n **" << ItemName << "** ";
+			output << "\n **" << ItemName << "**\n";
 		}
 	}
 };
