@@ -89,7 +89,7 @@ std::string remove_last_char(const std::string& s) {
 }
 
 void paragraph::parse(player& current_player, dpp::snowflake user_id) {
-	std::stringstream paragraph_content(text);
+	std::stringstream paragraph_content(text + "\r\n");
 	std::stringstream output;
 	std::string p_text, LastLink;
 
@@ -99,7 +99,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 
 		if (paragraph_content.eof()) {
 			break;
-		}	
+		}
 
 		try {	
 			if (route_tag(*this, p_text, paragraph_content, output, current_player, display)) {
@@ -164,7 +164,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 				}
 				/* TODO: What is this 'the' madness? Find out! Ancient fix? */
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
-					output << " (unable to follow this path)";
+					navigation_links.push_back(nav_link{ .paragraph = 0, .type = nav_type_respawn, .cost = 0, .monster = {}, .buyable = {} });
 				} else {
 					links++;
 					LastLink = pnum;

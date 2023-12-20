@@ -12,6 +12,10 @@ const dpp::message& component_builder::get_message() {
 }
 
 void component_builder::add_component(const dpp::component& c) {
+	if (index >= 25) {
+		/* Already at the max of 5x5 buttons */
+		return;
+	}
 	message.components[component_parent].add_component(c);
 	index++;
 	if (index && (index % 5 == 0)) {

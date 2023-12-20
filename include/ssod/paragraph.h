@@ -27,6 +27,7 @@ enum nav_link_type {
 	nav_type_shop,
 	nav_type_combat,
 	nav_type_bank,
+	nav_type_respawn,
 };
 
 struct nav_link {
