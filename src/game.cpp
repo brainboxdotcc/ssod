@@ -94,6 +94,45 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
 		p.in_inventory = true;
 		claimed = true;
+	} else if (parts[0] == "drop" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
+		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
+		/* TODO: Check if item is equipped, if it is, remove its values! */
+		claimed = true;
+	} else if (parts[0] == "use" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
+		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
+		std::string flags = parts[2];
+		if (flags.substr(0, 2) == "ST") {
+			long modifier = atol(flags.substr(2, flags.length() - 2));
+			p.add_stamina(modifier);
+		} else if (flags.substr(0, 2) == "SK") {
+			long modifier = atol(flags.substr(2, flags.length() - 2));
+			p.add_skill(modifier);
+		} else if (flags.substr(0, 2) == "SD") {
+			long modifier = atol(flags.substr(2, flags.length() - 2));
+			p.add_speed(modifier);
+		} else if (flags.substr(0, 2) == "EX") {
+			long modifier = atol(flags.substr(2, flags.length() - 2));
+			p.add_experience(modifier);
+		} else if (flags.substr(0, 2) == "LK") {
+			long modifier = atol(flags.substr(2, flags.length() - 2));
+			p.add_luck(modifier);
+		} else if (flags.substr(0, 1) == "A") {
+			long modifier = atol(flags.substr(1, flags.length() - 1));
+			p.armour.rating += modifier;
+		} else if (flags.substr(0, 1) == "W") {
+			long modifier = atol(flags.substr(1, flags.length() - 1));
+			p.weapon.rating += modifier;
+		}
+		/* TODO: Apply modifier */
+		claimed = true;
+	} else if (parts[0] == "equip" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
+		/* TODO: Apply to player */
+		if (parts[1][0] == 'W') {
+			p.weapon = rated_item{ .name = parts[1], .rating = atol(parts[2]) };
+		} else {
+			p.armour = rated_item{ .name = parts[1], .rating = atol(parts[2]) };
+		}
+		claimed = true;
 	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
 		p.in_inventory = false;
 		claimed = true;
@@ -110,7 +149,15 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
 
-	content << "__**Inventory**__\n";
+	content << "__**Stats**__\n\n";
+	content << "<:" << sprite::health_heart.format() << "> Stamina: __" << p.stamina << "__";
+	content << " <:" << sprite::book07.format() << "> Skill: __" << p.skill << "__";
+	content << " <:" << sprite::clover.format() << "> Luck: __" << p.luck << "__";
+	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__";
+	content << " <:" << sprite::shoes03.format() << "> Speed: __" << p.speed << "__";
+	content << "\n";
+
+	content << "\n__**Inventory**__\n";
 	if (p.gold > 0) {
 		content << "<:" << sprite::gold_coin.format() << ">" << " " << p.gold << " Gold Pieces\n";
 	}
@@ -137,7 +184,11 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		} else if (inv.flags.substr(0, 3) == "LK+") {
 			emoji = sprite::blue03.format();
 		}
-		content << "<:" << emoji << ">" << " " << inv.name << " - *" << describe_item(inv.flags, inv.name) << "*\n";
+		content << "<:" << emoji << ">" << " " << inv.name << " - *" << describe_item(inv.flags, inv.name) << "*";
+		if (p.armour.name == inv.name || p.weapon.name == inv.name) {
+			content << " <:" << sprite::light02.format() << "> - **Equipped**";
+		}
+		content << "\n";
 	}
 	content << "\n__**Spells**__\n";
 	std::ranges::sort(p.spells, [](const item &a, const item& b) -> bool { return a.name < b.name; });
