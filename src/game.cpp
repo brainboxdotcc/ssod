@@ -73,7 +73,7 @@ void game_nav(const dpp::button_click_t& event) {
 		p.paragraph = atol(parts[1]);
 		if (not_got_yet(p.paragraph, "PICKED", p.gotfrom)) {
 			p.possessions.push_back(item{ .name = parts[3], .flags = parts[4] });
-			p.gotfrom += " [PICKED" + std::to_string(p.paragraph) + "]";
+			p.add_flag("PICKED", p.paragraph);
 		}
 		claimed = true;
 	} else if (parts[0] == "respawn" && p.stamina < 1) {

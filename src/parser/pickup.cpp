@@ -11,7 +11,7 @@ struct pickup_tag : public tag {
 		if (dpp::lowercase(p_text) == "scroll>") {
 			if (not_got_yet(p.id, "SCROLL", current_player.gotfrom)) {
 				current_player.scrolls++;
-				current_player.gotfrom += " [SCROLL" + std::to_string(p.id) + "]";
+				current_player.add_flag("SCROLL", p.id);
 			}
 			return;
 		}
@@ -54,7 +54,7 @@ struct pickup_tag : public tag {
 			// crafty player trying to get the same item twice! Not good if its unique!
 			return;
 		}
-		current_player.gotfrom += " [" + item_name + std::to_string(p.id) + "]";
+		current_player.add_flag(item_name, p.id);
 		if (flags == "SPELL") {
 			current_player.spells.push_back(item{ .name = item_name, .flags = flags });
 		} else if (flags == "HERB") {
