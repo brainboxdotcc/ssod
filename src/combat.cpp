@@ -96,7 +96,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 	long& EWeapon = p.combatant.weapon;
 	std::stringstream output;
 
-	if (event.command.type == dpp::it_component_button) {
+	if ((int)p.attack == 0 || (int)p.stance == 0 || (int)p.stance > 2 || (int)p.attack > 2) {
 		p.attack = CUTTING;
 		p.stance = OFFENSIVE;
 	}
@@ -273,6 +273,10 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 					snprintf(dm, limit - 1, death_messages[rand() % 48], p.name.c_str(), p.combatant.name.c_str());
 				} else {
 					snprintf(dm, limit - 1, death_messages[rand() % 48], p.combatant.name.c_str(), p.name.c_str());
+					/* Add experience on victory equal to remaining skill of enemy (indicates difficulty of the fight) */
+					long xp = abs(std::min(p.combatant.skill, 0l) * 0.15f) + 1;
+					output << "\n\n***+" + std::to_string(xp) + " experience points!***\n\n";
+					p.add_experience(xp);
 				}
 				output << "**" << dm << "**";
 			}
