@@ -98,4 +98,6 @@ namespace sprite {
 	inline const dpp::emoji backpack("backpack", 1187413868650184774);
 	inline const dpp::emoji health_heart("health_heart", 1187413977593020566);
 	inline const dpp::emoji skull("ded_skull", 1187415569729851402);
+	inline const dpp::emoji leaf("I_Leaf", 1187434440444620921);
+	inline const dpp::emoji inv_drop("inv_drop", 1187450540041449583);
 };

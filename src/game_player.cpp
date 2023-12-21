@@ -436,10 +436,9 @@ Once you are happy with your choices, click **Continue** to name your character.
 player::player(bool reroll) :
 	state(state_roll_stats), in_combat(false), after_fragment(0),
 	race(player_race::race_error), profession(player_profession::prof_error),
-	X(player_profession::prof_error), stamina(0), skill(0), luck(0), sneak(0),
-	speed(0), silver(0), gold(0), rations(0), experience(0), notoriety(0),
-	days(0), scrolls(0), last_use(0), last_strike(0), pinned(0), muted(0),
-	mana(0), mana_tick(0) {
+	stamina(0), skill(0), luck(0), sneak(0), speed(0), silver(0), gold(0),
+	rations(0), experience(0), notoriety(0), days(0), scrolls(0), last_use(0),
+	last_strike(0), pinned(0), muted(0), mana(0), mana_tick(0) {
 	if (reroll) {
 		skill = dice() + 5;
 		stamina = dice() + 5;
@@ -478,7 +477,6 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 	if (a_row.size()) {
 		race = (player_race)atoi(a_row[0].at("race").c_str());
 		profession = (player_profession)atoi(a_row[0].at("profession").c_str());
-		X = profession;
 		name = a_row[0].at("name");
 		stamina = atol(a_row[0].at("stamina"));
 		skill = atol(a_row[0].at("skill"));
