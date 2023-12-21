@@ -176,24 +176,24 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id("drop;" + inv.name + ";" + inv.flags)
-			.set_label("Drop")
-			.set_style(dpp::cos_primary)
+			.set_label("Drop " + inv.name)
+			.set_style(dpp::cos_danger)
 			.set_emoji(sprite::inv_drop.name, sprite::inv_drop.id)
 		);
 		if (inv.flags.find("+") != std::string::npos) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id("use;" + inv.name + ";" + inv.flags)
-				.set_label("Use")
-				.set_style(dpp::cos_primary)
+				.set_label("Use " + inv.name)
+				.set_style(dpp::cos_success)
 				.set_emoji("➕")
 			);
 		} else if (inv.flags.length() && inv.flags[0] == 'A') {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id("equip;" + inv.name + ";" + inv.flags)
-				.set_label("Wear")
-				.set_style(dpp::cos_primary)
+				.set_label("Wear " + inv.name)
+				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::armor04.name, sprite::armor04.id)
 			);
 		}
