@@ -127,10 +127,37 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	update_live_player(event, p);
 	dpp::message m;
 	m.add_embed(embed);
+	int64_t t = time(nullptr) - 600;
+	auto others = db::query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
+	if (others.size() > 0 || location.dropped_items.size() > 0) {
+		std::string list_others, list_dropped, text;
+		for (const auto & other : others) {
+			list_others += dpp::utility::markdown_escape(other.at("name"), true) + ", ";
+		}
+		if (list_others.length()) {
+			list_others = list_others.substr(0, list_others.length() - 2);
+			text += "**__Other players here:__** " + list_others + "\n\n";
+		}
+		if (location.dropped_items.size()) {
+			for (const auto & dropped : location.dropped_items) {
+				list_dropped += dpp::utility::markdown_escape(dropped.name, true) + ", ";
+			}
+			if (list_dropped.length()) {
+				list_dropped = list_dropped.substr(0, list_dropped.length() - 2);
+				text += "**__Items On Ground__**" + list_dropped + "\n\n";
+			}
+		}
+		m.add_embed(dpp::embed()
+			.set_colour(0xd5b994)
+			.set_description(text)
+		);
+	}
+
 	component_builder cb(m);
 	size_t index{0}, enabled_links{0};
 	bool respawn_button_shown{false};
 	size_t unique{0};
+
 	for (const auto & n : location.navigation_links) {
 		std::string label{"Travel"}, id;
 		dpp::component comp;
