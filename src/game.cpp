@@ -96,7 +96,14 @@ void game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "drop" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
 		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
-		/* TODO: Check if item is equipped, if it is, remove its values! */
+		if (p.armour.name == parts[1]) {
+			p.armour.name = "Undergarments 👙";
+			p.armour.rating = 0;
+		} else if (p.weapon.name == parts[1]) {
+			p.weapon.name = "Unarmed 👊";
+			p.weapon.rating = 0;
+		}
+		/* TODO: Drop to floor */
 		claimed = true;
 	} else if (parts[0] == "use" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
 		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
@@ -123,10 +130,8 @@ void game_nav(const dpp::button_click_t& event) {
 			long modifier = atol(flags.substr(1, flags.length() - 1));
 			p.weapon.rating += modifier;
 		}
-		/* TODO: Apply modifier */
 		claimed = true;
 	} else if (parts[0] == "equip" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
-		/* TODO: Apply to player */
 		if (parts[1][0] == 'W') {
 			p.weapon = rated_item{ .name = parts[1], .rating = atol(parts[2]) };
 		} else {
