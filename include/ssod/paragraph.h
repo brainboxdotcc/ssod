@@ -99,8 +99,6 @@ long extract_value_number(const std::string& p_text);
 
 bool global_set(const std::string& flag);
 
-bool not_got_yet(uint32_t paragraph, const std::string& item, const std::string& gotfrom);
-
 void extract_to_quote(std::string& p_text, std::stringstream& content, char end = '>');
 
 std::string remove_last_char(const std::string& s);

@@ -9,7 +9,7 @@ struct pickup_tag : public tag {
 		paragraph_content >> p_text;
 
 		if (dpp::lowercase(p_text) == "scroll>") {
-			if (not_got_yet(p.id, "SCROLL", current_player.gotfrom)) {
+			if (!current_player.has_flag("SCROLL", p.id)) {
 				current_player.scrolls++;
 				current_player.add_flag("SCROLL", p.id);
 			}
@@ -50,7 +50,7 @@ struct pickup_tag : public tag {
 			flags += item_flags[i];
 		}
 
-		if (!not_got_yet(p.id, item_name, current_player.gotfrom)) {
+		if (current_player.has_flag(item_name, p.id)) {
 			// crafty player trying to get the same item twice! Not good if its unique!
 			return;
 		}
