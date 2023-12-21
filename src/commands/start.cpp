@@ -111,8 +111,16 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		}
 		player p_old = get_registering_player(event);
 		if (event.custom_id == "name_character" && p_old.state == state_name_player) {
-			p_old.event.delete_original_response();
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
+			auto check = db::query("SELECT * FROM game_users WHERE name = ?", {name});
+			if (check.size()) {
+				event.reply();
+				dpp::message m = p_old.get_magic_selection_message(bot, event);
+				m.embeds[0].description += "\n\n## The username you have selected already exists. Please try another.";
+				p_old.event.edit_original_response(m);
+				return;
+			}
+			p_old.event.delete_original_response();
 			p_old.name = name;
 			p_old.state = state_play;
 			update_registering_player(event, p_old);
