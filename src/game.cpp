@@ -8,6 +8,7 @@
 #include <ssod/paragraph.h>
 #include <ssod/game_util.h>
 #include <ssod/component_builder.h>
+#include <ssod/emojis.h>
 #include <ssod/combat.h>
 
 void game_nav(const dpp::button_click_t& event) {
@@ -214,7 +215,9 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_emoji(directions[++index], 0, false);
 
 		if (n.type == nav_type_respawn) {
-			comp.set_emoji("💀", 0, false);
+			comp.set_emoji(sprite::skull.name, sprite::skull.id);
+		} else if (n.type == nav_type_bank) {
+			comp.set_emoji(sprite::gold_bar.name, sprite::gold_bar.id);
 		}
 		cb.add_component(comp);
 	}
@@ -224,7 +227,16 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_id("respawn")
 			.set_label("Respawn")
 			.set_style(dpp::cos_danger)
-			.set_emoji("💀", 0, false)
+			.set_emoji(sprite::skull.name, sprite::skull.id)
+		);
+	}
+	if (p.stamina > 0 && p.after_fragment == 0) {
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id("inventory")
+			.set_label("Inventory")
+			.set_style(dpp::cos_secondary)
+			.set_emoji(sprite::backpack.name, sprite::backpack.id)
 		);
 	}
 	cb.add_component(help_button());

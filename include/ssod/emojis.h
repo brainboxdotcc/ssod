@@ -95,4 +95,7 @@ namespace sprite {
 	inline const dpp::emoji spear003("W_Spear003", 1187034271748214874);
 	inline const dpp::emoji spear007("W_Spear007", 1187036591173161050);
 	inline const dpp::emoji staff02("W_Staff02", 1187034279704797204);
+	inline const dpp::emoji backpack("backpack", 1187413868650184774);
+	inline const dpp::emoji health_heart("health_heart", 1187413977593020566);
+	inline const dpp::emoji skull("ded_skull", 1187415569729851402);
 };

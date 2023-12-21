@@ -5,6 +5,7 @@
 #include <ssod/game_dice.h>
 #include <ssod/database.h>
 #include <ssod/ssod.h>
+#include <ssod/emojis.h>
 #include <fmt/format.h>
 
 constexpr const char* death_messages[48]{
@@ -300,7 +301,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				.set_id("respawn")
 				.set_label("Respawn")
 				.set_style(dpp::cos_danger)
-				.set_emoji("💀", 0, false)	
+				.set_emoji(sprite::skull.name, sprite::skull.id)
 			);
 			CombatEnded = true;
 		} else if (EStamina < 1) {
