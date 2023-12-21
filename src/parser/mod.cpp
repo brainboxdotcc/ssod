@@ -32,6 +32,7 @@ struct mod_tag : public tag {
 			}
 			output << " ***" << (modifier < 1 ? "Subtract " : "Add ") << abs(modifier) << " " << m->second.first << "*** ";
 			*(m->second.second) += modifier;
+			p.words++;
 		}
 	}
 };

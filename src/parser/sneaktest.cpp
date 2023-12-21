@@ -14,6 +14,7 @@ struct sneaktest_tag : public tag {
 		output << "\n***" << monster_name << "** *Sneak " << monster_sneak << "*,";
 		p.auto_test = current_player.sneak_test(monster_sneak);
 		output << (p.auto_test ? " **PASSED**!\n" : " **FAILED**!\n");
+		p.words++;
 	}
 };
 

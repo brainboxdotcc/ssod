@@ -17,6 +17,7 @@ struct pick_tag : public tag {
 		} else {
 			output << "\n **" << ItemName << "**\n";
 		}
+		p.words++;
 	}
 };
 

@@ -5,6 +5,7 @@ struct br_tag : public tag {
 	static constexpr std::string_view tags[]{"<br>"};
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		output << "\n";
+		p.words++;
 	}
 };
 
