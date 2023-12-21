@@ -563,6 +563,10 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 	return true;
 }
 
+void player::add_flag(const std::string flag, long paragraph) {
+	gotfrom += " [" + flag + std::to_string(paragraph) + "]";
+}
+
 void player::strike() {
 	// store this time as the time a hit was last made in combat
 	last_strike = time(nullptr);

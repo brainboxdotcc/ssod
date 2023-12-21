@@ -117,6 +117,8 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 	if (EStamina <= 0) {
 		output << "This monster is already dead!\n\n";
 		p.after_fragment++;
+		p.combatant = {};
+		p.in_combat = false;
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph))
@@ -252,6 +254,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			} else {
 				EStamina -= SDamage;
 				ESkill -= KDamage;
+				p.strike();
 			}
 
 			if (p.stamina < 4) {

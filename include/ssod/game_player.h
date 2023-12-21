@@ -107,6 +107,8 @@ struct player {
 	void add_rations(long modifier);
 	bool remove_day();
 
+	void add_flag(const std::string flag, long paragraph);
+
 	bool has_herb(const std::string herb_name);
 	bool has_component_herb(const std::string& spell);
 	bool has_spell(const std::string spell_name);
