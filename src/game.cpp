@@ -26,7 +26,7 @@ void game_nav(const dpp::button_click_t& event) {
 			return;
 		}
 	}
-	if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay") && parts.size() >= 3) {
+	if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay" || parts[0] == "follow_nav_win") && parts.size() >= 3) {
 		if (parts[0] == "follow_nav_pay" && parts.size() >= 4) {
 			long link_cost = atol(parts[3]);
 			if (p.gold < link_cost) {
@@ -34,7 +34,9 @@ void game_nav(const dpp::button_click_t& event) {
 			}
 			p.gold -= link_cost;
 		}
-		p.after_fragment = 0; // Resets current combat index
+		if (parts[1] != parts[2]) {
+			p.after_fragment = 0; // Resets current combat index
+		}
 		long dest = atol(parts[1]);
 		if (paragraph::valid_next(p.paragraph, dest)) {
 			p.paragraph = dest;
@@ -63,8 +65,8 @@ void game_nav(const dpp::button_click_t& event) {
 			.name = parts[2],
 			.stamina = atol(parts[3]),
 			.skill = atol(parts[4]),
-			.armour = atol(parts[5]),
-			.weapon = atol(parts[6]),
+			.armour = atol(parts[6]),
+			.weapon = atol(parts[5]),
 		};
 		claimed = true;
 	} else if (parts[0] == "pick_one" && parts.size() >= 5) {

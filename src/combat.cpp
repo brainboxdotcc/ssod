@@ -65,8 +65,8 @@ bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<st
 	bool claimed{false};
 
 	if (parts[0] == "attack" && parts.size() >= 3) {
-		p.weapon.rating = atol(parts[1]);
-		p.weapon.name = parts[2];
+		p.weapon.rating = atol(parts[2]);
+		p.weapon.name = parts[1];
 		claimed = true;
 	} else if (parts[0] == "change_stance" && parts.size() >= 2) {
 		p.stance = (parts[1] == "o" ? OFFENSIVE : DEFENSIVE);
