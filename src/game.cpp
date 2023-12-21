@@ -82,6 +82,7 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.in_combat = false;
 		new_p.after_fragment = 0;
 		new_p.combatant = {};
+		new_p.state = state_play;
 		new_p.reset_to_spawn_point();
 		update_live_player(event, new_p);
 		new_p.save(event.command.usr.id);
