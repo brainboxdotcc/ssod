@@ -28,6 +28,7 @@ struct i_tag : public tag {
 		// process COST token here: COST="cost">
 		Cost = extract_value(p_text);
 		output << "\n**Buy: " << ItemName << "** (*" << Cost << " gold*) - " << describe_item(Value, ItemName) << "\n";
+		p.words++;
 
 		p.links++;
 		output << directions[p.links] << "\n";

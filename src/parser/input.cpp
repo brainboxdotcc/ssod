@@ -17,6 +17,7 @@ struct input_tag : public tag {
 		output << "\n\n";
 		//output << "<b>" << Prompt << "</b><br><form action='" << me << "'><input type='hidden' name='action' value='riddle'><input type='hidden' name='guid' value='" << formData[1] << "'><input type='hidden' name='keycode' value='" << Key << "'><input type='text' name='q' value='""'><input type='hidden' name='p' value='" << Para << "'><input type='submit' value='Answer'></form>" << CR << CR;
 		output << "TODO: Input Dialog\n";
+		p.words++;
 	}
 };
 
