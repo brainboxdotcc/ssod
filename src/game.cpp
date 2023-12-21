@@ -91,6 +91,12 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.save(event.command.usr.id);
 		p = new_p;
 		claimed = true;
+	} else if (parts[0] == "inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
+		p.in_inventory = true;
+		claimed = true;
+	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
+		p.in_inventory = false;
+		claimed = true;
 	}
 	if (claimed) {
 		p.event = event;
@@ -100,9 +106,114 @@ void game_nav(const dpp::button_click_t& event) {
 	}
 };
 
+void inventory(const dpp::interaction_create_t& event, player p) {
+	dpp::cluster& bot = *(event.from->creator);
+	std::stringstream content;
+
+	content << "__**Inventory**__\n";
+	if (p.gold > 0) {
+		content << "<:" << sprite::gold_coin.format() << ">" << " " << p.gold << " Gold Pieces\n";
+	}
+	if (p.silver > 0) {
+		content << "<:" << sprite::silver_coin.format() << ">" << " " << p.gold << " Silver Pieces\n";
+	}
+	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
+	for (const auto& inv : p.possessions) {
+		std::string emoji = sprite::backpack.format();
+		if (inv.flags.length() && inv.flags[0] == 'W') {
+			if (dpp::lowercase(inv.name).find("bow") != std::string::npos) {
+				emoji = sprite::bow02.format();
+			} else {
+				emoji = sprite::sword008.format();
+			}
+		} else if (inv.name.find("rrow") != std::string::npos) {
+			emoji = sprite::bow08.format();
+		} else if (inv.flags.length() && inv.flags[0] == 'A') {
+			emoji = sprite::armor04.format();
+		} else if (inv.flags.substr(0, 3) == "ST+") {
+			emoji = sprite::red03.format();
+		} else if (inv.flags.substr(0, 3) == "SK+") {
+			emoji = sprite::green03.format();
+		} else if (inv.flags.substr(0, 3) == "LK+") {
+			emoji = sprite::blue03.format();
+		}
+		content << "<:" << emoji << ">" << " " << inv.name << " - *" << describe_item(inv.flags, inv.name) << "*\n";
+	}
+	content << "\n__**Spells**__\n";
+	std::ranges::sort(p.spells, [](const item &a, const item& b) -> bool { return a.name < b.name; });
+	for (const auto& inv : p.spells) {
+		content << "<:" << sprite::hat02.format() << ">" << " " << inv.name << "\n";
+	}
+	content << "\n__**Herbs**__\n";
+	std::ranges::sort(p.herbs, [](const item &a, const item& b) -> bool { return a.name < b.name; });
+	for (const auto& inv : p.herbs) {
+		content << "<:" << sprite::leaf.format() << ">" << " " << inv.name << "\n";
+	}
+
+	dpp::embed embed = dpp::embed()
+		.set_url("https://ssod.org/")
+		.set_footer(dpp::embed_footer{ 
+			.text = "Inventory",
+			.icon_url = bot.me.get_avatar_url(), 
+			.proxy_url = "",
+		})
+		.set_colour(0xd5b994)
+		.set_description(content.str());
+	
+	dpp::message m;
+	m.add_embed(embed);
+	component_builder cb(m);
+
+	cb.add_component(dpp::component()
+		.set_type(dpp::cot_button)
+		.set_id("exit_inventory")
+		.set_label("Back")
+		.set_style(dpp::cos_primary)
+		.set_emoji(sprite::magic05.name, sprite::magic05.id)
+	);
+
+	for (const auto& inv : p.possessions) {
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id("drop;" + inv.name + ";" + inv.flags)
+			.set_label("Drop")
+			.set_style(dpp::cos_primary)
+			.set_emoji(sprite::inv_drop.name, sprite::inv_drop.id)
+		);
+		if (inv.flags.find("+") != std::string::npos) {
+			cb.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id("use;" + inv.name + ";" + inv.flags)
+				.set_label("Use")
+				.set_style(dpp::cos_primary)
+				.set_emoji("➕")
+			);
+		} else if (inv.flags.length() && inv.flags[0] == 'A') {
+			cb.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id("equip;" + inv.name + ";" + inv.flags)
+				.set_label("Wear")
+				.set_style(dpp::cos_primary)
+				.set_emoji(sprite::armor04.name, sprite::armor04.id)
+			);
+		}
+	}
+
+	m = cb.get_message();
+
+	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
+		if (cc.is_error()) {
+			event.reply("Internal error displaying inventory:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+		}
+	});
+}
+
 void continue_game(const dpp::interaction_create_t& event, player p) {
 	if (p.in_combat) {
 		continue_combat(event, p);
+		return;
+	} else if (p.in_inventory) {
+		inventory(event, p);
 		return;
 	}
 	paragraph location(p.paragraph, p, event.command.usr.id);

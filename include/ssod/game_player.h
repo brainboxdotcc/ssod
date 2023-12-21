@@ -39,43 +39,162 @@ enum combat_strike {
 	PIERCING = 2,
 };
 
+/**
+ * @brief Represents a player. These are loaded from the database, cached to RAM
+ * and frequently saved back to the database.
+ */
 struct player {
+	/**
+	 * @brief The current player state in the game's state machine
+	 */
 	game_state state;
+	/**
+	 * @brief The last D++ app command event for the player
+	 */
 	dpp::interaction_create_t event;
+	/**
+	 * @brief Current combat stance
+	 */
 	combat_stance stance;
+	/**
+	 * @brief Current combat attack type
+	 */
 	combat_strike attack;
-	bool in_combat;
+	/**
+	 * @brief True if in combat
+	 */
+	bool in_combat{};
+	/**
+	 * @brief True if in inventory
+	 */
+	bool in_inventory{};
+	/**
+	 * @brief Current fragment of a paragraph with combat
+	 */
 	int after_fragment;
+	/**
+	 * @brief Combatant for pve combat
+	 */
 	enemy combatant;
+	/**
+	 * @brief Player name
+	 */
 	std::string name;
+	/**
+	 * @brief Player race
+	 */
 	player_race race;
+	/**
+	 * @brief Player profession
+	 */
 	player_profession profession;
-	player_profession X;
+	/**
+	 * @brief Player stamina
+	 * Zero stamina = dead
+	 */
 	long stamina;
+	/**
+	 * @brief Player skill
+	 */
 	long skill;
+	/**
+	 * @brief Player luck
+	 */
 	long luck;
+	/**
+	 * @brief Player sneak
+	 */
 	long sneak;
+	/**
+	 * @brief Player speed
+	 */
 	long speed;
+	/**
+	 * @brief Player silver
+	 */
 	long silver;
+	/**
+	 * @brief Player gold
+	 */
 	long gold;
+	/**
+	 * @brief Player rations
+	 */
 	long rations;
+	/**
+	 * @brief Player experience
+	 */
 	long experience;
+	/**
+	 * @brief Player notoriety
+	 */
 	long notoriety;
+	/**
+	 * @brief Player days
+	 */
 	long days;
+	/**
+	 * @brief Player scroll count
+	 */
 	long scrolls;
+	/**
+	 * @brief Player paragraph
+	 */
 	uint32_t paragraph;
+	/**
+	 * @brief Player armour
+	 */
 	rated_item armour;
+	/**
+	 * @brief Player weapon
+	 */
 	rated_item weapon;
+	/**
+	 * @brief Player inventory
+	 */
 	std::vector<item> possessions;
+	/**
+	 * @brief Player notes
+	 */
 	std::vector<std::string> notes;
+	/**
+	 * @brief Player spells
+	 */
 	std::vector<item> spells;
+	/**
+	 * @brief Player herbs
+	 * (used as components for spell casting)
+	 */
 	std::vector<item> herbs;
+	/**
+	 * @brief Player flag list
+	 * State set by paragraph
+	 */
 	std::string gotfrom;
+	/**
+	 * @brief Time player last accessed
+	 */
 	time_t last_use;
+	/**
+	 * @brief Time player last landed a blow in combat
+	 */
 	time_t last_strike;
+	/**
+	 * @brief If non-zero, player can't move until this time
+	 */
 	time_t pinned;
+	/**
+	 * @brief If non-zero, player muted until this time
+	 */
 	time_t muted;
+	/**
+	 * @brief Spellcasting mana
+	 * (stops spell spamming in pvp)
+	 */
 	long mana;
+	/**
+	 * @brief Mana recharge rate
+	 */
 	time_t mana_tick;
 
 	~player();
