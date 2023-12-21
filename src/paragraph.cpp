@@ -121,12 +121,6 @@ bool global_set(const std::string& flag) {
 	return db::query("SELECT flag FROM game_global_flags WHERE flag = ?", {flag}).size() > 0;
 }
 
-// returns true if the user hasnt found an item before
-bool not_got_yet(uint32_t paragraph, const std::string& item, const std::string& gotfrom) {
-	std::string f{" [" + item + std::to_string(paragraph) + "]"};
-	return gotfrom.find(f) == std::string::npos;
-}
-
 void extract_to_quote(std::string& p_text, std::stringstream& content, char end) {
 	while (!content.eof() && p_text.length() && *p_text.rbegin() != end) {
 		std::string extra;

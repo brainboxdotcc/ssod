@@ -71,7 +71,7 @@ void game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "pick_one" && parts.size() >= 5) {
 		p.paragraph = atol(parts[1]);
-		if (not_got_yet(p.paragraph, "PICKED", p.gotfrom)) {
+		if (!p.has_flag("PICKED", p.paragraph)) {
 			p.possessions.push_back(item{ .name = parts[3], .flags = parts[4] });
 			p.add_flag("PICKED", p.paragraph);
 		}

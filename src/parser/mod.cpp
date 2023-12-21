@@ -24,7 +24,7 @@ struct mod_tag : public tag {
 		auto m = modifier_list.find(p_text);
 		if (m != modifier_list.end()) {
 			// No output if the player's been here before
-			if (not_got_yet(p.id, flag, current_player.gotfrom)) {
+			if (!current_player.has_flag(flag, p.id)) {
 				current_player.add_flag(flag, p.id);
 			} else {
 				output << "***Make no changes to your " << m->first << "*** ";

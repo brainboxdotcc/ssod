@@ -108,6 +108,7 @@ struct player {
 	bool remove_day();
 
 	void add_flag(const std::string flag, long paragraph);
+	bool has_flag(const std::string flag, long paragraph);
 
 	bool has_herb(const std::string herb_name);
 	bool has_component_herb(const std::string& spell);
