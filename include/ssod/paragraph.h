@@ -5,7 +5,7 @@
 #include <ssod/game_player.h>
 #include <dpp/unicode_emoji.h>
 
-inline const char* directions[10] = {
+inline const char* directions[] = {
 	dpp::unicode_emoji::zero,
 	dpp::unicode_emoji::one,
 	dpp::unicode_emoji::two,
@@ -16,6 +16,32 @@ inline const char* directions[10] = {
 	dpp::unicode_emoji::seven,
 	dpp::unicode_emoji::eight,
 	dpp::unicode_emoji::nine,
+	dpp::unicode_emoji::regional_indicator_a,
+	dpp::unicode_emoji::regional_indicator_b,
+	dpp::unicode_emoji::regional_indicator_c,
+	dpp::unicode_emoji::regional_indicator_d,
+	dpp::unicode_emoji::regional_indicator_e,
+	dpp::unicode_emoji::regional_indicator_f,
+	dpp::unicode_emoji::regional_indicator_g,
+	dpp::unicode_emoji::regional_indicator_h,
+	dpp::unicode_emoji::regional_indicator_i,
+	dpp::unicode_emoji::regional_indicator_j,
+	dpp::unicode_emoji::regional_indicator_k,
+	dpp::unicode_emoji::regional_indicator_l,
+	dpp::unicode_emoji::regional_indicator_m,
+	dpp::unicode_emoji::regional_indicator_n,
+	dpp::unicode_emoji::regional_indicator_o,
+	dpp::unicode_emoji::regional_indicator_p,
+	dpp::unicode_emoji::regional_indicator_q,
+	dpp::unicode_emoji::regional_indicator_r,
+	dpp::unicode_emoji::regional_indicator_s,
+	dpp::unicode_emoji::regional_indicator_t,
+	dpp::unicode_emoji::regional_indicator_u,
+	dpp::unicode_emoji::regional_indicator_v,
+	dpp::unicode_emoji::regional_indicator_w,
+	dpp::unicode_emoji::regional_indicator_x,
+	dpp::unicode_emoji::regional_indicator_y,
+	dpp::unicode_emoji::regional_indicator_z,
 };
 
 enum nav_link_type {
