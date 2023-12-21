@@ -43,7 +43,7 @@ std::string extract_without_quotes(const std::string& p_text) {
 }
 
 bool paragraph::valid_next(long Current, long Next) {
-	std::set<long> Paralist;
+	std::set<long> Paralist{Current};
 	std::string p_text;
 	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {Current});
 	if (location.empty()) {
