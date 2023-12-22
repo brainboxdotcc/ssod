@@ -16,7 +16,12 @@ void component_builder::add_component(const dpp::component& c) {
 		/* Already at the max of 5x5 buttons */
 		return;
 	}
+	if (ids.find(c.custom_id) != ids.end()) {
+		/* Drop duplicate ids */
+		return;
+	}
 	message.components[component_parent].add_component(c);
+	ids.insert(c.custom_id);
 	index++;
 	if (index && (index % 5 == 0)) {
 		message.add_component(dpp::component());
