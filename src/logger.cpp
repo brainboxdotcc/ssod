@@ -49,8 +49,9 @@ namespace logger {
 		async_logger = std::make_shared<spdlog::async_logger>("file_and_console", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
 		async_logger->set_pattern("%^%Y-%m-%d %H:%M:%S.%e [%L] [th#%t]%$ : %v");
 		async_logger->set_level(spdlog_level::debug);
-		
+	
 		spdlog::register_logger(async_logger);
+		spdlog::flush_every(std::chrono::seconds(5));
 	}
 
 	void log(const dpp::log_t & event) {
