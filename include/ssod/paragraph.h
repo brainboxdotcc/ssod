@@ -69,7 +69,7 @@ struct paragraph {
 	uint32_t id{};
 	std::string text;
 	std::vector<nav_link> navigation_links;
-	std::vector<item> dropped_items;
+	std::vector<stacked_item> dropped_items;
 	bool combat_disabled{};
 	bool magic_disabled{};
 	bool theft_disabled{};

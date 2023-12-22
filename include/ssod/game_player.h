@@ -9,6 +9,12 @@ struct item {
 	std::string flags{};
 };
 
+struct stacked_item {
+	std::string name{};
+	std::string flags{};
+	long qty{1};
+};
+
 struct rated_item {
 	std::string name{};
 	long rating{1};
