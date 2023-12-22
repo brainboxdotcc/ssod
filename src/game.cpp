@@ -103,7 +103,8 @@ void game_nav(const dpp::button_click_t& event) {
 			p.weapon.name = "Unarmed 👊";
 			p.weapon.rating = 0;
 		}
-		/* TODO: Drop to floor */
+		/* Drop to floor */
+		db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
 		claimed = true;
 	} else if (parts[0] == "use" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
 		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
@@ -228,10 +229,11 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		.set_emoji(sprite::magic05.name, sprite::magic05.id)
 	);
 
+	size_t index{0};
 	for (const auto& inv : p.possessions) {
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("drop;" + inv.name + ";" + inv.flags)
+			.set_id("drop;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index))
 			.set_label("Drop " + inv.name)
 			.set_style(dpp::cos_danger)
 			.set_emoji(sprite::inv_drop.name, sprite::inv_drop.id)
@@ -239,7 +241,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		if (inv.flags.find("+") != std::string::npos) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("use;" + inv.name + ";" + inv.flags)
+				.set_id("use;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index))
 				.set_label("Use " + inv.name)
 				.set_style(dpp::cos_success)
 				.set_emoji("➕")
@@ -247,7 +249,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		} else if (inv.flags.length() && inv.flags[0] == 'A') {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("equip;" + inv.name + ";" + inv.flags)
+				.set_id("equip;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index))
 				.set_label("Wear " + inv.name)
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::armor04.name, sprite::armor04.id)
@@ -259,6 +261,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 
 	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
 		if (cc.is_error()) {
+			bot.log(dpp::ll_error, "Internal error displaying inventory:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
 			event.reply("Internal error displaying inventory:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
 		}
 	});
@@ -411,6 +414,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
 		if (cc.is_error()) {{
+			bot.log(dpp::ll_error, "Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
 			event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
 		}}
 	});
