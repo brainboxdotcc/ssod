@@ -321,11 +321,12 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		if (!CombatEnded) {
 			// todo: iterate inventory for anything with weapon score and present as option here,
 			// also combat spells
+			size_t index = 0;
 			for (const auto & inv :  p.possessions) {
 				if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
-						.set_id("attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1))
+						.set_id("attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index))
 						.set_label("Attack using " + inv.name)
 						.set_style(dpp::cos_secondary)
 						.set_emoji("⚔️", 0, false)	
