@@ -77,7 +77,7 @@ void game_nav(const dpp::button_click_t& event) {
 			p.add_flag("PICKED", p.paragraph);
 		}
 		claimed = true;
-	} else if (parts[0] == "respawn" && p.stamina < 1) {
+	} else if (parts[0] == "respawn") {
 		/* Load backup of player and save over the current */
 		player new_p = player(event.command.usr.id, true);
 		/* Keep experience points only (HARDCORE!!!) */
@@ -91,10 +91,10 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.save(event.command.usr.id);
 		p = new_p;
 		claimed = true;
-	} else if (parts[0] == "inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
+	} else if (parts[0] == "inventory" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_inventory = true;
 		claimed = true;
-	} else if (parts[0] == "drop" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
+	} else if (parts[0] == "drop" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
 		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
 		if (p.armour.name == parts[1]) {
 			p.armour.name = "Undergarments 👙";
@@ -106,7 +106,7 @@ void game_nav(const dpp::button_click_t& event) {
 		/* Drop to floor */
 		db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
 		claimed = true;
-	} else if (parts[0] == "use" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
+	} else if (parts[0] == "use" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
 		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
 		std::string flags = parts[2];
 		if (flags.substr(0, 2) == "ST") {
@@ -132,7 +132,7 @@ void game_nav(const dpp::button_click_t& event) {
 			p.weapon.rating += modifier;
 		}
 		claimed = true;
-	} else if (parts[0] == "equip" && parts.size() == 3 && p.in_inventory && p.stamina > 0) {
+	} else if (parts[0] == "equip" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
 		if (parts[1][0] == 'W') {
 			p.weapon = rated_item{ .name = parts[1], .rating = atol(parts[2]) };
 		} else {
@@ -311,7 +311,11 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 		if (location.dropped_items.size()) {
 			for (const auto & dropped : location.dropped_items) {
-				list_dropped += dpp::utility::markdown_escape(dropped.name, true) + ", ";
+				list_dropped += dpp::utility::markdown_escape(dropped.name, true);
+				if (dropped.qty > 1) {
+					list_dropped += " (x " + std::to_string(dropped.qty) + ")";
+				}
+				list_dropped += ", ";
 			}
 			if (list_dropped.length()) {
 				list_dropped = list_dropped.substr(0, list_dropped.length() - 2);
@@ -372,6 +376,9 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			case nav_type_respawn:
 				label = "Respawn";
 				id = "respawn";
+				p.stamina = 0; /* 💀 */
+				p.save(event.command.usr.id);
+				update_live_player(event, p);
 				break;
 			default:
 				id = "follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(++unique);
@@ -392,6 +399,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		cb.add_component(comp);
 	}
 	if (enabled_links == 0 && !respawn_button_shown) {
+		p.stamina = 0;
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id("respawn")
@@ -400,7 +408,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_emoji(sprite::skull.name, sprite::skull.id)
 		);
 	}
-	if (p.stamina > 0 && p.after_fragment == 0) {
+	if (enabled_links > 0 && p.stamina > 0 && p.after_fragment == 0) {
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id("inventory")
