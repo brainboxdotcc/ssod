@@ -106,6 +106,14 @@ void game_nav(const dpp::button_click_t& event) {
 		/* Drop to floor */
 		db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
 		claimed = true;
+	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
+		/* Pick up frm floor */
+		long paragraph = atol(parts[1]);
+		std::string name = parts[2];
+		std::string flags = parts[3];
+		db::query("DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
+		p.possessions.push_back(item{ .name = name, .flags = flags });
+		claimed = true;
 	} else if (parts[0] == "use" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
 		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
 		std::string flags = parts[2];
@@ -307,7 +315,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 		if (list_others.length()) {
 			list_others = list_others.substr(0, list_others.length() - 2);
-			text += "**__Other players here:__** " + list_others + "\n\n";
+			text += "**__Other players here:__**\n" + list_others + "\n\n";
 		}
 		if (location.dropped_items.size()) {
 			for (const auto & dropped : location.dropped_items) {
@@ -319,7 +327,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			}
 			if (list_dropped.length()) {
 				list_dropped = list_dropped.substr(0, list_dropped.length() - 2);
-				text += "**__Items On Ground__**" + list_dropped + "\n\n";
+				text += "**__Items On Ground__**\n" + list_dropped + "\n\n";
 			}
 		}
 		m.add_embed(dpp::embed()
@@ -416,7 +424,18 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::backpack.name, sprite::backpack.id)
 		);
+
+		for (const auto & dropped : location.dropped_items) {
+			cb.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id("pick;" + std::to_string(p.paragraph) + ";" + dropped.name + ";" + dropped.flags)
+				.set_label("Pick up " + dropped.name)
+				.set_style(dpp::cos_secondary)
+				.set_emoji(sprite::backpack.name, sprite::backpack.id)
+			);
+		}
 	}
+
 	cb.add_component(help_button());
 	m = cb.get_message();
 
