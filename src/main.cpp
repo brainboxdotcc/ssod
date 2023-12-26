@@ -35,11 +35,9 @@ int main(int argc, char const *argv[])
 
 	dpp::cluster bot(
 		config::get("token"),
-		dpp::i_guild_messages | dpp::i_guild_members | dpp::i_guilds,
+		dpp::i_guild_messages | dpp::i_guilds,
 		1, 0, 1, true, dpp::cache_policy::cpol_none
 	);
-
-//	sentry::init(bot);
 
 	bot.on_log(&logger::log);
 	bot.on_guild_create(&listeners::on_guild_create);
@@ -53,7 +51,5 @@ int main(int argc, char const *argv[])
 
 	/* Start bot */
 	bot.start(dpp::st_wait);
-
-//	sentry::close();
 }
 
