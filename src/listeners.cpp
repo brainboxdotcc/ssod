@@ -190,41 +190,4 @@ namespace listeners {
 		);
 		route_command(event);
 	}
-
-	void reply_to_ping(const dpp::message_create_t &ev) {
-		std::vector<std::string> replies{
-			"Hail, @user!",
-			"Yes, @user?",
-			"@user, You probably want the /start command",
-		};
-		std::vector<std::string>::iterator rand_iter = replies.begin();
-		std::advance(rand_iter, std::rand() % replies.size());
-		std::string response = replace_string(*rand_iter, "@user", ev.msg.author.get_mention());
-		ev.from->creator->message_create(
-			dpp::message(ev.msg.channel_id, response)
-				.set_allowed_mentions(true, false, false, true, {}, {})
-				.set_reference(ev.msg.id, ev.msg.guild_id, ev.msg.channel_id, false)
-		);
-	}
-
-	void on_message_create(const dpp::message_create_t &event) {
-		auto guild_member = event.msg.member;
-
-		/* If the author is a bot or webhook, stop the event (no checking). */
-		if (event.msg.author.is_bot() || event.msg.author.id.empty()) {
-			return;
-		}
-
-		/* Check if we are mentioned in the message, if so send a sarcastic reply */
-		for (const auto& ping : event.msg.mentions) {
-			if (ping.first.id == event.from->creator->me.id) {
-				reply_to_ping(event);
-				/* Don't return, just break, because people might still try
-				 * to put dodgy images in the message too
-				 */
-				break;
-			}
-		}
-
-	}
 }
