@@ -241,6 +241,7 @@ struct player {
 	bool has_possession(const std::string name);
 
 	bool drop_possession(const item& i);
+	void drop_everything();
 	bool drop_spell(const item& i);
 	bool drop_herb(const item& i);
 
