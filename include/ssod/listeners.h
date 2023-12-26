@@ -53,13 +53,6 @@ namespace listeners {
 	void on_guild_delete(const dpp::guild_delete_t &event);
 
 	/**
-	 * @brief handle message creation
-	 * 
-	 * @param event message_create_t
-	 */
-	void on_message_create(const dpp::message_create_t& event);
-
-	/**
 	 * @brief Handle button click (false positive, good match)
 	 * 
 	 * @param event button_click_t
