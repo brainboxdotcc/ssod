@@ -301,6 +301,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				.set_style(dpp::cos_danger)
 				.set_emoji(sprite::skull.name, sprite::skull.id)
 			);
+			p.drop_everything();
 			CombatEnded = true;
 		} else if (EStamina < 1) {
 			p.after_fragment++;

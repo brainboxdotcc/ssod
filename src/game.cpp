@@ -385,6 +385,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				label = "Respawn";
 				id = "respawn";
 				p.stamina = 0; /* 💀 */
+				p.drop_everything();
 				p.save(event.command.usr.id);
 				update_live_player(event, p);
 				break;
@@ -415,6 +416,9 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_style(dpp::cos_danger)
 			.set_emoji(sprite::skull.name, sprite::skull.id)
 		);
+		p.drop_everything();
+		p.save(event.command.usr.id);
+		update_live_player(event, p);
 	}
 	if (enabled_links > 0 && p.stamina > 0 && p.after_fragment == 0) {
 		cb.add_component(dpp::component()

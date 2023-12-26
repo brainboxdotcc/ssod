@@ -520,6 +520,16 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 	}
 }
 
+void player::drop_everything() {
+	/* Drop everything to floor */
+	for (const auto& i : possessions) {
+		db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {paragraph, i.name, i.flags});
+	}
+	possessions.clear();
+	spells.clear();
+	herbs.clear();
+}
+
 bool player::save(dpp::snowflake user_id, bool put_backup)
 {
 	db::transaction();
