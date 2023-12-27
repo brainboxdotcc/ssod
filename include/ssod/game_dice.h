@@ -1,6 +1,15 @@
 #pragma once
 
 /**
+ * @brief Uniform distribution between first and last inclusive
+ * 
+ * @param first lowest number
+ * @param last highest number
+ * @return int random between first and last
+ */
+int random(int first, int last);
+
+/**
  * @brief Uniform distribution D6
  * 
  * @return int between 1 and 6 inclusive

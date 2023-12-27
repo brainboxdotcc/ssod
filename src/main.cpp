@@ -29,7 +29,6 @@
 
 int main(int argc, char const *argv[])
 {
-	std::srand(time(NULL));
 	config::init("../config.json");
 	logger::init(config::get("log"));
 
