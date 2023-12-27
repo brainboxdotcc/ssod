@@ -10,10 +10,8 @@ project(${BOT_NAME})
 aux_source_directory("src" coresrc)
 aux_source_directory("src/commands" coresrc)
 aux_source_directory("src/parser" coresrc)
-aux_source_directory("src/3rdparty" coresrc)
 add_executable(${BOT_NAME} ${coresrc})
 
-target_precompile_headers(${BOT_NAME} INTERFACE "src/3rdparty/httplib.h")
 target_precompile_headers(${BOT_NAME} INTERFACE "/usr/include/fmt/format.h")
 
 string(ASCII 27 Esc)
@@ -36,7 +34,7 @@ else()
 	find_package(OpenSSL REQUIRED)
 endif()
 
-set(CMAKE_CXX_FLAGS "-g -O2 -Wall -Wno-psabi -Wempty-body -Wignored-qualifiers -Wimplicit-fallthrough -Wmissing-field-initializers -Wsign-compare -Wtype-limits -Wuninitialized -Wshift-negative-value")
+set(CMAKE_CXX_FLAGS "-g -O2 -Wall -Wno-psabi -Wempty-body -Wignored-qualifiers -Wimplicit-fallthrough -Wmissing-field-initializers -Wsign-compare -Wtype-limits -Wuninitialized -Wshift-negative-value -fuse-ld=mold")
 target_compile_definitions(${BOT_NAME} PUBLIC DPP_CORO=ON CPPHTTPLIB_OPENSSL_SUPPORT)
 
 target_include_directories(${BOT_NAME} PUBLIC
@@ -50,8 +48,6 @@ target_link_libraries(${BOT_NAME}
     mysqlclient
     crypto
     ssl
-    sentry
-    CxxUrl
     ${CMAKE_THREAD_LIBS_INIT}
     ${DPP_LIBRARIES}
 )

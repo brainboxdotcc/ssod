@@ -23,7 +23,6 @@
 #include <ssod/database.h>
 #include <ssod/ssod.h>
 #include <ssod/command.h>
-#include <ssod/sentry.h>
 
 #include <ssod/commands/info.h>
 #include <ssod/commands/start.h>
