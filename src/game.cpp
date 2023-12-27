@@ -345,7 +345,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Location " + std::to_string(p.paragraph),
+			.text = "Location " + location.secure_id,
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
