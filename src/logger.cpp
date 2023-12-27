@@ -23,7 +23,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <dpp/dpp.h>
-#include <ssod/sentry.h>
 
 namespace logger {
 
@@ -55,9 +54,6 @@ namespace logger {
 	}
 
 	void log(const dpp::log_t & event) {
-		if (event.message == "You have attached an event to cluster::on_message_create() but have not specified the privileged intent dpp::i_message_content. Message content, embeds, attachments, and components on received guild messages will be empty.") {
-			return;
-		}
 		switch (event.severity) {
 			case dpp::ll_trace:
 				async_logger->trace("{}", event.message);

@@ -21,7 +21,6 @@
 #include <ssod/database.h>
 #include <ssod/commands/info.h>
 #include <ssod/database.h>
-#include <ssod/sentry.h>
 #include <ssod/game_date.h>
 
 dpp::slashcommand info_command::register_command(dpp::cluster& bot)
@@ -75,8 +74,6 @@ void info_command::route(const dpp::slashcommand_t &event)
 			.add_field("Bot Uptime", bot->uptime().to_string(), true)
 			.add_field("Memory Usage", std::to_string(rss() / 1024 / 1024) + "M", true)
 			.add_field("Total Servers", std::to_string(guild_count), true)
-			.add_field("Sentry Version", sentry::version(), true)
-			.add_field("Log Queue Length", std::to_string(sentry::queue_length()), true)
 			.add_field("Debugging", is_gdb() ? ":white_check_mark: Yes" : "<:wc_rs:1174363531794202624> No", true)
 			.add_field("Guild Members Intent", "<:wc_rs:1174363531794202624> No", true)
 			.add_field("Message Content Intent", "<:wc_rs:1174363531794202624> No", true)

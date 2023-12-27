@@ -24,7 +24,6 @@
 #include <ssod/database.h>
 #include <ssod/logger.h>
 #include <ssod/config.h>
-#include <ssod/sentry.h>
 #include <ssod/game.h>
 
 int main(int argc, char const *argv[])

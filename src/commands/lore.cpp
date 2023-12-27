@@ -21,7 +21,6 @@
 #include <ssod/database.h>
 #include <ssod/commands/lore.h>
 #include <ssod/database.h>
-#include <ssod/sentry.h>
 #include <ssod/game_date.h>
 #include <ssod/component_builder.h>
 #include <filesystem>
