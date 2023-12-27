@@ -70,6 +70,10 @@ void game_nav(const dpp::button_click_t& event) {
 			.weapon = atol(parts[5]),
 		};
 		claimed = true;
+	} else if (parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
+		// paragraph name stamina skill armour weapon
+		p.in_bank = true;
+		claimed = true;
 	} else if (parts[0] == "pick_one" && parts.size() >= 5) {
 		p.paragraph = atol(parts[1]);
 		if (!p.has_flag("PICKED", p.paragraph)) {
@@ -149,6 +153,9 @@ void game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
 		p.in_inventory = false;
+		claimed = true;
+	} else if (parts[0] == "exit_bank" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
+		p.in_bank = false;
 		claimed = true;
 	}
 	if (claimed) {
@@ -275,12 +282,54 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	});
 }
 
+void bank(const dpp::interaction_create_t& event, player p) {
+	dpp::cluster& bot = *(event.from->creator);
+	std::stringstream content;
+
+	content << "__**Bank**__\n\n";
+	content << "Bank Content to be inserted here\n";
+
+	dpp::embed embed = dpp::embed()
+		.set_url("https://ssod.org/")
+		.set_footer(dpp::embed_footer{ 
+			.text = "Bank Of Utopia",
+			.icon_url = bot.me.get_avatar_url(), 
+			.proxy_url = "",
+		})
+		.set_colour(0xd5b994)
+		.set_description(content.str());
+	
+	dpp::message m;
+	m.add_embed(embed);
+	component_builder cb(m);
+
+	cb.add_component(dpp::component()
+		.set_type(dpp::cot_button)
+		.set_id("exit_bank")
+		.set_label("Back")
+		.set_style(dpp::cos_primary)
+		.set_emoji(sprite::magic05.name, sprite::magic05.id)
+	);
+
+	m = cb.get_message();
+
+	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
+		if (cc.is_error()) {
+			bot.log(dpp::ll_error, "Internal error displaying bank: " + cc.http_info.body + " Message: " + m.build_json());
+			event.reply("Internal error displaying bank:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+		}
+	});
+}
+
 void continue_game(const dpp::interaction_create_t& event, player p) {
 	if (p.in_combat) {
 		continue_combat(event, p);
 		return;
 	} else if (p.in_inventory) {
 		inventory(event, p);
+		return;
+	} else if (p.in_bank) {
+		bank(event, p);
 		return;
 	}
 	paragraph location(p.paragraph, p, event.command.usr.id);
