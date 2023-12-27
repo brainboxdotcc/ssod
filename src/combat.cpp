@@ -8,53 +8,52 @@
 #include <ssod/emojis.h>
 #include <fmt/format.h>
 
-constexpr const char* death_messages[48]{
-	"%s becomes another greasy stain on the desert sands.",
-	"%s departs the land of the living.",
-	"%s travels to the next world courtesy of %s.",
-	"%s lead a heroic, but brief life.",
-	"The life of %s was cut short by %s.",
-	"%s is now dancing with the reaper.",
-	"%s wins a free trip across the styx from %s.",
-	"%s takes a one way trip to Hades.",
-	"%s, worried, looks down and sees their corpse.",
-	"%s is carried off by the Valkyries.",
-	"Let %s's name be praised.",
-	"%s no longer resides within the mortal realm.",
-	"%s becomes the corpus delecti.",
-	"%s is sent to the pearly gates by %s.",
-	"%s is introduced to death by %s.",
-	"%s now understands the agony of defeat.",
-	"Nice try %s, but no cigar.",
-	"%s becomes a part of history.",
-	"%s suffers an untimely death at the hands of %s.",
-	"%s was chopped into pieces by %s.",
-	"The legend of %s was ended rather suddenly by %s",
-	"%s is now a stain on %s's weapon.",
-	"%s is now an extension of %s's weapon.",
-	"The insects now have %s to themselves.",
-	"%s's corpse is now suffering at the hands of %s.",
-	"%s floats around in the insides of %s",
-	"%s expires due to %s's blow.",
-	"%s is now an ex-player... has ceased to be... is no more!",
-	"%s wanders into the light with a helping hand from %s",
-	"%s gets recycled by %s",
-	"%s becomes a greasy smear on %s's boot",
-	"%s is now a greasy puddle.",
-	"%s's grave is danced on by %s, with great merriment",
-	"%s has a hole in his stomach!",
-	"%s finds themselves both diced AND sliced",
-	"No guts, no glory. %s's guts now belong to %s",
-	"%s looks at the grass from below",
-	"%s goes to look if god really exists",
-	"%s goes the fast way to hell",
-	"And there was much rejoicing as %s left the mortal coil",
-	"%s was terminated with extreme predjudice",
-	"%s simply expires",
-	"%s was mortally wounded",
-	"%s falls to the ground oozing",
-	"Pause a moment and mourn the loss of %s",
-	"All your %s are belong to %s.",
+const std::vector<std::string_view> death_messages{
+	"{} departs the land of the living.",
+	"{} travels to the next world courtesy of {}.",
+	"{} lead a heroic, but brief life.",
+	"The life of {} was cut short by {}.",
+	"{} is now dancing with the reaper.",
+	"{} wins a free trip across the styx from {}.",
+	"{} takes a one way trip to Hades.",
+	"{}, worried, looks down and sees their corpse.",
+	"{} is carried off by the Valkyries.",
+	"Let {}'s name be praised.",
+	"{} no longer resides within the mortal realm.",
+	"{} becomes the corpus delecti.",
+	"{} is sent to the pearly gates by {}.",
+	"{} is introduced to death by {}.",
+	"{} now understands the agony of defeat.",
+	"Nice try {}, but no cigar.",
+	"{} becomes a part of history.",
+	"{} suffers an untimely death at the hands of {}.",
+	"{} was chopped into pieces by {}.",
+	"The legend of {} was ended rather suddenly by {}",
+	"{} is now a stain on {}'s weapon.",
+	"{} is now an extension of {}'s weapon.",
+	"The insects now have {} to themselves.",
+	"{}'s corpse is now suffering at the hands of {}.",
+	"{} floats around in the insides of {}",
+	"{} expires due to {}'s blow.",
+	"{} is now an ex-player... has ceased to be... is no more!",
+	"{} wanders into the light with a helping hand from {}",
+	"{} gets recycled by {}",
+	"{} becomes a greasy smear on {}'s boot",
+	"{} is now a greasy puddle.",
+	"{}'s grave is danced on by {}, with great merriment",
+	"{} has a hole in his stomach!",
+	"{} finds themselves both diced AND sliced",
+	"No guts, no glory. {}'s guts now belong to {}",
+	"{} looks at the grass from below",
+	"{} goes to look if god really exists",
+	"{} goes the fast way to hell",
+	"And there was much rejoicing as {} left the mortal coil",
+	"{} was terminated with extreme predjudice",
+	"{} simply expires",
+	"{} was mortally wounded",
+	"{} falls to the ground oozing",
+	"Pause a moment and mourn the loss of {}",
+	"All your {} are belong to {}.",
 };
 
 bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts) {
@@ -269,18 +268,15 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			}
 
 			if (EStamina < 1 || p.stamina < 1) {
-				size_t limit = p.combatant.name.length() + p.name.length() + 255;
-				char dm[limit];
 				if (p.stamina < 1) {
-					snprintf(dm, limit - 1, death_messages[rand() % 48], p.name.c_str(), p.combatant.name.c_str());
+					output << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, p.combatant.name);
 				} else {
-					snprintf(dm, limit - 1, death_messages[rand() % 48], p.combatant.name.c_str(), p.name.c_str());
 					/* Add experience on victory equal to remaining skill of enemy (indicates difficulty of the fight) */
 					long xp = abs(std::min(p.combatant.skill, 0l) * 0.15f) + 1;
 					output << "\n\n***+" + std::to_string(xp) + " experience points!***\n\n";
 					p.add_experience(xp);
+					output << "**" << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.combatant.name, p.name) << "**";
 				}
-				output << "**" << dm << "**";
 			}
 		}
 

@@ -75,6 +75,10 @@ struct player {
 	 */
 	bool in_inventory{};
 	/**
+	 * @brief True if in bank
+	 */
+	bool in_bank{};
+	/**
 	 * @brief Current fragment of a paragraph with combat
 	 */
 	int after_fragment;

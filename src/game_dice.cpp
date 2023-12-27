@@ -13,6 +13,11 @@ std::mt19937 mt(seq);
 std::uniform_int_distribution uniform_d6{ 1, 6 };
 std::uniform_int_distribution uniform_d12{ 1, 12 };
 
+int random(int first, int last) {
+	std::uniform_int_distribution uniform{ first, last };
+	return uniform(mt);
+}
+
 int dice() {
 	return uniform_d6(mt);
 }
