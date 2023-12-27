@@ -95,20 +95,20 @@ void admin_command::route(const dpp::slashcommand_t &event)
 
 	if (subcommand.name == "teleport") {
 		int64_t location = std::get<int64_t>(subcommand.options[0].value);
-		auto check = db::query("SELECT id FROM game_locations WHERE id = ?", {location});
+		auto check = db::query("SELECT secure_id, id FROM game_locations WHERE id = ? OR secure_id = ?", {location, location});
 		if (check.empty()) {
 			event.reply(dpp::message("Location " + std::to_string(location) + " does not exist.").set_flags(dpp::m_ephemeral));	
 			return;
 		}
-		db::query("UPDATE game_users SET paragraph = ? WHERE user_id = ?", {location, event.command.usr.id});
+		db::query("UPDATE game_users SET paragraph = ? WHERE user_id = ?", {check[0].at("id"), event.command.usr.id});
 		player p(event.command.usr.id);
 		p.save(event.command.usr.id);
 		p.state = state_play;
 		p.after_fragment = 0;
 		p.combatant = {};
 		update_live_player(event, p);
-		event.reply(dpp::message("You have been teleported to location " + std::to_string(location)).set_flags(dpp::m_ephemeral));
-		bot.log(dpp::ll_info, "ADMIN TELEPORT " + event.command.usr.global_name + " to " + std::to_string(location));
+		event.reply(dpp::message("You have been teleported to location " + check[0].at("id")).set_flags(dpp::m_ephemeral));
+		bot.log(dpp::ll_info, "ADMIN TELEPORT " + event.command.usr.global_name + " to " + check[0].at("id"));
 	}
 	if (subcommand.name == "mute" || subcommand.name == "pin") {
 		std::string user = std::get<std::string>(subcommand.options[0].value);

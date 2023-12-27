@@ -15,6 +15,7 @@ paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user
 	}
 	id = paragraph_id;
 	text = location[0].at("data");
+	secure_id = location[0].at("secure_id");
 	combat_disabled = location[0].at("combat_disabled") == "1";
 	magic_disabled = location[0].at("magic_disabled") == "1";
 	theft_disabled = location[0].at("theft_disabled") == "1";

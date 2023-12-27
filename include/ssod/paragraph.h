@@ -68,6 +68,7 @@ struct nav_link {
 struct paragraph {
 	uint32_t id{};
 	std::string text;
+	std::string secure_id;
 	std::vector<nav_link> navigation_links;
 	std::vector<stacked_item> dropped_items;
 	bool combat_disabled{};
