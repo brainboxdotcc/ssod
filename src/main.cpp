@@ -43,6 +43,7 @@ int main(int argc, char const *argv[])
 	bot.on_slashcommand(&listeners::on_slashcommand);
 	bot.on_button_click(&game_nav);
 	bot.on_select_click(&game_select);
+	bot.on_form_submit(&game_input);
 	bot.on_ready(&listeners::on_ready);
 
 	db::init(bot);
