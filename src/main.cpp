@@ -25,11 +25,13 @@
 #include <ssod/logger.h>
 #include <ssod/config.h>
 #include <ssod/game.h>
+#include <ssod/aes.h>
 
 int main(int argc, char const *argv[])
 {
 	config::init("../config.json");
 	logger::init(config::get("log"));
+	security::init();
 
 	dpp::cluster bot(
 		config::get("token"),
