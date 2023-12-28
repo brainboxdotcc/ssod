@@ -117,6 +117,14 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 		});
 
 		m = cb.get_message();
+		for (const auto& ext : std::array<std::string, 3>{"webp", "png", "jpg"}) {
+			std::string image_file = replace_string(path, ".md", "") + "." + ext;
+			if (fs::exists(image_file)) {
+				m.add_file("image." + ext, dpp::utility::read_file(image_file));
+				embed.set_image("attachment://image." + ext);
+				break;
+			}
+		}
 	} else {
 		std::set<fs::directory_entry> sorted_entries;
 		for (const auto& entry : fs::directory_iterator(path.empty() ? "../resource/lore/" : path)) {
