@@ -398,7 +398,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 
 	auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 	long amount = atol(bank_amount[0].at("gold"));
-	content << "__**Bank**__\n\n";
+	content << "__**Welcome to the Bank Of Utopia**__\n\n";
 	content << "Your balance: " + std::to_string(amount) + " Gold " + sprite::gold_coin.get_mention() + "\n";
 	content << "Coin purse: " + std::to_string(p.gold) + " Gold " + sprite::gold_coin.get_mention() + "\n";
 
@@ -457,11 +457,11 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		);
 	}
 
-	m.add_embed(embed).add_component(dpp::component().add_component(deposit_menu));
+	if (bank_items.size() < 25) {
+		m.add_embed(embed).add_component(dpp::component().add_component(deposit_menu));
+	}
 	if (bank_items.size() > 0) {
-		m.add_component(dpp::component()
-			.add_component(withdraw_menu)
-		);
+		m.add_component(dpp::component().add_component(withdraw_menu));
 	}
 	m.add_component(
 		dpp::component()
