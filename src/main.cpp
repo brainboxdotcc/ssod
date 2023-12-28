@@ -42,6 +42,7 @@ int main(int argc, char const *argv[])
 	bot.on_guild_delete(&listeners::on_guild_delete);
 	bot.on_slashcommand(&listeners::on_slashcommand);
 	bot.on_button_click(&game_nav);
+	bot.on_select_click(&game_select);
 	bot.on_ready(&listeners::on_ready);
 
 	db::init(bot);

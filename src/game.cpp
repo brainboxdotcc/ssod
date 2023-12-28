@@ -11,6 +11,27 @@
 #include <ssod/emojis.h>
 #include <ssod/combat.h>
 
+void game_select(const dpp::select_click_t &event) {
+	if (!player_is_live(event)) {
+		return;
+	}
+	bool claimed{false};
+	player p = get_live_player(event);
+	dpp::cluster& bot = *(event.from->creator);
+	if (event.custom_id == "withdraw" && p.in_bank) {
+		claimed = true;
+	} else if (event.custom_id == "deposit" && p.in_bank) {
+		claimed = true;
+	}
+	if (claimed) {
+		p.event = event;
+		update_live_player(event, p);
+		p.save(event.command.usr.id);
+		continue_game(event, p);
+	}
+
+}
+
 void game_nav(const dpp::button_click_t& event) {
 	if (!player_is_live(event)) {
 		return;
@@ -71,9 +92,36 @@ void game_nav(const dpp::button_click_t& event) {
 		};
 		claimed = true;
 	} else if (parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
-		// paragraph name stamina skill armour weapon
 		p.in_bank = true;
 		claimed = true;
+	} else if (parts[0] == "deposit_gold" && p.in_bank) {
+		dpp::interaction_modal_response modal("deposit_gold_amount_modal", "Deposit Gold",	{
+			dpp::component()
+			.set_label("Enter Gold Amount")
+			.set_id("deposit_gold_amount")
+			.set_type(dpp::cot_text)
+			.set_placeholder("1")
+			.set_min_length(1)
+			.set_required(true)
+			.set_max_length(64)
+			.set_text_style(dpp::text_short)
+		});
+		event.dialog(modal);
+		return;
+	} else if (parts[0] == "withdraw_gold" && p.in_bank) {
+		dpp::interaction_modal_response modal("withdraw_gold_amount_modal", "Withdraw Gold",	{
+			dpp::component()
+			.set_label("Enter Gold Amount")
+			.set_id("withdraw_gold_amount")
+			.set_type(dpp::cot_text)
+			.set_placeholder("1")
+			.set_min_length(1)
+			.set_required(true)
+			.set_max_length(64)
+			.set_text_style(dpp::text_short)
+		});
+		event.dialog(modal);
+		return;
 	} else if (parts[0] == "pick_one" && parts.size() >= 5) {
 		p.paragraph = atol(parts[1]);
 		if (!p.has_flag("PICKED", p.paragraph)) {
@@ -166,6 +214,28 @@ void game_nav(const dpp::button_click_t& event) {
 	}
 };
 
+dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
+	dpp::emoji emoji = sprite::backpack;
+	if (flags.length() && flags[0] == 'W') {
+		if (dpp::lowercase(name).find("bow") != std::string::npos) {
+			emoji = sprite::bow02;
+		} else {
+			emoji = sprite::sword008;
+		}
+	} else if (name.find("rrow") != std::string::npos) {
+		emoji = sprite::bow08;
+	} else if (flags.length() && flags[0] == 'A') {
+		emoji = sprite::armor04;
+	} else if (flags.substr(0, 3) == "ST+") {
+		emoji = sprite::red03;
+	} else if (flags.substr(0, 3) == "SK+") {
+		emoji = sprite::green03;
+	} else if (flags.substr(0, 3) == "LK+") {
+		emoji = sprite::blue03;
+	}
+	return emoji;
+}
+
 void inventory(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
@@ -187,24 +257,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	}
 	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
 	for (const auto& inv : p.possessions) {
-		std::string emoji = sprite::backpack.format();
-		if (inv.flags.length() && inv.flags[0] == 'W') {
-			if (dpp::lowercase(inv.name).find("bow") != std::string::npos) {
-				emoji = sprite::bow02.format();
-			} else {
-				emoji = sprite::sword008.format();
-			}
-		} else if (inv.name.find("rrow") != std::string::npos) {
-			emoji = sprite::bow08.format();
-		} else if (inv.flags.length() && inv.flags[0] == 'A') {
-			emoji = sprite::armor04.format();
-		} else if (inv.flags.substr(0, 3) == "ST+") {
-			emoji = sprite::red03.format();
-		} else if (inv.flags.substr(0, 3) == "SK+") {
-			emoji = sprite::green03.format();
-		} else if (inv.flags.substr(0, 3) == "LK+") {
-			emoji = sprite::blue03.format();
-		}
+		std::string emoji = get_emoji(inv.name, inv.flags).format();
 		content << "<:" << emoji << ">" << " " << inv.name << " - *" << describe_item(inv.flags, inv.name) << "*";
 		if (p.armour.name == inv.name || p.weapon.name == inv.name) {
 			content << " <:" << sprite::light02.format() << "> - **Equipped**";
@@ -286,8 +339,10 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
 
+	auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
+	long amount = atol(bank_amount[0].at("gold"));
 	content << "__**Bank**__\n\n";
-	content << "Bank Content to be inserted here\n";
+	content << "Your balance: " + std::to_string(amount) + " Gold " + sprite::gold_coin.get_mention() + "\n";
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -300,18 +355,78 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		.set_description(content.str());
 	
 	dpp::message m;
-	m.add_embed(embed);
-	component_builder cb(m);
 
-	cb.add_component(dpp::component()
-		.set_type(dpp::cot_button)
-		.set_id("exit_bank")
-		.set_label("Back")
-		.set_style(dpp::cos_primary)
-		.set_emoji(sprite::magic05.name, sprite::magic05.id)
+	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
+	auto bank_items = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc != ? ORDER BY item_desc LIMIT 25",{event.command.usr.id, "__GOLD__"});
+	if (bank_items.size() > 0) {
+		content << "\n__**Bank Items**__\n";
+		for (const auto& bank_item : bank_items) {
+			content << sprite::backpack.get_mention() << " " << bank_item.at("item_desc") << " - *" << describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")) << "*\n";
+		}
+	}
+
+	dpp::component deposit_menu, withdraw_menu;
+	deposit_menu.set_type(dpp::cot_selectmenu)
+		.set_min_values(0)
+		.set_max_values(1)
+		.set_placeholder("Deposit Item")
+		.set_id("deposit");
+	size_t index{0};
+	for (const auto& inv : p.possessions) {
+		dpp::emoji e = get_emoji(inv.name, inv.flags);
+		deposit_menu.add_select_option(
+			dpp::select_option(inv.name, inv.name + ";" + inv.flags, describe_item(inv.flags, inv.name).substr(0, 100))
+			.set_emoji(e.name, e.id)
+		);
+		if (index++ == 25) {
+			break;
+		}
+	}
+	withdraw_menu.set_type(dpp::cot_selectmenu)
+		.set_min_values(0)
+		.set_max_values(1)
+		.set_placeholder("Withdraw Item")
+		.set_id("withdraw");
+	for (const auto& bank_item : bank_items) {
+		dpp::emoji e = get_emoji(bank_item.at("item_desc"), bank_item.at("item_flags"));
+		deposit_menu.add_select_option(
+			dpp::select_option(bank_item.at("item_desc"), bank_item.at("item_desc") + ";" + bank_item.at("item_flags"), describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")).substr(0, 100))
+			.set_emoji(e.name, e.id)
+		);
+	}
+
+	m.add_embed(embed).add_component(dpp::component().add_component(deposit_menu));
+	if (bank_items.size() > 0) {
+		m.add_component(dpp::component()
+			.add_component(withdraw_menu)
+		);
+	}
+	m.add_component(
+		dpp::component()
+		.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id("exit_bank")
+			.set_label("Back")
+			.set_style(dpp::cos_primary)
+			.set_emoji(sprite::magic05.name, sprite::magic05.id)
+		)
+		.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id("deposit_gold")
+			.set_label("Deposit Gold")
+			.set_style(dpp::cos_primary)
+			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
+		)
+		.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id("withdraw_gold")
+			.set_label("Withdraw Gold")
+			.set_style(dpp::cos_primary)
+			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
+		)
+		.add_component(help_button())
 	);
 
-	m = cb.get_message();
 
 	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
 		if (cc.is_error()) {
