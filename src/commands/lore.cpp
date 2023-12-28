@@ -23,6 +23,7 @@
 #include <ssod/database.h>
 #include <ssod/game_date.h>
 #include <ssod/component_builder.h>
+#include <ssod/emojis.h>
 #include <filesystem>
 #include <set>
 
@@ -71,7 +72,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 			.proxy_icon_url = "",
 		})
 		.set_colour(0xd5b994)
-		.set_image("attachment://app_logo.png")
+		.set_image("attachment://app_encyclopaedia.jpg")
 		.set_description("Select a choice from the options below to read information about the game world, its characters and your quest's background.");
 	dpp::message m;
 	component_builder cb(m);
@@ -95,7 +96,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 					.set_id("lore-read;" + fullpath.string() + std::to_string(p) + partial_name)
 					.set_label("Page " + std::to_string(p) + " of " + std::to_string(pages))
 					.set_style(dpp::cos_secondary)
-					.set_emoji("📘", 0, false)
+					.set_emoji(sprite::scroll02.name, sprite::scroll02.id)
 					.set_disabled(current_page == p)
 				);
 				whole_doc.append(dpp::utility::read_file(fullpath.string() + std::to_string(p) + partial_name));
@@ -107,7 +108,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 			.set_id("lore;" + fullpath.string() + "/")
 			.set_label("Back")
 			.set_style(dpp::cos_secondary)
-			.set_emoji("⬆", 0, false)
+			.set_emoji(sprite::spear003.name, sprite::spear003.id)
 		);
 		embed.set_title(title);
 		embed.set_footer(dpp::embed_footer{ 
@@ -162,7 +163,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 					.set_id("lore-read;" + entry.path().string())
 					.set_label(replace_string(to_title(replace_string(label, "-", " ")), ".md", ""))
 					.set_style(dpp::cos_secondary)
-					.set_emoji("📃", 0, false)
+					.set_emoji(sprite::scroll.name, sprite::scroll.id)
 				);
 			}
 		}
@@ -176,7 +177,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 			);
 		}
 		m = cb.get_message();
-		m.add_file("app_logo.png", dpp::utility::read_file("../resource/app_logo.png"));
+		m.add_file("app_encyclopaedia.jpg", dpp::utility::read_file("../resource/app_encyclopaedia.jpg"));
 	}
 	m.add_embed(embed);
 	if (event.command.type == dpp::it_component_button) {
