@@ -139,7 +139,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 					.set_id("lore;" + entry.path().string())
 					.set_label(to_title(replace_string(replace_string(entry.path(), "../resource/lore/", ""), "-", " ")))
 					.set_style(dpp::cos_secondary)
-					.set_emoji("📂", 0, false)
+					.set_emoji(sprite::book07.name, sprite::book07.id)
 				);
 			} else if (entry.is_regular_file()) {
 				/* Show regular files as entries */
@@ -173,7 +173,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 				.set_id("lore;../resource/lore/")
 				.set_label("Back")
 				.set_style(dpp::cos_secondary)
-				.set_emoji("⬆", 0, false)
+				.set_emoji(sprite::spear003.name, sprite::spear003.id)
 			);
 		}
 		m = cb.get_message();

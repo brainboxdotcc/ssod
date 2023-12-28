@@ -1,0 +1,141 @@
+#include <ssod/aes.h>
+#include <ssod/config.h>
+#include <dpp/dpp.h>
+
+#include <openssl/aes.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
+#include <openssl/evperr.h>
+#include <openssl/aes.h>
+#include <openssl/crypto.h>
+
+static const int B64index[256] = {
+	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  62, 63, 62, 62, 63,
+	52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 0,  0,  0,  0,  0,  0,
+	0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14,
+	15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0,  0,  0,  0,  63,
+	0,  26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+	41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+};
+
+#define DECL_OPENSSL_PTR(tname, free_func)	\
+	struct openssl_##tname##_dtor {		\
+		void operator()(tname* v) {	\
+			free_func(v);		\
+		}				\
+	};					\
+	typedef std::unique_ptr<tname, openssl_##tname##_dtor> tname##_t
+
+
+DECL_OPENSSL_PTR(EVP_CIPHER_CTX, ::EVP_CIPHER_CTX_free);
+
+
+aes256_cbc::aes256_cbc(std::vector<uint8_t> _iv) : iv(std::move(_iv)) {
+}
+
+void aes256_cbc::encrypt(const std::vector<uint8_t>& key, const std::vector<uint8_t>& message, std::vector<uint8_t>& output) const {
+	output.resize(message.size() * AES_BLOCK_SIZE);
+	int inlen = message.size();
+	int outlen = 0;
+	size_t total_out = 0;
+
+	EVP_CIPHER_CTX_t ctx(EVP_CIPHER_CTX_new());
+	const std::vector<uint8_t> enc_key = key;
+
+	EVP_EncryptInit(ctx.get(), EVP_aes_256_cbc(), enc_key.data(), iv.data());
+	EVP_EncryptUpdate(ctx.get(), output.data(), &outlen, message.data(), inlen);
+	total_out += outlen;
+	EVP_EncryptFinal(ctx.get(), output.data() + total_out, &outlen);
+	total_out += outlen;
+
+	output.resize(total_out);
+}
+
+void aes256_cbc::decrypt(const std::vector<uint8_t>& key, const std::vector<uint8_t>& message, std::vector<uint8_t>& output) const {
+	output.resize(message.size() * 3);
+	int outlen = 0;
+	size_t total_out = 0;
+
+	EVP_CIPHER_CTX_t ctx(EVP_CIPHER_CTX_new());
+	const std::vector<uint8_t> enc_key = key;
+	std::vector<uint8_t> target_message;
+	std::vector<uint8_t> _iv;
+
+	_iv = iv;
+	target_message = message;
+
+	int inlen = target_message.size();
+
+	EVP_DecryptInit(ctx.get(), EVP_aes_256_cbc(), enc_key.data(), _iv.data());
+	EVP_DecryptUpdate(ctx.get(), output.data(), &outlen, target_message.data(), inlen);
+	total_out += outlen;
+	EVP_DecryptFinal(ctx.get(), output.data()+outlen, &outlen);
+	total_out += outlen;
+
+	output.resize(total_out);
+}
+
+static std::vector<uint8_t> str_to_bytes(const std::string& message) {
+	std::vector<uint8_t> out(message.size());
+	for(size_t n = 0; n < message.size(); n++) {
+		out[n] = message[n];
+	}
+	return out;
+}
+
+static std::string bytes_to_str(const std::vector<uint8_t>& bytes) {
+	return std::string(bytes.begin(), bytes.end());
+}
+
+const std::string b64decode(const void* data, size_t len) {
+	if (len == 0) return "";
+
+	unsigned char *p = (unsigned char*) data;
+	size_t j = 0,
+	pad1 = len % 4 || p[len - 1] == '=',
+	pad2 = pad1 && (len % 4 > 2 || p[len - 2] != '=');
+	const size_t last = (len - pad1) / 4 << 2;
+	std::string result(last / 4 * 3 + pad1 + pad2, '\0');
+	unsigned char *str = (unsigned char*) &result[0];
+
+	for (size_t i = 0; i < last; i += 4) {
+		int n = B64index[p[i]] << 18 | B64index[p[i + 1]] << 12 | B64index[p[i + 2]] << 6 | B64index[p[i + 3]];
+		str[j++] = n >> 16;
+		str[j++] = n >> 8 & 0xFF;
+		str[j++] = n & 0xFF;
+	}
+	if (pad1) {
+		int n = B64index[p[last]] << 18 | B64index[p[last + 1]] << 12;
+		str[j++] = n >> 16;
+		if (pad2) {
+			n |= B64index[p[last + 2]] << 6;
+			str[j++] = n >> 8 & 0xFF;
+		}
+	}
+	return result;
+}
+
+namespace security {
+	aes256_cbc* enc = nullptr;
+
+	void init() {
+		enc = new aes256_cbc(str_to_bytes(config::get("encryption")["iv"]));
+	}
+
+	std::string encrypt(const std::string& text) {
+		std::vector<uint8_t> enc_result;
+		std::string key = config::get("encryption")["key"];
+		enc->encrypt(str_to_bytes(key), str_to_bytes(text), enc_result);
+		return dpp::base64_encode(enc_result.data(), enc_result.size());
+	}
+
+	std::string decrypt(const std::string& text) {
+		std::vector<uint8_t> dec_result;
+		std::string key = config::get("encryption")["key"];
+		std::string decoded = b64decode(text.data(), text.length());
+		enc->decrypt(str_to_bytes(key), str_to_bytes(decoded), dec_result);
+		return bytes_to_str(dec_result);
+	}
+};
