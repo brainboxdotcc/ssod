@@ -271,6 +271,14 @@ dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
 		}
 	} else if (name.find("rrow") != std::string::npos) {
 		emoji = sprite::bow08;
+	} else if (name.find("scroll") != std::string::npos) {
+		emoji = sprite::scroll02;
+	} else if (name.find("key") != std::string::npos) {
+		emoji = sprite::key01;
+	} else if (name.find("ration") != std::string::npos) {
+		emoji = sprite::cheese;
+	} else if (name.find("food") != std::string::npos) {
+		emoji = sprite::bread;
 	} else if (flags.length() && flags[0] == 'A') {
 		emoji = sprite::armor04;
 	} else if (flags.substr(0, 3) == "ST+") {
@@ -279,6 +287,8 @@ dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
 		emoji = sprite::green03;
 	} else if (flags.substr(0, 3) == "LK+") {
 		emoji = sprite::blue03;
+	} else if (name.find("potion") != std::string::npos) {
+		emoji = sprite::orange03;
 	}
 	return emoji;
 }
@@ -395,7 +405,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
 	auto bank_items = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc != ? ORDER BY item_desc LIMIT 25",{event.command.usr.id, "__GOLD__"});
 	if (bank_items.size() > 0) {
-		content << "\n__**Bank Items**__\n";
+		content << "\n__**" << bank_items.size() << "/25 Bank Items**__\n";
 		for (const auto& bank_item : bank_items) {
 			content << sprite::backpack.get_mention() << " " << bank_item.at("item_desc") << " - *" << describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")) << "*\n";
 		}
@@ -421,6 +431,10 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		.set_id("deposit");
 	size_t index{0};
 	for (const auto& inv : p.possessions) {
+		if (dpp::lowercase(inv.name) == "scroll") {
+			/* Can't bank a scroll! */
+			continue;
+		}
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
 		deposit_menu.add_select_option(
 			dpp::select_option(inv.name, inv.name + ";" + inv.flags, describe_item(inv.flags, inv.name).substr(0, 100))
