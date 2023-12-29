@@ -79,6 +79,6 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 ## Starting the bot
 
 ```bash
-cd beholder
+cd ssod
 screen -dmS ssod ./run.sh
 ```
