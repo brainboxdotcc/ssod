@@ -61,7 +61,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		} else if (custom_id == "player_name" && p_old.state == state_pick_magic) {
 			p_old.state = state_name_player;
 			update_registering_player(event, p_old);
-			dpp::interaction_modal_response modal("name_character", "Name Your Adventurer",	{
+			dpp::interaction_modal_response modal(security::encrypt("name_character"), "Name Your Adventurer",	{
 				dpp::component()
 				.set_label("Enter Your Character's Name")
 				.set_id(security::encrypt("player_set_name"))

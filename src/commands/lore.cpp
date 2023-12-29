@@ -55,7 +55,12 @@ uint32_t mins_read_time(const std::string& s) {
 	return ceil((double)word_count(s) / 200.0);
 }
 
-void page(const dpp::interaction_create_t& event, bool document, const std::string& path = "") {
+std::string remove_lead(const std::string& in) {
+	return replace_string(in, "../resource/lore/", "");
+}
+
+void page(const dpp::interaction_create_t& event, bool document, std::string path = "") {
+	path = "../resource/lore/" + path;
 	dpp::cluster* bot = event.from->creator;
 	fs::path fullpath(path);
 	size_t pages = 1;
@@ -94,7 +99,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 			for (size_t p = 1; p <= pages; ++p) {
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
-					.set_id(security::encrypt("lore-read;" + replace_string(fullpath.string() + std::to_string(p) + partial_name, "//", "/")))
+					.set_id(security::encrypt("lore-read;" + remove_lead(replace_string(fullpath.string() + std::to_string(p) + partial_name, "//", "/"))))
 					.set_label("Page " + std::to_string(p) + " of " + std::to_string(pages))
 					.set_style(dpp::cos_secondary)
 					.set_emoji(sprite::scroll02.name, sprite::scroll02.id)
@@ -106,7 +111,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 		}
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("lore;" + replace_string(fullpath.string() + "/", "//", "/")))
+			.set_id(security::encrypt("lore;" + remove_lead(replace_string(fullpath.string() + "/", "//", "/"))))
 			.set_label("Back")
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::spear003.name, sprite::spear003.id)
@@ -129,7 +134,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 		}
 	} else {
 		std::set<fs::directory_entry> sorted_entries;
-		for (const auto& entry : fs::directory_iterator(path.empty() ? "../resource/lore/" : path)) {
+		for (const auto& entry : fs::directory_iterator(path.empty() ? "/" : path)) {
 			sorted_entries.insert(entry);
 		}
 		for (const auto& entry : sorted_entries) {
@@ -137,8 +142,8 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 				/* Show directories as categories */
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
-					.set_id(security::encrypt("lore;" + replace_string(entry.path().string(), "//", "/")))
-					.set_label(to_title(replace_string(replace_string(entry.path(), "../resource/lore/", ""), "-", " ")))
+					.set_id(security::encrypt("lore;" + remove_lead(replace_string(entry.path().string(), "//", "/"))))
+					.set_label(to_title(replace_string(remove_lead(entry.path()), "-", " ")))
 					.set_style(dpp::cos_secondary)
 					.set_emoji(sprite::book07.name, sprite::book07.id)
 				);
@@ -161,17 +166,17 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 				fullpath.remove_filename();
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
-					.set_id(security::encrypt("lore-read;" + replace_string(entry.path().string(), "//", "/")))
-					.set_label(replace_string(to_title(replace_string(label, "-", " ")), ".md", ""))
+					.set_id(security::encrypt("lore-read;" + remove_lead(replace_string(entry.path().string(), "//", "/"))))
+					.set_label(replace_string(to_title(replace_string(remove_lead(label), "-", " ")), ".md", ""))
 					.set_style(dpp::cos_secondary)
 					.set_emoji(sprite::scroll.name, sprite::scroll.id)
 				);
 			}
 		}
-		if (!document && path != "../resource/lore/" && path != "") {
+		if (!document && path != "") {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id(security::encrypt("lore;../resource/lore/"))
+				.set_id(security::encrypt("lore;"))
 				.set_label("Back")
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::spear003.name, sprite::spear003.id)

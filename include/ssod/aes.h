@@ -47,7 +47,11 @@ namespace security {
 	 * 
 	 * @note A temporal key is generated for each call to this function and prepended to the ciphertext. The temporal key
 	 * is only 32 bits in size and made of printable ascii, it cannot be any larger due to length restrictions of custome id
-	 * fields. This is used to mutate the static key.
+	 * fields. This is used to mutate the static key. Zlib compression is applied to the text before encryption, in an attempt
+	 * to make it shorter. This also serves as a data integrity check, as the header will be invalid if the content does not
+	 * decrypt correctly, causing an exception to be thrown when decrypting which causes an empty string to be returned by
+	 * security::decrypt().
+	 * 
 	 * @param text custom_id value to encrypt. We can safely encrypt about 64 characters. Anything more won't fit, after base64 encoding
 	 * @return std::string output encrypted content
 	 */
