@@ -1,4 +1,4 @@
- ![Logo](https://github.com/brainboxdotcc/ssod/blob/main/resource/app_logo.png)
+![Artwork](https://github.com/brainboxdotcc/ssod/blob/main/resource/app_encyclopaedia.jpg)
 
 The Seven Spells Of Destruction is a multiplayer open world role playing game played through Discord. It is based on the 2.0 version of this game, which was a web based game played through the web.
 
@@ -21,8 +21,6 @@ This game has quite a long history.
 * [Historical 2003 Code](old)
 * [Modern Code](src)
 * [Lore Encyclopaedia](resource/lore)
-
-![Artwork](https://github.com/brainboxdotcc/ssod/blob/main/resource/app_encyclopaedia.jpg)
 
 ## Compilation
 
