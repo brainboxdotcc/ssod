@@ -24,6 +24,7 @@
 #include <ssod/game_date.h>
 #include <ssod/component_builder.h>
 #include <ssod/emojis.h>
+#include <ssod/aes.h>
 #include <filesystem>
 #include <set>
 
@@ -93,7 +94,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 			for (size_t p = 1; p <= pages; ++p) {
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
-					.set_id("lore-read;" + fullpath.string() + std::to_string(p) + partial_name)
+					.set_id(security::encrypt("lore-read;" + replace_string(fullpath.string() + std::to_string(p) + partial_name, "//", "/")))
 					.set_label("Page " + std::to_string(p) + " of " + std::to_string(pages))
 					.set_style(dpp::cos_secondary)
 					.set_emoji(sprite::scroll02.name, sprite::scroll02.id)
@@ -105,7 +106,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 		}
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("lore;" + fullpath.string() + "/")
+			.set_id(security::encrypt("lore;" + replace_string(fullpath.string() + "/", "//", "/")))
 			.set_label("Back")
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::spear003.name, sprite::spear003.id)
@@ -136,7 +137,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 				/* Show directories as categories */
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
-					.set_id("lore;" + entry.path().string())
+					.set_id(security::encrypt("lore;" + replace_string(entry.path().string(), "//", "/")))
 					.set_label(to_title(replace_string(replace_string(entry.path(), "../resource/lore/", ""), "-", " ")))
 					.set_style(dpp::cos_secondary)
 					.set_emoji(sprite::book07.name, sprite::book07.id)
@@ -160,7 +161,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 				fullpath.remove_filename();
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
-					.set_id("lore-read;" + entry.path().string())
+					.set_id(security::encrypt("lore-read;" + replace_string(entry.path().string(), "//", "/")))
 					.set_label(replace_string(to_title(replace_string(label, "-", " ")), ".md", ""))
 					.set_style(dpp::cos_secondary)
 					.set_emoji(sprite::scroll.name, sprite::scroll.id)
@@ -170,7 +171,7 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 		if (!document && path != "../resource/lore/" && path != "") {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("lore;../resource/lore/")
+				.set_id(security::encrypt("lore;../resource/lore/"))
 				.set_label("Back")
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::spear003.name, sprite::spear003.id)
@@ -193,7 +194,11 @@ void page(const dpp::interaction_create_t& event, bool document, const std::stri
 
 dpp::slashcommand lore_command::register_command(dpp::cluster& bot) {
 	bot.on_button_click([](const dpp::button_click_t& event) {
-		std::vector<std::string> parts = dpp::utility::tokenize(event.custom_id, ";");
+		std::string custom_id = security::decrypt(event.custom_id);
+		if (custom_id.empty()) {
+			return;
+		}
+		std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 		if ((parts[0] == "lore" || parts[0] == "lore-read") && parts.size() >= 2) {
 			page(event, parts[0] == "lore-read", parts[1]);
 		}

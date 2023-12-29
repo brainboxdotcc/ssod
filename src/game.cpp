@@ -10,6 +10,7 @@
 #include <ssod/component_builder.h>
 #include <ssod/emojis.h>
 #include <ssod/combat.h>
+#include <ssod/aes.h>
 
 void game_input(const dpp::form_submit_t & event) {
 	if (!player_is_live(event)) {
@@ -17,9 +18,13 @@ void game_input(const dpp::form_submit_t & event) {
 	}
 	player p = get_live_player(event);
 	dpp::cluster& bot = *(event.from->creator);
-	bot.log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + event.custom_id);
 	bool claimed{true};
-	if (event.custom_id == "deposit_gold_amount_modal" && p.in_bank) {
+	std::string custom_id = security::decrypt(event.custom_id);
+	if (custom_id.empty()) {
+		return;
+	}
+	bot.log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
+	if (custom_id == "deposit_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
 		amount = std::min(amount, p.gold);
 		if (p.gold > 0 && amount > 0) {
@@ -27,7 +32,7 @@ void game_input(const dpp::form_submit_t & event) {
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, amount});
 		}
 		claimed = true;
-	} else if (event.custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
+	} else if (custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
 		auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 		long balance_amount = atol(bank_amount[0].at("gold"));
@@ -56,13 +61,17 @@ void game_select(const dpp::select_click_t &event) {
 	bool claimed{false};
 	player p = get_live_player(event);
 	dpp::cluster& bot = *(event.from->creator);
-	bot.log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + event.custom_id);
-	if (event.custom_id == "withdraw" && p.in_bank) {
+	std::string custom_id = security::decrypt(event.custom_id);
+	if (custom_id.empty()) {
+		return;
+	}
+	bot.log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
+	if (custom_id == "withdraw" && p.in_bank) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		db::query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ?", {event.command.usr.id, parts[0], parts[1]});
 		p.possessions.push_back(item{ .name = parts[0], .flags = parts[1] });
 		claimed = true;
-	} else if (event.custom_id == "deposit" && p.in_bank) {
+	} else if (custom_id == "deposit" && p.in_bank) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags ) VALUES(?,?,?)", {event.command.usr.id, parts[0], parts[1]});
 		p.drop_possession(item{ .name = parts[0], .flags = parts[1] });
@@ -85,8 +94,12 @@ void game_nav(const dpp::button_click_t& event) {
 	if (p.state != state_play || event.custom_id.empty()) {
 		return;
 	}
-	event.from->log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + event.custom_id);
-	std::vector<std::string> parts = dpp::utility::tokenize(event.custom_id, ";");
+	std::string custom_id = security::decrypt(event.custom_id);
+	if (custom_id.empty()) {
+		return;
+	}
+	event.from->log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
+	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (p.in_combat) {
 		if (combat_nav(event, p, parts)) {
 			return;
@@ -142,7 +155,7 @@ void game_nav(const dpp::button_click_t& event) {
 		dpp::interaction_modal_response modal("deposit_gold_amount_modal", "Deposit Gold",	{
 			dpp::component()
 			.set_label("Enter Gold Amount")
-			.set_id("deposit_gold_amount")
+			.set_id(security::encrypt("deposit_gold_amount"))
 			.set_type(dpp::cot_text)
 			.set_placeholder("1")
 			.set_min_length(1)
@@ -156,7 +169,7 @@ void game_nav(const dpp::button_click_t& event) {
 		dpp::interaction_modal_response modal("withdraw_gold_amount_modal", "Withdraw Gold",	{
 			dpp::component()
 			.set_label("Enter Gold Amount")
-			.set_id("withdraw_gold_amount")
+			.set_id(security::encrypt("withdraw_gold_amount"))
 			.set_type(dpp::cot_text)
 			.set_placeholder("1")
 			.set_min_length(1)
@@ -348,7 +361,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 
 	cb.add_component(dpp::component()
 		.set_type(dpp::cot_button)
-		.set_id("exit_inventory")
+		.set_id(security::encrypt("exit_inventory"))
 		.set_label("Back")
 		.set_style(dpp::cos_primary)
 		.set_emoji(sprite::magic05.name, sprite::magic05.id)
@@ -358,7 +371,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	for (const auto& inv : p.possessions) {
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("drop;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index))
+			.set_id(security::encrypt("drop;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
 			.set_label("Drop " + inv.name)
 			.set_style(dpp::cos_danger)
 			.set_emoji(sprite::inv_drop.name, sprite::inv_drop.id)
@@ -366,7 +379,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		if (inv.flags.find("+") != std::string::npos) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("use;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index))
+				.set_id(security::encrypt("use;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
 				.set_label("Use " + inv.name)
 				.set_style(dpp::cos_success)
 				.set_emoji("➕")
@@ -374,7 +387,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		} else if (inv.flags.length() && inv.flags[0] == 'A') {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("equip;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index))
+				.set_id(security::encrypt("equip;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
 				.set_label("Wear " + inv.name)
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::armor04.name, sprite::armor04.id)
@@ -428,7 +441,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		.set_min_values(0)
 		.set_max_values(1)
 		.set_placeholder("Deposit Item")
-		.set_id("deposit");
+		.set_id(security::encrypt("deposit"));
 	size_t index{0};
 	for (const auto& inv : p.possessions) {
 		if (dpp::lowercase(inv.name) == "scroll") {
@@ -448,7 +461,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		.set_min_values(0)
 		.set_max_values(1)
 		.set_placeholder("Withdraw Item")
-		.set_id("withdraw");
+		.set_id(security::encrypt("withdraw"));
 	for (const auto& bank_item : bank_items) {
 		dpp::emoji e = get_emoji(bank_item.at("item_desc"), bank_item.at("item_flags"));
 		withdraw_menu.add_select_option(
@@ -467,14 +480,14 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		dpp::component()
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("exit_bank")
+			.set_id(security::encrypt("exit_bank"))
 			.set_label("Back")
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::magic05.name, sprite::magic05.id)
 		)
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("deposit_gold")
+			.set_id(security::encrypt("deposit_gold"))
 			.set_label("Deposit Gold")
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
@@ -482,7 +495,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		)
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("withdraw_gold")
+			.set_id(security::encrypt("withdraw_gold"))
 			.set_label("Withdraw Gold")
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
@@ -623,7 +636,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				break;
 		}
 		comp.set_type(dpp::cot_button)
-			.set_id(id)
+			.set_id(security::encrypt(id))
 			.set_label(label)
 			.set_style(n.type == nav_type_combat ? dpp::cos_danger : dpp::cos_primary)
 			.set_emoji(directions[++index], 0, false);
@@ -639,7 +652,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		p.stamina = 0;
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("respawn")
+			.set_id(security::encrypt("respawn"))
 			.set_label("Respawn")
 			.set_style(dpp::cos_danger)
 			.set_emoji(sprite::skull.name, sprite::skull.id)
@@ -651,7 +664,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	if (enabled_links > 0 && p.stamina > 0 && p.after_fragment == 0) {
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("inventory")
+			.set_id(security::encrypt("inventory"))
 			.set_label("Inventory")
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::backpack.name, sprite::backpack.id)
@@ -660,7 +673,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		for (const auto & dropped : location.dropped_items) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("pick;" + std::to_string(p.paragraph) + ";" + dropped.name + ";" + dropped.flags)
+				.set_id(security::encrypt("pick;" + std::to_string(p.paragraph) + ";" + dropped.name + ";" + dropped.flags))
 				.set_label("Pick up " + dropped.name)
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::backpack.name, sprite::backpack.id)

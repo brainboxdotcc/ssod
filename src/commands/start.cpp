@@ -27,6 +27,7 @@
 #include <ssod/game.h>
 #include <ssod/neutrino_api.h>
 #include <ssod/config.h>
+#include <ssod/aes.h>
 
 dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 {
@@ -35,15 +36,19 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			return;
 		}
 		player p_old = get_registering_player(event);
-		bot.log(dpp::ll_debug, "button click: state: " + std::to_string(p_old.state) + " id: " + event.custom_id);
+		std::string custom_id = security::decrypt(event.custom_id);
+		if (custom_id.empty()) {
+			return;
+		}
+		bot.log(dpp::ll_debug, "button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
 		dpp::cluster& bot = *(event.from->creator);
-		if (event.custom_id == "player_reroll" && p_old.state == state_roll_stats) {
+		if (custom_id == "player_reroll" && p_old.state == state_roll_stats) {
 			event.reply();
 			player p_new(true);
 			p_new.event = p_old.event;
 			update_registering_player(event, p_new);
 			p_new.event.edit_original_response(p_new.get_registration_message(bot, event));
-		} else if (event.custom_id == "player_herb_spell_selection" && p_old.state == state_roll_stats) {
+		} else if (custom_id == "player_herb_spell_selection" && p_old.state == state_roll_stats) {
 			event.reply();
 			p_old.state = state_pick_magic;
 			p_old.stamina += bonuses_numeric(1, p_old.race, p_old.profession);
@@ -53,13 +58,13 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			p_old.speed += bonuses_numeric(5, p_old.race, p_old.profession);
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
-		} else if (event.custom_id == "player_name" && p_old.state == state_pick_magic) {
+		} else if (custom_id == "player_name" && p_old.state == state_pick_magic) {
 			p_old.state = state_name_player;
 			update_registering_player(event, p_old);
 			dpp::interaction_modal_response modal("name_character", "Name Your Adventurer",	{
 				dpp::component()
 				.set_label("Enter Your Character's Name")
-				.set_id("player_set_name")
+				.set_id(security::encrypt("player_set_name"))
 				.set_type(dpp::cot_text)
 				.set_placeholder("Sir Discordia Of Chattingham")
 				.set_min_length(1)
@@ -78,23 +83,27 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		}
 		event.reply();
 		player p_old = get_registering_player(event);
+		std::string custom_id = security::decrypt(event.custom_id);
+		if (custom_id.empty()) {
+			return;
+		}
 		dpp::cluster& bot = *(event.from->creator);
-		if (event.custom_id == "select_player_race" && p_old.state == state_roll_stats) {
+		if (custom_id == "select_player_race" && p_old.state == state_roll_stats) {
 			p_old.race = (player_race)atoi(event.values[0].c_str());
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
-		} else if (event.custom_id == "select_player_profession" && p_old.state == state_roll_stats) {
+		} else if (custom_id == "select_player_profession" && p_old.state == state_roll_stats) {
 			p_old.profession = (player_profession)atoi(event.values[0].c_str());
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
-		} else if (event.custom_id == "select_player_herbs" && p_old.state == state_pick_magic) {
+		} else if (custom_id == "select_player_herbs" && p_old.state == state_pick_magic) {
 			p_old.herbs.clear();
 			for (const auto & h : event.values) {
 				p_old.herbs.push_back(item{ .name = h, .flags = "HERB"});
 			}
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
-		} else  if (event.custom_id == "select_player_spells" && p_old.state == state_pick_magic) {
+		} else  if (custom_id == "select_player_spells" && p_old.state == state_pick_magic) {
 			p_old.spells.clear();
 			for (const auto & s : event.values) {
 				p_old.spells.push_back(item{ .name = s, .flags = "SPELL"});
@@ -110,7 +119,11 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			return;
 		}
 		player p_old = get_registering_player(event);
-		if (event.custom_id == "name_character" && p_old.state == state_name_player) {
+		std::string custom_id = security::decrypt(event.custom_id);
+		if (custom_id.empty()) {
+			return;
+		}
+		if (custom_id == "name_character" && p_old.state == state_name_player) {
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
 			auto check = db::query("SELECT * FROM game_users WHERE name = ?", {name});
 			if (check.size()) {

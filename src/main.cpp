@@ -31,13 +31,14 @@ int main(int argc, char const *argv[])
 {
 	config::init("../config.json");
 	logger::init(config::get("log"));
-	security::init();
 
 	dpp::cluster bot(
 		config::get("token"),
 		dpp::i_guilds,
 		0, 0, 1, true, dpp::cache_policy::cpol_none
 	);
+
+	security::init(bot);
 
 	bot.on_log(&logger::log);
 	bot.on_guild_create(&listeners::on_guild_create);

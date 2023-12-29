@@ -2,11 +2,12 @@
 #include <fmt/format.h>
 #include <ssod/database.h>
 #include <dpp/dpp.h>
+#include <ssod/aes.h>
 
 dpp::component help_button() {
 	return dpp::component()
 		.set_type(dpp::cot_button)
-		.set_id("player_nav_help")
+		.set_id(security::encrypt("player_nav_help"))
 		.set_label("Get Help")
 		.set_url("https://discord.gg/brainbox")
 		.set_style(dpp::cos_link);		

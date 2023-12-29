@@ -6,6 +6,7 @@
 #include <ssod/database.h>
 #include <ssod/ssod.h>
 #include <ssod/emojis.h>
+#include <ssod/aes.h>
 #include <fmt/format.h>
 
 const std::vector<std::string_view> death_messages{
@@ -119,7 +120,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		p.in_combat = false;
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph))
+			.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
 			.set_label("Continue")
 			.set_style(dpp::cos_primary)
 			.set_emoji("▶️", 0, false)	
@@ -292,7 +293,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		if (p.stamina < 1) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("respawn")
+				.set_id(security::encrypt("respawn"))
 				.set_label("Respawn")
 				.set_style(dpp::cos_danger)
 				.set_emoji(sprite::skull.name, sprite::skull.id)
@@ -305,7 +306,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			p.in_combat = false;
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph))
+				.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
 				.set_label("Continue")
 				.set_style(dpp::cos_primary)
 				.set_emoji("▶️", 0, false)	
@@ -321,7 +322,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
-						.set_id("attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index))
+						.set_id(security::encrypt("attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
 						.set_label("Attack using " + inv.name)
 						.set_style(dpp::cos_secondary)
 						.set_emoji("⚔️", 0, false)	
@@ -330,14 +331,14 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			}
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("change_stance;" + std::string(p.stance == DEFENSIVE ? "o" : "d"))
+				.set_id(security::encrypt("change_stance;" + std::string(p.stance == DEFENSIVE ? "o" : "d")))
 				.set_label("Stance: " + std::string(p.stance == DEFENSIVE ? "Defensive" : "Offensive") + " (click to change)")
 				.set_style(dpp::cos_secondary)
 				.set_emoji("🛡️", 0, false)
 			);
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("change_strike;" + std::string(p.attack == CUTTING ? "p" : "c"))
+				.set_id(security::encrypt("change_strike;" + std::string(p.attack == CUTTING ? "p" : "c")))
 				.set_label("Attack Type: " + std::string(p.attack == CUTTING ? "Cutting" : "Piercing") + " (click to change)")
 				.set_style(dpp::cos_secondary)
 				.set_emoji("🤺", 0, false)
