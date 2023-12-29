@@ -2,6 +2,7 @@
 #include <ssod/config.h>
 #include <dpp/dpp.h>
 #include <ssod/game_dice.h>
+#include <ssod/compress.h>
 #include <vector>
 #include <memory>
 #include <cstring>
@@ -146,7 +147,7 @@ namespace security {
 		for (size_t x = 0; x != 4; ++x) {
 			key[x * 4] ^= temporal_key[x];
 		}
-		enc->encrypt(str_to_bytes(key), str_to_bytes(text), enc_result);
+		enc->encrypt(str_to_bytes(key), str_to_bytes(zlib::compress(text)), enc_result);
 		std::string r = temporal_key + dpp::base64_encode(enc_result.data(), enc_result.size());
 		if (r.length() > 100) {
 			bot->log(dpp::ll_error, "Encrypted component ID [" + text + "] is longer than 100 characters and will not fit in the ID field!");
@@ -164,6 +165,12 @@ namespace security {
 		}
 		std::string decoded = b64decode(ciphertext.data(), ciphertext.length());
 		enc->decrypt(str_to_bytes(key), str_to_bytes(decoded), dec_result);
-		return bytes_to_str(dec_result);
+		try {
+			return zlib::decompress(bytes_to_str(dec_result));
+		}
+		catch (const std::exception&) {
+			/* Decompression failure, invalid encrypted ID */
+			return "";
+		}
 	}
 };

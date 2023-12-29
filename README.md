@@ -69,6 +69,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 * [D++](https://github.com/brainboxdotcc/dpp) v10.0.28 or later
 * libcrypto/libssl
 * libmysqlclient 8.x
+* zlib
 * g++ 11.4 or later
 * cmake
 * fmtlib

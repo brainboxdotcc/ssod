@@ -152,7 +152,7 @@ void game_nav(const dpp::button_click_t& event) {
 		p.in_bank = true;
 		claimed = true;
 	} else if (parts[0] == "deposit_gold" && p.in_bank) {
-		dpp::interaction_modal_response modal("deposit_gold_amount_modal", "Deposit Gold",	{
+		dpp::interaction_modal_response modal(security::encrypt("deposit_gold_amount_modal"), "Deposit Gold",	{
 			dpp::component()
 			.set_label("Enter Gold Amount")
 			.set_id(security::encrypt("deposit_gold_amount"))
@@ -166,7 +166,7 @@ void game_nav(const dpp::button_click_t& event) {
 		event.dialog(modal);
 		return;
 	} else if (parts[0] == "withdraw_gold" && p.in_bank) {
-		dpp::interaction_modal_response modal("withdraw_gold_amount_modal", "Withdraw Gold",	{
+		dpp::interaction_modal_response modal(security::encrypt("withdraw_gold_amount_modal"), "Withdraw Gold",	{
 			dpp::component()
 			.set_label("Enter Gold Amount")
 			.set_id(security::encrypt("withdraw_gold_amount"))
