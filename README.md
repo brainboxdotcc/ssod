@@ -22,7 +22,7 @@ This game has quite a long history.
 * [Modern Code](src)
 * [Lore Encyclopaedia](resource/lore)
 
-![Artwork](https://github.com/brainboxdotcc/ssod/blob/main/resource/app_encyclopaedia.png)
+![Artwork](https://github.com/brainboxdotcc/ssod/blob/main/resource/app_encyclopaedia.jpg)
 
 ## Compilation
 
