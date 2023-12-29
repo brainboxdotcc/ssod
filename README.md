@@ -33,7 +33,9 @@ make -j
 
 ## Configuring the bot
 
-Create a config.json in the directory above the build directory:
+Create a config.json in the directory above the build directory.
+
+__NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the encryption. This is used to encrypt the state content sent to the user, and if an insecure configuration is placed into the config file here, it may allow selfbots and malicious users to tamper with game state. Keep these values secure and keep them secret as your token, for your the protection of the bot!
 
 ```json
 {
