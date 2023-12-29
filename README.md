@@ -6,17 +6,21 @@ This game has quite a long history.
 
 ### Timeline of the game's development
 
-* 1993: This game was created by me at age 13 as a 1480 paragraph novel, similar in inspiration to "Fighting Fantasy" books by Steve Jackson and Ian Livingstone.
-* 1996: The game book was typed up into inter-word on BBC Master 128 Computer
-* 2000: The game book content was transcribed into Microsoft Word 98
-* 2001: Word 98 content converted to a web based game, completely single player. C++ backend. 
-* 2004: Multiplayer features added to the game. Peak player count in 2005 was 1500 concurrent players.
-* 2008: Multiplayer game shut down
-* 2014: Start of development of a 3D single player Seven Spells game in Unreal Engine 4
-* 2021: Unreal Engine 4 game abandoned due to lack of resources to adapt the content to a fully open 3D world.
-* 2023: New parser/engine created for the 2004 game content to run via Discord through a bot.
+* __1993__: This game was created by me at age 13 as a 1480 paragraph novel, similar in inspiration to "[Fighting Fantasy](https://en.wikipedia.org/wiki/Fighting_Fantasy)" books by Steve Jackson and Ian Livingstone.
+* __1996__: The game book was typed up into [inter-word](https://en.wikipedia.org/wiki/Wordwise#InterWord) on BBC Master 128 Computer
+* __2000__: The game book content was transcribed into Microsoft Word 98
+* __2001__: Word 98 content converted to a web based game, completely single player. C++ backend. 
+* __2003__: Multiplayer features added to the game. [ssod.org](ssod.org) doman name registered. Peak player count in 2005 was 1500 concurrent players.
+* __2014__: Start of development of a 3D single player Seven Spells game in Unreal Engine 4
+* __2020__: Unreal Engine 4 game abandoned due to lack of resources to adapt the content to a fully open 3D world.
+* __2023__: New parser/engine created for the 2004 game content to run via Discord through a bot.
 
+## Navigating the codebase
 
+* [Engine Documentation](docs)
+* [Historical 2003 Code](old)
+* [Modern Code](src)
+* [Lore Encyclopaedia](resource/lore)
 
 ## Compilation
 
