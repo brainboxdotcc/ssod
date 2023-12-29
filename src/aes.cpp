@@ -1,6 +1,10 @@
 #include <ssod/aes.h>
 #include <ssod/config.h>
 #include <dpp/dpp.h>
+#include <ssod/game_dice.h>
+#include <vector>
+#include <memory>
+#include <cstring>
 
 #include <openssl/aes.h>
 #include <openssl/err.h>
@@ -119,22 +123,46 @@ const std::string b64decode(const void* data, size_t len) {
 
 namespace security {
 	aes256_cbc* enc = nullptr;
+	dpp::cluster* bot = nullptr;
 
-	void init() {
-		enc = new aes256_cbc(str_to_bytes(config::get("encryption")["iv"]));
+	std::string random_string(size_t len) {
+		std::string out;
+		for (size_t x = 0; x < len; ++x) {
+			out += (char)random(65, 90);
+		}
+		return out;
 	}
 
+	void init(dpp::cluster& creator) {
+		enc = new aes256_cbc(str_to_bytes(config::get("encryption")["iv"]));
+		bot = &creator;
+	}
+
+	/* We can fit 3x32 byte AES128 blocks into a 100-char Discord custom_id, plus a 4 character temporal key */
 	std::string encrypt(const std::string& text) {
 		std::vector<uint8_t> enc_result;
 		std::string key = config::get("encryption")["key"];
+		std::string temporal_key = random_string(4);
+		for (size_t x = 0; x != 4; ++x) {
+			key[x * 4] ^= temporal_key[x];
+		}
 		enc->encrypt(str_to_bytes(key), str_to_bytes(text), enc_result);
-		return dpp::base64_encode(enc_result.data(), enc_result.size());
+		std::string r = temporal_key + dpp::base64_encode(enc_result.data(), enc_result.size());
+		if (r.length() > 100) {
+			bot->log(dpp::ll_error, "Encrypted component ID [" + text + "] is longer than 100 characters and will not fit in the ID field!");
+		}
+		return r;
 	}
 
 	std::string decrypt(const std::string& text) {
+		std::string temporal_key{text.substr(0, 4)};
+		std::string ciphertext{text.substr(4, text.length() - 4)};
 		std::vector<uint8_t> dec_result;
 		std::string key = config::get("encryption")["key"];
-		std::string decoded = b64decode(text.data(), text.length());
+		for (size_t x = 0; x != 4; ++x) {
+			key[x * 4] ^= temporal_key[x];
+		}
+		std::string decoded = b64decode(ciphertext.data(), ciphertext.length());
 		enc->decrypt(str_to_bytes(key), str_to_bytes(decoded), dec_result);
 		return bytes_to_str(dec_result);
 	}

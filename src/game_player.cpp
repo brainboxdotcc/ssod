@@ -5,6 +5,7 @@
 #include <ssod/game_dice.h>
 #include <fmt/format.h>
 #include <ssod/game_util.h>
+#include <ssod/aes.h>
 
 player_list registering_players;
 player_list live_players;
@@ -104,7 +105,7 @@ Your character is shown below. If you are not happy with your base stats, click 
 			.set_max_values(1)
 			.set_required(true)
 			.set_placeholder("Select Your Race")
-			.set_id("select_player_race")
+			.set_id(security::encrypt("select_player_race"))
 			.add_select_option(dpp::select_option("Human", "1", "The jack-of-all-trades").set_default(race == race_human))
 			.add_select_option(dpp::select_option("Elf", "2", "Experts in the arcane and the forests").set_default(race == race_elf))
 			.add_select_option(dpp::select_option("Orc", "3", "Battle hardened and never backs down from a fight").set_default(race == race_orc))
@@ -118,7 +119,7 @@ Your character is shown below. If you are not happy with your base stats, click 
 			.set_max_values(1)
 			.set_placeholder("Select Your Profession")
 			.set_required(true)
-			.set_id("select_player_profession")
+			.set_id(security::encrypt("select_player_profession"))
 			.add_select_option(dpp::select_option("Warrior", "1", "Experts with bladed and blunt weapons").set_default(profession == prof_warrior))
 			.add_select_option(dpp::select_option("Wizard", "2", "Skilled in use of magic and potions").set_default(profession == prof_wizard))
 			.add_select_option(dpp::select_option("Thief", "3", "Sleight of hand is their game").set_default(profession == prof_thief))
@@ -138,13 +139,13 @@ Your character is shown below. If you are not happy with your base stats, click 
 			dpp::component()
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("player_reroll")
+				.set_id(security::encrypt("player_reroll"))
 				.set_label("Re-Roll")
 				.set_style(dpp::cos_danger)
 			)
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("player_herb_spell_selection")
+				.set_id(security::encrypt("player_herb_spell_selection"))
 				.set_label("Continue")
 				.set_style(dpp::cos_success)
 			)
@@ -340,7 +341,7 @@ Once you are happy with your choices, click **Continue** to name your character.
 		.set_min_values(0)
 		.set_max_values(3)
 		.set_placeholder("Select Herbs")
-		.set_id("select_player_herbs")
+		.set_id(security::encrypt("select_player_herbs"))
 		.add_select_option(dpp::select_option("Hartleaf", "hartleaf", "A herb associated with movement and water").set_default(has_herb("hartleaf")))
 		.add_select_option(dpp::select_option("Elfbane", "elfbane", "Commonly found around fast moving birds").set_default(has_herb("elfbane")))
 		.add_select_option(dpp::select_option("Monkgrass", "monkgrass", "Opens the mind to other languages").set_default(has_herb("monkgrass")))
@@ -355,7 +356,7 @@ Once you are happy with your choices, click **Continue** to name your character.
 	spell_select_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_placeholder("Select Spells")
-		.set_id("select_player_spells");
+		.set_id(security::encrypt("select_player_spells"));
 	/* Fill spell select menu only with spells applicable to the chosen herbs up to a max of 25 choices */
 	const std::vector<dpp::select_option> all_spells{
 		dpp::select_option("Fire", "fire", "Summons fire"),
@@ -425,7 +426,7 @@ Once you are happy with your choices, click **Continue** to name your character.
 			dpp::component()
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id("player_name")
+				.set_id(security::encrypt("player_name"))
 				.set_label("Continue")
 				.set_style(dpp::cos_success)
 			)
