@@ -153,6 +153,7 @@ void start_command::route(const dpp::slashcommand_t &event)
 
 	if (player_is_live(event)) {
 		player p = get_live_player(event);
+		send_chat(event.command.usr.id, p.paragraph, "", "join");
 		continue_game(event, p);
 		return;
 	}

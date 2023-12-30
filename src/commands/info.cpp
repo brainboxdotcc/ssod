@@ -55,6 +55,7 @@ void info_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 	auto rs = db::query("SELECT COUNT(id) AS guild_count, SUM(user_count) AS user_count FROM guild_cache");
+	std::string hash(GIT_COMMIT_HASH);
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title("The Seven Spells Of Destruction")
@@ -68,16 +69,17 @@ void info_command::route(const dpp::slashcommand_t &event)
 		.add_field("Bot Uptime", bot->uptime().to_string(), true)
 		.add_field("Memory Usage", std::to_string(rss() / 1024 / 1024) + "M", true)
 		.add_field("Total Servers", rs[0].at("guild_count"), true)
-		.add_field("Git Revision", GIT_BRANCH " - " GIT_COMMIT_HASH, true)
+		.add_field("Git Revision", GIT_BRANCH "@" + hash.substr(hash.length() - 8), true)
 		.add_field("Total Users", rs[0].at("user_count"), true)
 		.add_field("Cluster", std::to_string(bot->cluster_id) + "/" + std::to_string(bot->maxclusters), true)
 		.add_field("Shard", std::to_string(event.from->shard_id) + "/" + std::to_string(bot->get_shards().size()), true)
 		.add_field("SQL cache size", std::to_string(db::cache_size()), true)
 		.add_field("SQL query count", std::to_string(db::query_count()), true)
 		.add_field("Game Time", game_date(), false)
+		.set_image("attachment://app_encyclopaedia.jpg")
 		;
 
 	embed.add_field("Library Version", "<:DPP1:847152435399360583><:DPP2:847152435343523881> [" + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)", false);
 
-	event.reply(dpp::message().add_embed(embed));
+	event.reply(dpp::message().add_embed(embed).add_file("app_encyclopaedia.jpg", dpp::utility::read_file("../resource/app_encyclopaedia.jpg")));
 }

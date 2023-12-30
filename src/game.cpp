@@ -1,5 +1,6 @@
 #include <dpp/dpp.h>
 #include <string>
+#include <fmt/format.h>
 #include <ssod/ssod.h>
 #include <ssod/game.h>
 #include <ssod/game_player.h>
@@ -11,6 +12,39 @@
 #include <ssod/emojis.h>
 #include <ssod/combat.h>
 #include <ssod/aes.h>
+
+void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type) {
+	db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)", {type, user_id, paragraph, message.substr(0, 140)});
+}
+
+void add_chat(std::string& text, long paragraph_id) {
+	text += "\n__**Chat**__\n```";
+	auto rs = db::query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND location_id = ? ORDER BY sent, id LIMIT 5", {paragraph_id});
+	for (size_t x = 0; x < 5 - rs.size(); ++x) {
+		text += std::string(80, ' ') + "\n";
+	}
+	for (const auto& row : rs) {
+		if (row.at("event_type") == "chat") {
+			text += fmt::format("[{}] <{}> {}\n", row.at("message_time"), row.at("name"), row.at("message"));
+		} else if (row.at("event_type") == "join") {
+			text += fmt::format("[{}] *** {} wanders into the location\n", row.at("message_time"), row.at("name"));
+		} else  if (row.at("event_type") == "part") {
+			text += fmt::format("[{}] *** {} leaves the location\n", row.at("message_time"), row.at("name"));
+		} else  if (row.at("event_type") == "drop") {
+			std::string item = row.at("message");
+			text += fmt::format("[{}] *** {} drops {} {}\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", item);
+		} else  if (row.at("event_type") == "pickup") {
+			std::string item = row.at("message");
+			text += fmt::format("[{}] *** {} picks up {} {}\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", item);
+		} else  if (row.at("event_type") == "combat") {
+			std::string item = row.at("message");
+			text += fmt::format("[{}] *** {} challenges {} to combat!\n", row.at("message_time"), row.at("name"), row.at("message"));
+		} else  if (row.at("event_type") == "combat") {
+			text += fmt::format("[{}] *** {} died...\n", row.at("message_time"), row.at("name"));
+		}
+	}
+	text += "```\n";
+}
 
 void game_input(const dpp::form_submit_t & event) {
 	if (!player_is_live(event)) {
@@ -31,6 +65,10 @@ void game_input(const dpp::form_submit_t & event) {
 			p.add_gold(-amount);
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, amount});
 		}
+		claimed = true;
+	} else if (custom_id == "chat_modal" && p.stamina > 0) {
+		std::string message = std::get<std::string>(event.components[0].components[0].value);
+		send_chat(event.command.usr.id, p.paragraph, message);
 		claimed = true;
 	} else if (custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
@@ -114,7 +152,9 @@ void game_nav(const dpp::button_click_t& event) {
 			p.gold -= link_cost;
 		}
 		if (parts[1] != parts[2]) {
-			p.after_fragment = 0; // Resets current combat index
+			p.after_fragment = 0; // Resets current combat index and announces travel
+			send_chat(event.command.usr.id, atoi(parts[2]), "", "leave");
+			send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
 		}
 		long dest = atol(parts[1]);
 		if (paragraph::valid_next(p.paragraph, dest)) {
@@ -266,6 +306,22 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "exit_bank" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
 		p.in_bank = false;
 		claimed = true;
+	} else if (parts[0] == "refresh" && p.stamina > 0) {
+		claimed = true;
+	} else if (parts[0] == "chat" && p.stamina > 0) {
+		dpp::interaction_modal_response modal(security::encrypt("chat_modal"), "Chat",	{
+			dpp::component()
+			.set_label("Enter Message")
+			.set_id(security::encrypt("chat_message"))
+			.set_type(dpp::cot_text)
+			.set_placeholder("hello")
+			.set_min_length(1)
+			.set_max_length(140)
+			.set_required(true)
+			.set_text_style(dpp::text_short)
+		});
+		event.dialog(modal);
+		return;
 	}
 	if (claimed) {
 		p.event = event;
@@ -572,6 +628,14 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				text += "**__Items On Ground__**\n" + list_dropped + "\n\n";
 			}
 		}
+		add_chat(text, location.id);
+		m.add_embed(dpp::embed()
+			.set_colour(0xd5b994)
+			.set_description(text)
+		);
+	} else {
+		std::string text = "";
+		add_chat(text, location.id);
 		m.add_embed(dpp::embed()
 			.set_colour(0xd5b994)
 			.set_description(text)
@@ -669,6 +733,20 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_label("Inventory")
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::backpack.name, sprite::backpack.id)
+		);
+
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("refresh"))
+			.set_style(dpp::cos_secondary)
+			.set_emoji("♻")
+		);
+
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("chat"))
+			.set_style(dpp::cos_secondary)
+			.set_emoji("💬")
 		);
 
 		for (const auto & dropped : location.dropped_items) {
