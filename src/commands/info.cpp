@@ -54,37 +54,30 @@ bool is_gdb() {
 void info_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
-	bot->current_application_get([bot, event](const dpp::confirmation_callback_t& v) {
-		dpp::application app;
-		uint64_t guild_count = 0;
-		if (!v.is_error()) {
-			app = std::get<dpp::application>(v.value);
-			guild_count = app.approximate_guild_count;
-		}
-		dpp::embed embed = dpp::embed()
-			.set_url("https://ssod.org/")
-			.set_title("The Seven Spells Of Destruction")
-			.set_footer(dpp::embed_footer{ 
-				.text = "Requested by " + event.command.usr.format_username(), 
-				.icon_url = bot->me.get_avatar_url(), 
-				.proxy_url = "",
-			})
-			.set_colour(0x7aff7a)
-			.set_description("")
-			.add_field("Bot Uptime", bot->uptime().to_string(), true)
-			.add_field("Memory Usage", std::to_string(rss() / 1024 / 1024) + "M", true)
-			.add_field("Total Servers", std::to_string(guild_count), true)
-			.add_field("Debugging", is_gdb() ? ":white_check_mark: Yes" : "<:wc_rs:1174363531794202624> No", true)
-			.add_field("Guild Members Intent", "<:wc_rs:1174363531794202624> No", true)
-			.add_field("Message Content Intent", "<:wc_rs:1174363531794202624> No", true)
-			.add_field("Shard", std::to_string(event.from->shard_id) + "/" + std::to_string(bot->get_shards().size()), true)
-			.add_field("SQL cache size", std::to_string(db::cache_size()), true)
-			.add_field("SQL query count", std::to_string(db::query_count()), true)
-			.add_field("Game Time", game_date(), false)
-			;
+	auto rs = db::query("SELECT COUNT(id) AS guild_count, SUM(user_count) AS user_count FROM guild_cache");
+	dpp::embed embed = dpp::embed()
+		.set_url("https://ssod.org/")
+		.set_title("The Seven Spells Of Destruction")
+		.set_footer(dpp::embed_footer{ 
+			.text = "Requested by " + event.command.usr.format_username(), 
+			.icon_url = bot->me.get_avatar_url(), 
+			.proxy_url = "",
+		})
+		.set_colour(0xd5b994)
+		.set_description("")
+		.add_field("Bot Uptime", bot->uptime().to_string(), true)
+		.add_field("Memory Usage", std::to_string(rss() / 1024 / 1024) + "M", true)
+		.add_field("Total Servers", rs[0].at("guild_count"), true)
+		.add_field("Git Revision", GIT_BRANCH " - " GIT_COMMIT_HASH, true)
+		.add_field("Total Users", rs[0].at("user_count"), true)
+		.add_field("Cluster", std::to_string(bot->cluster_id) + "/" + std::to_string(bot->maxclusters), true)
+		.add_field("Shard", std::to_string(event.from->shard_id) + "/" + std::to_string(bot->get_shards().size()), true)
+		.add_field("SQL cache size", std::to_string(db::cache_size()), true)
+		.add_field("SQL query count", std::to_string(db::query_count()), true)
+		.add_field("Game Time", game_date(), false)
+		;
 
-		embed.add_field("Library Version", "<:DPP1:847152435399360583><:DPP2:847152435343523881> [" + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)", false);
+	embed.add_field("Library Version", "<:DPP1:847152435399360583><:DPP2:847152435343523881> [" + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)", false);
 
-		event.reply(dpp::message().add_embed(embed));
-	});
+	event.reply(dpp::message().add_embed(embed));
 }
