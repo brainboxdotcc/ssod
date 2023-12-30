@@ -258,6 +258,7 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		/* Drop to floor */
 		db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
+		send_chat(event.command.usr.id, p.paragraph, parts[1], "drop");
 		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
 		/* Pick up frm floor */
@@ -266,6 +267,7 @@ void game_nav(const dpp::button_click_t& event) {
 		std::string flags = parts[3];
 		db::query("DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
 		p.possessions.push_back(item{ .name = name, .flags = flags });
+		send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 		claimed = true;
 	} else if (parts[0] == "use" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
 		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
