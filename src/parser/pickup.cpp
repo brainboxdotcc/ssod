@@ -81,6 +81,7 @@ struct pickup_tag : public tag {
 		} else {
 			current_player.possessions.push_back(item{ .name = item_name, .flags = flags });
 		}
+		current_player.inv_change = true;
 		return;
 	}
 };

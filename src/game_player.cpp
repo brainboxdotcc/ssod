@@ -203,6 +203,7 @@ bool player::drop_possession(const item& i) {
 	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
 		if (inv->name == i.name) {
 			possessions.erase(inv);
+			inv_change = true;
 			return true;
 		}
 	}
@@ -213,6 +214,7 @@ bool player::drop_spell(const item& i) {
 	for (auto inv = spells.begin(); inv != spells.end(); ++inv) {
 		if (inv->name == i.name) {
 			spells.erase(inv);
+			inv_change = true;
 			return true;
 		}
 	}
@@ -223,6 +225,7 @@ bool player::drop_herb(const item& i) {
 	for (auto inv = herbs.begin(); inv != herbs.end(); ++inv) {
 		if (inv->name == i.name) {
 			herbs.erase(inv);
+			inv_change = true;
 			return true;
 		}
 	}
@@ -454,7 +457,7 @@ Once you are happy with your choices, click **Continue** to name your character.
 }
 
 player::player(bool reroll) :
-	state(state_roll_stats), in_combat(false), in_inventory(false), in_bank(false), after_fragment(0),
+	state(state_roll_stats), in_combat(false), in_inventory(false), in_bank(false), inv_change(false), after_fragment(0),
 	race(player_race::race_error), profession(player_profession::prof_error), stamina(0), skill(0), luck(0),
 	sneak(0), speed(0), silver(0), gold(0),	rations(0), experience(0), notoriety(0), days(0), scrolls(0),
 	last_use(0), last_strike(0), pinned(0), muted(0), mana(0), mana_tick(0) {
@@ -479,6 +482,7 @@ player::player(bool reroll) :
 		possessions.emplace_back(item{ .name = "Leather Coat", .flags = "A1" });
 		possessions.emplace_back(item{ .name = "Stamina Potion", .flags = "ST+4" });
 		possessions.emplace_back(item{ .name = "Skill Potion", .flags = "SK+4" });
+		inv_change = true;
 		reset_to_spawn_point();
 		gotfrom = "__ITEMS_FROM__";
 
@@ -547,37 +551,44 @@ void player::drop_everything() {
 	possessions.clear();
 	spells.clear();
 	herbs.clear();
+	inv_change = true;
 }
 
 bool player::save(dpp::snowflake user_id, bool put_backup)
 {
 	db::transaction();
 
-	db::query("DELETE FROM game_owned_items WHERE user_id = ?", {user_id});
-	
-	for (const item& posession : possessions) {
-		if (posession.name != "[none]") {
-			db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, posession.name, posession.flags});
+	if (inv_change) {
+		db::query("DELETE FROM game_owned_items WHERE user_id = ?", {user_id});
+		
+		for (const item& posession : possessions) {
+			if (posession.name != "[none]") {
+				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, posession.name, posession.flags});
+			}
 		}
-	}
-	for (const item& herb : herbs) {
-		if (herb.name != "[none]") {
-			db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, herb.name, herb.flags});
+		for (const item& herb : herbs) {
+			if (herb.name != "[none]") {
+				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, herb.name, herb.flags});
+			}
 		}
-	}
-	for (const item& spell : spells) {
-		if (spell.name != "[none]") {
-			db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, spell.name, spell.flags});
+		for (const item& spell : spells) {
+			if (spell.name != "[none]") {
+				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, spell.name, spell.flags});
+			}
 		}
-	}
-	db::query(fmt::format("DELETE FROM {} WHERE user_id = ?", put_backup ? "game_default_users" : "game_users"), {user_id});
 
+		inv_change = false;
+	}
 	last_use = time(nullptr);
 
 	db::query(fmt::format("INSERT INTO {} (user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph, \
 	 armour, weapon, gotfrom, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick) \
-	VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", put_backup ? "game_default_users" : "game_users"),
+	 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
+	 ON DUPLICATE KEY UPDATE name = ?, race = ?, profession = ?, stamina = ?, skill = ?, luck = ?, sneak = ?, speed = ?, silver = ?, gold = ?, rations = ?, experience = ?, notoriety = ?, days = ?, scrolls = ?, paragraph = ?, \
+	 armour = ?, weapon = ?, gotfrom = ?, armour_rating = ?, weapon_rating = ?, lastuse = ?, laststrike = ?, pinned = ?, muted = ?, mana = ?, manatick = ?", put_backup ? "game_default_users" : "game_users"),
 		{user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
+		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick,
+		name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
 		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick}
 	);
 

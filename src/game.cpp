@@ -127,11 +127,13 @@ void game_select(const dpp::select_click_t &event) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		db::query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ?", {event.command.usr.id, parts[0], parts[1]});
 		p.possessions.push_back(item{ .name = parts[0], .flags = parts[1] });
+		p.inv_change = true;
 		claimed = true;
 	} else if (custom_id == "deposit" && p.in_bank) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags ) VALUES(?,?,?)", {event.command.usr.id, parts[0], parts[1]});
 		p.drop_possession(item{ .name = parts[0], .flags = parts[1] });
+		p.inv_change = true;
 		claimed = true;
 	}
 	if (claimed) {
@@ -194,6 +196,7 @@ void game_nav(const dpp::button_click_t& event) {
 			} else {
 				p.possessions.push_back(item{ .name = name, .flags = flags });
 			}
+			p.inv_change = true;
 		}
 		claimed = true;
 	} else if (parts[0] == "combat" && parts.size() >= 7) {
@@ -242,6 +245,7 @@ void game_nav(const dpp::button_click_t& event) {
 		p.paragraph = atol(parts[1]);
 		if (!p.has_flag("PICKED", p.paragraph)) {
 			p.possessions.push_back(item{ .name = parts[3], .flags = parts[4] });
+			p.inv_change = true;
 			p.add_flag("PICKED", p.paragraph);
 		}
 		claimed = true;
@@ -286,6 +290,7 @@ void game_nav(const dpp::button_click_t& event) {
 		std::string flags = parts[3];
 		db::query("DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
 		p.possessions.push_back(item{ .name = name, .flags = flags });
+		p.inv_change = true;
 		send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 		claimed = true;
 	} else if (parts[0] == "use" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
