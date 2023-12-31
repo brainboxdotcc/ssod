@@ -2,7 +2,7 @@
  * 
  * The Seven Spells Of Destruction
  *
- * Copyright 1993,2001,2023 Craig Edwards <support@sporks.gg>
+ * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,8 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 				.set_text_style(dpp::text_short)
 			});
 			event.dialog(modal);
+		} else if (custom_id == "lore" || custom_id == "lore-read") {
+			/* Do nothing, this is handled by a different part of the bot */
 		} else {
 			event.reply("State error");
 		}

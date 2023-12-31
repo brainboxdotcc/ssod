@@ -2,7 +2,7 @@
  * 
  * The Seven Spells Of Destruction
  *
- * Copyright 1993,2001,2023 Craig Edwards <support@sporks.gg>
+ * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@
 #include <ssod/commands/map.h>
 #include <ssod/commands/admin.h>
 #include <ssod/commands/lore.h>
+#include <ssod/commands/help.h>
 
 #include <ssod/botlist.h>
 #include <ssod/botlists/topgg.h>
@@ -131,6 +132,7 @@ namespace listeners {
 				register_command<start_command>(bot),
 				register_command<map_command>(bot),
 				register_command<lore_command>(bot),
+				register_command<help_command>(bot),
 			});
 			bot.guild_bulk_command_create({
 				register_command<admin_command>(bot),

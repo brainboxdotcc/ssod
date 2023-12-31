@@ -2,7 +2,7 @@
  * 
  * The Seven Spells Of Destruction
  *
- * Copyright 1993,2001,2023 Craig Edwards <support@sporks.gg>
+ * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
