@@ -98,6 +98,10 @@ struct player {
 	 */
 	bool in_bank{};
 	/**
+	 * @brief Inventory, spells or herbs have changed
+	 */
+	bool inv_change{};
+	/**
 	 * @brief Current fragment of a paragraph with combat
 	 */
 	int after_fragment;
