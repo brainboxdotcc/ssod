@@ -78,7 +78,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			.proxy_icon_url = "",
 		})
 		.set_colour(0xd5b994)
-		.set_image("attachment://app_encyclopaedia.jpg")
+		.set_image("attachment://app_encyclopaedia_c.jpg")
 		.set_description("Select a choice from the options below to read information about the game world, its characters and your quest's background.");
 	dpp::message m;
 	component_builder cb(m);
@@ -183,7 +183,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			);
 		}
 		m = cb.get_message();
-		m.add_file("app_encyclopaedia.jpg", dpp::utility::read_file("../resource/app_encyclopaedia.jpg"));
+		m.add_file("app_encyclopaedia_c.jpg", dpp::utility::read_file("../resource/app_encyclopaedia_c.jpg"));
 	}
 	m.add_embed(embed);
 	if (event.command.type == dpp::it_component_button) {
