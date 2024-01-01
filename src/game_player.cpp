@@ -29,6 +29,13 @@
 player_list registering_players;
 player_list live_players;
 
+constexpr long MAX_LEVEL = 34;
+constexpr long levels[MAX_LEVEL] = {
+	-100000000, 0, 10, 20, 40, 80, 160, 250, 500, 550, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 8000, 10000, 20000,
+	40000, 80000, 160000, 240000, 480000, 960000, 1920000, 3840000, 7680000, 15360000, 30720000, 61440000, 122880000,
+};
+
+
 bool player_is_registering(dpp::snowflake user_id) {
 	return registering_players.find(user_id) != registering_players.end();
 }
@@ -91,6 +98,22 @@ player get_live_player(const dpp::interaction_create_t& event) {
 }
 
 player::~player() {
+}
+
+long player::get_level() {
+	long level = 1;
+	while ((experience >= levels[level]) && (level != MAX_LEVEL)) level++;
+	return level;
+}
+
+void player::death_xp_loss() {
+	long level = get_level();
+	if (level > 1) {
+		experience -= ((levels[level + 1] - levels[level]) / 4);
+		if (experience < levels[level]) {
+			experience = levels[level];
+		}
+	}
 }
 
 dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
