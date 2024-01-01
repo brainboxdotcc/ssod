@@ -81,5 +81,5 @@ void info_command::route(const dpp::slashcommand_t &event)
 
 	embed.add_field("Library Version", "<:DPP1:847152435399360583><:DPP2:847152435343523881> [" + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)", false);
 
-	event.reply(dpp::message().add_embed(embed).add_file("app_encyclopaedia.jpg", dpp::utility::read_file("../resource/app_encyclopaedia.jpg")));
+	event.reply(dpp::message().add_embed(embed).add_file("app_encyclopaedia.jpg", dpp::utility::read_file("../resource/app_encyclopaedia.jpg")).set_flags(dpp::m_ephemeral));
 }

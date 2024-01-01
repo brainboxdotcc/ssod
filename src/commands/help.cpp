@@ -48,5 +48,5 @@ void help_command::route(const dpp::slashcommand_t &event)
 		.add_field("/info", "Show technical information about the bot.\nUnless you are having problems, you probably don't need to use this command.", false)
 		;
 
-	event.reply(dpp::message().add_embed(embed));
+	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 }
