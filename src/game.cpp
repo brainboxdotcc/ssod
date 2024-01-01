@@ -262,6 +262,7 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.gold = p.gold;
 		new_p.silver = p.silver;
 		new_p.gotfrom = p.gotfrom;
+		new_p.death_xp_loss();
 		new_p.reset_to_spawn_point();
 		update_live_player(event, new_p);
 		new_p.save(event.command.usr.id);
@@ -397,7 +398,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	content << "<:" << sprite::health_heart.format() << "> Stamina: __" << p.stamina << "__";
 	content << " <:" << sprite::book07.format() << "> Skill: __" << p.skill << "__";
 	content << " <:" << sprite::clover.format() << "> Luck: __" << p.luck << "__";
-	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__";
+	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__ (Level: __" << p.get_level() << "__)";
 	content << " <:" << sprite::shoes03.format() << "> Speed: __" << p.speed << "__";
 	content << "\n";
 

@@ -272,6 +272,9 @@ struct player {
 	bool drop_spell(const item& i);
 	bool drop_herb(const item& i);
 
+	long get_level();
+	void death_xp_loss();
+
 	dpp::message get_registration_message(class dpp::cluster& cluster, const dpp::interaction_create_t &event);
 	dpp::message get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event);
 };
