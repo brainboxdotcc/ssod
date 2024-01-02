@@ -45,6 +45,7 @@ void help_command::route(const dpp::slashcommand_t &event)
 		.add_field("/start", "Start a new character, or continue your game\nThe game is played via button clicks and interacting with bot messages.", false)
 		.add_field("/lore", "Show lore and information about the game world, its locations and people\nUse button clicks to navigate the lore system.", false)
 		.add_field("/map", "Show a map of the game world.\nThe bot will not show you where you are. It is up to you to keep track of your bearings!", false)
+		.add_field("/profile", "Show a user's profile.\nYou must use the username of the user in the game, not their discord username.", false)
 		.add_field("/info", "Show technical information about the bot.\nUnless you are having problems, you probably don't need to use this command.", false)
 		;
 

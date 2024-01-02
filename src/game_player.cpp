@@ -103,7 +103,7 @@ player::~player() {
 long player::get_level() {
 	long level = 1;
 	while ((experience >= levels[level]) && (level != MAX_LEVEL)) level++;
-	return level;
+	return std::max(1l, level - 1);
 }
 
 void player::death_xp_loss() {
@@ -113,6 +113,21 @@ void player::death_xp_loss() {
 		if (experience < levels[level]) {
 			experience = levels[level];
 		}
+	}
+}
+
+double player::get_percent_of_current_level() {
+	long level = get_level();
+	if (level >= MAX_LEVEL - 1) {
+		return 0;
+	}
+	long next_level = levels[level + 1];
+	long total_span = next_level - levels[level];
+	long through_span = experience - levels[level];
+	if (through_span == 0) {
+		return 0;
+	} else {
+		return ((double)through_span / (double)total_span) * 100.0;
 	}
 }
 

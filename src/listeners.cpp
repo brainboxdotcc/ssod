@@ -30,6 +30,7 @@
 #include <ssod/commands/admin.h>
 #include <ssod/commands/lore.h>
 #include <ssod/commands/help.h>
+#include <ssod/commands/profile.h>
 
 #include <ssod/botlist.h>
 #include <ssod/botlists/topgg.h>
@@ -133,6 +134,7 @@ namespace listeners {
 				register_command<map_command>(bot),
 				register_command<lore_command>(bot),
 				register_command<help_command>(bot),
+				register_command<profile_command>(bot),
 			});
 			bot.guild_bulk_command_create({
 				register_command<admin_command>(bot),
