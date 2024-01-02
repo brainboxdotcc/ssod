@@ -43,7 +43,8 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	}
 	auto rs = db::query("SELECT * FROM game_users WHERE name = ?", {user});
 	if (rs.empty()) {
-		event.reply("No such user. Remember, you must use an in-game nickname, not a discord username!");
+		event.reply(dpp::message("No such user. Remember, you must use an in-game nickname, not a discord username!").set_flags(dpp::m_ephemeral));
+		return;
 	}
 	p.experience = atol(rs[0].at("experience"));
 

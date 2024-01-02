@@ -393,6 +393,7 @@ dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
 void inventory(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
+	bool equip_w{false}, equip_a{false};
 
 	content << "__**Stats**__\n\n";
 	content << "<:" << sprite::health_heart.format() << "> Stamina: __" << p.stamina << "__";
@@ -413,8 +414,12 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	for (const auto& inv : p.possessions) {
 		std::string emoji = get_emoji(inv.name, inv.flags).format();
 		content << "<:" << emoji << ">" << " " << inv.name << " - *" << describe_item(inv.flags, inv.name) << "*";
-		if (p.armour.name == inv.name || p.weapon.name == inv.name) {
+		if (p.armour.name == inv.name && !equip_a) {
 			content << " <:" << sprite::light02.format() << "> - **Equipped**";
+			equip_a = true;
+		} else if (p.weapon.name == inv.name && !equip_w) {
+			content << " <:" << sprite::light02.format() << "> - **Equipped**";
+			equip_w = true;
 		}
 		content << "\n";
 	}
