@@ -27,6 +27,9 @@
 #include <ssod/emojis.h>
 #include <ssod/aes.h>
 #include <fmt/format.h>
+#include <ssod/game.h>
+
+std::map<dpp::snowflake, combat_state> pvp_list;
 
 const std::vector<std::string_view> death_messages{
 	"{} departs the land of the living.",
@@ -75,6 +78,53 @@ const std::vector<std::string_view> death_messages{
 	"Pause a moment and mourn the loss of {}",
 	"All your {} are belong to {}.",
 };
+
+void remove_pvp(const dpp::snowflake id) {
+	auto p1 = pvp_list.find(id);
+	if (p1 != pvp_list.end()) {
+		auto p2 = pvp_list.find(p1->second.opponent);
+		if (p2 != pvp_list.end()) {
+			pvp_list.erase(p2);
+		}
+		pvp_list.erase(p1);
+	}
+}
+
+void challenge_pvp(const dpp::snowflake me, const dpp::snowflake opponent) {
+	pvp_list[me] = {
+		.opponent = opponent,
+		.accepted = false,
+		.my_turn = false,
+	};
+	pvp_list[opponent] = {
+		.opponent = me,
+		.accepted = false,
+		.my_turn = false,
+	};
+}
+
+void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
+	bool turn = random(0, 1);
+	pvp_list[id2] = {
+		.opponent = id1,
+		.accepted = true,
+		.my_turn = turn,
+	};
+	pvp_list[id1] = {
+		.opponent = id2,
+		.accepted = true,
+		.my_turn = turn,
+	};
+}
+
+bool has_active_pvp(const dpp::snowflake id) {
+	auto p = pvp_list.find(id);
+	return (p != pvp_list.end() && p->second.accepted == true);
+}
+
+bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts) {
+
+}
 
 bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts) {
 	if (!p.in_combat) {

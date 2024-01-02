@@ -21,6 +21,22 @@
 #include <dpp/dpp.h>
 #include <ssod/game_player.h>
 
+struct combat_state {
+	dpp::snowflake opponent{};
+	bool accepted{false};
+	bool my_turn;
+};
+
+bool has_active_pvp(const dpp::snowflake id);
+
+void remove_pvp(const dpp::snowflake id);
+
+void challenge_pvp(const dpp::snowflake id);
+
+void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2);
+
+bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts);
+
 bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts);
 
 void continue_combat(const dpp::interaction_create_t& event, player p);

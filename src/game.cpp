@@ -174,6 +174,8 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		if (parts[1] != parts[2]) {
 			p.after_fragment = 0; // Resets current combat index and announces travel
+			p.challenged_by = 0ull;
+			remove_pvp(event.command.usr.id);
 			send_chat(event.command.usr.id, atoi(parts[2]), "", "part");
 			send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
 		}

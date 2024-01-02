@@ -102,6 +102,10 @@ struct player {
 	 */
 	bool inv_change{};
 	/**
+	 * @brief Who has challenged this user to pvp
+	 */
+	dpp::snowflake challenged_by{};
+	/**
 	 * @brief Current fragment of a paragraph with combat
 	 */
 	int after_fragment;
@@ -229,7 +233,10 @@ struct player {
 	 * @brief Mana recharge rate
 	 */
 	time_t mana_tick;
-
+	/**
+	 * @brief Destroy the player object
+	 * 
+	 */
 	~player();
 	player(bool reroll = false);
 	player(dpp::snowflake user_id, bool get_backup = false);
