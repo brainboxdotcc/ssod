@@ -28,6 +28,7 @@
 #include <ssod/neutrino_api.h>
 #include <ssod/config.h>
 #include <ssod/aes.h>
+#include <ssod/emojis.h>
 
 dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 {
@@ -40,7 +41,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id.empty()) {
 			return;
 		}
-		bot.log(dpp::ll_debug, "button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
+		bot.log(dpp::ll_debug, event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
 		dpp::cluster& bot = *(event.from->creator);
 		if (custom_id == "player_reroll" && p_old.state == state_roll_stats) {
 			event.reply();
@@ -76,7 +77,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		} else if (custom_id == "lore" || custom_id == "lore-read") {
 			/* Do nothing, this is handled by a different part of the bot */
 		} else {
-			event.reply("State error");
+			event.reply(dpp::message("Sorry adventurer, this button has expired " + sprite::skull.get_mention() + " - Please try again using `/start`.").set_flags(dpp::m_ephemeral));
 		}
 	});
 	bot.on_select_click([&bot](const dpp::select_click_t &event) {

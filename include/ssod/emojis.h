@@ -119,4 +119,6 @@ namespace sprite {
 	inline const dpp::emoji skull("ded_skull", 1187415569729851402);
 	inline const dpp::emoji leaf("I_Leaf", 1187434440444620921);
 	inline const dpp::emoji inv_drop("inv_drop", 1187450540041449583);
+	inline const dpp::emoji bar_red("barred", 1191532848537141279);
+	inline const dpp::emoji bar_green("bargreen", 1191532758636433522);
 };
