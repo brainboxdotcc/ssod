@@ -46,7 +46,11 @@ struct i_tag : public tag {
 
 		// process COST token here: COST="cost">
 		Cost = extract_value(p_text);
-		output << "\n**Buy: " << ItemName << "** (*" << Cost << " gold*) - " << describe_item(Value, ItemName) << "\n";
+		output << "\n**Buy: " << ItemName;
+		if (current_player.has_possession(ItemName) || current_player.has_spell(ItemName) || current_player.has_herb(ItemName)) {
+			output << " ✅ [In Inventory]";
+		}
+		output << "** (*" << Cost << " gold*) - " << describe_item(Value, ItemName) << "\n";
 		p.words++;
 
 		p.links++;
