@@ -135,6 +135,11 @@ void game_select(const dpp::select_click_t &event) {
 		p.drop_possession(item{ .name = parts[0], .flags = parts[1] });
 		p.inv_change = true;
 		claimed = true;
+	} else if (custom_id == "fight_pvp" && p.in_pvp_picker) {
+		dpp::snowflake user(event.values[0]);
+		challenge_pvp(event, user);
+		p.inv_change = true;
+		claimed = true;
 	}
 	if (claimed) {
 		p.event = event;
@@ -336,6 +341,40 @@ void game_nav(const dpp::button_click_t& event) {
 		p.in_bank = false;
 		claimed = true;
 	} else if (parts[0] == "refresh" && p.stamina > 0) {
+		claimed = true;
+	} else if (parts[0] == "pvp_picker" && p.stamina > 0) {
+		p.in_pvp_picker = true;
+		claimed = true;
+	} else if (parts[0] == "exit_pvp_picker" && p.stamina > 0) {
+		p.in_pvp_picker = false;
+		claimed = true;
+	} else if (parts[0] == "pvp_reject" && p.stamina > 0) {
+		p.in_pvp_picker = false;
+		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
+		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
+		dpp::message m = dpp::message("<@" + opponent.str() +  "> " + p.name + " rejected your combat request.").set_allowed_mentions(true, false, false, false, {}, {});
+		m.channel_id = p2.event.command.channel_id;
+		m.guild_id = p2.event.command.guild_id;
+		m.add_component(
+			dpp::component()
+			.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id(security::encrypt("exit_pvp_picker"))
+				.set_label("Go Back")
+				.set_style(dpp::cos_secondary)
+				.set_emoji(sprite::magic05.name, sprite::magic05.id)
+			)
+		);
+		p = end_pvp_combat(event);
+		p2.event.edit_original_response(m);
+		claimed = true;
+	} else if (parts[0] == "pvp_accept" && p.stamina > 0) {
+		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
+		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
+		accept_pvp(event.command.usr.id, opponent);
+		p.in_pvp_picker = false;
+		p = set_in_pvp_combat(event);
+		update_opponent_message(event, get_pvp_round(p2.event));
 		claimed = true;
 	} else if (parts[0] == "chat" && p.stamina > 0) {
 		dpp::interaction_modal_response modal(security::encrypt("chat_modal"), "Chat",	{
@@ -604,9 +643,80 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	});
 }
 
+void pvp_picker(const dpp::interaction_create_t& event, player p) {
+	dpp::cluster& bot = *(event.from->creator);
+	std::stringstream content;
+
+	int64_t t = time(nullptr) - 600;
+	auto others = db::query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
+	content << "\n__**Select player to fight**__\n\nThe player you pick will be sent a request and must accept it to fight you. If they leave the area, the request will be cancelled.\n";
+
+	dpp::embed embed = dpp::embed()
+		.set_url("https://ssod.org/")
+		.set_footer(dpp::embed_footer{ 
+			.text = "PvP Player Selection for " + p.name,
+			.icon_url = bot.me.get_avatar_url(), 
+			.proxy_url = "",
+		})
+		.set_colour(0xd5b994)
+		.set_description(content.str());
+	
+	dpp::message m;
+	dpp::component fight_menu;
+
+	if (others.size() > 0) {
+
+		fight_menu.set_type(dpp::cot_selectmenu)
+			.set_min_values(0)
+			.set_max_values(1)
+			.set_placeholder("Select Player")
+			.set_id(security::encrypt("fight_pvp"));
+		for (const auto& other: others) {
+			fight_menu.add_select_option(
+				dpp::select_option(other.at("name"), other.at("user_id"), "Stamina: " + other.at("stamina") + ", Skill: " + other.at("skill") + ", " + other.at("experience") + " XP")
+			);
+		}
+	} else {
+		content << "\nThere are no players here to fight. You must go back.";
+	}
+
+	m.add_embed(embed);
+
+	if (others.size() > 0) {
+		m.add_component(dpp::component().add_component(fight_menu));
+	}
+
+	m.add_component(
+		dpp::component()
+		.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("exit_pvp_picker"))
+			.set_label("Back")
+			.set_style(dpp::cos_secondary)
+			.set_emoji(sprite::magic05.name, sprite::magic05.id)
+		)
+		.add_component(help_button())
+	);
+
+
+	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
+		if (cc.is_error()) {
+			bot.log(dpp::ll_error, "Internal error displaying pvp picker: " + cc.http_info.body + " Message: " + m.build_json());
+			event.reply("Internal error displaying pvp picker:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+		}
+	});
+}
+
 void continue_game(const dpp::interaction_create_t& event, player p) {
 	if (p.in_combat) {
-		continue_combat(event, p);
+		if (has_active_pvp(event.command.usr.id)) {
+			continue_pvp_combat(event, p);
+		} else {
+			continue_combat(event, p);
+		}
+		return;
+	} else if (p.in_pvp_picker) {
+		pvp_picker(event, p);
 		return;
 	} else if (p.in_inventory) {
 		inventory(event, p);
@@ -761,6 +871,16 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		update_live_player(event, p);
 	}
 	if (enabled_links > 0 && p.stamina > 0 && p.after_fragment == 0) {
+		if (others.size() > 0) {
+			/* Can fight other players, present option */
+			cb.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id(security::encrypt("pvp_picker"))
+				.set_label("PvP")
+				.set_style(dpp::cos_secondary)
+				.set_emoji(sprite::bow09.name, sprite::bow09.id)
+			);
+		}
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("inventory"))

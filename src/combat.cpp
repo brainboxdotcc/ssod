@@ -90,7 +90,17 @@ void remove_pvp(const dpp::snowflake id) {
 	}
 }
 
-void challenge_pvp(const dpp::interaction_create_t event, const dpp::snowflake opponent) {
+player get_pvp_opponent(const dpp::snowflake id, dpp::discord_client* shard) {
+	auto p1 = pvp_list.find(id);
+	if (p1 != pvp_list.end()) {
+		dpp::interaction_create_t tmp(shard, "");
+		tmp.command.usr.id = p1->second.opponent;
+		return get_live_player(tmp, false);
+	}
+	return player();
+}
+
+void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake opponent) {
 	player p = get_live_player(event, false);
 	pvp_list[event.command.usr.id] = {
 		.opponent = opponent,
@@ -104,17 +114,29 @@ void challenge_pvp(const dpp::interaction_create_t event, const dpp::snowflake o
 	};
 	player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 	send_chat(event.command.usr.id, p.paragraph, p2.name, "combat");
-	p2.event.reply(dpp::ir_update_message, "Challenged to combat");
-}
-
-player get_pvp_opponent(const dpp::snowflake id, dpp::discord_client* shard) {
-	auto p1 = pvp_list.find(id);
-	if (p1 != pvp_list.end()) {
-		dpp::interaction_create_t tmp(shard, "");
-		tmp.command.usr.id = p1->second.opponent;
-		return get_live_player(tmp, false);
-	}
-	return player();
+	dpp::message m = dpp::message("<@" + opponent.str() +  "> You have been challenged to combat by " + p.name).set_allowed_mentions(true, false, false, false, {}, {});
+	m.channel_id = p2.event.command.channel_id;
+	m.guild_id = p2.event.command.guild_id;
+	m.add_component(
+		dpp::component()
+		.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("pvp_accept;" + event.command.usr.id.str() + ";" + opponent.str()))
+			.set_label("Accept")
+			.set_style(dpp::cos_success)
+			.set_emoji(sprite::sword008.name, sprite::sword008.id)
+		)
+		.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("pvp_reject;" + event.command.usr.id.str() + ";" + opponent.str()))
+			.set_label("Reject")
+			.set_style(dpp::cos_danger)
+			.set_emoji(sprite::magic05.name, sprite::magic05.id)
+		)
+	);
+	
+	//event.from->creator->message_create(m);
+	p2.event.edit_original_response(m);
 }
 
 dpp::snowflake get_pvp_opponent_id(const dpp::snowflake id) {
@@ -125,7 +147,7 @@ dpp::snowflake get_pvp_opponent_id(const dpp::snowflake id) {
 	return 0ull;
 }
 
-void update_save_opponent(dpp::interaction_create_t event, player p) {
+void update_save_opponent(const dpp::interaction_create_t& event, player p) {
 	dpp::snowflake o = get_pvp_opponent_id(event.command.usr.id);
 	dpp::interaction_create_t tmp(event.from, "");
 	tmp.command.usr.id = o;
@@ -133,7 +155,7 @@ void update_save_opponent(dpp::interaction_create_t event, player p) {
 	p.save(o);
 }
 
-player set_in_pvp_combat(const dpp::interaction_create_t event) {
+player set_in_pvp_combat(const dpp::interaction_create_t& event) {
 	player p1 = get_live_player(event, false);
 	p1.in_combat = true;
 	player p2 = get_pvp_opponent(event.command.usr.id, event.from);
@@ -146,6 +168,13 @@ player set_in_pvp_combat(const dpp::interaction_create_t event) {
 	update_live_player(event, p1);
 	update_live_player(tmp, p2);
 	return p1;
+}
+
+void update_opponent_message(const dpp::interaction_create_t& event, const dpp::message& m) {
+	if (has_active_pvp(event.command.usr.id)) {
+		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
+		p2.event.edit_original_response(m);	
+	}	
 }
 
 void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
@@ -162,7 +191,7 @@ void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
 	};
 }
 
-player end_pvp_combat(const dpp::interaction_create_t event) {
+player end_pvp_combat(const dpp::interaction_create_t& event) {
 	player p1 = get_live_player(event, false);
 	p1.in_combat = false;
 	p1.challenged_by = 0;
@@ -188,18 +217,17 @@ bool is_my_pvp_turn(const dpp::snowflake id) {
 	return (p != pvp_list.end() && p->second.accepted == true && p->second.my_turn == true);
 }
 
-void continue_pvp_combat(const dpp::interaction_create_t& event, player p) {
+dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	dpp::cluster& bot = *(event.from->creator);
 	dpp::message m;
 	component_builder cb(m);
 	std::stringstream output;
-
 	player opponent = get_pvp_opponent(event.command.usr.id, event.from);
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{ 
-			.text = "In PvP combat with " + p.combatant.name + ", Location " + std::to_string(p.paragraph),
+			.text = "In PvP combat with " + opponent.name + ", Location: " + std::to_string(opponent.paragraph),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
@@ -207,9 +235,17 @@ void continue_pvp_combat(const dpp::interaction_create_t& event, player p) {
 		.set_description(output.str());
 	
 	m = cb.get_message();
+	m.add_embed(embed);
+	return m;
+}
+
+void continue_pvp_combat(const dpp::interaction_create_t& event, player p) {
+	dpp::cluster& bot = *(event.from->creator);
+
+	dpp::message m(get_pvp_round(event));
+
 	p.save(event.command.usr.id);
 	update_live_player(event, p);
-	m.add_embed(embed);
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, m, p](const auto& cc) {
 		if (cc.is_error()) {
@@ -224,6 +260,11 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 		return false;
 	}
 	bool claimed{false};
+
+	if (parts[0] == "pvp_accept") {
+		/* Fall-through to prevent going to PvE combat code after accept */
+		claimed = true;
+	}
 
 	if (claimed) {
 		continue_pvp_combat(event, p);

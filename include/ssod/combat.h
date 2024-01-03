@@ -31,7 +31,19 @@ bool has_active_pvp(const dpp::snowflake id);
 
 void remove_pvp(const dpp::snowflake id);
 
-void challenge_pvp(const dpp::snowflake id);
+player end_pvp_combat(const dpp::interaction_create_t& event);
+
+void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake id);
+
+void update_opponent_message(const dpp::interaction_create_t& event, const dpp::message& m);
+
+dpp::message get_pvp_round(const dpp::interaction_create_t& event);
+
+player set_in_pvp_combat(const dpp::interaction_create_t& event);
+
+dpp::snowflake get_pvp_opponent_id(const dpp::snowflake id);
+
+player get_pvp_opponent(const dpp::snowflake id, dpp::discord_client* shard);
 
 void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2);
 
@@ -40,3 +52,5 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts);
 
 void continue_combat(const dpp::interaction_create_t& event, player p);
+
+void continue_pvp_combat(const dpp::interaction_create_t& event, player p);

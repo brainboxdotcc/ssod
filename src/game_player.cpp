@@ -497,9 +497,9 @@ Once you are happy with your choices, click **Continue** to name your character.
 }
 
 player::player(bool reroll) :
-	state(state_roll_stats), in_combat(false), in_inventory(false), in_bank(false), inv_change(false), challenged_by(0),
-	after_fragment(0), race(player_race::race_error), profession(player_profession::prof_error), stamina(0), skill(0),
-	luck(0), sneak(0), speed(0), silver(0), gold(0), rations(0), experience(0), notoriety(0), days(0), scrolls(0),
+	state(state_roll_stats), in_combat(false), in_inventory(false), in_bank(false), in_pvp_picker(false), inv_change(false),
+	challenged_by(0), after_fragment(0), race(player_race::race_error), profession(player_profession::prof_error), stamina(0),
+	skill(0), luck(0), sneak(0), speed(0), silver(0), gold(0), rations(0), experience(0), notoriety(0), days(0), scrolls(0),
 	last_use(0), last_strike(0), pinned(0), muted(0), mana(0), mana_tick(0) {
 	if (reroll) {
 		skill = dice() + 5;
