@@ -84,14 +84,16 @@ void move_from_registering_to_live(const dpp::interaction_create_t& event, playe
 	}
 }
 
-player get_live_player(const dpp::interaction_create_t& event) {
+player get_live_player(const dpp::interaction_create_t& event, bool update_event) {
 	auto f = live_players.find(event.command.usr.id);
 	if (f != live_players.end()) {
 		return f->second;
 	}
 	/* Retrieve from database */
 	player p(event.command.usr.id);
-	p.event = event;
+	if (update_event) {
+		p.event = event;
+	}
 	p.state = state_play;
 	live_players[event.command.usr.id] = p;
 	return p;
