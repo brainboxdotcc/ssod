@@ -294,7 +294,7 @@ player get_registering_player(const dpp::interaction_create_t& event);
 void update_registering_player(const dpp::interaction_create_t& event, player p);
 void move_from_registering_to_live(const dpp::interaction_create_t& event, player p);
 bool player_is_live(const dpp::interaction_create_t& event);
-player get_live_player(const dpp::interaction_create_t& event);
+player get_live_player(const dpp::interaction_create_t& event, bool update_event = true);
 void update_live_player(const dpp::interaction_create_t& event, player p);
 
 long bonuses_numeric(int type, player_race R, player_profession P);
