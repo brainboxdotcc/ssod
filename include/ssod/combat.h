@@ -35,7 +35,7 @@ player end_pvp_combat(const dpp::interaction_create_t& event);
 
 void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake id);
 
-void update_opponent_message(const dpp::interaction_create_t& event, const dpp::message& m);
+void update_opponent_message(const dpp::interaction_create_t& event, dpp::message m, const std::stringstream& output);
 
 dpp::message get_pvp_round(const dpp::interaction_create_t& event);
 
@@ -53,4 +53,4 @@ bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<st
 
 void continue_combat(const dpp::interaction_create_t& event, player p);
 
-void continue_pvp_combat(const dpp::interaction_create_t& event, player p);
+void continue_pvp_combat(const dpp::interaction_create_t& event, player p, const std::stringstream& output);
