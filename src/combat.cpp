@@ -223,6 +223,11 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	component_builder cb(m);
 	std::stringstream output;
 	player opponent = get_pvp_opponent(event.command.usr.id, event.from);
+	player p1 = get_live_player(event, false);
+
+	output << "### " << p1.name << " vs " << opponent.name << "\n";
+
+	output << "This section under construction. You probably shouldn't be here yet.";
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
