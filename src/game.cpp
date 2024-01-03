@@ -374,7 +374,7 @@ void game_nav(const dpp::button_click_t& event) {
 		accept_pvp(event.command.usr.id, opponent);
 		p.in_pvp_picker = false;
 		p = set_in_pvp_combat(event);
-		update_opponent_message(event, get_pvp_round(p2.event));
+		update_opponent_message(event, get_pvp_round(p2.event), std::stringstream());
 		claimed = true;
 	} else if (parts[0] == "chat" && p.stamina > 0) {
 		dpp::interaction_modal_response modal(security::encrypt("chat_modal"), "Chat",	{
@@ -710,7 +710,7 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 void continue_game(const dpp::interaction_create_t& event, player p) {
 	if (p.in_combat) {
 		if (has_active_pvp(event.command.usr.id)) {
-			continue_pvp_combat(event, p);
+			continue_pvp_combat(event, p, std::stringstream());
 		} else {
 			continue_combat(event, p);
 		}

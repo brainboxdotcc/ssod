@@ -170,7 +170,8 @@ player set_in_pvp_combat(const dpp::interaction_create_t& event) {
 	return p1;
 }
 
-void update_opponent_message(const dpp::interaction_create_t& event, const dpp::message& m) {
+void update_opponent_message(const dpp::interaction_create_t& event, dpp::message m, const std::stringstream& output) {
+	m.embeds[0].description += output.str();
 	if (has_active_pvp(event.command.usr.id)) {
 		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 		p2.event.edit_original_response(m);	
@@ -187,7 +188,7 @@ void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
 	pvp_list[id1] = {
 		.opponent = id2,
 		.accepted = true,
-		.my_turn = turn,
+		.my_turn = !turn,
 	};
 }
 
@@ -217,17 +218,67 @@ bool is_my_pvp_turn(const dpp::snowflake id) {
 	return (p != pvp_list.end() && p->second.accepted == true && p->second.my_turn == true);
 }
 
+void swap_pvp_turn(const dpp::snowflake id) {
+	auto p = pvp_list.find(id);
+	if (p != pvp_list.end() && p->second.accepted == true) {
+		p->second.my_turn = !p->second.my_turn;
+		auto p2 = pvp_list.find(p->second.opponent);
+		if (p2 != pvp_list.end()) {
+			p2->second.my_turn = !p2->second.my_turn;
+		}
+	}
+}
+
 dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	dpp::cluster& bot = *(event.from->creator);
 	dpp::message m;
 	component_builder cb(m);
 	std::stringstream output;
 	player opponent = get_pvp_opponent(event.command.usr.id, event.from);
-	player p1 = get_live_player(event, false);
+	player p = get_live_player(event, false);
+	bool turn = is_my_pvp_turn(event.command.usr.id);
 
-	output << "### " << p1.name << " vs " << opponent.name << "\n";
+	output << "### " << p.name << " vs " << opponent.name << "\n";
 
-	output << "This section under construction. You probably shouldn't be here yet.";
+	if (turn) {
+		output << "**Your turn!**";
+		size_t index = 0;
+		for (const auto & inv :  p.possessions) {
+			if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
+				cb.add_component(dpp::component()
+					.set_type(dpp::cot_button)
+					.set_id(security::encrypt("pvp_attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
+					.set_label("Attack using " + inv.name)
+					.set_style(dpp::cos_secondary)
+					.set_emoji("⚔️", 0, false)	
+				);
+			}
+		}
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("pvp_change_stance;" + std::string(p.stance == DEFENSIVE ? "o" : "d")))
+			.set_label("Stance: " + std::string(p.stance == DEFENSIVE ? "Defensive" : "Offensive") + " (click to change)")
+			.set_style(dpp::cos_secondary)
+			.set_emoji("🛡️", 0, false)
+		);
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("pvp_change_strike;" + std::string(p.attack == CUTTING ? "p" : "c")))
+			.set_label("Attack Type: " + std::string(p.attack == CUTTING ? "Cutting" : "Piercing") + " (click to change)")
+			.set_style(dpp::cos_secondary)
+			.set_emoji("🤺", 0, false)
+		);
+	} else {
+		output << "**" << opponent.name << "'s turn!**";
+	}
+
+	output << "\n\n```\n";
+	output << fmt::format("{0:<30s}{1:<30s}", p.name.substr(0, 28), opponent.name.substr(0, 28)) << "\n";
+	output << fmt::format("{0:<30s}{1:<30s}", fmt::format("Skill: {0:2d}", p.skill), fmt::format("Skill: {0:2d}", opponent.skill)) << "\n";
+	output << fmt::format("{0:<30s}{1:<30s}", fmt::format("Stamina: {0:2d}", p.stamina), fmt::format("Stamina: {0:2d}", opponent.stamina)) << "\n";
+	output << fmt::format("{0:<30s}{1:<30s}", fmt::format("Armour: {0:2d}", p.armour.rating), fmt::format("Armour: {0:2d}", opponent.armour.rating)) << "\n";
+	output << fmt::format("{0:<30s}{1:<30s}", fmt::format("Weapon: {0:2d}", p.weapon.rating), fmt::format("Weapon: {0:2d}", opponent.weapon.rating)) << "\n";
+	output << "```\n\n";
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -241,16 +292,15 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	
 	m = cb.get_message();
 	m.add_embed(embed);
+
 	return m;
 }
 
-void continue_pvp_combat(const dpp::interaction_create_t& event, player p) {
+void continue_pvp_combat(const dpp::interaction_create_t& event, player p, const std::stringstream& output) {
 	dpp::cluster& bot = *(event.from->creator);
 
 	dpp::message m(get_pvp_round(event));
-
-	p.save(event.command.usr.id);
-	update_live_player(event, p);
+	m.embeds[0].description += output.str();
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, m, p](const auto& cc) {
 		if (cc.is_error()) {
@@ -265,14 +315,164 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 		return false;
 	}
 	bool claimed{false};
+	player opponent = get_pvp_opponent(event.command.usr.id, event.from);
+	std::stringstream output1, output2;
 
 	if (parts[0] == "pvp_accept") {
 		/* Fall-through to prevent going to PvE combat code after accept */
 		claimed = true;
+	} else if (parts[0] == "pvp_attack" && is_my_pvp_turn(event.command.usr.id) && parts.size() >= 3) {
+		p.weapon.rating = atol(parts[2]);
+		p.weapon.name = parts[1];
+		/* Deal damage + saving throws */
+		long PAttack = dice() + dice() + p.skill + p.weapon.rating;
+		if ((p.stance == OFFENSIVE) && (opponent.stance == DEFENSIVE)) {
+			int Bonus = dice();
+			PAttack += Bonus;
+			output1 << "You are being offensive in stance, and " << opponent.name << " is shielding themselves from your blow (**+" << Bonus << " to your attack score**).";
+			output2 << "You are defensive in stance, and the " << p.name << " is bearing down on you (**+" << Bonus << " to their attack score**).";
+		}
+		output1 << "\n\nYou get a total attack score of **" << PAttack << "** using your **" << p.weapon.name << "**\n\n";
+		output2 << "\n\n" << p.name << " gets a total attack score of **" << PAttack << "** using their **" << p.weapon.name << "**\n\n";
+		long SaveRoll = dice() + dice();
+		bool Saved = false;		
+		if (opponent.stance == DEFENSIVE) {
+			output1 << " Because " << opponent.name << " is in a defensive position this round, they gains extra bonuses to their armour which may increase their chances of avoiding damage.";
+			output2 << " Because you are in a defensive position this round, you gain extra bonuses to your armour which may increase your chances of avoiding damage.";
+			SaveRoll -= dice();
+		}
+		if (SaveRoll <= opponent.armour.rating) {
+			Saved = true;
+		}
+		long D6 = dice();
+		long SDamage{}, KDamage{};
+		combat_strike KAttackType = p.attack;
+		if (Saved) {
+			output1 << " The blow bounces harmlessly off their " << opponent.armour.name <<"...";
+			output2 << " The blow bounces harmlessly off your " << opponent.armour.name <<"...";
+		} else {
+			output1 << " The blow cuts through their " << opponent.armour.name << " and lands in the **";
+			output2 << " The blow cuts through your " << opponent.armour.name << " and lands in the **";
+			switch (D6) {
+				case 1:
+					output1 << "head/neck";
+					output2 << "head/neck";
+					SDamage = dice();
+					KDamage = 1;
+					break;
+				case 2:
+					output1 << "legs";
+					output2 << "legs";
+					SDamage = 3;
+					KDamage = 1;
+					break;
+				case 3:
+					output1 << "torso";
+					output2 << "torso";
+					SDamage = dice();
+					KDamage = 0;
+					break;
+				case 4:
+					output1 << "arms";
+					output2 << "arms";
+					SDamage = 2;
+					KDamage = 2;
+					break;
+				case 5:
+					output1 << "hands";
+					output2 << "hands";
+					SDamage = 2;
+					KDamage = 1;
+					break;
+				case 6:
+					output1 << "weapon";
+					output2 << "weapon";
+					SDamage = 0;
+					KDamage = 1;
+					break;
+			}
+			output1 << "** area, ";
+			output2 << "** area, ";
+			switch (D6) {
+				case 1:
+					if (KAttackType == CUTTING) {
+						output1 << "Because the attack was a cutting attack, it causes severe damage to this part of the body, and extra stamina points are lost as a result!";
+						output2 << "Because the attack was a cutting attack, it causes severe damage to this part of the body, and extra stamina points are lost as a result!";
+						SDamage += dice();
+					}
+					break;
+				case 2:
+					if (KAttackType == PIERCING) {
+						output1 << "Because the attack was a piercing attack, it causes severe damage to the body, and extra stamina is lost due to the attack!";
+						output2 << "Because the attack was a piercing attack, it causes severe damage to the body, and extra stamina is lost due to the attack!";
+						SDamage += dice();
+					}
+					break;
+			}
+			output1 << " This causes ";
+			output2 << " This causes ";
+			if (SDamage == 0) {
+				output1 << "no **stamina** loss, ";
+				output2 << "no **stamina** loss, ";
+			} else {
+				output1 << SDamage << " points of **stamina** loss, ";
+				output2 << SDamage << " points of **stamina** loss, ";
+			}
+			output1 << "and ";
+			output2 << "and ";
+			if (KDamage == 0) {
+				output1 << "no **skill** loss. ";
+				output2 << "no **skill** loss. ";
+			} else {
+				output1 << KDamage << " points of **skill** loss. ";
+				output2 << KDamage << " points of **skill** loss. ";
+			}
+			opponent.stamina -= SDamage;
+			opponent.skill -= KDamage;
+			p.strike();			
+			if (p.stamina < 4) {
+				output1 << "You are very disorientated and confused and feeling very weak. ";
+				output2 << p.name + " is very disorientated and confused and feeling very weak. ";
+			} else if (opponent.stamina < 4) {
+				output1 << opponent.name + " is dazed and staggering, close to death. ";
+				output2 << "You are dazed and staggering, close to death. ";
+			}
+			if (p.skill < 5) {
+				output1 << "Your hands are trembling and you are unable to properly aim at the enemy, ";
+			} else if (opponent.skill < 5) {
+				output2 << "Your hands are trembling and you are unable to properly aim at the enemy, ";
+			}
+			if (opponent.stamina < 1 || p.stamina < 1) {
+				if (p.stamina < 1) {
+					output1 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
+					output2 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
+				} else {
+					output1 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
+					output2 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
+				}
+				/* Add experience on victory equal to remaining skill of enemy (indicates difficulty of the fight) */
+				//long xp = abs(std::min(p.combatant.skill, 0l) * 0.15f) + 1;
+				//output << "\n\n***+" + std::to_string(xp) + " experience points!***\n\n";
+				//p.add_experience(xp);
+				//output << "**" << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.combatant.name, p.name) << "**";
+			}
+		}			
+		swap_pvp_turn(event.command.usr.id);
+		claimed = true;
+	} else if (parts[0] == "pvp_change_stance" && parts.size() >= 2) {
+		p.stance = (parts[1] == "o" ? OFFENSIVE : DEFENSIVE);
+		claimed = true;
+	} else if (parts[0] == "pvp_change_strike" && parts.size() >= 2) {
+		p.attack = (parts[1] == "p" ? PIERCING : CUTTING);
+		claimed = true;
 	}
 
 	if (claimed) {
-		continue_pvp_combat(event, p);
+		p.save(event.command.usr.id);
+		update_live_player(event, p);
+		update_save_opponent(event, opponent);
+		update_opponent_message(event, get_pvp_round(opponent.event), output2);
+		continue_pvp_combat(event, p, output1);
 		return true;
 	}
 	return false;
