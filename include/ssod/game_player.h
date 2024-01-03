@@ -98,6 +98,10 @@ struct player {
 	 */
 	bool in_bank{};
 	/**
+	 * @brief True if in PVP picker
+	 */
+	bool in_pvp_picker{};
+	/**
 	 * @brief Inventory, spells or herbs have changed
 	 */
 	bool inv_change{};

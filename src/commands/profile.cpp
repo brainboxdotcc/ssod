@@ -35,15 +35,17 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	auto param = event.get_parameter("user");
 	std::string user;
 	player p;
+	bool self{false};
 	if (param.index() == 0) {
 		p = get_live_player(event);
 		user = p.name;
+		self = true;
 	} else {
 		user = std::get<std::string>(event.get_parameter("user"));
 	}
 	auto rs = db::query("SELECT * FROM game_users WHERE name = ?", {user});
 	if (rs.empty()) {
-		event.reply(dpp::message("No such user. Remember, you must use an in-game nickname, not a discord username!").set_flags(dpp::m_ephemeral));
+		event.reply(dpp::message(self ? "You do not have a profile yet. You must create a character by using the `/start` command!" : "No such user. Remember, you must use an in-game nickname, not a discord username!").set_flags(dpp::m_ephemeral));
 		return;
 	}
 	p.experience = atol(rs[0].at("experience"));
