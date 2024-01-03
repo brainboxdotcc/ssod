@@ -589,8 +589,10 @@ void player::drop_everything() {
 		db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {paragraph, i.name, i.flags});
 	}
 	possessions.clear();
-	spells.clear();
-	herbs.clear();
+	possessions.emplace_back(item{ .name = "Hunting Dagger", .flags = "W1" });
+	possessions.emplace_back(item{ .name = "Leather Coat", .flags = "A1" });
+	possessions.emplace_back(item{ .name = "Stamina Potion", .flags = "ST+4" });
+	possessions.emplace_back(item{ .name = "Skill Potion", .flags = "SK+4" });
 	inv_change = true;
 }
 
