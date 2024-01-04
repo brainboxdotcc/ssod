@@ -25,6 +25,7 @@ struct combat_state {
 	dpp::snowflake opponent{};
 	bool accepted{false};
 	bool my_turn;
+	time_t last_updated{};
 };
 
 bool has_active_pvp(const dpp::snowflake id);
@@ -54,3 +55,5 @@ bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<st
 void continue_combat(const dpp::interaction_create_t& event, player p);
 
 void continue_pvp_combat(const dpp::interaction_create_t& event, player p, const std::stringstream& output);
+
+void end_abandoned_pvp();

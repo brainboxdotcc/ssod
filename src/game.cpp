@@ -58,8 +58,8 @@ void add_chat(std::string& text, long paragraph_id) {
 		} else  if (row.at("event_type") == "combat") {
 			std::string item = row.at("message");
 			text += fmt::format("[{}] *** {} challenges {} to combat!\n", row.at("message_time"), row.at("name"), row.at("message"));
-		} else  if (row.at("event_type") == "combat") {
-			text += fmt::format("[{}] *** {} died...\n", row.at("message_time"), row.at("name"));
+		} else  if (row.at("event_type") == "death") {
+			text += fmt::format("[{}] *** {} died{}...\n", row.at("message_time"), row.at("name"), row.at("message").empty() ? "" : " fighting " + row.at("message"));
 		}
 	}
 	text += "```\n";
@@ -138,7 +138,6 @@ void game_select(const dpp::select_click_t &event) {
 	} else if (custom_id == "fight_pvp" && p.in_pvp_picker) {
 		dpp::snowflake user(event.values[0]);
 		challenge_pvp(event, user);
-		p.inv_change = true;
 		claimed = true;
 	}
 	if (claimed) {
@@ -366,7 +365,9 @@ void game_nav(const dpp::button_click_t& event) {
 			)
 		);
 		p = end_pvp_combat(event);
-		p2.event.edit_original_response(m);
+		if (p2.event.from) {
+			p2.event.edit_original_response(m);
+		}
 		claimed = true;
 	} else if (parts[0] == "pvp_accept" && p.stamina > 0) {
 		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
@@ -530,7 +531,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
 		if (cc.is_error()) {
 			bot.log(dpp::ll_error, "Internal error displaying inventory:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
-			event.reply("Internal error displaying inventory:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			event.reply(dpp::message("Internal error displaying inventory:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
 }
@@ -638,7 +639,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
 		if (cc.is_error()) {
 			bot.log(dpp::ll_error, "Internal error displaying bank: " + cc.http_info.body + " Message: " + m.build_json());
-			event.reply("Internal error displaying bank:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			event.reply(dpp::message("Internal error displaying bank:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
 }
@@ -649,7 +650,13 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 
 	int64_t t = time(nullptr) - 600;
 	auto others = db::query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
-	content << "\n__**Select player to fight**__\n\nThe player you pick will be sent a request and must accept it to fight you. If they leave the area, the request will be cancelled.\n";
+	dpp::snowflake opponent_id = get_pvp_opponent_id(event.command.usr.id);
+
+	if (opponent_id.empty()) {
+		content << "\n__**Select player to fight**__\n\nThe player you pick will be sent a request and must accept it to fight you. If they leave the area, the request will be cancelled.\n";
+	} else {
+		content << "\n__**Please wait for your challenge to be accepted**__\n\nIf the user does not accept or reject your request, you will receive no response. If you wish to give up waiting, simply click the " + sprite::magic05.get_mention() + " Back button.\n";
+	}
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -664,7 +671,7 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 	dpp::message m;
 	dpp::component fight_menu;
 
-	if (others.size() > 0) {
+	if (others.size() > 0 && opponent_id.empty()) {
 
 		fight_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(0)
@@ -701,8 +708,7 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 
 	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
 		if (cc.is_error()) {
-			bot.log(dpp::ll_error, "Internal error displaying pvp picker: " + cc.http_info.body + " Message: " + m.build_json());
-			event.reply("Internal error displaying pvp picker:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			event.reply(dpp::message("The player you have selected has is not active at this location! Perhaps they left the area while you were choosing?").set_flags(dpp::m_ephemeral));
 		}
 	});
 }
@@ -920,7 +926,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
 		if (cc.is_error()) {{
 			bot.log(dpp::ll_error, "Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
-			event.reply("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			event.reply(dpp::message("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}}
 	});
 }

@@ -121,4 +121,10 @@ namespace sprite {
 	inline const dpp::emoji inv_drop("inv_drop", 1187450540041449583);
 	inline const dpp::emoji bar_red("barred", 1191532848537141279);
 	inline const dpp::emoji bar_green("bargreen", 1191532758636433522);
+	inline const dpp::emoji sword_box_red("S_Sword15", 1192261648753373184);
+	inline const dpp::emoji sword_box_orange("S_Sword16", 1192261650166857768);
+	inline const dpp::emoji sword_box_yellow("S_Sword17", 1192261651546779712);
+	inline const dpp::emoji sword_box_green("S_Sword18", 1192261596156797029);
+	inline const dpp::emoji sword_box_blue("S_Sword19", 1192261656407969902);
+	inline const dpp::emoji sword_box_purple("S_Sword20", 1192261659469824070);
 };
