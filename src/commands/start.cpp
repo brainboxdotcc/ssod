@@ -80,6 +80,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			event.reply(dpp::message("Sorry adventurer, this button has expired " + sprite::skull.get_mention() + " - Please try again using `/start`.").set_flags(dpp::m_ephemeral));
 		}
 	});
+	
 	bot.on_select_click([&bot](const dpp::select_click_t &event) {
 		if (player_is_live(event)) {
 			return;
@@ -116,7 +117,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
 		} else {
-			event.reply("State error");
+			event.reply(dpp::message("Sorry adventurer, this button has expired " + sprite::skull.get_mention() + " - Please try again using `/start`.").set_flags(dpp::m_ephemeral));
 		}
 	});
 	bot.on_form_submit([&bot](const dpp::form_submit_t & event) {

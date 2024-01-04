@@ -108,6 +108,14 @@ long player::get_level() {
 	return std::max(1l, level - 1);
 }
 
+long player::xp_worth() {
+	long level = get_level();
+	if (level >= MAX_LEVEL - 1) {
+		return ((levels[MAX_LEVEL - 1] - levels[MAX_LEVEL - 2]) / 10);
+	}
+	return ((levels[level + 1] - levels[level]) / 10);
+}
+
 void player::death_xp_loss() {
 	long level = get_level();
 	if (level > 1) {

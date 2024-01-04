@@ -22,6 +22,7 @@
 #include <ssod/listeners.h>
 #include <ssod/database.h>
 #include <ssod/ssod.h>
+#include <ssod/combat.h>
 #include <ssod/command.h>
 
 #include <ssod/commands/info.h>
@@ -154,6 +155,9 @@ namespace listeners {
 			bot.start_timer([&bot](dpp::timer t) {
 				welcome_new_guilds(bot);
 			}, 30);
+			bot.start_timer([&bot](dpp::timer t) {
+				end_abandoned_pvp();
+			}, 10);
 
 			set_presence();
 			welcome_new_guilds(bot);

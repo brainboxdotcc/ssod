@@ -286,6 +286,7 @@ struct player {
 	long get_level();
 	void death_xp_loss();
 	double get_percent_of_current_level();
+	long xp_worth();
 
 	dpp::message get_registration_message(class dpp::cluster& cluster, const dpp::interaction_create_t &event);
 	dpp::message get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event);

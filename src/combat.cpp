@@ -29,7 +29,10 @@
 #include <fmt/format.h>
 #include <ssod/game.h>
 
+const time_t combat_timeout = 60 * 5;
+
 std::map<dpp::snowflake, combat_state> pvp_list;
+std::mutex pvp_list_lock;
 
 const std::vector<std::string_view> death_messages{
 	"{} departs the land of the living.",
@@ -80,17 +83,20 @@ const std::vector<std::string_view> death_messages{
 };
 
 void remove_pvp(const dpp::snowflake id) {
+	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p1 = pvp_list.find(id);
 	if (p1 != pvp_list.end()) {
-		auto p2 = pvp_list.find(p1->second.opponent);
+		dpp::snowflake o = p1->second.opponent;
+		pvp_list.erase(p1);
+		auto p2 = pvp_list.find(o);
 		if (p2 != pvp_list.end()) {
 			pvp_list.erase(p2);
 		}
-		pvp_list.erase(p1);
 	}
 }
 
 player get_pvp_opponent(const dpp::snowflake id, dpp::discord_client* shard) {
+	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p1 = pvp_list.find(id);
 	if (p1 != pvp_list.end()) {
 		dpp::interaction_create_t tmp(shard, "");
@@ -102,16 +108,21 @@ player get_pvp_opponent(const dpp::snowflake id, dpp::discord_client* shard) {
 
 void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake opponent) {
 	player p = get_live_player(event, false);
-	pvp_list[event.command.usr.id] = {
-		.opponent = opponent,
-		.accepted = false,
-		.my_turn = false,
-	};
-	pvp_list[opponent] = {
-		.opponent = event.command.usr.id,
-		.accepted = false,
-		.my_turn = false,
-	};
+	{
+		std::lock_guard<std::mutex> l(pvp_list_lock);
+		pvp_list[event.command.usr.id] = {
+			.opponent = opponent,
+			.accepted = false,
+			.my_turn = false,
+			.last_updated = time(nullptr),
+		};
+		pvp_list[opponent] = {
+			.opponent = event.command.usr.id,
+			.accepted = false,
+			.my_turn = false,
+			.last_updated = time(nullptr),
+		};
+	}
 	player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 	send_chat(event.command.usr.id, p.paragraph, p2.name, "combat");
 	dpp::message m = dpp::message("<@" + opponent.str() +  "> You have been challenged to combat by " + p.name).set_allowed_mentions(true, false, false, false, {}, {});
@@ -136,10 +147,13 @@ void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake 
 	);
 	
 	//event.from->creator->message_create(m);
-	p2.event.edit_original_response(m);
+	if (p2.event.from) {
+		p2.event.edit_original_response(m);
+	}
 }
 
 dpp::snowflake get_pvp_opponent_id(const dpp::snowflake id) {
+	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p1 = pvp_list.find(id);
 	if (p1 != pvp_list.end()) {
 		return p1->second.opponent;
@@ -174,21 +188,26 @@ void update_opponent_message(const dpp::interaction_create_t& event, dpp::messag
 	m.embeds[0].description += output.str();
 	if (has_active_pvp(event.command.usr.id)) {
 		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
-		p2.event.edit_original_response(m);	
+		if (p2.event.from) {
+			p2.event.edit_original_response(m);	
+		}
 	}	
 }
 
 void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
+	std::lock_guard<std::mutex> l(pvp_list_lock);
 	bool turn = random(0, 1);
 	pvp_list[id2] = {
 		.opponent = id1,
 		.accepted = true,
 		.my_turn = turn,
+		.last_updated = time(nullptr),
 	};
 	pvp_list[id1] = {
 		.opponent = id2,
 		.accepted = true,
 		.my_turn = !turn,
+		.last_updated = time(nullptr),
 	};
 }
 
@@ -209,22 +228,61 @@ player end_pvp_combat(const dpp::interaction_create_t& event) {
 }
 
 bool has_active_pvp(const dpp::snowflake id) {
+	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p = pvp_list.find(id);
 	return (p != pvp_list.end() && p->second.accepted == true);
 }
 
 bool is_my_pvp_turn(const dpp::snowflake id) {
+	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p = pvp_list.find(id);
 	return (p != pvp_list.end() && p->second.accepted == true && p->second.my_turn == true);
 }
 
 void swap_pvp_turn(const dpp::snowflake id) {
+	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p = pvp_list.find(id);
 	if (p != pvp_list.end() && p->second.accepted == true) {
 		p->second.my_turn = !p->second.my_turn;
+		p->second.last_updated = time(nullptr);
 		auto p2 = pvp_list.find(p->second.opponent);
 		if (p2 != pvp_list.end()) {
 			p2->second.my_turn = !p2->second.my_turn;
+			p2->second.last_updated = time(nullptr);
+		}
+	}
+}
+
+void end_abandoned_pvp() {
+	time_t now = time(nullptr);
+	std::map<dpp::snowflake, combat_state> pvp_list_copy;
+	{
+		std::lock_guard<std::mutex> l(pvp_list_lock);
+		pvp_list_copy = pvp_list;
+	}
+	for (const auto& [id, pvp] : pvp_list_copy) {
+		if (now - pvp.last_updated > combat_timeout && pvp.my_turn && pvp.accepted) {
+			/* Five minutes without action, PvP is forfeit to the other player */
+			dpp::interaction_create_t event(nullptr, "");
+			event.command.usr.id = id;
+			player p = get_live_player(event, false);
+			event.from = p.event.from;
+			player opponent = get_pvp_opponent(event.command.usr.id, event.from);
+			if (opponent.stamina > 0 && p.stamina > 0) {
+				p.stamina = 0;
+				p.in_pvp_picker = false;
+				opponent.in_pvp_picker = false;
+				p.save(event.command.usr.id);
+				update_live_player(event, p);
+				update_save_opponent(event, opponent);
+				update_opponent_message(event, get_pvp_round(opponent.event), std::stringstream(p.name + " timed out after 5 minutes without activity"));
+				update_opponent_message(opponent.event, get_pvp_round(event), std::stringstream(p.name + " timed out after 5 minutes without activity"));
+				p = end_pvp_combat(event);
+				/* To the victor go the spoils */
+				opponent.add_experience(p.xp_worth());
+				send_chat(event.command.usr.id, p.paragraph, "the raveges of time", "death");
+				update_save_opponent(event, opponent);
+			}
 		}
 	}
 }
@@ -241,37 +299,63 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	output << "### " << p.name << " vs " << opponent.name << "\n";
 
 	if (turn) {
-		output << "**Your turn!**";
-		size_t index = 0;
-		for (const auto & inv :  p.possessions) {
-			if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
-				cb.add_component(dpp::component()
-					.set_type(dpp::cot_button)
-					.set_id(security::encrypt("pvp_attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
-					.set_label("Attack using " + inv.name)
-					.set_style(dpp::cos_secondary)
-					.set_emoji("⚔️", 0, false)	
-				);
+		if (p.stamina > 0) {
+			output << "**Your turn!** - Respond with an action before the time runs out " + dpp::utility::timestamp(time(nullptr) + combat_timeout, dpp::utility::tf_relative_time) + "!";
+			size_t index = 0;
+			for (const auto & inv :  p.possessions) {
+				if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
+					dpp::emoji e = get_emoji(inv.name, inv.flags);
+					cb.add_component(dpp::component()
+						.set_type(dpp::cot_button)
+						.set_id(security::encrypt("pvp_attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
+						.set_label("Attack using " + inv.name)
+						.set_style(dpp::cos_secondary)
+						.set_emoji(e.name, e.id)
+					);
+				}
 			}
+			cb.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id(security::encrypt("pvp_change_stance;" + std::string(p.stance == DEFENSIVE ? "o" : "d")))
+				.set_label("Stance: " + std::string(p.stance == DEFENSIVE ? "Defensive" : "Offensive") + " (click to change)")
+				.set_style(dpp::cos_secondary)
+				.set_emoji(sprite::wood03.name, sprite::wood03.id)
+			);
+			cb.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id(security::encrypt("pvp_change_strike;" + std::string(p.attack == CUTTING ? "p" : "c")))
+				.set_label("Attack Type: " + std::string(p.attack == CUTTING ? "Cutting" : "Piercing") + " (click to change)")
+				.set_style(dpp::cos_secondary)
+				.set_emoji(sprite::shoes04.name, sprite::shoes04.id)
+			);
 		}
-		cb.add_component(dpp::component()
-			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("pvp_change_stance;" + std::string(p.stance == DEFENSIVE ? "o" : "d")))
-			.set_label("Stance: " + std::string(p.stance == DEFENSIVE ? "Defensive" : "Offensive") + " (click to change)")
-			.set_style(dpp::cos_secondary)
-			.set_emoji("🛡️", 0, false)
-		);
-		cb.add_component(dpp::component()
-			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("pvp_change_strike;" + std::string(p.attack == CUTTING ? "p" : "c")))
-			.set_label("Attack Type: " + std::string(p.attack == CUTTING ? "Cutting" : "Piercing") + " (click to change)")
-			.set_style(dpp::cos_secondary)
-			.set_emoji("🤺", 0, false)
-		);
 	} else {
-		output << "**" << opponent.name << "'s turn!**";
+		if (p.stamina > 0) { 
+			output << "**" << opponent.name << "'s turn!** - They must respond " + dpp::utility::timestamp(time(nullptr) + combat_timeout, dpp::utility::tf_relative_time) + " or will forfeit combat";
+		}
+	}
+	if (p.stamina < 1) {
+		p.in_pvp_picker = false;
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("respawn"))
+			.set_label("Respawn")
+			.set_style(dpp::cos_danger)
+			.set_emoji(sprite::skull.name, sprite::skull.id)
+		);
+	}
+	else if (opponent.stamina < 1) {
+		p.in_combat = p.in_pvp_picker = false;
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
+			.set_label("Victory!")
+			.set_style(dpp::cos_primary)
+			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
+		);
 	}
 
+	output << "\nYour Stance: **" << (p.stance == DEFENSIVE ? "defensive " + sprite::wood03.get_mention() : "offensive " + sprite::sword008.get_mention()) << "**";
 	output << "\n\n```\n";
 	output << fmt::format("{0:<30s}{1:<30s}", p.name.substr(0, 28), opponent.name.substr(0, 28)) << "\n";
 	output << fmt::format("{0:<30s}{1:<30s}", fmt::format("Skill: {0:2d}", p.skill), fmt::format("Skill: {0:2d}", opponent.skill)) << "\n";
@@ -304,8 +388,8 @@ void continue_pvp_combat(const dpp::interaction_create_t& event, player p, const
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, m, p](const auto& cc) {
 		if (cc.is_error()) {
-			bot.log(dpp::ll_error, "Internal error displaying combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ": " + cc.http_info.body);
-			event.reply("Internal error displaying combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			bot.log(dpp::ll_error, "Internal error displaying PvP combat location " + std::to_string(p.paragraph) + ": " + cc.http_info.body);
+			event.reply(dpp::message("Internal error displaying Pvp combat location " + std::to_string(p.paragraph) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
 }
@@ -316,6 +400,7 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 	}
 	bool claimed{false};
 	player opponent = get_pvp_opponent(event.command.usr.id, event.from);
+	dpp::snowflake oid = get_pvp_opponent_id(event.command.usr.id);
 	std::stringstream output1, output2;
 
 	if (parts[0] == "pvp_accept") {
@@ -332,8 +417,8 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 			output1 << "You are being offensive in stance, and " << opponent.name << " is shielding themselves from your blow (**+" << Bonus << " to your attack score**).";
 			output2 << "You are defensive in stance, and the " << p.name << " is bearing down on you (**+" << Bonus << " to their attack score**).";
 		}
-		output1 << "\n\nYou get a total attack score of **" << PAttack << "** using your **" << p.weapon.name << "**\n\n";
-		output2 << "\n\n" << p.name << " gets a total attack score of **" << PAttack << "** using their **" << p.weapon.name << "**\n\n";
+		output1 << "You get a total attack score of **" << PAttack << "** using your **" << p.weapon.name << "**\n\n";
+		output2 << p.name << " gets a total attack score of **" << PAttack << "** using their **" << p.weapon.name << "**\n\n";
 		long SaveRoll = dice() + dice();
 		bool Saved = false;		
 		if (opponent.stance == DEFENSIVE) {
@@ -450,11 +535,6 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 					output1 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
 					output2 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
 				}
-				/* Add experience on victory equal to remaining skill of enemy (indicates difficulty of the fight) */
-				//long xp = abs(std::min(p.combatant.skill, 0l) * 0.15f) + 1;
-				//output << "\n\n***+" + std::to_string(xp) + " experience points!***\n\n";
-				//p.add_experience(xp);
-				//output << "**" << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.combatant.name, p.name) << "**";
 			}
 		}			
 		swap_pvp_turn(event.command.usr.id);
@@ -473,6 +553,20 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 		update_save_opponent(event, opponent);
 		update_opponent_message(event, get_pvp_round(opponent.event), output2);
 		continue_pvp_combat(event, p, output1);
+		if (p.stamina < 1 || opponent.stamina < 1) {
+			p = end_pvp_combat(event);
+			/* To the victor go the spoils */
+			if (opponent.stamina < 1) {
+				p.add_experience(opponent.xp_worth());
+				send_chat(oid, opponent.paragraph, p.name, "death");
+			} else {
+				opponent.add_experience(p.xp_worth());
+				send_chat(event.command.usr.id, p.paragraph, opponent.name, "death");
+			}
+			p.save(event.command.usr.id);
+			update_live_player(event, p);
+			update_save_opponent(event, opponent);
+		}
 		return true;
 	}
 	return false;
@@ -546,17 +640,17 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
-			.set_label("Continue")
+			.set_label("Victory!")
 			.set_style(dpp::cos_primary)
-			.set_emoji("▶️", 0, false)	
+			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 		);
 	} else {
 
 		long EAttack = dice() + dice() + ESkill + EWeapon;
 		long PAttack = dice() + dice() + p.skill + PWeapon;
 
-		output << "Enemy Stance: **" << (EStance == DEFENSIVE ? "defensive 🛡️" : "offensive ⚔️") << "**\n";
-		output << "Your Stance: **" << (p.stance == DEFENSIVE ? "defensive 🛡️" : "offensive ⚔️") << "**\n";
+		output << "Enemy Stance: **" << (EStance == DEFENSIVE ? "defensive " + sprite::wood03.get_mention() : "offensive " + sprite::sword008.get_mention()) << "**\n";
+		output << "Your Stance: **" << (p.stance == DEFENSIVE ? "defensive " + sprite::wood03.get_mention() : "offensive " + sprite::sword008.get_mention()) << "**\n";
 
 		if ((EStance == OFFENSIVE) && (p.stance == DEFENSIVE)) {
 			int Bonus = dice();
@@ -732,9 +826,9 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
-				.set_label("Continue")
+				.set_label("Victory!")
 				.set_style(dpp::cos_primary)
-				.set_emoji("▶️", 0, false)	
+				.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 			);
 			CombatEnded = true;
 		}
@@ -745,12 +839,13 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			size_t index = 0;
 			for (const auto & inv :  p.possessions) {
 				if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
+					dpp::emoji e = get_emoji(inv.name, inv.flags);
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
 						.set_id(security::encrypt("attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
 						.set_label("Attack using " + inv.name)
 						.set_style(dpp::cos_secondary)
-						.set_emoji("⚔️", 0, false)	
+						.set_emoji(e.name, e.flags)
 					);
 				}
 			}
@@ -759,14 +854,14 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				.set_id(security::encrypt("change_stance;" + std::string(p.stance == DEFENSIVE ? "o" : "d")))
 				.set_label("Stance: " + std::string(p.stance == DEFENSIVE ? "Defensive" : "Offensive") + " (click to change)")
 				.set_style(dpp::cos_secondary)
-				.set_emoji("🛡️", 0, false)
+				.set_emoji(sprite::wood03.name, sprite::wood03.id)
 			);
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("change_strike;" + std::string(p.attack == CUTTING ? "p" : "c")))
 				.set_label("Attack Type: " + std::string(p.attack == CUTTING ? "Cutting" : "Piercing") + " (click to change)")
 				.set_style(dpp::cos_secondary)
-				.set_emoji("🤺", 0, false)
+				.set_emoji(sprite::shoes04.name, sprite::shoes04.id)
 			);
 		}
 	}
@@ -790,8 +885,8 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, m, p](const auto& cc) {
 		if (cc.is_error()) {
-			bot.log(dpp::ll_error, "Internal error displaying combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ": " + cc.http_info.body);
-			event.reply("Internal error displaying combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			bot.log(dpp::ll_error, "Internal error displaying PvE combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ": " + cc.http_info.body);
+			event.reply(dpp::message("Internal error displaying PvE combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
 
