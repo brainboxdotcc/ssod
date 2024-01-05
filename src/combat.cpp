@@ -845,7 +845,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 						.set_id(security::encrypt("attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
 						.set_label("Attack using " + inv.name)
 						.set_style(dpp::cos_secondary)
-						.set_emoji(e.name, e.flags)
+						.set_emoji(e.name, e.id)
 					);
 				}
 			}
@@ -885,7 +885,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, m, p](const auto& cc) {
 		if (cc.is_error()) {
-			bot.log(dpp::ll_error, "Internal error displaying PvE combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ": " + cc.http_info.body);
+			bot.log(dpp::ll_error, "Internal error displaying PvE combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ": " + cc.http_info.body + " -- " + m.build_json());
 			event.reply(dpp::message("Internal error displaying PvE combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
