@@ -60,6 +60,7 @@ std::string remove_lead(const std::string& in) {
 }
 
 void page(const dpp::interaction_create_t& event, bool document, std::string path = "") {
+	bool top = path.empty();
 	path = "../resource/lore/" + path;
 	dpp::cluster* bot = event.from->creator;
 	fs::path fullpath(path);
@@ -109,13 +110,15 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			}
 			title = replace_string(title, std::to_string(current_page) + " ", "");
 		}
-		cb.add_component(dpp::component()
-			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("lore;" + remove_lead(replace_string(fullpath.string() + "/", "//", "/"))))
-			.set_label("Back")
-			.set_style(dpp::cos_secondary)
-			.set_emoji(sprite::spear003.name, sprite::spear003.id)
-		);
+		if (!top) {
+			cb.add_component(dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id(security::encrypt("lore;" + remove_lead(replace_string(fullpath.string() + "/", "//", "/"))))
+				.set_label("Back")
+				.set_style(dpp::cos_secondary)
+				.set_emoji(sprite::spear003.name, sprite::spear003.id)
+			);
+		}
 		embed.set_title(title);
 		embed.set_footer(dpp::embed_footer{ 
 			.text = document ? std::to_string(pages) + " page" + (pages > 1 ? "s" : "") + ", " + std::to_string(mins_read_time(whole_doc)) + " minutes read time" : "Lore Information", 
@@ -173,7 +176,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 				);
 			}
 		}
-		if (!document && path != "") {
+		if (!document && path != "" && !top) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("lore;"))
