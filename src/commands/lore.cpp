@@ -204,8 +204,8 @@ dpp::slashcommand lore_command::register_command(dpp::cluster& bot) {
 			return;
 		}
 		std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
-		if ((parts[0] == "lore" || parts[0] == "lore-read") && parts.size() >= 2) {
-			page(event, parts[0] == "lore-read", parts[1]);
+		if ((parts[0] == "lore" || parts[0] == "lore-read")) {
+			page(event, parts[0] == "lore-read", parts.size() >= 2 ? parts[1] : "");
 		}
 	});
 	return dpp::slashcommand("lore", "Show lore pages about the game world", bot.me.id);

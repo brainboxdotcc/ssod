@@ -74,7 +74,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 				.set_text_style(dpp::text_short)
 			});
 			event.dialog(modal);
-		} else if (custom_id == "lore" || custom_id == "lore-read") {
+		} else if (custom_id.substr(0, 4) == "lore") {
 			/* Do nothing, this is handled by a different part of the bot */
 		} else {
 			event.reply(dpp::message("Sorry adventurer, this button has expired " + sprite::skull.get_mention() + " - Please try again using `/start`.").set_flags(dpp::m_ephemeral));

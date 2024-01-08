@@ -574,18 +574,22 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		.set_placeholder("Deposit Item")
 		.set_id(security::encrypt("deposit"));
 	size_t index{0};
+	std::set<std::string> ds;
 	for (const auto& inv : p.possessions) {
 		if (dpp::lowercase(inv.name) == "scroll") {
 			/* Can't bank a scroll! */
 			continue;
 		}
-		dpp::emoji e = get_emoji(inv.name, inv.flags);
-		deposit_menu.add_select_option(
-			dpp::select_option(inv.name, inv.name + ";" + inv.flags, describe_item(inv.flags, inv.name).substr(0, 100))
-			.set_emoji(e.name, e.id)
-		);
-		if (index++ == 25) {
-			break;
+		if (ds.find(inv.name) == ds.end()) {
+			dpp::emoji e = get_emoji(inv.name, inv.flags);
+			deposit_menu.add_select_option(
+				dpp::select_option(inv.name, inv.name + ";" + inv.flags, describe_item(inv.flags, inv.name).substr(0, 100))
+				.set_emoji(e.name, e.id)
+			);
+			if (index++ == 25) {
+				break;
+			}
+			ds.insert(inv.name);
 		}
 	}
 	withdraw_menu.set_type(dpp::cot_selectmenu)
@@ -593,15 +597,19 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		.set_max_values(1)
 		.set_placeholder("Withdraw Item")
 		.set_id(security::encrypt("withdraw"));
+	std::set<std::string> dup_set;
 	for (const auto& bank_item : bank_items) {
-		dpp::emoji e = get_emoji(bank_item.at("item_desc"), bank_item.at("item_flags"));
-		withdraw_menu.add_select_option(
-			dpp::select_option(bank_item.at("item_desc"), bank_item.at("item_desc") + ";" + bank_item.at("item_flags"), describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")).substr(0, 100))
-			.set_emoji(e.name, e.id)
-		);
+		if (dup_set.find(bank_item.at("item_desc")) == dup_set.end()) {
+			dpp::emoji e = get_emoji(bank_item.at("item_desc"), bank_item.at("item_flags"));
+			withdraw_menu.add_select_option(
+				dpp::select_option(bank_item.at("item_desc"), bank_item.at("item_desc") + ";" + bank_item.at("item_flags"), describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")).substr(0, 100))
+				.set_emoji(e.name, e.id)
+			);
+			dup_set.insert(bank_item.at("item_desc"));
+		}
 	}
 
-	if (bank_items.size() < 25 && index > 0) {
+	if (dup_set.size() < 25 && index > 0) {
 		/* User has something they can deposit in their inventory and bank is not full */
 		m.add_embed(embed).add_component(dpp::component().add_component(deposit_menu));
 	}
