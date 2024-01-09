@@ -37,9 +37,11 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	player p;
 	bool self{false};
 	if (param.index() == 0) {
-		p = get_live_player(event);
-		user = p.name;
-		self = true;
+		if (player_is_live(event)) {
+			p = get_live_player(event);
+			user = p.name;
+			self = true;
+		}
 	} else {
 		user = std::get<std::string>(event.get_parameter("user"));
 	}
@@ -50,7 +52,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	}
 	p.experience = atol(rs[0].at("experience"));
 
-	std::string content{"### Level " + std::to_string(p.get_level()) + "\n"};
+	std::string content{"### Level " + std::to_string(p.get_level()) + " " + std::string(race((player_race)atoi(rs[0].at("race")))) + " " + std::string(profession((player_profession)atoi(rs[0].at("profession")))) +  "\n"};
 	int percent = p.get_percent_of_current_level();
 	for (int x = 0; x < 100; x += 10) {
 		if (x < percent) {
@@ -71,6 +73,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		})
 		.set_colour(0xd5b994)
 		.set_description(content)
+		.set_image("attachment://race.jpg")
 		.add_field("Stamina", sprite::health_heart.get_mention() + " " + rs[0].at("stamina"), true)
 		.add_field("Skill", sprite::book07.get_mention() + " " + rs[0].at("skill"), true)
 		.add_field("Luck", sprite::clover.get_mention() + " " + rs[0].at("luck"), true)
@@ -81,7 +84,34 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field("Armour", sprite::helm03.get_mention() + " " + rs[0].at("armour_rating"), true)
 		.add_field("Weapon", sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating"), true)
 		;
+	std::string file;
+	switch (atoi(rs[0].at("race"))) {
+		case race_barbarian:
+			file = "../resource/lore/races/barbarian.jpg";
+		break;
+		case race_dark_elf:
+			file = "../resource/lore/races/darkelf.jpg";
+		break;
+		case race_dwarf:
+			file = "../resource/lore/races/dwarf.jpg";
+		break;
+		case race_elf:
+			file = "../resource/lore/races/elf.jpg";
+		break;
+		case race_goblin:
+			file = "../resource/lore/races/goblin.jpg";
+		break;
+		case race_human:
+			file = "../resource/lore/races/human.jpg";
+		break;
+		case race_lesser_orc:
+			file = "../resource/lore/races/lesser-orc.jpg";
+		break;
+		case race_orc:
+			file = "../resource/lore/races/orc.jpg";
+		break;
+	}
 
-	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral).add_file("race.jpg", dpp::utility::read_file(file)));
 
 }

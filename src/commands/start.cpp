@@ -108,7 +108,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			p_old.inv_change = true;
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
-		} else  if (custom_id == "select_player_spells" && p_old.state == state_pick_magic) {
+		} else if (custom_id == "select_player_spells" && p_old.state == state_pick_magic) {
 			p_old.spells.clear();
 			for (const auto & s : event.values) {
 				p_old.spells.push_back(item{ .name = s, .flags = "SPELL"});

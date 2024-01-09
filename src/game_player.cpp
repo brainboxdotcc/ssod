@@ -77,9 +77,9 @@ void update_live_player(const dpp::interaction_create_t& event, player p) {
 }
 
 void move_from_registering_to_live(const dpp::interaction_create_t& event, player p) {
-	live_players[event.command.usr.id] = p;
 	auto f = registering_players.find(event.command.usr.id);
 	if (f != registering_players.end()) {
+		live_players[event.command.usr.id] = p;
 		registering_players.erase(f);
 	}
 }

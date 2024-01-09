@@ -24,14 +24,14 @@
  */
 enum player_race {
 	race_error = 0,
-	race_human,
-	race_elf,
-	race_orc,
-	race_dwarf,
-	race_lesser_orc,
-	race_barbarian,
-	race_goblin,
-	race_dark_elf
+	race_human = 1,
+	race_elf = 2,
+	race_orc = 3,
+	race_dwarf = 4,
+	race_lesser_orc = 5,
+	race_barbarian = 6,
+	race_goblin = 7,
+	race_dark_elf = 8,
 };
 
 /**
@@ -39,12 +39,12 @@ enum player_race {
  */
 enum player_profession {
 	prof_error = 0,
-	prof_warrior,
-	prof_wizard,
-	prof_thief,
-	prof_woodsman,
-	prof_assassin,
-	prof_mercenary
+	prof_warrior = 1,
+	prof_wizard = 2,
+	prof_thief = 3,
+	prof_woodsman = 4,
+	prof_assassin = 5,
+	prof_mercenary = 6,
 };
 
 const char* profession(player_profession p);
