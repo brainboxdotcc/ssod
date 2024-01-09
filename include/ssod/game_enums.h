@@ -18,6 +18,7 @@
  *
  ************************************************************************************/
 #pragma once
+#include <string>
 
 /**
  * @brief An enumeration used to hold a player's race inside a Player class.
@@ -49,3 +50,4 @@ enum player_profession {
 
 const char* profession(player_profession p);
 const char* race(player_race r);
+std::string matrix_image(player_race r, player_profession p, bool male = true);
