@@ -18,36 +18,11 @@
  *
  ************************************************************************************/
 #pragma once
-#include <string>
+#include <ssod/ssod.h>
+#include <ssod/command.h>
 
-/**
- * @brief An enumeration used to hold a player's race inside a Player class.
- */
-enum player_race {
-	race_error = 0,
-	race_human = 1,
-	race_elf = 2,
-	race_orc = 3,
-	race_dwarf = 4,
-	race_lesser_orc = 5,
-	race_barbarian = 6,
-	race_goblin = 7,
-	race_dark_elf = 8,
+struct gender_command : public command {
+	static constexpr std::string_view name{"gender"};
+	static dpp::slashcommand register_command(dpp::cluster& bot);
+	static void route(const dpp::slashcommand_t &event);
 };
-
-/**
- * @brief An enumeration used to hold a player's profession inside a Player class.
- */
-enum player_profession {
-	prof_error = 0,
-	prof_warrior = 1,
-	prof_wizard = 2,
-	prof_thief = 3,
-	prof_woodsman = 4,
-	prof_assassin = 5,
-	prof_mercenary = 6,
-};
-
-const char* profession(player_profession p);
-const char* race(player_race r);
-std::string matrix_image(player_race r, player_profession p, bool male = true);

@@ -84,33 +84,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field("Armour", sprite::helm03.get_mention() + " " + rs[0].at("armour_rating"), true)
 		.add_field("Weapon", sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating"), true)
 		;
-	std::string file;
-	switch (atoi(rs[0].at("race"))) {
-		case race_barbarian:
-			file = "../resource/lore/races/barbarian.jpg";
-		break;
-		case race_dark_elf:
-			file = "../resource/lore/races/darkelf.jpg";
-		break;
-		case race_dwarf:
-			file = "../resource/lore/races/dwarf.jpg";
-		break;
-		case race_elf:
-			file = "../resource/lore/races/elf.jpg";
-		break;
-		case race_goblin:
-			file = "../resource/lore/races/goblin.jpg";
-		break;
-		case race_human:
-			file = "../resource/lore/races/human.jpg";
-		break;
-		case race_lesser_orc:
-			file = "../resource/lore/races/lesser-orc.jpg";
-		break;
-		case race_orc:
-			file = "../resource/lore/races/orc.jpg";
-		break;
-	}
+	std::string file = matrix_image((player_race)atoi(rs[0].at("race")), (player_profession)atoi(rs[0].at("profession")), rs[0].at("gender") == "male");
 
 	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral).add_file("race.jpg", dpp::utility::read_file(file)));
 

@@ -18,6 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/game_enums.h>
+#include <fmt/format.h>
 
 const char* player_race_s[] = {
 	"Error",
@@ -48,4 +49,8 @@ const char* profession(player_profession p) {
 
 const char* race(player_race r) {
 	return player_race_s[r];
+}
+
+std::string matrix_image(player_race r, player_profession p, bool male) {
+	return fmt::format("../resource/profile_matrix/{}_{}_{}.png", (int)r, (int)p, male ? 'm' : 'f');
 }
