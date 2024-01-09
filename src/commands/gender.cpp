@@ -40,7 +40,8 @@ void gender_command::route(const dpp::slashcommand_t &event)
 		event.reply(dpp::message("You do not have a profile yet. You must create a character by using the `/start` command!").set_flags(dpp::m_ephemeral));
 		return;
 	}
-	auto rs = db::query("UPDATE game_users SET gender = ? WHERE user_id = ?", {new_gender, event.command.usr.id});
+	db::query("UPDATE game_users SET gender = ? WHERE user_id = ?", {new_gender, event.command.usr.id});
+	db::query("UPDATE game_default_users SET gender = ? WHERE user_id = ?", {new_gender, event.command.usr.id});
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")

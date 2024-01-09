@@ -164,9 +164,11 @@ Your character is shown below. If you are not happy with your base stats, click 
 		.add_field("Rations", std::to_string(rations), true)
 		.add_field("Notoriety", std::to_string(notoriety), true)
 		.add_field("Armour", fmt::format("{} (Rating {})", armour.name, armour.rating), true)
-		.add_field("Weapon", fmt::format("{} (Rating {})", weapon.name, weapon.rating), true);
+		.add_field("Weapon", fmt::format("{} (Rating {})", weapon.name, weapon.rating), true)
+		.set_image("attachment://race.jpg")
+		;
 
-		dpp::component race_select_menu, profession_select_menu;
+		dpp::component race_select_menu, profession_select_menu, gender_select_menu;
 		race_select_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(1)
 			.set_max_values(1)
@@ -193,6 +195,17 @@ Your character is shown below. If you are not happy with your base stats, click 
 			.add_select_option(dpp::select_option("Woodsman", "4", "Experts in bows, and navigating forests").set_default(profession == prof_woodsman))
 			.add_select_option(dpp::select_option("Assassin", "5", "A stealthy and efficient professional killer for hire").set_default(profession == prof_assassin))
 			.add_select_option(dpp::select_option("Mercenary", "6", "A sword for hire, who gets the job done... for a price.").set_default(profession == prof_mercenary));
+		gender_select_menu.set_type(dpp::cot_selectmenu)
+			.set_min_values(1)
+			.set_max_values(1)
+			.set_placeholder("Select Your Gender")
+			.set_required(true)
+			.set_default_value("male")
+			.set_id(security::encrypt("select_player_gender"))
+			.add_select_option(dpp::select_option("Male", "male").set_default(gender == "male"))
+			.add_select_option(dpp::select_option("Female", "female").set_default(gender == "female"));
+
+	std::string file = matrix_image(race, profession, gender == "male");
 
 	return dpp::message()
 		.add_embed(embed)
@@ -201,6 +214,9 @@ Your character is shown below. If you are not happy with your base stats, click 
 		)
 		.add_component(dpp::component()
 			.add_component(profession_select_menu)
+		)
+		.add_component(dpp::component()
+			.add_component(gender_select_menu)
 		)
 		.add_component(
 			dpp::component()
@@ -217,7 +233,8 @@ Your character is shown below. If you are not happy with your base stats, click 
 				.set_style(dpp::cos_success)
 			)
 			.add_component(help_button())
-		).set_flags(dpp::m_ephemeral);
+		).set_flags(dpp::m_ephemeral)
+		.add_file("race.jpg", dpp::utility::read_file(file));
 }
 
 bool player::has_herb(const std::string herb_name) {
@@ -519,6 +536,7 @@ player::player(bool reroll) :
 		gold = 10;
 		days = 14;
 		notoriety = 10;
+		gender = "male";
 		int d;
 		while ((d = dice()) == 6);
 		race = (player_race)d;
@@ -566,6 +584,7 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		weapon.name = a_row[0].at("weapon");
 		armour.rating = atol(a_row[0].at("armour_rating"));
 		weapon.rating = atol(a_row[0].at("weapon_rating"));
+		gender = a_row[0].at("gender");
 		// TODO: NOTES
 		last_use = atoll(a_row[0].at("lastuse").c_str());
 		last_strike = atoll(a_row[0].at("laststrike").c_str());
@@ -632,14 +651,14 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 	last_use = time(nullptr);
 
 	db::query(fmt::format("INSERT INTO {} (user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph, \
-	 armour, weapon, gotfrom, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick) \
-	 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
+	 armour, weapon, gotfrom, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick, gender) \
+	 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
 	 ON DUPLICATE KEY UPDATE name = ?, race = ?, profession = ?, stamina = ?, skill = ?, luck = ?, sneak = ?, speed = ?, silver = ?, gold = ?, rations = ?, experience = ?, notoriety = ?, days = ?, scrolls = ?, paragraph = ?, \
-	 armour = ?, weapon = ?, gotfrom = ?, armour_rating = ?, weapon_rating = ?, lastuse = ?, laststrike = ?, pinned = ?, muted = ?, mana = ?, manatick = ?", put_backup ? "game_default_users" : "game_users"),
+	 armour = ?, weapon = ?, gotfrom = ?, armour_rating = ?, weapon_rating = ?, lastuse = ?, laststrike = ?, pinned = ?, muted = ?, mana = ?, manatick = ?, gender = ?", put_backup ? "game_default_users" : "game_users"),
 		{user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
-		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick,
+		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender,
 		name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
-		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick}
+		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender}
 	);
 
 	db::commit();
