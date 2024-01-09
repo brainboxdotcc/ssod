@@ -130,6 +130,10 @@ struct player {
 	 */
 	player_profession profession;
 	/**
+	 * @brief Player gender
+	 */
+	std::string gender;
+	/**
 	 * @brief Player stamina
 	 * Zero stamina = dead
 	 */
