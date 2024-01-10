@@ -760,9 +760,17 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		})
 		.set_colour(0xd5b994)
 		.set_description(location.text);
+	dpp::message m;
+	std::array<std::string, 3> types{".png", ".jpg", ".webm"};
+	for (const std::string& ext : types) {
+		if (fs::exists("../resource/paragraph_pictures/" + std::to_string(location.id) + ext)) {
+			embed.set_image("attachment://" + std::to_string(location.id) + ext);
+			m.add_file(std::to_string(location.id) + ext, dpp::utility::read_file("../resource/paragraph_pictures/" + std::to_string(location.id) + ext));
+			break;
+		}
+	}
 	p.save(event.command.usr.id);
 	update_live_player(event, p);
-	dpp::message m;
 	m.add_embed(embed);
 	int64_t t = time(nullptr) - 600;
 	auto others = db::query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
