@@ -35,6 +35,7 @@ struct mod_tag : public tag {
 			{"stm", {"stamina", &current_player.stamina}},
 			{"skl", {"skill", &current_player.skill}},
 			{"luck", {"luck", &current_player.luck}},
+			{"lck", {"luck", &current_player.luck}},
 			{"exp", {"experience", &current_player.experience}},
 			{"arm", {"armour", &current_player.armour.rating}},
 			{"wpn", {"weapon", &current_player.weapon.rating}},

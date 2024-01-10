@@ -1,3 +1,6 @@
 build
 config.json
 .vscode
+resource/paragraph_pictures/*.jpg
+resource/paragraph_pictures/*.png
+resource/paragraph_pictures/*.webp
