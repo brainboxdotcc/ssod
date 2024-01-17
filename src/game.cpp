@@ -764,8 +764,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	std::array<std::string, 3> types{".png", ".jpg", ".webm"};
 	for (const std::string& ext : types) {
 		if (fs::exists("../resource/paragraph_pictures/" + std::to_string(location.id) + ext)) {
-			embed.set_image("attachment://" + std::to_string(location.id) + ext);
-			m.add_file(std::to_string(location.id) + ext, dpp::utility::read_file("../resource/paragraph_pictures/" + std::to_string(location.id) + ext));
+			embed.set_image("https://raw.githubusercontent.com/brainboxdotcc/ssod/main/resource/paragraph_pictures/" + std::to_string(location.id) + ext);
 			break;
 		}
 	}
