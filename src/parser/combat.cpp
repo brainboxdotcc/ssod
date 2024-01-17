@@ -45,8 +45,8 @@ struct combat_tag : public tag {
 			// that contains at least one combat.
 			
 			output << fmt::format(
-				"\n```\n ⚔ {0:26s} STM:{1:2d} SKL:{2:2d} ARM:{3:2d} WPN:{4:2d} {5}\n```\n",
-				monster_name.substr(0, 26),
+				"\n```\n⚔ {0:16s} STM:{1:2d} SKL:{2:2d} ARM:{3:2d} WPN:{4:2d} {5}\n```\n",
+				monster_name.substr(0, 16),
 				monster_stamina,
 				monster_skill,
 				monster_armour,
