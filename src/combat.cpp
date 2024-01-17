@@ -187,9 +187,29 @@ player set_in_pvp_combat(const dpp::interaction_create_t& event) {
 void update_opponent_message(const dpp::interaction_create_t& event, dpp::message m, const std::stringstream& output) {
 	m.embeds[0].description += output.str();
 	if (has_active_pvp(event.command.usr.id)) {
-		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
-		if (p2.event.from) {
-			p2.event.edit_original_response(m);	
+		player opponent = get_pvp_opponent(event.command.usr.id, event.from);
+		if (opponent.event.from) {
+			opponent.event.edit_original_response(m, [event, o = opponent](const auto& cc) {
+				if (cc.is_error()) {
+					player opponent = o;
+					player p = get_live_player(event, false);
+					if (opponent.stamina > 0 && p.stamina > 0) {
+						opponent.stamina = 0;
+						opponent.in_pvp_picker = false;
+						p.in_pvp_picker = false;
+						opponent.save(event.command.usr.id);
+						update_live_player(event, p);
+						update_save_opponent(event, opponent);
+						update_opponent_message(event, get_pvp_round(opponent.event), std::stringstream(opponent.name + " timed out, left Discord?"));
+						update_opponent_message(opponent.event, get_pvp_round(event), std::stringstream(opponent.name + " timed out, left Discord?"));
+						p = end_pvp_combat(event);
+						/* To the victor go the spoils */
+						p.add_experience(opponent.xp_worth());
+						send_chat(opponent.event.command.usr.id, p.paragraph, "the whims of Discord", "death");
+						update_save_opponent(event, opponent);
+					}
+				}
+			});	
 		}
 	}	
 }
