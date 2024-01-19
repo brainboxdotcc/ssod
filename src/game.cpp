@@ -194,13 +194,24 @@ void game_nav(const dpp::button_click_t& event) {
 		std::string name = parts[5];
 		p.paragraph = atol(parts[1]);
 		if (p.gold >= cost) {
-			p.gold -= cost;
 			if (flags == "SPELL") {
+				p.gold -= cost;
 				p.spells.push_back(item{ .name = name, .flags = flags });
 			} else if (flags == "HERB") {
+				p.gold -= cost;
 				p.herbs.push_back(item{ .name = name, .flags = flags });
 			} else {
-				p.possessions.push_back(item{ .name = name, .flags = flags });
+				if (dpp::lowercase(name) == "scroll") {
+					if (!p.has_flag("SCROLL", p.paragraph)) {
+						p.gold -= cost;
+						p.scrolls++;
+						p.add_flag("SCROLL", p.paragraph);
+						p.possessions.push_back(item{ .name = name, .flags = flags });
+					}
+				} else {
+					p.gold -= cost;
+					p.possessions.push_back(item{ .name = name, .flags = flags });
+				}
 			}
 			p.inv_change = true;
 		}
@@ -278,17 +289,20 @@ void game_nav(const dpp::button_click_t& event) {
 		p.in_inventory = true;
 		claimed = true;
 	} else if (parts[0] == "drop" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
-		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
-		if (p.armour.name == parts[1]) {
-			p.armour.name = "Undergarments 👙";
-			p.armour.rating = 0;
-		} else if (p.weapon.name == parts[1]) {
-			p.weapon.name = "Unarmed 👊";
-			p.weapon.rating = 0;
+		if (dpp::lowercase(parts[1]) != "scroll") {
+			/* Can't drop a scroll (is quest item) */
+			p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
+			if (p.armour.name == parts[1]) {
+				p.armour.name = "Undergarments 👙";
+				p.armour.rating = 0;
+			} else if (p.weapon.name == parts[1]) {
+				p.weapon.name = "Unarmed 👊";
+				p.weapon.rating = 0;
+			}
+			/* Drop to floor */
+			db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
+			send_chat(event.command.usr.id, p.paragraph, parts[1], "drop");
 		}
-		/* Drop to floor */
-		db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
-		send_chat(event.command.usr.id, p.paragraph, parts[1], "drop");
 		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
 		/* Pick up frm floor */
