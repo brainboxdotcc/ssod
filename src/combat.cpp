@@ -307,6 +307,29 @@ void end_abandoned_pvp() {
 	}
 }
 
+long get_spell_rating(const std::string& name)
+{
+	static const std::map<std::string, long> ratings = {
+		{"fire", 2},
+		{"water", 4},
+		{"strength", 2},
+		{"bolt", 4},
+		{"fasthands", 2},
+		{"thunderbolt", 6},
+		{"heateyes", 4},
+		{"espsurge", 5},
+		{"afterimage", 4},
+		{"growweapon", 4},
+		{"vortex", 10},
+	};
+	auto r = ratings.find(name);
+	if (r != ratings.end()) {
+		return r->second;
+	}
+	return 0;
+}
+
+
 dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	dpp::cluster& bot = *(event.from->creator);
 	dpp::message m;
@@ -329,6 +352,19 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 						.set_type(dpp::cot_button)
 						.set_id(security::encrypt("pvp_attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
 						.set_label("Attack using " + inv.name)
+						.set_style(dpp::cos_secondary)
+						.set_emoji(e.name, e.id)
+					);
+				}
+			}
+			for (const auto & spell :  p.spells) {
+				long rating = get_spell_rating(spell.name);
+				if (rating) {
+					dpp::emoji e = sprite::hat02;
+					cb.add_component(dpp::component()
+						.set_type(dpp::cot_button)
+						.set_id(security::encrypt("pvp_attack;" + spell.name + ";" + std::to_string(rating) + ";" + std::to_string(++index)))
+						.set_label("Cast " + spell.name)
 						.set_style(dpp::cos_secondary)
 						.set_emoji(e.name, e.id)
 					);
@@ -864,6 +900,19 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 						.set_type(dpp::cot_button)
 						.set_id(security::encrypt("attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
 						.set_label("Attack using " + inv.name)
+						.set_style(dpp::cos_secondary)
+						.set_emoji(e.name, e.id)
+					);
+				}
+			}
+			for (const auto & spell :  p.spells) {
+				long rating = get_spell_rating(spell.name);
+				if (rating) {
+					dpp::emoji e = sprite::hat02;
+					cb.add_component(dpp::component()
+						.set_type(dpp::cot_button)
+						.set_id(security::encrypt("attack;" + spell.name + ";" + std::to_string(rating) + ";" + std::to_string(++index)))
+						.set_label("Cast " + spell.name)
 						.set_style(dpp::cos_secondary)
 						.set_emoji(e.name, e.id)
 					);
