@@ -808,6 +808,14 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_description(text)
 		);
 	}
+	/* Display and clear toasts */
+	std::vector<std::string> toasts = p.get_toasts();
+	for (const auto& toast : toasts) {
+		m.add_embed(dpp::embed()
+			.set_colour(0xd5b994)
+			.set_description(toast)
+		);
+	}
 
 	component_builder cb(m);
 	size_t index{0}, enabled_links{0};

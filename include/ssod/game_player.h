@@ -203,6 +203,10 @@ struct player {
 	 */
 	std::vector<std::string> notes;
 	/**
+	 * @brief Toast messages
+	 */
+	std::vector<std::string> toasts;
+	/**
 	 * @brief Player spells
 	 */
 	std::vector<item> spells;
@@ -281,6 +285,9 @@ struct player {
 	long max_speed();
 	long max_gold();
 	long max_silver();
+
+	void add_toast(const std::string& message);
+	std::vector<std::string> get_toasts();
 
 	void add_flag(const std::string flag, long paragraph);
 	bool has_flag(const std::string flag, long paragraph);

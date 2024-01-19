@@ -924,8 +924,16 @@ long player::max_luck() {
 }
 
 long player::max_sneak() {
-	long level = get_level();
-	return 15 + level;
+	long level = get_level(), special = 0;
+	if (profession == prof_thief) {
+		special += 3;
+	} else if (profession == prof_assassin) {
+		special += 2;
+	}
+	if (race == race_lesser_orc) {
+		special += 3;
+	}
+	return 15 + level + special;
 }
 
 long player::max_speed() {
@@ -943,3 +951,14 @@ long player::max_silver() {
 	return 100 * level;
 }
 
+void player::add_toast(const std::string& message) {
+	if (toasts.size() < 8) {
+		toasts.push_back(message);
+	}
+}
+
+std::vector<std::string> player::get_toasts() {
+	std::vector<std::string> return_toast = toasts;
+	toasts.clear();
+	return return_toast;
+}
