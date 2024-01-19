@@ -580,6 +580,7 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		days = atol(a_row[0].at("days"));
 		scrolls = atol(a_row[0].at("scrolls"));
 		paragraph = atol(a_row[0].at("paragraph"));
+		gotfrom = a_row[0].at("gotfrom");
 		armour.name = a_row[0].at("armour");
 		weapon.name = a_row[0].at("weapon");
 		armour.rating = atol(a_row[0].at("armour_rating"));
@@ -613,7 +614,10 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 void player::drop_everything() {
 	/* Drop everything to floor */
 	for (const auto& i : possessions) {
-		db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {paragraph, i.name, i.flags});
+		/* Scrolls arent dropped to the floor */
+		if (dpp::lowercase(i.name) != "scroll") {
+			db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {paragraph, i.name, i.flags});
+		}
 	}
 	possessions.clear();
 	possessions.emplace_back(item{ .name = "Hunting Dagger", .flags = "W1" });
