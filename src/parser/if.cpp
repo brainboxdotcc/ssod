@@ -79,6 +79,7 @@ struct if_tag : public tag {
 			{ "day", current_player.days },
 			{ "spd", current_player.speed },
 			{ "luck", current_player.luck },
+			{ "scrolls", current_player.scrolls },
 		};
 		auto check = scorename_map.find(scorename);
 		if (check != scorename_map.end()) {
