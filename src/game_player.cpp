@@ -719,6 +719,7 @@ void player::add_stamina(long modifier) {
 		return;
 	}
 	stamina = std::max((long)0, stamina + modifier);
+	stamina = std::min(stamina, max_stamina());
 }
 
 void player::add_experience(long modifier) {
@@ -735,6 +736,7 @@ bool player::time_up() {
 
 void player::add_skill(long modifier) {
 	skill = std::max((long)0, skill + modifier);
+	skill = std::min(skill, max_skill());
 }
 
 bool player::test_luck()
@@ -762,22 +764,27 @@ bool player::test_experience() {
 
 void player::add_luck(long modifier) {
 	luck = std::max((long)0, luck + modifier);
+	luck = std::min(luck, max_luck());
 }
 
 void player::add_sneak(long modifier) {
 	sneak = std::max((long)0, sneak + modifier);
+	sneak = std::min(sneak, max_sneak());
 }
 
 void player::add_speed(long modifier) {
 	speed = std::max((long)0, speed + modifier);
+	speed = std::min(speed, max_speed());
 }
 
 void player::add_gold(long modifier) {
 	gold = std::max((long)0, gold + modifier);
+	gold = std::min(gold, max_gold());
 }
 
 void player::add_silver(long modifier) {
 	silver = std::max((long)0, silver + modifier);
+	silver = std::min(silver, max_silver());
 }
 
 // Remove a ration point, or subtract 2 stamina if none left -
@@ -895,3 +902,44 @@ std::string bonuses(int type, player_race R, player_profession P) {
 		return fmt::format(" ({})", bonus);
 	}
 }
+
+long player::max_stamina() {
+	long level = get_level(), special = 0;
+	if (profession == prof_warrior) {
+		special += 5;
+        } else if (race == race_barbarian || race == race_orc) {
+		special += 4;
+	}
+	return 20 + level + special;
+}
+
+long player::max_skill() {
+	long level = get_level();
+	return 18 + level;
+}
+
+long player::max_luck() {
+	long level = get_level();
+	return 16 + level;
+}
+
+long player::max_sneak() {
+	long level = get_level();
+	return 15 + level;
+}
+
+long player::max_speed() {
+	long level = get_level();
+	return 20 + level;
+}
+
+long player::max_gold() {
+	long level = get_level();
+	return 50 * level;
+}
+
+long player::max_silver() {
+	long level = get_level();
+	return 100 * level;
+}
+

@@ -20,6 +20,12 @@
 #include <ssod/ssod.h>
 #include <ssod/parser.h>
 
+struct modifier_t {
+	std::string name;
+	long* score{nullptr};
+	long max{9223372036854775807};
+};
+
 struct mod_tag : public tag {
 	mod_tag() { register_tag<mod_tag>(); }
 	static constexpr std::string_view tags[]{"<mod"};
@@ -31,15 +37,15 @@ struct mod_tag : public tag {
 		long modifier = atol(mod);
 		std::string flag = "MOD" + p_text + mod;
 
-		const std::map<std::string, std::pair<std::string, long*>> modifier_list = {
-			{"stm", {"stamina", &current_player.stamina}},
-			{"skl", {"skill", &current_player.skill}},
-			{"luck", {"luck", &current_player.luck}},
-			{"lck", {"luck", &current_player.luck}},
-			{"exp", {"experience", &current_player.experience}},
-			{"arm", {"armour", &current_player.armour.rating}},
-			{"wpn", {"weapon", &current_player.weapon.rating}},
-			{"spd", {"speed", &current_player.speed}},
+		const std::map<std::string, modifier_t> modifier_list = {
+			{"stm", {"stamina", &current_player.stamina, current_player.max_stamina()}},
+			{"skl", {"skill", &current_player.skill, current_player.max_skill()}},
+			{"luck", {"luck", &current_player.luck, current_player.max_luck()}},
+			{"lck", {"luck", &current_player.luck, current_player.max_luck()}},
+			{"exp", {"experience", &current_player.experience, 9223372036854775807}},
+			{"arm", {"armour", &current_player.armour.rating, 9223372036854775807}},
+			{"wpn", {"weapon", &current_player.weapon.rating, 9223372036854775807}},
+			{"spd", {"speed", &current_player.speed, current_player.max_speed()}},
 		};
 		auto m = modifier_list.find(p_text);
 		if (m != modifier_list.end()) {
@@ -50,8 +56,9 @@ struct mod_tag : public tag {
 				output << "***Make no changes to your " << m->first << "*** ";
 				return;
 			}
-			output << " ***" << (modifier < 1 ? "Subtract " : "Add ") << abs(modifier) << " " << m->second.first << "*** ";
-			*(m->second.second) += modifier;
+			output << " ***" << (modifier < 1 ? "Subtract " : "Add ") << abs(modifier) << " " << m->second.name << "*** ";
+			*(m->second.score) += modifier;
+			*(m->second.score) = std::min(*(m->second.score), m->second.max);
 			p.words++;
 		}
 	}

@@ -274,6 +274,14 @@ struct player {
 	void add_rations(long modifier);
 	bool remove_day();
 
+	long max_stamina();
+	long max_skill();
+	long max_luck();
+	long max_sneak();
+	long max_speed();
+	long max_gold();
+	long max_silver();
+
 	void add_flag(const std::string flag, long paragraph);
 	bool has_flag(const std::string flag, long paragraph);
 
