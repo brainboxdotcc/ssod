@@ -76,6 +76,9 @@ namespace listeners {
 			/* Determine the correct channel to send to */
 			dpp::snowflake guild_id = row.at("id");
 			bot.log(dpp::ll_info, "New guild: " + guild_id.str());
+			/* Temp disabled */
+			db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
+			continue;
 			bot.guild_get(guild_id, [&bot, guild_id](const auto& cc) {
 				if (cc.is_error()) {
 					/* Couldn't fetch the guild - kicked within 30 secs of inviting, bummer. */
