@@ -62,6 +62,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		}
 	}
 	content += " (" + std::to_string(percent) + "%)";
+	player p2(atol(rs[0].at("user_id")), false);
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -74,13 +75,13 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.set_colour(0xd5b994)
 		.set_description(content)
 		.set_image("attachment://race.jpg")
-		.add_field("Stamina", sprite::health_heart.get_mention() + " " + rs[0].at("stamina"), true)
-		.add_field("Skill", sprite::book07.get_mention() + " " + rs[0].at("skill"), true)
-		.add_field("Luck", sprite::clover.get_mention() + " " + rs[0].at("luck"), true)
+		.add_field("Stamina", sprite::health_heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)
+		.add_field("Skill", sprite::book07.get_mention() + " " + rs[0].at("skill") + "/" + std::to_string(p2.max_skill()), true)
+		.add_field("Luck", sprite::clover.get_mention() + " " + rs[0].at("luck") + "/" + std::to_string(p2.max_luck()), true)
 		.add_field("XP", sprite::medal01.get_mention() + " " + rs[0].at("experience"), true)
-		.add_field("Speed", sprite::shoes03.get_mention() + " " + rs[0].at("speed"), true)
-		.add_field("Sneak", sprite::throw05.get_mention() + " " + rs[0].at("sneak"), true)
-		.add_field("Gold", sprite::gold_coin.get_mention() + " " + rs[0].at("gold"), true)
+		.add_field("Speed", sprite::shoes03.get_mention() + " " + rs[0].at("speed") + "/" + std::to_string(p2.max_speed()), true)
+		.add_field("Sneak", sprite::throw05.get_mention() + " " + rs[0].at("sneak") + "/" + std::to_string(p2.max_sneak()), true)
+		.add_field("Gold", sprite::gold_coin.get_mention() + " " + rs[0].at("gold") + "/" + std::to_string(p2.max_gold()), true)
 		.add_field("Armour", sprite::helm03.get_mention() + " " + rs[0].at("armour_rating"), true)
 		.add_field("Weapon", sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating"), true)
 		;
