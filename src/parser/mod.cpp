@@ -57,8 +57,13 @@ struct mod_tag : public tag {
 				return;
 			}
 			output << " ***" << (modifier < 1 ? "Subtract " : "Add ") << abs(modifier) << " " << m->second.name << "*** ";
+			long old_value = current_player.get_level();
 			*(m->second.score) += modifier;
 			*(m->second.score) = std::min(*(m->second.score), m->second.max);
+			long new_value = current_player.get_level();
+			if (new_value > old_value && new_value > 1) {
+				current_player.add_toast("# Level Up!\n\n## You are now level " + std::to_string(new_value) + "\nYou gain +1 to maximum stamina, skill, speed, sneak, and luck.");
+			}
 			p.words++;
 		}
 	}
