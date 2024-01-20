@@ -727,7 +727,12 @@ void player::add_stamina(long modifier) {
 }
 
 void player::add_experience(long modifier) {
+	long old_value = get_level();
 	experience = std::max((long)0, experience + modifier);
+	long new_value = get_level();
+	if (new_value > old_value && new_value > 1) {
+		add_toast("# Level Up!\n\n## You are now level " + std::to_string(new_value) + "\nYou gain +1 to maximum stamina, skill, speed, sneak, and luck.");
+	}
 }
 
 bool player::is_dead() {
