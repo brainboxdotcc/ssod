@@ -726,6 +726,10 @@ void player::add_stamina(long modifier) {
 	stamina = std::min(stamina, max_stamina());
 }
 
+dpp::snowflake player::get_user() {
+	return event.command.usr.id;
+}
+
 void player::add_experience(long modifier) {
 	long old_value = get_level();
 	experience = std::max((long)0, experience + modifier);

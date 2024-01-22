@@ -65,7 +65,9 @@ struct combat_tag : public tag {
 					.armour = monster_armour,
 					.weapon = monster_weapon,
 				},
-				.buyable = {}
+				.buyable = {},
+				.prompt = "",
+				.answer = "",
 			});
 			throw parse_end_exception();
 		}
