@@ -77,12 +77,27 @@ void game_input(const dpp::form_submit_t & event) {
 		return;
 	}
 	bot.log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
+	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (custom_id == "deposit_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
 		amount = std::min(amount, p.gold);
 		if (p.gold > 0 && amount > 0) {
 			p.add_gold(-amount);
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, amount});
+		}
+		claimed = true;
+	} else if (parts[0] == "answer" && p.stamina > 0 && !p.in_bank && !p.in_inventory) {
+		// id = "answer;" + std::to_string(n.paragraph) + ";" + n.prompt + ";" + n.answer + ";" + std::to_string(++unique);		
+		std::string entered_answer = std::get<std::string>(event.components[0].components[0].value);
+		if (dpp::lowercase(entered_answer) == dpp::lowercase(parts[3])) {
+			p.after_fragment = 0; // Resets current combat index and announces travel
+			p.challenged_by = 0ull;
+			remove_pvp(event.command.usr.id);
+			send_chat(event.command.usr.id, p.paragraph, "", "part");
+			send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
+			p.paragraph = atol(parts[1]);
+		} else {
+			p.add_toast("### " + sprite::inv_drop.get_mention() + " The answer you entered is not correct, adventurer! Please try again!");
 		}
 		claimed = true;
 	} else if (custom_id == "chat_modal" && p.stamina > 0) {
@@ -230,6 +245,19 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
 		p.in_bank = true;
 		claimed = true;
+	} else if (parts[0] == "answer" && !p.in_combat && !p.in_inventory) {
+		dpp::interaction_modal_response modal(security::encrypt(custom_id), parts[2], {
+			dpp::component()
+			.set_label(parts[2])
+			.set_id(security::encrypt("answer_prompt"))
+			.set_type(dpp::cot_text)
+			.set_min_length(1)
+			.set_required(true)
+			.set_max_length(64)
+			.set_text_style(dpp::text_short)
+		});
+		event.dialog(modal);
+		return;
 	} else if (parts[0] == "deposit_gold" && p.in_bank) {
 		dpp::interaction_modal_response modal(security::encrypt("deposit_gold_amount_modal"), "Deposit Gold",	{
 			dpp::component()
@@ -782,6 +810,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			break;
 		}
 	}
+	std::vector<std::string> toasts = p.get_toasts();
 	p.save(event.command.usr.id);
 	update_live_player(event, p);
 	m.add_embed(embed);
@@ -823,7 +852,6 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		);
 	}
 	/* Display and clear toasts */
-	std::vector<std::string> toasts = p.get_toasts();
 	for (const auto& toast : toasts) {
 		m.add_embed(dpp::embed()
 			.set_colour(0xd5b994)
@@ -884,6 +912,11 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				p.save(event.command.usr.id);
 				update_live_player(event, p);
 				break;
+			case nav_type_modal:
+				label = "Answer: " + n.prompt;
+				id = "answer;" + std::to_string(n.paragraph) + ";" + n.prompt + ";" + n.answer + ";" + std::to_string(++unique);
+				enabled_links++;
+				break;
 			default:
 				id = "follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(++unique);
 				enabled_links++;
@@ -899,6 +932,8 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			comp.set_emoji(sprite::skull.name, sprite::skull.id);
 		} else if (n.type == nav_type_bank) {
 			comp.set_emoji(sprite::gold_bar.name, sprite::gold_bar.id);
+		} else if (n.type == nav_type_modal) {
+			comp.set_emoji("❓");
 		}
 		cb.add_component(comp);
 	}

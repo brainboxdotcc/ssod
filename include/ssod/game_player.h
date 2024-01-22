@@ -253,6 +253,7 @@ struct player {
 	player(bool reroll = false);
 	player(dpp::snowflake user_id, bool get_backup = false);
 	bool save(dpp::snowflake user_id, bool put_backup = false);
+	dpp::snowflake get_user();
 	void strike();
 	void reset_to_spawn_point();
 	std::string get_flags();

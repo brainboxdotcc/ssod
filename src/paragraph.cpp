@@ -198,9 +198,9 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 				links++;
 				output << directions[links];
 				if (current_player.gold < atol(cost)) {
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {} });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
 				} else {
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {} });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
 				}
 				output << " ";
 			} else if (tag.find("<link=") != std::string::npos && !last_was_link) {
@@ -216,7 +216,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 					links++;
 					LastLink = pnum;
 					output << directions[links];
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_link, .cost = 0, .monster = {}, .buyable = {} });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
 				}
 				output << " ";
 			} else if (tag.find("<autolink=") != std::string::npos && !last_was_link) {
@@ -228,15 +228,15 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 				}
 				/* TODO: What is this 'the' madness? Find out! Ancient fix? */
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
-					navigation_links.push_back(nav_link{ .paragraph = 0, .type = nav_type_respawn, .cost = 0, .monster = {}, .buyable = {} });
+					navigation_links.push_back(nav_link{ .paragraph = 0, .type = nav_type_respawn, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
 				} else {
 					links++;
 					LastLink = pnum;
 					output << directions[links];
 					if (auto_test) {
-						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_autolink, .cost = 0, .monster = {}, .buyable = {} });
+						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_autolink, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
 					} else {
-						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {} });
+						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
 					}
 				}
 				auto_test = !auto_test; // invert the next autolink...

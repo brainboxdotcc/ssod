@@ -82,6 +82,8 @@ struct nav_link {
 	long cost;
 	enemy monster;
 	item buyable;
+	std::string prompt;
+	std::string answer;
 };
 
 struct paragraph {
