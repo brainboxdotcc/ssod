@@ -23,8 +23,6 @@ struct input_tag : public tag {
 	input_tag() { register_tag<input_tag>(); }
 	static constexpr std::string_view tags[]{"<input"};
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		// <input prompt="prompt" location="loc_id" value="correct_answer">
-		// TODO: Modal Dialog!
 		paragraph_content >> p_text;
 		extract_to_quote(p_text, paragraph_content, '"');
 		std::string Prompt = extract_value(p_text);
