@@ -153,7 +153,7 @@ std::string remove_last_char(const std::string& s) {
 }
 
 void paragraph::parse(player& current_player, dpp::snowflake user_id) {
-	std::stringstream paragraph_content(text + "\r\n");
+	std::stringstream paragraph_content(text + "\r\n<br>\r\n");
 	std::stringstream output;
 	std::string p_text, LastLink;
 
