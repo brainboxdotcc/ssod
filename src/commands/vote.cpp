@@ -39,7 +39,7 @@ void vote_command::route(const dpp::slashcommand_t &event)
 			.proxy_url = "",
 		})
 		.set_colour(0xd5b994)
-		.set_description("[Vote for Seven Spells on top.gg](src/commands/map.cpp) to gain additional loot such as helpful potions every 12 hours!\n\nIf you do not already have a stamina or skill potion, and you vote for the bot, then your supply of that item will be replenished.\n\n**Use the potions repeatedly to max out your stats.**");
+		.set_description("[Vote for Seven Spells on top.gg](https://top.gg/bot/620654573547159553/vote) to gain additional loot such as helpful potions every 12 hours!\n\nIf you do not already have a stamina or skill potion, and you vote for the bot, then your supply of that item will be replenished.\n\n**Use the potions repeatedly to max out your stats.**");
 	event.reply(dpp::message()
 		.add_embed(embed)
 		.set_flags(dpp::m_ephemeral)
