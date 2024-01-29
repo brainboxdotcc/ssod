@@ -24,6 +24,7 @@
 #include <ssod/ssod.h>
 #include <ssod/combat.h>
 #include <ssod/command.h>
+#include <ssod/game_player.h>
 
 #include <ssod/commands/info.h>
 #include <ssod/commands/start.h>
@@ -63,6 +64,28 @@ namespace listeners {
 		);*/
 		/* Probably successfully welcomed */
 		db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
+	}
+
+	void process_potion_drops(dpp::cluster& bot) {
+		auto rs = db::query("SELECT user_id FROM potion_drops");
+		for (const auto& user : rs) {
+			dpp::snowflake user_id(user.at("user_id"));
+			dpp::interaction_create_t e;
+			e.command.usr.id = user_id;
+			if (player_is_live(e)) {
+				player p = get_live_player(e, false);
+				if (!p.has_possession("skill potion")) {
+					p.possessions.push_back(item{ .name = "skill potion", .flags = "SK+5"});
+				}
+				if (!p.has_possession("stamina potion")) {
+					p.possessions.push_back(item{ .name = "stamina potion", .flags = "ST+5"});
+				}
+				p.add_toast("## A loot drop has arrived!\n\nYou have received a stamina potion and a skill potion!");
+				update_live_player(p.event, p);
+				p.save(user_id);
+			}
+			db::query("DELETE FROM potion_drops WHERE user_id = ?", {user_id});
+		}
 	}
 
 	/**
@@ -163,9 +186,13 @@ namespace listeners {
 			bot.start_timer([&bot](dpp::timer t) {
 				end_abandoned_pvp();
 			}, 10);
+			bot.start_timer([&bot](dpp::timer t) {
+				process_potion_drops(bot);
+			}, 60);
 
 			set_presence();
 			welcome_new_guilds(bot);
+			process_potion_drops(bot);
 
 			register_botlist<topgg>();
 			register_botlist<discordbotlist>();
