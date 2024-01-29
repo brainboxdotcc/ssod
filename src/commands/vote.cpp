@@ -27,7 +27,7 @@ dpp::slashcommand vote_command::register_command(dpp::cluster& bot)
 	return dpp::slashcommand("vote", "Show how to vote for the bot to gain loot drops", bot.me.id);
 }
 
-void map_command::route(const dpp::slashcommand_t &event)
+void vote_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
