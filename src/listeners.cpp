@@ -34,6 +34,7 @@
 #include <ssod/commands/help.h>
 #include <ssod/commands/profile.h>
 #include <ssod/commands/gender.h>
+#include <ssod/commands/vote.h>
 
 #include <ssod/botlist.h>
 #include <ssod/botlists/topgg.h>
