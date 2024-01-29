@@ -165,6 +165,7 @@ namespace listeners {
 				register_command<help_command>(bot),
 				register_command<profile_command>(bot),
 				register_command<gender_command>(bot),
+				register_command<vote_command>(bot),
 			});
 			bot.guild_bulk_command_create({
 				register_command<admin_command>(bot),
