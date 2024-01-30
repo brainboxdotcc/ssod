@@ -67,9 +67,16 @@ void bio_command::route(const dpp::slashcommand_t &event)
 	} else if (subcommand.name == "picture") {
 		auto param = subcommand.options[0].value;
             	dpp::snowflake file_id = std::get<dpp::snowflake>(param);
-		dpp::attachment att = event.command.get_resolved_attachment(file_id);		
-		db::query("INSERT INTO character_bio (user_id, image_name) VALUES(?, ?) ON DUPLICATE KEY UPDATE image_name = ?", { event.command.usr.id, att.filename, att.filename });
-		event.reply(dpp::message("Set picture " + att.filename).set_flags(dpp::m_ephemeral));
+		dpp::attachment att = event.command.get_resolved_attachment(file_id);
+		bot.request(att.url, dpp::m_get, [att, event](const dpp::http_request_completion_t& data) {
+			std::string filename = event.command.usr.id.str() + fs::path(att.filename).extension().c_str();
+			std::fstream file;
+			file.open("../uploads/" + filename, std::ios::app | std::ios::binary);
+			file.write(data.body.data(), data.body.length());
+			file.close();
+			db::query("INSERT INTO character_bio (user_id, image_name) VALUES(?, ?) ON DUPLICATE KEY UPDATE image_name = ?", { event.command.usr.id, filename, filename });
+			event.reply(dpp::message("Set picture " + filename).set_flags(dpp::m_ephemeral));
+		});
 	}
 
 }
