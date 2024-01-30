@@ -43,6 +43,17 @@ void bio_command::route(const dpp::slashcommand_t &event)
 	dpp::command_interaction cmd_data = event.command.get_command_interaction();
 	auto subcommand = cmd_data.options[0];
 
+	dpp::embed embed;
+	embed.set_url("https://ssod.org/")
+		.set_title("Custom Player Bio")
+		.set_footer(dpp::embed_footer{ 
+			.text = "Requested by " + event.command.usr.format_username(), 
+			.icon_url = bot.me.get_avatar_url(), 
+			.proxy_url = "",
+		})
+		.set_colour(0xd5b994);
+
+
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
 	if (rs.empty()) {
 		event.reply(
@@ -63,19 +74,23 @@ void bio_command::route(const dpp::slashcommand_t &event)
 		auto param = subcommand.options[0].value;
 		std::string text = std::get<std::string>(param);
 		db::query("INSERT INTO character_bio (user_id, bio) VALUES(?, ?) ON DUPLICATE KEY UPDATE bio = ?", { event.command.usr.id, text, text });
-		event.reply(dpp::message("Set bio " + text).set_flags(dpp::m_ephemeral));
+		embed.set_description("Your custom bio text has been set to:\n\n" + text);
+		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	} else if (subcommand.name == "picture") {
 		auto param = subcommand.options[0].value;
             	dpp::snowflake file_id = std::get<dpp::snowflake>(param);
 		dpp::attachment att = event.command.get_resolved_attachment(file_id);
-		bot.request(att.url, dpp::m_get, [att, event](const dpp::http_request_completion_t& data) {
+		bot.request(att.url, dpp::m_get, [embed, att, event](const dpp::http_request_completion_t& data) {
 			std::string filename = event.command.usr.id.str() + fs::path(att.filename).extension().c_str();
 			std::fstream file;
+			dpp::embed e = embed;
 			file.open("../uploads/" + filename, std::ios::app | std::ios::binary);
 			file.write(data.body.data(), data.body.length());
 			file.close();
 			db::query("INSERT INTO character_bio (user_id, image_name) VALUES(?, ?) ON DUPLICATE KEY UPDATE image_name = ?", { event.command.usr.id, filename, filename });
-			event.reply(dpp::message("Set picture " + filename).set_flags(dpp::m_ephemeral));
+			e.set_description("Your custom bio profile picture has been uploaded.");
+			e.set_image("attachment://" + filename);
+			event.reply(dpp::message().add_embed(e).add_file(filename, data.body).set_flags(dpp::m_ephemeral));
 		});
 	}
 
