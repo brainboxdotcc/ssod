@@ -1,3 +1,8 @@
 build
 config.json
 .vscode
+uploads/*.png
+uploads/*.gif
+uploads/*.jpg
+uploads/*.jpeg
+uploads/*.webm
