@@ -87,6 +87,17 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		;
 	std::string file = matrix_image((player_race)atoi(rs[0].at("race")), (player_profession)atoi(rs[0].at("profession")), rs[0].at("gender") == "male");
 
-	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral).add_file("race.jpg", dpp::utility::read_file(file)));
-
+	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
+	if (rs.size()) {
+		auto bio = db::query("SELECT * FROM character_bio WHERE user_id = ?", { event.command.usr.id });
+		if (bio.size()) {
+			if (bio[0].at("bio").length()) {
+				embed.set_description(content + "\n\n" + bio[0].at("bio"));
+			}
+			if (bio[0].at("image_name").length()) {
+				file = "../uploads/" + bio[0].at("image_name");
+			}
+		}
+	}
+	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral).add_file("race.jpg", dpp::utility::read_file(file)));	
 }
