@@ -35,6 +35,7 @@
 #include <ssod/commands/profile.h>
 #include <ssod/commands/gender.h>
 #include <ssod/commands/vote.h>
+#include <ssod/commands/bio.h>
 
 #include <ssod/botlist.h>
 #include <ssod/botlists/topgg.h>
@@ -166,6 +167,7 @@ namespace listeners {
 				register_command<profile_command>(bot),
 				register_command<gender_command>(bot),
 				register_command<vote_command>(bot),
+				register_command<bio_command>(bot),
 			});
 			bot.guild_bulk_command_create({
 				register_command<admin_command>(bot),
