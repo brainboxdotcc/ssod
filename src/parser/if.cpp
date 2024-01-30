@@ -19,6 +19,7 @@
  ************************************************************************************/
 #include <ssod/ssod.h>
 #include <ssod/parser.h>
+#include <ssod/database.h>
 
 bool comparison(std::string condition, long C1, const std::string& C2, int g_dice) {
 	long C = C2 == "dice" ? g_dice : atol(C2);
@@ -80,6 +81,7 @@ struct if_tag : public tag {
 			{ "spd", current_player.speed },
 			{ "luck", current_player.luck },
 			{ "scrolls", current_player.scrolls },
+			{ "level", current_player.get_level() },
 		};
 		auto check = scorename_map.find(scorename);
 		if (check != scorename_map.end()) {
@@ -117,6 +119,13 @@ struct if_tag : public tag {
 				(dpp::lowercase(p_text) == "thief>" && (current_player.profession == prof_thief || current_player.profession == prof_assassin))
 					||
 				(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman);
+			return;
+		} else if (dpp::lowercase(p_text) == "premium>") {
+			// ------------------------------------------------------
+			// <if premium>
+			// ------------------------------------------------------
+			auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { current_player.event.command.usr.id });
+			p.display = rs.size();
 			return;
 		}
 	}

@@ -63,9 +63,10 @@ Paragraph tags are never considered to be a DOM. Only certain tags have range an
         <p>&lt;if STAT eq|gt|lt|ne dice&gt; ... [&lt;else&gt;] ... &lt;endif&gt;</p>
         <p>&lt;if race orc&gt;, &lt;if race human&gt;....</p>
         <p>&lt;if prof wizard&gt;, &lt;if prof warrior&gt;</p>
+        <p>&lt;if premium&gt;</p>
       </td>
       <td>
-        Display next part of the paragraph if STAT is equal (eq), greater than (gt), less than (lt) or not equal (ne) to the value you provide. Valid values for STAT are: stm - stamina; skl - skill; wpn - weapon; arm - armour; exp - experience; luck - luck; spd - speed
+        Display next part of the paragraph if STAT is equal (eq), greater than (gt), less than (lt) or not equal (ne) to the value you provide. Valid values for STAT are: stm - stamina; skl - skill; wpn - weapon; arm - armour; exp - experience; luck - luck; spd - speed; scrolls - scrolls; level - level
         <p>When checking with the &lt;if flag&gt; tag, you may check against a local flag (set with &lt;set&gt;) or a global flag (set with &lt;setglobal&gt;).</p>
         <p>With the &lt;if dice&gt; tag, you must have used the &lt;dice&gt; tag previously to have a result to check against. N must be in the range 1-6.</p>
         <p>When using the &lt;if prof&gt; or &lt;if race&gt; tags, these compare against the current players race or profession, only use the ones valid in the game, in lower case only.</p>
