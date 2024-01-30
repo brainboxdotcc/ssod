@@ -24,7 +24,7 @@
 #include <ssod/game_date.h>
 #include <ssod/game_player.h>
 
-void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
+static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
 	auto rs = db::query("SELECT lower(name) AS name FROM game_users WHERE name LIKE ?", {uservalue + "%"});
 	dpp::interaction_response ir(dpp::ir_autocomplete_reply);
 	for (const auto& r : rs) {

@@ -82,8 +82,8 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field("Speed", sprite::shoes03.get_mention() + " " + rs[0].at("speed") + "/" + std::to_string(p2.max_speed()), true)
 		.add_field("Sneak", sprite::throw05.get_mention() + " " + rs[0].at("sneak") + "/" + std::to_string(p2.max_sneak()), true)
 		.add_field("Gold", sprite::gold_coin.get_mention() + " " + rs[0].at("gold") + "/" + std::to_string(p2.max_gold()), true)
-		.add_field("Armour", sprite::helm03.get_mention() + " " + rs[0].at("armour_rating"), true)
-		.add_field("Weapon", sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating"), true)
+		.add_field("Armour", sprite::helm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
+		.add_field("Weapon", sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
 		;
 	std::string file = matrix_image((player_race)atoi(rs[0].at("race")), (player_profession)atoi(rs[0].at("profession")), rs[0].at("gender") == "male");
 
@@ -92,7 +92,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		auto bio = db::query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
 		if (bio.size()) {
 			if (bio[0].at("bio").length()) {
-				embed.set_description(content + "\n\n" + bio[0].at("bio"));
+				embed.set_description(content + "\n### Biography\n" + bio[0].at("bio") + "\n\n");
 			}
 			if (bio[0].at("image_name").length()) {
 				file = "../uploads/" + bio[0].at("image_name");
