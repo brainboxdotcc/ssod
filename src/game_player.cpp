@@ -26,8 +26,19 @@
 #include <ssod/game_util.h>
 #include <ssod/aes.h>
 
+/* List of registering players, creating character profiles. These don't get saved to the database until
+ * they name their character at the end of the process. The old version of this used to save them temporarily
+ * to a table which would need regular cleaning.
+ */
 player_list registering_players;
+
+/* List of live players, this is a cache of players from the database who have been interacting with the bot.
+ */
 player_list live_players;
+
+/* Thread safety */
+std::mutex reg_list_lock;
+std::mutex live_list_lock;
 
 constexpr long MAX_LEVEL = 34;
 constexpr long levels[MAX_LEVEL] = {
@@ -37,13 +48,17 @@ constexpr long levels[MAX_LEVEL] = {
 
 
 bool player_is_registering(dpp::snowflake user_id) {
+	std::lock_guard<std::mutex> l(reg_list_lock);
 	return registering_players.find(user_id) != registering_players.end();
 }
 
 bool player_is_live(const dpp::interaction_create_t& event) {
-	auto f = live_players.find(event.command.usr.id);
-	if (f != live_players.end()) {
-		return true;
+	{
+		std::lock_guard<std::mutex> l(live_list_lock);
+		auto f = live_players.find(event.command.usr.id);
+		if (f != live_players.end()) {
+			return true;
+		}
 	}
 	auto rs = db::query("SELECT * FROM game_users WHERE user_id = ?", { event.command.usr.id });
 	if (!rs.empty()) {
@@ -51,13 +66,17 @@ bool player_is_live(const dpp::interaction_create_t& event) {
 		player p(event.command.usr.id);
 		p.event = event;
 		p.state = state_play;
-		live_players[event.command.usr.id] = p;
+		{
+			std::lock_guard<std::mutex> l(live_list_lock);
+			live_players[event.command.usr.id] = p;
+		}
 		return true;
 	}
 	return false;
 }
 
 player get_registering_player(const dpp::interaction_create_t& event) {
+	std::lock_guard<std::mutex> l(reg_list_lock);
 	auto f = registering_players.find(event.command.usr.id);
 	if (f != registering_players.end()) {
 		return f->second;
@@ -69,22 +88,28 @@ player get_registering_player(const dpp::interaction_create_t& event) {
 }
 
 void update_registering_player(const dpp::interaction_create_t& event, player p) {
+	std::lock_guard<std::mutex> l(reg_list_lock);
 	registering_players[event.command.usr.id] = p;
 }
 
 void update_live_player(const dpp::interaction_create_t& event, player p) {
+	std::lock_guard<std::mutex> l(live_list_lock);
 	live_players[event.command.usr.id] = p;
 }
 
 void move_from_registering_to_live(const dpp::interaction_create_t& event, player p) {
+	std::lock(reg_list_lock, live_list_lock);
 	auto f = registering_players.find(event.command.usr.id);
 	if (f != registering_players.end()) {
 		live_players[event.command.usr.id] = p;
 		registering_players.erase(f);
 	}
+	reg_list_lock.unlock();
+	live_list_lock.unlock();
 }
 
 player get_live_player(const dpp::interaction_create_t& event, bool update_event) {
+	std::lock_guard<std::mutex> l(live_list_lock);
 	auto f = live_players.find(event.command.usr.id);
 	if (f != live_players.end()) {
 		return f->second;
