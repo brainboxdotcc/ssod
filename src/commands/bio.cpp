@@ -56,20 +56,7 @@ void bio_command::route(const dpp::slashcommand_t &event)
 
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
 	if (rs.empty()) {
-		event.reply(
-			dpp::message("## Premium Required\n\nYou need [Seven Spells Premium](https://premium.ssod.org) to use this feature! Subscriptions are just £3 a month and give access to additional areas, automatic loot drops, and more!")
-			.set_flags(dpp::m_ephemeral)
-			.add_component(
-				dpp::component().add_component(
-					dpp::component()
-					.set_type(dpp::cot_button)
-					.set_id(security::encrypt("player_premium_cta"))
-					.set_label("Get Premium")
-					.set_url("https://premium.ssod.org")
-					.set_style(dpp::cos_link)
-				)
-			)
-		);
+		premium_required(event);
 	} else  if (subcommand.name == "text") {
 		auto param = subcommand.options[0].value;
 		std::string text = std::get<std::string>(param);
