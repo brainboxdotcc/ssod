@@ -23,3 +23,4 @@
 
 std::string describe_item(const std::string& modifier_flags, const std::string& name);
 dpp::component help_button();
+void premium_required(const dpp::interaction_create_t& event);

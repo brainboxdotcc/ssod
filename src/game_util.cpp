@@ -62,3 +62,20 @@ std::string describe_item(const std::string& modifier_flags, const std::string& 
 	}
 	return name;
 }
+
+void premium_required(const dpp::interaction_create_t& event) {
+	event.reply(
+		dpp::message("## Premium Required\n\nYou need [Seven Spells Premium](https://premium.ssod.org) to use this feature! Subscriptions are just £3 a month and give access to additional areas, automatic loot drops, and more!")
+		.set_flags(dpp::m_ephemeral)
+		.add_component(
+			dpp::component().add_component(
+				dpp::component()
+				.set_type(dpp::cot_button)
+				.set_id(security::encrypt("player_premium_cta"))
+				.set_label("Get Premium")
+				.set_url("https://premium.ssod.org/?user=" + event.command.usr.id.str())
+				.set_style(dpp::cos_link)
+			)
+		)
+	);
+}
