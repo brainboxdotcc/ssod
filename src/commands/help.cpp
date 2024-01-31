@@ -40,7 +40,7 @@ void help_command::route(const dpp::slashcommand_t &event)
 			.proxy_url = "",
 		})
 		.set_colour(0xd5b994)
-		.set_description("Welcome to **The Seven Spells Of Destruction**, an open world multi player role playing game played through Discord! There are not many commands for this bot as using it is simple. You can find a list of all the commands for the bot below:")
+		.set_description("Welcome to **The Seven Spells Of Destruction**, an open world multi player role playing game played through Discord! There are not many commands for this bot as using it is simple. to get started, use `/start`. You can find a list of all the commands for the bot below:")
 		.add_field("/help", "Bring about world peace, or just show this command\nShows information about the bot's commands", false)
 		.add_field("/start", "Start a new character, or continue your game\nThe game is played via button clicks and interacting with bot messages.", false)
 		.add_field("/lore", "Show lore and information about the game world, its locations and people\nUse button clicks to navigate the lore system.", false)
@@ -48,6 +48,9 @@ void help_command::route(const dpp::slashcommand_t &event)
 		.add_field("/vote", "Show how to vote for the bot on top.gg for loot drops", false)
 		.add_field("/profile", "Show a user's profile.\nYou must use the username of the user in the game, not their discord username.", false)
 		.add_field("/gender", "Set your gender on your user profile.\nThis is only used to set the gender of your profile picture (which is selected to match your character's profession and race). Please note only `male` or `female` are supported, due to image creation limitations.", false)
+		.add_field("/premium", "Show a link to manage your premium, if you are a premium member.", false)
+		.add_field("/bio", "Change your biography or profile picture; premium command.", false)
+		.add_field("/rename", "Rename a weapon or armour piece; premium command.", false)
 		.add_field("/info", "Show technical information about the bot.\nUnless you are having problems, you probably don't need to use this command.", false)
 		;
 
