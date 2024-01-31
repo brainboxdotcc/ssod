@@ -32,12 +32,12 @@ void premium_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
-	bool has_premium = rs.empty();
+	bool has_premium = !rs.empty();
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title("Seven Spells Premium")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 
+			.text = "Requested by " + event.command.usr.format_username(), 	
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
