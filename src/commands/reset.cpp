@@ -40,8 +40,6 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 			return;
        		}
 		if (custom_id == "player_reset") {
-			event.from->log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
-
 			dpp::cluster* bot = event.from->creator;
 			dpp::embed embed = dpp::embed()
 				.set_url("https://ssod.org/")
