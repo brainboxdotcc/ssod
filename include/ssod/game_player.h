@@ -321,6 +321,7 @@ void move_from_registering_to_live(const dpp::interaction_create_t& event, playe
 bool player_is_live(const dpp::interaction_create_t& event);
 player get_live_player(const dpp::interaction_create_t& event, bool update_event = true);
 void update_live_player(const dpp::interaction_create_t& event, player p);
+void delete_live_player(const dpp::interaction_create_t& event);
 
 long bonuses_numeric(int type, player_race R, player_profession P);
 std::string bonuses(int type, player_race R, player_profession P);

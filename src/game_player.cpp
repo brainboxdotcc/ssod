@@ -108,6 +108,20 @@ void move_from_registering_to_live(const dpp::interaction_create_t& event, playe
 	live_list_lock.unlock();
 }
 
+void delete_live_player(const dpp::interaction_create_t& event) {
+	{
+		std::lock_guard<std::mutex> l(live_list_lock);
+		auto f = live_players.find(event.command.usr.id);
+		if (f != live_players.end()) {
+			live_players.erase(f);
+		}
+	}
+	db::query("DELETE FROM game_users WHERE user_id = ?", { event.command.usr.id });
+	db::query("DELETE FROM game_default_users WHERE user_id = ?", { event.command.usr.id });
+	db::query("DELETE FROM game_bank WHERE owner_id = ?", { event.command.usr.id });
+	db::query("DELETE FROM game_owned_items WHERE user_id = ?", { event.command.usr.id });
+}
+
 player get_live_player(const dpp::interaction_create_t& event, bool update_event) {
 	std::lock_guard<std::mutex> l(live_list_lock);
 	auto f = live_players.find(event.command.usr.id);
