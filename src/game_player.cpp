@@ -653,6 +653,23 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 	}
 }
 
+long player::max_mana() {
+	if (profession == prof_wizard) {
+		return 10 + (get_level() * 6);
+	} else {
+		return 10 + (get_level() * 2);
+	}
+}
+
+void player::tick_mana() {
+	if (mana_tick < time(nullptr) - 900) {
+		// Wizards regain 2 mana per 15 mins. other professions gain 1 mana point per 15 mins.
+		mana_tick = time(NULL);
+		mana += (profession == prof_wizard ? 2 : 1);
+	}
+	mana = std::min(max_mana(), mana);
+}
+
 void player::drop_everything() {
 	/* Drop everything to floor */
 	for (const auto& i : possessions) {
@@ -671,6 +688,7 @@ void player::drop_everything() {
 
 bool player::save(dpp::snowflake user_id, bool put_backup)
 {
+	tick_mana();
 	db::transaction();
 
 	if (inv_change) {

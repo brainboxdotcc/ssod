@@ -242,7 +242,7 @@ struct player {
 	 */
 	long mana;
 	/**
-	 * @brief Mana recharge rate
+	 * @brief Mana last time_t value when mana was ticked up
 	 */
 	time_t mana_tick;
 	/**
@@ -286,6 +286,9 @@ struct player {
 	long max_speed();
 	long max_gold();
 	long max_silver();
+	long max_mana();
+
+	void tick_mana();
 
 	void add_toast(const std::string& message);
 	std::vector<std::string> get_toasts();

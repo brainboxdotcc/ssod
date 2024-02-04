@@ -82,6 +82,7 @@ struct if_tag : public tag {
 			{ "luck", current_player.luck },
 			{ "scrolls", current_player.scrolls },
 			{ "level", current_player.get_level() },
+			{ "mana", current_player.mana },
 		};
 		auto check = scorename_map.find(scorename);
 		if (check != scorename_map.end()) {
