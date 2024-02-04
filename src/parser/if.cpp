@@ -56,13 +56,13 @@ struct if_tag : public tag {
 		} else if (dpp::lowercase(p_text) == "flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
-			std::string flag = " gamestate_" + p_text;
+			std::string flag = "[gamestate_" + p_text;
 			p.display = (current_player.gotfrom.find(flag) != std::string::npos || global_set(p_text));
 			return;
 		} else if (dpp::lowercase(p_text) == "!flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
-			std::string flag = " gamestate_" + p_text;
+			std::string flag = "[gamestate_" + p_text;
 			p.display = (current_player.gotfrom.find(flag) == std::string::npos && !global_set(p_text));
 			return;
 		}
