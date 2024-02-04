@@ -367,6 +367,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 						.set_label("Cast " + spell.name)
 						.set_style(dpp::cos_secondary)
 						.set_emoji(e.name, e.id)
+						.set_disabled(p.mana < rating)
 					);
 				}
 			}
@@ -465,6 +466,14 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 	} else if (parts[0] == "pvp_attack" && is_my_pvp_turn(event.command.usr.id) && parts.size() >= 3) {
 		p.weapon.rating = atol(parts[2]);
 		p.weapon.name = parts[1];
+		if (p.has_spell(p.weapon.name)) {
+			if (p.mana < p.weapon.rating) {
+				p.weapon.rating = 0;
+				p.weapon.name = "Unarmed (out of mana!)";
+			} else {
+				p.mana -= p.weapon.rating;
+			}
+		}
 		/* Deal damage + saving throws */
 		long PAttack = dice() + dice() + p.skill + p.weapon.rating;
 		if ((p.stance == OFFENSIVE) && (opponent.stance == DEFENSIVE)) {
@@ -648,6 +657,14 @@ bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<st
 	} else if (parts[0] == "change_strike" && parts.size() >= 2) {
 		p.attack = (parts[1] == "p" ? PIERCING : CUTTING);
 		claimed = true;
+	}
+	if (p.has_spell(p.weapon.name)) {
+		if (p.mana < p.weapon.rating) {
+			p.weapon.rating = 0;
+			p.weapon.name = "Unarmed (out of mana!)";
+		} else {
+			p.mana -= p.weapon.rating;
+		}
 	}
 
 	if (claimed) {
@@ -915,6 +932,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 						.set_label("Cast " + spell.name)
 						.set_style(dpp::cos_secondary)
 						.set_emoji(e.name, e.id)
+						.set_disabled(p.mana < rating)
 					);
 				}
 			}
