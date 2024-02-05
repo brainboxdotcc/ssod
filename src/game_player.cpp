@@ -769,6 +769,27 @@ void player::reset_to_spawn_point() {
 	}
 }
 
+bool player::convert_rations(const item& i) {
+	std::string name{dpp::lowercase(i.name)};
+	if (name.find("5 ration") != std::string::npos) {
+		add_rations(5);
+		return true;
+	} else if (name.find("4 ration") != std::string::npos) {
+		add_rations(4);
+		return true;
+	} else if (name.find("3 ration") != std::string::npos) {
+		add_rations(3);
+		return true;
+	} else if (name.find("2 ration") != std::string::npos) {
+		add_rations(3);
+		return true;
+	} else if (name.find("ration") != std::string::npos) {
+		add_rations(1);
+		return true;
+	}
+	return false;
+}
+
 std::string player::get_flags() {
 	return gotfrom;
 }
@@ -838,6 +859,10 @@ bool player::test_experience() {
 void player::add_luck(long modifier) {
 	luck = std::max((long)0, luck + modifier);
 	luck = std::min(luck, max_luck());
+}
+
+void player::add_notoriety(long modifier) {
+	notoriety = std::max((long)0, notoriety + modifier);
 }
 
 void player::add_sneak(long modifier) {

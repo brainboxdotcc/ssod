@@ -225,7 +225,10 @@ void game_nav(const dpp::button_click_t& event) {
 					}
 				} else {
 					p.gold -= cost;
-					p.possessions.push_back(item{ .name = name, .flags = flags });
+					item i{ .name = name, .flags = flags };
+					if (!p.convert_rations(i)) {
+						p.possessions.push_back(i);
+					}
 				}
 			}
 			p.inv_change = true;
@@ -289,7 +292,10 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "pick_one" && parts.size() >= 5) {
 		p.paragraph = atol(parts[1]);
 		if (!p.has_flag("PICKED", p.paragraph)) {
-			p.possessions.push_back(item{ .name = parts[3], .flags = parts[4] });
+			item i{ .name = parts[3], .flags = parts[4] };
+			if (!p.convert_rations(i)) {
+				p.possessions.push_back(i);
+			}
 			p.inv_change = true;
 			p.add_flag("PICKED", p.paragraph);
 		}
@@ -338,7 +344,10 @@ void game_nav(const dpp::button_click_t& event) {
 		std::string name = parts[2];
 		std::string flags = parts[3];
 		db::query("DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
-		p.possessions.push_back(item{ .name = name, .flags = flags });
+		item i{ .name = name, .flags = flags };
+		if (!p.convert_rations(i)) {
+			p.possessions.push_back(i);
+		}
 		p.inv_change = true;
 		send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 		claimed = true;
