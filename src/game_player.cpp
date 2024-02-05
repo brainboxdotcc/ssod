@@ -772,7 +772,10 @@ void player::reset_to_spawn_point() {
 
 bool player::convert_rations(const item& i) {
 	std::string name{dpp::lowercase(i.name)};
-	if (name.find("5 ration") != std::string::npos) {
+	if (name.find("12 ration") != std::string::npos) {
+		add_rations(4);
+		return true;
+	} else if (name.find("5 ration") != std::string::npos) {
 		add_rations(5);
 		return true;
 	} else if (name.find("4 ration") != std::string::npos) {
