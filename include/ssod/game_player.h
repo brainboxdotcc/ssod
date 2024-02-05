@@ -276,6 +276,7 @@ struct player {
 	void add_gold(long modifier);
 	void add_silver(long modifier);
 	void add_notoriety(long modifier);
+	void add_mana(long modifier);
 	bool eat_ration();
 	void add_rations(long modifier);
 	bool remove_day();

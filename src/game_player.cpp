@@ -578,6 +578,7 @@ player::player(bool reroll) :
 		gold = 10;
 		days = 14;
 		notoriety = 10;
+		mana = max_mana();
 		gender = "male";
 		int d;
 		while ((d = dice()) == 6);
@@ -662,8 +663,8 @@ long player::max_mana() {
 }
 
 void player::tick_mana() {
-	if (mana_tick < time(nullptr) - 900) {
-		// Wizards regain 2 mana per 15 mins. other professions gain 1 mana point per 15 mins.
+	if (mana_tick < time(nullptr) - 60) {
+		// Wizards regain 2 mana per 1 min. other professions gain 1 mana point per min.
 		mana_tick = time(NULL);
 		mana += (profession == prof_wizard ? 2 : 1);
 	}
@@ -898,6 +899,11 @@ bool player::eat_ration() {
 
 void player::add_rations(long modifier) {
 	rations = std::max((long)0, rations + modifier);
+}
+
+void player::add_mana(long modifier) {
+	mana = std::max((long)0, mana + modifier);
+	mana = std::min(mana, max_mana());
 }
 
 // Remove a day and return false if the time is now up

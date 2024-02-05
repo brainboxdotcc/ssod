@@ -46,6 +46,8 @@ struct mod_tag : public tag {
 			{"arm", {"armour", &current_player.armour.rating, 9223372036854775807}},
 			{"wpn", {"weapon", &current_player.weapon.rating, 9223372036854775807}},
 			{"spd", {"speed", &current_player.speed, current_player.max_speed()}},
+			{"mana", {"mana", &current_player.mana, current_player.max_mana()}},
+			{"rations", {"rations", &current_player.rations, 9223372036854775807}},
 		};
 		auto m = modifier_list.find(p_text);
 		if (m != modifier_list.end()) {
@@ -60,6 +62,7 @@ struct mod_tag : public tag {
 			long old_value = current_player.get_level();
 			*(m->second.score) += modifier;
 			*(m->second.score) = std::min(*(m->second.score), m->second.max);
+			*(m->second.score) = std::max(*(m->second.score), 0L);
 			long new_value = current_player.get_level();
 			if (new_value > old_value && new_value > 1) {
 				current_player.add_toast("# Level Up!\n\n## You are now level " + std::to_string(new_value) + "\nYou gain +1 to maximum stamina, skill, speed, sneak, and luck.");
