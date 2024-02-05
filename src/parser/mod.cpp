@@ -48,6 +48,7 @@ struct mod_tag : public tag {
 			{"spd", {"speed", &current_player.speed, current_player.max_speed()}},
 			{"mana", {"mana", &current_player.mana, current_player.max_mana()}},
 			{"rations", {"rations", &current_player.rations, 9223372036854775807}},
+			{"notoriety", {"notoriety", &current_player.notoriety, 9223372036854775807}},
 		};
 		auto m = modifier_list.find(p_text);
 		if (m != modifier_list.end()) {
