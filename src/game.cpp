@@ -108,7 +108,9 @@ void game_input(const dpp::form_submit_t & event) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
 		auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 		long balance_amount = atol(bank_amount[0].at("gold"));
+		/* Can't withdraw more than is in the bank, or more than you can carry */
 		amount = std::min(amount, balance_amount);
+		amount = std::min(amount, p.max_gold());
 		if (balance_amount > 0 && amount > 0) {
 			p.add_gold(amount);
 			/* Coalesce gold in bank to one row */
@@ -360,6 +362,9 @@ void game_nav(const dpp::button_click_t& event) {
 		} else if (flags.substr(0, 2) == "SK") {
 			long modifier = atol(flags.substr(2, flags.length() - 2));
 			p.add_skill(modifier);
+		} else if (flags.substr(0, 2) == "MA") {
+			long modifier = atol(flags.substr(2, flags.length() - 2));
+			p.add_mana(modifier);
 		} else if (flags.substr(0, 2) == "SD") {
 			long modifier = atol(flags.substr(2, flags.length() - 2));
 			p.add_speed(modifier);

@@ -52,7 +52,7 @@ Paragraph tags are never considered to be a DOM. Only certain tags have range an
     </tr>
     <tr>
       <td>&lt;mod STAT +-N&gt;</td>
-      <td>Modify a player score. Valid values for STAT are: stm - stamina; skl - skill; wpn - weapon; arm - armour; exp - experience; luck - luck; spd - speed</td>
+      <td>Modify a player score. Valid values for STAT are: stm - stamina; skl - skill; wpn - weapon; arm - armour; exp - experience; luck - luck; spd - speed; mana - mana</td>
       <td>&lt;mod stm -5&gt;</td>
     </tr>
     <tr>
@@ -66,7 +66,7 @@ Paragraph tags are never considered to be a DOM. Only certain tags have range an
         <p>&lt;if premium&gt;</p>
       </td>
       <td>
-        Display next part of the paragraph if STAT is equal (eq), greater than (gt), less than (lt) or not equal (ne) to the value you provide. Valid values for STAT are: stm - stamina; skl - skill; wpn - weapon; arm - armour; exp - experience; luck - luck; spd - speed; scrolls - scrolls; level - level
+        Display next part of the paragraph if STAT is equal (eq), greater than (gt), less than (lt) or not equal (ne) to the value you provide. Valid values for STAT are: stm - stamina; skl - skill; wpn - weapon; arm - armour; exp - experience; luck - luck; spd - speed; scrolls - scrolls; level - level; mana - mana; notoriety - notoriety; rations - rations
         <p>When checking with the &lt;if flag&gt; tag, you may check against a local flag (set with &lt;set&gt;) or a global flag (set with &lt;setglobal&gt;).</p>
         <p>With the &lt;if dice&gt; tag, you must have used the &lt;dice&gt; tag previously to have a result to check against. N must be in the range 1-6.</p>
         <p>When using the &lt;if prof&gt; or &lt;if race&gt; tags, these compare against the current players race or profession, only use the ones valid in the game, in lower case only.</p>
@@ -83,7 +83,7 @@ Paragraph tags are never considered to be a DOM. Only certain tags have range an
         <p>&lt;I NAME="Item Name" VALUE="STAT+-N" COST="X"&gt;</p>
       </td>
       <td>
-        A buyable item, e.g. from a shop. Item Name will be displayed in backpack if bought. The cost value X is the cost in gold of the item. If a VALUE parameter is included it indicates the special STAT value of the item. Valid values for STAT are: ST - stamina; SK - skill; W - weapon; A - armour; EX - experience; LK - luck; SD - speed.
+        A buyable item, e.g. from a shop. Item Name will be displayed in backpack if bought. The cost value X is the cost in gold of the item. If a VALUE parameter is included it indicates the special STAT value of the item. Valid values for STAT are: ST - stamina; SK - skill; W - weapon; A - armour; EX - experience; LK - luck; SD - speed; MA - mana.
         <p>Spells are special items where STAT+-N == "SPELL".</p>
         <p>Herbs are special items where STAT+-N == "HERB"</p>
       </td>
@@ -111,7 +111,7 @@ Paragraph tags are never considered to be a DOM. Only certain tags have range an
     <tr>
       <td>&lt;PICK NAME="item name" VALUE="STAT+-N"&gt;</td>
       <td>
-        A pickable item, for a "you may take only one item" event. Item Name will be displayed in backpack if bought. The VALUE parameter must be included and it indicates the special STAT value of the item. Valid values for STAT are: ST - stamina; SK - skill; W - weapon; A - armour; EX - experience; LK - luck; SD - speed.
+        A pickable item, for a "you may take only one item" event. Item Name will be displayed in backpack if bought. The VALUE parameter must be included and it indicates the special STAT value of the item. Valid values for STAT are: ST - stamina; SK - skill; W - weapon; A - armour; EX - experience; LK - luck; SD - speed; MA - mana.
         <p>Spells are special items where STAT+-N == "SPELL".</p>
         <p>Herbs are special items where STAT+-N == "HERB"</p>
       </td>
