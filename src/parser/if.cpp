@@ -83,6 +83,8 @@ struct if_tag : public tag {
 			{ "scrolls", current_player.scrolls },
 			{ "level", current_player.get_level() },
 			{ "mana", current_player.mana },
+			{ "notoriety", current_player.notoriety },
+			{ "rations", current_player.rations },
 		};
 		auto check = scorename_map.find(scorename);
 		if (check != scorename_map.end()) {

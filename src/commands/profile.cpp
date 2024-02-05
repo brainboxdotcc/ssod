@@ -85,6 +85,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field("Mana", sprite::hat02.get_mention() + " " + rs[0].at("mana") + "/" + std::to_string(p2.max_mana()), true)
 		.add_field("Armour", sprite::helm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
 		.add_field("Weapon", sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
+		.add_field("Notoriety", sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
 		;
 	std::string file = matrix_image((player_race)atoi(rs[0].at("race")), (player_profession)atoi(rs[0].at("profession")), rs[0].at("gender") == "male");
 

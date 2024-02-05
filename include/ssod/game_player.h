@@ -275,6 +275,7 @@ struct player {
 	void add_speed(long modifier);
 	void add_gold(long modifier);
 	void add_silver(long modifier);
+	void add_notoriety(long modifier);
 	bool eat_ration();
 	void add_rations(long modifier);
 	bool remove_day();
@@ -313,6 +314,8 @@ struct player {
 
 	dpp::message get_registration_message(class dpp::cluster& cluster, const dpp::interaction_create_t &event);
 	dpp::message get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event);
+
+	bool convert_rations(const item& i);
 };
 
 using player_list = std::unordered_map<dpp::snowflake, player>;
