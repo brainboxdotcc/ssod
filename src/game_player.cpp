@@ -577,7 +577,7 @@ player::player(bool reroll) :
 		luck = dice() + dice() + 4;
 		gold = 10;
 		days = 14;
-		notoriety = 10;
+		notoriety = 0;
 		mana = max_mana();
 		gender = "male";
 		int d;
