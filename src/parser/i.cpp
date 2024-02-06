@@ -55,7 +55,7 @@ struct i_tag : public tag {
 
 		p.links++;
 		output << directions[p.links] << "\n";
-		p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_shop, .cost = atol(Cost), .monster = {}, .buyable = { .name = ItemName, .flags = Value }, .prompt = "", .answer = "" });
+		p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_shop, .cost = atol(Cost), .monster = {}, .buyable = { .name = ItemName, .flags = Value }, .prompt = "", .answer = "", .label = "" });
 
 	}
 };

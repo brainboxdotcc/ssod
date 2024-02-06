@@ -32,7 +32,7 @@ struct input_tag : public tag {
 		std::string Correct = extract_value(p_text);
 		output << "\n### ❓ " << Prompt << "\n\n";
 		++p.links;
-		p.navigation_links.push_back(nav_link{ .paragraph = destination, .type = nav_type_modal, .cost = 0, .monster = {}, .buyable = {}, .prompt = Prompt, .answer = Correct });
+		p.navigation_links.push_back(nav_link{ .paragraph = destination, .type = nav_type_modal, .cost = 0, .monster = {}, .buyable = {}, .prompt = Prompt, .answer = Correct, .label = "" });
 		p.words++;
 	}
 };

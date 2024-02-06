@@ -933,6 +933,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				break;
 			default:
 				id = "follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(++unique);
+				label = n.label;
 				enabled_links++;
 				break;
 		}

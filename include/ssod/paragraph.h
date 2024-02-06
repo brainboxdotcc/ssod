@@ -84,6 +84,7 @@ struct nav_link {
 	item buyable;
 	std::string prompt;
 	std::string answer;
+	std::string label;
 };
 
 struct paragraph {
