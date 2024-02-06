@@ -25,7 +25,7 @@ while (true) {
 					Do not edit any other types of tag than LINK.
 					Each LINK should occur only ONCE in the output, determined by the LINK number.
 					CONTEXT should be as short as possible. Not more than 2-4 words.
-					Output ONLY the replaced <LINK, CONTEXT> tags each on a separate line."
+					Output ONLY the replaced <LINK, CONTEXT> tags each on a separate line. NOTHING else should be output."
 				],
 				[
 					"role" => "user",
