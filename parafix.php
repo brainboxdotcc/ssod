@@ -16,24 +16,25 @@ while (true) {
 			'messages' => [
 				[
 					"role" => "system",
-					"content" => "Your role is to translate text from one form to another as instructed by the user as a helpful assistant."
+					"content" => "You are a helpful assistant that does as the user asks."
 				],
 				[
 					"role" => "user",
 					"content" => "Task: The text contains <LINK> tags. Do the following:
-					Summarize the context of the sentence before a link tag into short words.
-					Insert the summarized text into the link tag. Example: TEXT <LINK=1> is converted to TEXT <LINK=1, CONTEXT> where CONTEXT is summarized context of the sentence before LINK tag.
-					The context refers to an action a player can take.
-					Do not edit anything outside the LINK tag.
-					There should be NO punctuation in the CONTEXT.
-					Do not edit any other types of tag than LINK.
-					Each LINK should occur only ONCE in the output, determined by the LINK number.
-					CONTEXT should be as short as possible. Not more than 2-4 words.
-					Display ONLY the <LINK, CONTEXT>, one per line. NO OTHER PART of the text should be replied with:
-					
-					```
-					$data->data
-					```",
+Summarize the context of the sentence before a link tag into short words.
+Insert the summarized text into the link tag. Example: TEXT <LINK=1> is converted to TEXT <LINK=1, CONTEXT> where CONTEXT is summarized context of the sentence before LINK tag.
+The context refers to an action a player can take.
+Do not edit anything outside the LINK tag.
+There should be NO punctuation in the CONTEXT.
+Do not edit any other types of tag than LINK.
+Each LINK should occur only ONCE in the output, determined by the LINK number.
+CONTEXT should be as short as possible. Not more than 2-4 words.
+Display ONLY the <LINK, CONTEXT>, one per line. NO OTHER PART of the text should be replied with
+
+Text is:
+```
+$data->data
+```",
 				],
 			],
 		]);
