@@ -68,6 +68,7 @@ struct combat_tag : public tag {
 				.buyable = {},
 				.prompt = "",
 				.answer = "",
+				.label = ""
 			});
 			throw parse_end_exception();
 		}

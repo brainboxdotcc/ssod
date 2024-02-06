@@ -153,7 +153,7 @@ std::string remove_last_char(const std::string& s) {
 }
 
 void paragraph::parse(player& current_player, dpp::snowflake user_id) {
-	std::stringstream paragraph_content(text + "\r\n<br>\r\n");
+	std::stringstream paragraph_content(replace_string(text, "><", "> <") + "\r\n<br>\r\n");
 	std::stringstream output;
 	std::string p_text, LastLink;
 
@@ -198,17 +198,36 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 				links++;
 				output << directions[links];
 				if (current_player.gold < atol(cost)) {
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 				} else {
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 				}
 				output << " ";
 			} else if (tag.find("<link=") != std::string::npos && !last_was_link) {
 				int i{0};
-				std::string pnum;
-				while (p_text[i++] != '=');
-				while (p_text[i] != '>') {
-					pnum += p_text[i++];
+				std::string pnum, label;
+				if (p_text.find(',') != std::string::npos) {
+					while (p_text[i++] != '=');
+					while (p_text[i] != ',') {
+						pnum += p_text[i++];
+					}
+					p_text = p_text.substr(i + 1, p_text.length());
+					bool bail{false};
+					do {
+						if (p_text.find('>') == std::string::npos) {
+							label += p_text + " ";
+							paragraph_content >> p_text;
+						} else {
+							label += p_text.substr(0, p_text.find('>')) + " ";
+							bail = true;
+						}
+					} while (!bail);
+				} else {
+					while (p_text[i++] != '=');
+					while (p_text[i] != '>') {
+						pnum += p_text[i++];
+					}
+					label = "Travel";
 				}
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
 					output << " (unable to follow this path)";
@@ -216,7 +235,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 					links++;
 					LastLink = pnum;
 					output << directions[links];
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = label });
 				}
 				output << " ";
 			} else if (tag.find("<autolink=") != std::string::npos && !last_was_link) {
@@ -228,15 +247,15 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 				}
 				/* TODO: What is this 'the' madness? Find out! Ancient fix? */
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
-					navigation_links.push_back(nav_link{ .paragraph = 0, .type = nav_type_respawn, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
+					navigation_links.push_back(nav_link{ .paragraph = 0, .type = nav_type_respawn, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 				} else {
 					links++;
 					LastLink = pnum;
 					output << directions[links];
 					if (auto_test) {
-						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_autolink, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
+						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_autolink, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 					} else {
-						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "" });
+						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 					}
 				}
 				auto_test = !auto_test; // invert the next autolink...

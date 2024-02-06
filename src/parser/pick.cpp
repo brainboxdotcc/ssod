@@ -32,7 +32,7 @@ struct pick_tag : public tag {
 		if (!current_player.has_flag("PICKED", p.id)) {
 			output << "\n **" << ItemName << "** ";
 			output << directions[++p.links] << "\n";
-			p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_pick_one, .cost = 0, .monster = {}, .buyable = { .name = ItemName, .flags = ItemVal }, .prompt = "", .answer = "" });
+			p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_pick_one, .cost = 0, .monster = {}, .buyable = { .name = ItemName, .flags = ItemVal }, .prompt = "", .answer = "", .label = "" });
 		} else {
 			output << "\n **" << ItemName << "**\n";
 		}
