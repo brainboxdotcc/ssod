@@ -16,6 +16,10 @@ while (true) {
 			'messages' => [
 				[
 					"role" => "system",
+					"content" => "Your role is to translate text from one form to another as instructed by the user as a helpful assistant."
+				],
+				[
+					"role" => "user",
 					"content" => "Task: The text contains <LINK> tags. Do the following:
 					Summarize the context of the sentence before a link tag into short words.
 					Insert the summarized text into the link tag. Example: TEXT <LINK=1> is converted to TEXT <LINK=1, CONTEXT> where CONTEXT is summarized context of the sentence before LINK tag.
@@ -25,11 +29,11 @@ while (true) {
 					Do not edit any other types of tag than LINK.
 					Each LINK should occur only ONCE in the output, determined by the LINK number.
 					CONTEXT should be as short as possible. Not more than 2-4 words.
-					Output ONLY the replaced <LINK, CONTEXT> tags each on a separate line. NOTHING else should be output."
-				],
-				[
-					"role" => "user",
-					"content" => $data->data,
+					Display ONLY the <LINK, CONTEXT>, one per line. NO OTHER PART of the text should be replied with:
+					
+					```
+					$data->data
+					```",
 				],
 			],
 		]);
