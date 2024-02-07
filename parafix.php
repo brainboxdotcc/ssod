@@ -46,9 +46,11 @@ $data->data
 		print_r($corrections);
 		foreach ($corrections as $correction) {
 			$correction = preg_replace("/(<.+?>)/", "$1", $correction);
-			$find = substr($correction, 0, strpos($correction, ',')) . '>';
-			$replace = $correction;
-			$data->data = str_ireplace($find, $replace, $data->data);
+			$find = trim(substr($correction, 0, strpos($correction, ',')) . '>');
+			$replace = trim($correction);
+			if (preg_match('/^<link=/i', $replace))  {
+				$data->data = str_ireplace($find, $replace, $data->data);
+			}
 		}
 		echo "================================================================================\n";
 		echo $data->data . "\n\n";
