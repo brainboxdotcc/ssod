@@ -1,8 +1,8 @@
 /************************************************************************************
  * 
- * The Seven Spells Of Destruction
+ * Sporks, the learning, scriptable Discord bot!
  *
- * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
+ * Copyright 2019 Craig Edwards <support@sporks.gg>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,16 @@
  * limitations under the License.
  *
  ************************************************************************************/
-#include <ssod/parser.h>
 
-struct endif_tag : public tag {
-	endif_tag() { register_tag<endif_tag>(); }
-	static constexpr std::string_view tags[]{"<endif>"};
-	static constexpr bool overrides_display{true};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		if (!p.display.empty()) {
-			p.display.pop_back();
-		}
+#pragma once
+#include <dpp/dpp.h>
+#include <dpp/json.h>
+#include <map>
+#include <string>
+#include <ssod/ssod.h>
+#include <ssod/paragraph.h>
 
-	}
-};
-
-static endif_tag self_init;
+namespace js {
+	void init(class dpp::cluster& _bot);
+	bool run(const std::string& script, paragraph& p, const std::map<std::string, json> &vars);
+}

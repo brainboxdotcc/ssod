@@ -18,17 +18,24 @@
  *
  ************************************************************************************/
 #include <ssod/parser.h>
+#include <ssod/database.h>
+#include "../js/js.h"
 
-struct endif_tag : public tag {
-	endif_tag() { register_tag<endif_tag>(); }
-	static constexpr std::string_view tags[]{"<endif>"};
-	static constexpr bool overrides_display{true};
+struct script_tag : public tag {
+	script_tag() { register_tag<script_tag>(); }
+	static constexpr std::string_view tags[]{"<script>"};
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		if (!p.display.empty()) {
-			p.display.pop_back();
+		std::string script, partial;
+		while (partial != "</script>") {
+			script += " " + partial;
+			paragraph_content >> partial;
 		}
-
+		db::resultset pr = db::query("SELECT * FROM game_users WHERE user_id = ?", {current_player.event.command.usr.id});
+		json player = pr[0];
+		js::run(script, p, {
+			{"player", player}
+		});
 	}
 };
 
-static endif_tag self_init;
+static script_tag self_init;

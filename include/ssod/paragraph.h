@@ -23,6 +23,7 @@
 #include <dpp/dpp.h>
 #include <ssod/game_player.h>
 #include <dpp/unicode_emoji.h>
+#include <sstream>
 
 inline const char* directions[] = {
 	dpp::unicode_emoji::zero,
@@ -93,6 +94,7 @@ struct paragraph {
 	std::string secure_id;
 	std::vector<nav_link> navigation_links;
 	std::vector<stacked_item> dropped_items;
+	std::stringstream* output{nullptr};
 	bool combat_disabled{};
 	bool magic_disabled{};
 	bool theft_disabled{};
@@ -101,7 +103,7 @@ struct paragraph {
 	size_t links{0}, words{0};
 	std::string tag;
 	bool last_was_link{false};
-	bool display{true};
+	std::vector<bool> display;
 	long current_fragment{0};	
 	bool auto_test{false}, didntmove{false};
 	int g_dice{0};
