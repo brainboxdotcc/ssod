@@ -28,7 +28,11 @@ bool comparison(std::string condition, long C1, const std::string& C2, int g_dic
 		return true;
 	} else if (condition == "gt" && C1 > C) {
 		return true;
+	} else if (condition == "gte" && C1 >= C) {
+		return true;
 	} else if (condition == "lt" && C1 < C) {
+		return true;
+	} else if (condition == "lte" && C1 <= C) {
 		return true;
 	} else if (condition == "ne" && C1 != C) {
 		return true;
@@ -51,19 +55,19 @@ struct if_tag : public tag {
 			paragraph_content >> p_text;
 			extract_to_quote(p_text, paragraph_content, '>');
 			p_text = remove_last_char(p_text);
-			p.display = current_player.has_herb(p_text) || current_player.has_spell(p_text) || current_player.has_possession(p_text);
+			p.display.push_back(current_player.has_herb(p_text) || current_player.has_spell(p_text) || current_player.has_possession(p_text));
 			return;
 		} else if (dpp::lowercase(p_text) == "flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
 			std::string flag = "[gamestate_" + p_text;
-			p.display = (current_player.gotfrom.find(flag) != std::string::npos || global_set(p_text));
+			p.display.push_back(current_player.gotfrom.find(flag) != std::string::npos || global_set(p_text));
 			return;
 		} else if (dpp::lowercase(p_text) == "!flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
 			std::string flag = "[gamestate_" + p_text;
-			p.display = (current_player.gotfrom.find(flag) == std::string::npos && !global_set(p_text));
+			p.display.push_back(current_player.gotfrom.find(flag) == std::string::npos && !global_set(p_text));
 			return;
 		}
 		// -------------------------------------------------------
@@ -90,14 +94,15 @@ struct if_tag : public tag {
 		if (check != scorename_map.end()) {
 			paragraph_content >> condition;
 			paragraph_content >> p_text;
-			p.display = comparison(condition, check->second, p_text, p.g_dice);
+			p.display.push_back(comparison(condition, check->second, p_text, p.g_dice));
+			return;
 		} else if (dpp::lowercase(p_text) == "race") {
 			// ------------------------------------------------------
 			// <if race x>
 			// ------------------------------------------------------
 			// if false, nothing displayed until an <endif> is reached.
 			paragraph_content >> p_text;
-			p.display =
+			p.display.push_back(
 				(dpp::lowercase(p_text) == "human>" && (current_player.race == race_human || current_player.race == race_barbarian))
 					||
 				(dpp::lowercase(p_text) == "orc>" && (current_player.race == race_orc || current_player.race == race_goblin))
@@ -106,7 +111,8 @@ struct if_tag : public tag {
 					||
 				(dpp::lowercase(p_text) == "dwarf>" && current_player.race == race_dwarf)
 					||
-				(dpp::lowercase(p_text) == "lesserorc>" && current_player.race == race_lesser_orc);
+				(dpp::lowercase(p_text) == "lesserorc>" && current_player.race == race_lesser_orc)
+			);
 			return;
 		} else if (dpp::lowercase(p_text) == "prof") {
 			// ------------------------------------------------------
@@ -114,21 +120,22 @@ struct if_tag : public tag {
 			// ------------------------------------------------------
 			// if false, nothing displayed until an <endif> is reached.
 			paragraph_content >> p_text;
-			p.display = 
+			p.display.push_back( 
 				(dpp::lowercase(p_text) == "warrior>" && (current_player.profession == prof_warrior || current_player.profession == prof_mercenary))
 					||
 				(dpp::lowercase(p_text) == "wizard>" && current_player.profession == prof_wizard)
 					||
 				(dpp::lowercase(p_text) == "thief>" && (current_player.profession == prof_thief || current_player.profession == prof_assassin))
 					||
-				(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman);
+				(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman)
+			);
 			return;
 		} else if (dpp::lowercase(p_text) == "premium>") {
 			// ------------------------------------------------------
 			// <if premium>
 			// ------------------------------------------------------
 			auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { current_player.event.command.usr.id });
-			p.display = rs.size();
+			p.display.push_back(rs.size() > 0);
 			return;
 		}
 	}

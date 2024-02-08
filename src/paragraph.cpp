@@ -43,6 +43,7 @@ paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user
 	for (const auto& dropped_item : dropped) {
 		dropped_items.push_back(stacked_item{ .name = dropped_item.at("item_desc"), .flags = dropped_item.at("item_flags"), .qty = atol(dropped_item.at("stack_count")) });
 	}
+	display.push_back(true);
 	parse(current, user_id);
 }
 
@@ -154,8 +155,8 @@ std::string remove_last_char(const std::string& s) {
 
 void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 	std::stringstream paragraph_content(replace_string(text, "><", "> <") + "\r\n<br>\r\n");
-	std::stringstream output;
 	std::string p_text, LastLink;
+	output = new std::stringstream();
 
 	while (!paragraph_content.eof()) {
 		paragraph_content >> p_text;
@@ -166,7 +167,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 		}
 
 		try {	
-			if (route_tag(*this, p_text, paragraph_content, output, current_player, display)) {
+			if (route_tag(*this, p_text, paragraph_content, *output, current_player, display.size() ? display[display.size() - 1] : true)) {
 				continue;
 			}
 		}
@@ -182,7 +183,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 			continue;
 		}
 
-		if (display) {
+		if (display.size() ? display[display.size() - 1] : true) {
 			std::string tag = dpp::lowercase(p_text.substr(0, 20));
 			if (tag.find("<paylink=") != std::string::npos && !last_was_link) {
 				int i{0};
@@ -196,13 +197,13 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 					pnum += p_text[i++];
 				}
 				links++;
-				output << directions[links];
+				*output << directions[links];
 				if (current_player.gold < atol(cost)) {
 					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 				} else {
 					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 				}
-				output << " ";
+				*output << " ";
 			} else if (tag.find("<link=") != std::string::npos && !last_was_link) {
 				int i{0};
 				std::string pnum, label;
@@ -230,14 +231,14 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 					label = "Travel";
 				}
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
-					output << " (unable to follow this path)";
+					*output << " (unable to follow this path)";
 				} else {
 					links++;
 					LastLink = pnum;
-					output << directions[links];
+					*output << directions[links];
 					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = label });
 				}
-				output << " ";
+				*output << " ";
 			} else if (tag.find("<autolink=") != std::string::npos && !last_was_link) {
 				int i{0};
 				std::string pnum;
@@ -251,7 +252,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 				} else {
 					links++;
 					LastLink = pnum;
-					output << directions[links];
+					*output << directions[links];
 					if (auto_test) {
 						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_autolink, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 					} else {
@@ -259,16 +260,17 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 					}
 				}
 				auto_test = !auto_test; // invert the next autolink...
-				output << " ";
+				*output << " ";
 			}
 			else {
 				if (neat_version.find(">") == std::string::npos && !neat_version.empty() && neat_version[0] != '<') {
-					output << neat_version << " ";
+					*output << neat_version << " ";
 					words++;
 				}
 			}
 		}
 
 	}
-	text = output.str();
+	text = output->str();
+	delete output;
 }

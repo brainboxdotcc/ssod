@@ -25,6 +25,7 @@ execute_process(
 aux_source_directory("src" coresrc)
 aux_source_directory("src/commands" coresrc)
 aux_source_directory("src/parser" coresrc)
+aux_source_directory("src/js" coresrc)
 add_executable(${BOT_NAME} ${coresrc})
 
 target_precompile_headers(${BOT_NAME} INTERFACE "/usr/include/fmt/format.h")

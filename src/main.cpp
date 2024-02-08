@@ -25,6 +25,7 @@
 #include <ssod/logger.h>
 #include <ssod/config.h>
 #include <ssod/game.h>
+#include "js/js.h"
 #include <ssod/aes.h>
 
 int main(int argc, char const *argv[])
@@ -39,6 +40,7 @@ int main(int argc, char const *argv[])
 	);
 
 	security::init(bot);
+	js::init(bot);
 
 	bot.on_log(&logger::log);
 	bot.on_guild_create(&listeners::on_guild_create);
