@@ -29,13 +29,14 @@ There should be NO punctuation in the CONTEXT.
 Do not edit any other types of tag than LINK.
 Prefer text closest to the LINK tag for building CONTEXT.
 Prefer describing ACTIONS, e.g. \"head south\" instead of summaries like \"south, head\".
+DO NOT OUTPUT COMMA SEPARATED LISTS for the CONTEXT.
 Do not rearrange words in CONTEXT, it should still be understandable english.
 Each LINK should occur only ONCE in the output, determined by the LINK number.
 CONTEXT should be as short as possible. Not more than 6 words or 50 letters.
 Do not enclose CONTEXT in quotes.
 Display ONLY the <LINK, CONTEXT>, one per line. NO OTHER PART of the text should be replied with
 Do not prefix your reply with anything. The output is to be fed into a computer program.
-					
+
 Text is:
 ```
 $data->data
