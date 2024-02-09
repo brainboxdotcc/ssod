@@ -18,10 +18,9 @@
  *
  ************************************************************************************/
 
-#include "js.h"
 #include <dpp/dpp.h>
-#include <fmt/format.h>
 #include <dpp/json.h>
+#include <ssod/js.h>
 #include <ssod/config.h>
 #include <ssod/database.h>
 #include <thread>
@@ -34,6 +33,7 @@
 #include <sys/time.h>
 #include "duktape.h"
 #include <ssod/paragraph.h>
+#include <ssod/parser.h>
 
 namespace js {
 
@@ -82,6 +82,32 @@ static duk_ret_t js_print(duk_context *cx) {
 	return 0;
 }
 
+static duk_ret_t js_tag(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	std::string output;
+	if (argc < 1) {
+		return 0;
+	}
+	for (int i = 0; i < argc; i++) {
+		output.append(duk_to_string(cx, i - argc)).append(" ");
+	}
+	paragraph& p = duk_get_udata(cx);
+	if (p.id == 0) {
+		bot->log(dpp::ll_warning, "JS tag(): Cannot recursively execute a script tag inside tag()!");
+		return 0;
+	}
+	paragraph inner(output, *p.cur_player);
+	*p.output << inner.text;
+	p.links += inner.links;
+	for (const auto& nav : inner.navigation_links) {
+		p.navigation_links.push_back(nav);
+	}
+	if (inner.g_dice) {
+		p.g_dice = inner.g_dice;
+	}
+	return 0;
+}
+
 static void duk_build_object(duk_context* cx, const std::map<std::string, std::string> &strings, const std::map<std::string, bool> &bools) {
 	duk_idx_t obj_idx = duk_push_bare_object(cx);
 	for (auto i = strings.begin(); i != strings.end(); ++i) {
@@ -108,7 +134,7 @@ void init(dpp::cluster& _bot) {
 	bot = &_bot;
 }
 
-bool run(const std::string& script, paragraph& p, const std::map<std::string, json> &vars) {
+bool run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars) {
 	duk_int_t ret;
 
 	duk_context* ctx = duk_create_heap(nullptr, nullptr, nullptr, (void*)&p, sandbox_fatal);
@@ -116,6 +142,7 @@ bool run(const std::string& script, paragraph& p, const std::map<std::string, js
 	define_string(ctx, "BOT_ID", bot->me.id.str());
 	define_number(ctx, "PARAGRAPH_ID", p.id);
 	define_func(ctx, "print", js_print, DUK_VARARGS);
+	define_func(ctx, "tag", js_tag, DUK_VARARGS);
 	define_func(ctx, "exit", js_exit, 1);
 	duk_pop(ctx);
 

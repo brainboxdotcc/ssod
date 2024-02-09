@@ -25,7 +25,7 @@
 #include <ssod/logger.h>
 #include <ssod/config.h>
 #include <ssod/game.h>
-#include "js/js.h"
+#include <ssod/js.h>
 #include <ssod/aes.h>
 
 int main(int argc, char const *argv[])

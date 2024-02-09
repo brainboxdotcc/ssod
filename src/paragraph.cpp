@@ -39,12 +39,22 @@ paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user
 	magic_disabled = location[0].at("magic_disabled") == "1";
 	theft_disabled = location[0].at("theft_disabled") == "1";
 	chat_disabled = location[0].at("chat_disabled") == "1";
+	cur_player = &current;
 	auto dropped = db::query("SELECT item_desc, item_flags, count(item_desc) as stack_count FROM game_dropped_items WHERE location_id = ? GROUP BY item_desc, item_flags ORDER BY item_desc, item_flags LIMIT 50", {paragraph_id});
 	for (const auto& dropped_item : dropped) {
 		dropped_items.push_back(stacked_item{ .name = dropped_item.at("item_desc"), .flags = dropped_item.at("item_flags"), .qty = atol(dropped_item.at("stack_count")) });
 	}
 	display.push_back(true);
 	parse(current, user_id);
+}
+
+paragraph::paragraph(const std::string& data, player& current) {
+	id = 0;
+	text = data;
+	secure_id = "";
+	combat_disabled = magic_disabled = theft_disabled = chat_disabled = false;
+	cur_player = &current;
+	parse(current, 0);
 }
 
 // extracts from any NAME=Value pair
