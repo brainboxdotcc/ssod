@@ -108,8 +108,11 @@ struct paragraph {
 	bool auto_test{false}, didntmove{false};
 	int g_dice{0};
 
+	player* cur_player{nullptr};
+
 	paragraph() = default;
 	~paragraph() = default;
+	paragraph(const std::string& data, player& current);
 	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id);
 
 	static bool valid_next(long Current, long Next);

@@ -25,8 +25,9 @@
 #include <string>
 #include <ssod/ssod.h>
 #include <ssod/paragraph.h>
+#include <ssod/game_player.h>
 
 namespace js {
 	void init(class dpp::cluster& _bot);
-	bool run(const std::string& script, paragraph& p, const std::map<std::string, json> &vars);
+	bool run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars);
 }
