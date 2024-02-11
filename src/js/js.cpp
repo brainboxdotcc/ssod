@@ -108,6 +108,7 @@ static duk_ret_t js_tag(duk_context *cx) {
 	return 0;
 }
 
+[[maybe_unused]]
 static void duk_build_object(duk_context* cx, const std::map<std::string, std::string> &strings, const std::map<std::string, bool> &bools) {
 	duk_idx_t obj_idx = duk_push_bare_object(cx);
 	for (auto i = strings.begin(); i != strings.end(); ++i) {
