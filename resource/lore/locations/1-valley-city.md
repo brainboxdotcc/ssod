@@ -8,4 +8,4 @@ The city is a harmonious blend of practicality and aesthetic beauty. Stone build
 
 A huge wooden bridge arches gracefully over the Larret to the north, linking both sides of the river and fostering a sense of unity among its inhabitants. As daylight wanes, the glow of lanterns and the flicker of hearth fires cast warm hues on the stone facades, creating a cozy ambiance.
 
-Valley City, with its resilient people and enduring infrastructure, stands as a beacon of stability in the shadow of the Deathdrop Mountains. The rushing waters of the Larret, harnessed by the iconic water wheel, symbolize the city's ability to thrive amid challenging terrain, making it a place where history, industry, and natural beauty converge.
+Valley City, with its resilient people and enduring infrastructure, stands as a beacon of stability in the shadow of the Deathdrop Mountains. The rushing waters of the Larret, tamed by the iconic lighthouse, symbolize the city's ability to thrive amid challenging terrain, making it a place where history, industry, and natural beauty converge.
