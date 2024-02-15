@@ -54,6 +54,7 @@ dpp::slashcommand rename_command::register_command(dpp::cluster& bot) {
 	});
 
 	return dpp::slashcommand("rename", "Rename one of your weapons or armour pieces", bot.me.id)
+		.set_dm_permission(true)
 		.add_option(dpp::command_option(dpp::co_string, "item", "Item to rename", true).set_auto_complete(true))
 		.add_option(dpp::command_option(dpp::co_string, "name", "New Name", true).set_max_value(20));
 }

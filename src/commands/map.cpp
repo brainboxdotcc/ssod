@@ -25,7 +25,7 @@
 
 dpp::slashcommand map_command::register_command(dpp::cluster& bot)
 {
-	return dpp::slashcommand("map", "Show a map of the game world", bot.me.id);
+	return dpp::slashcommand("map", "Show a map of the game world", bot.me.id).set_dm_permission(true);
 }
 
 void map_command::route(const dpp::slashcommand_t &event)

@@ -24,7 +24,7 @@
 
 dpp::slashcommand vote_command::register_command(dpp::cluster& bot)
 {
-	return dpp::slashcommand("vote", "Show how to vote for the bot to gain loot drops", bot.me.id);
+	return dpp::slashcommand("vote", "Show how to vote for the bot to gain loot drops", bot.me.id).set_dm_permission(true);
 }
 
 void vote_command::route(const dpp::slashcommand_t &event)

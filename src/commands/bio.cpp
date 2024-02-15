@@ -26,6 +26,7 @@
 
 dpp::slashcommand bio_command::register_command(dpp::cluster& bot) {
 	return dpp::slashcommand("bio", "Update player biography", bot.me.id)
+		.set_dm_permission(true)
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "picture", "Set a custom profile picture")
 			.add_option(dpp::command_option(dpp::co_attachment, "image", "Image to upload", true))
