@@ -25,7 +25,7 @@
 
 dpp::slashcommand premium_command::register_command(dpp::cluster& bot)
 {
-	return dpp::slashcommand("premium", "Provide a link to manage your premium subscription or to subscribe", bot.me.id);
+	return dpp::slashcommand("premium", "Provide a link to manage your premium subscription or to subscribe", bot.me.id).set_dm_permission(true);
 }
 
 void premium_command::route(const dpp::slashcommand_t &event)

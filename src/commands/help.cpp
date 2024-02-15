@@ -25,7 +25,7 @@
 
 dpp::slashcommand help_command::register_command(dpp::cluster& bot)
 {
-	return dpp::slashcommand("help", "Seven Spells Of Destruction Bot help", bot.me.id);
+	return dpp::slashcommand("help", "Seven Spells Of Destruction Bot help", bot.me.id).set_dm_permission(true);
 }
 
 void help_command::route(const dpp::slashcommand_t &event)

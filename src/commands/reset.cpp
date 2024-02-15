@@ -62,7 +62,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 			delete_live_player(event);
 		}
 	});
-	return dpp::slashcommand("reset", "Completely reset character allowing for re-creation and re-roll", bot.me.id);
+	return dpp::slashcommand("reset", "Completely reset character allowing for re-creation and re-roll", bot.me.id).set_dm_permission(true);
 }
 
 void reset_command::route(const dpp::slashcommand_t &event)

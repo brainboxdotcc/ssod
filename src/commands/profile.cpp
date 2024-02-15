@@ -26,6 +26,7 @@
 
 dpp::slashcommand profile_command::register_command(dpp::cluster& bot) {
 	return dpp::slashcommand("profile", "View User Profile", bot.me.id)
+		.set_dm_permission(true)
 		.add_option(dpp::command_option(dpp::co_string, "user", "User to view profile of", false));
 }
 
