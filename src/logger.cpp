@@ -33,11 +33,6 @@ namespace logger {
 	static std::shared_ptr<spdlog::logger> async_logger;
 
 	void init(const std::string& log_file) {
-		/* This shuts up libleptonica, who tf logs errors to stderr in a lib?! */
-		int fd = ::open("/dev/null", O_WRONLY);
-		::dup2(fd, 2);
-		::close(fd);
-
 		/* Set up spdlog logger */
 		spdlog::init_thread_pool(8192, 2);
 		std::vector<spdlog::sink_ptr> sinks = {
