@@ -92,15 +92,15 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			return;
 		}
 		dpp::cluster& bot = *(event.from->creator);
-		if (custom_id == "select_player_race" && p_old.state == state_roll_stats) {
+		if (custom_id == "select_player_race" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.race = (player_race)atoi(event.values[0]);
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
-		} else if (custom_id == "select_player_gender" && p_old.state == state_roll_stats) {
+		} else if (custom_id == "select_player_gender" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.gender = event.values[0];
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
-		} else if (custom_id == "select_player_profession" && p_old.state == state_roll_stats) {
+		} else if (custom_id == "select_player_profession" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.profession = (player_profession)atoi(event.values[0]);
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
