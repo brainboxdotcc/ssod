@@ -55,7 +55,7 @@ namespace listeners {
 	 * @param channel_id 
 	 */
 	void send_welcome(dpp::cluster& bot, dpp::snowflake guild_id, dpp::snowflake channel_id) {
-		/*bot.message_create(
+		bot.message_create(
 			dpp::message(channel_id, "")
 			.add_embed(
 				dpp::embed()
@@ -66,7 +66,7 @@ namespace listeners {
 				.set_thumbnail(bot.me.get_avatar_url())
 				.set_footer("The Seven Spells Of Destruction", bot.me.get_avatar_url())
 			)
-		);*/
+		);
 		/* Probably successfully welcomed */
 		db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
 	}
@@ -105,8 +105,6 @@ namespace listeners {
 			dpp::snowflake guild_id = row.at("id");
 			bot.log(dpp::ll_info, "New guild: " + guild_id.str());
 			/* Temp disabled */
-			db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
-			continue;
 			bot.guild_get(guild_id, [&bot, guild_id](const auto& cc) {
 				if (cc.is_error()) {
 					/* Couldn't fetch the guild - kicked within 30 secs of inviting, bummer. */
