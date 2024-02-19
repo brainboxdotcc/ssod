@@ -188,11 +188,11 @@ namespace db {
 	 * @param db database
 	 * @param port port
 	 */
-	bool unsafe_connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
+	bool unsafe_connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port, const std::string &socket) {
 		if (mysql_init(&connection) != nullptr) {
 			mysql_options(&connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
 			int opts = CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS | CLIENT_REMEMBER_OPTIONS | CLIENT_IGNORE_SIGPIPE;
-			bool result = mysql_real_connect(&connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, opts);
+			bool result = mysql_real_connect(&connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, socket.empty() ? nullptr : socket.c_str(), opts);
 			signal(SIGPIPE, SIG_IGN);
 			return result;
 		} else {
@@ -201,15 +201,15 @@ namespace db {
 		}
 	}
 
-	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
+	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port, const std::string &socket) {
 		std::lock_guard<std::mutex> db_lock(db_mutex);
-		return unsafe_connect(host, user, pass, db, port);
+		return unsafe_connect(host, user, pass, db, port, socket);
 	}
 
 	void init (dpp::cluster& bot) {
 		creator = &bot;
 		const json& dbconf = config::get("database");
-		if (!db::connect(dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"])) {
+		if (!db::connect(dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"], dbconf.contains("socket") ? dbconf["socket"] : "")) {
 			creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"], mysql_error(&connection)));
 			exit(2);
 		}
@@ -311,7 +311,7 @@ namespace db {
 			}
 			cached_queries = {};
 			const json& dbconf = config::get("database");
-			if (!db::unsafe_connect(dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"])) {
+			if (!db::unsafe_connect(dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"], dbconf.contains("socket") ? dbconf["socket"] : "")) {
 				creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"], mysql_error(&connection)));
 				return rv;
 			}

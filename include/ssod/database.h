@@ -65,10 +65,11 @@ namespace db {
 	 * @param user Database username
 	 * @param pass Database password
 	 * @param db Database schema name
-	 * @param port Databae port number
+	 * @param port Database port number
+	 * @param unix socket path
 	 * @return True if the database connection succeeded
 	 */
-	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port = 3306);
+	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port = 3306, const std::string& socket = "");
 
 	/**
 	 * @brief Disconnect from database and free query cache
