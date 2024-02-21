@@ -57,6 +57,19 @@ struct component_builder {
 	 */
 	void add_component(const dpp::component& c);
 	/**
+	 * @brief Add an embed to the message
+	 * 
+	 * @param e embed
+	 */
+	void add_embed(const dpp::embed& e);
+	/**
+	 * @brief Add a file to the message
+	 * 
+	 * @param filename filename
+	 * @param content file content
+	 */
+	void add_file(const std::string& filename, const std::string& content);
+	/**
 	 * @brief Get the completed message
 	 *
 	 * @return dpp::message& reference to completed message

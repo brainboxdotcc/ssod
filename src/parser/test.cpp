@@ -28,6 +28,7 @@ struct test_tag : public tag {
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(p_text);
 		p.words++;
+		p.safe = false;
 
 		if (p_text.find("luck>") != std::string::npos) {
 			output << " Test your __**luck**__. ";

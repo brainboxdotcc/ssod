@@ -32,8 +32,71 @@
 #include <ssod/combat.h>
 #include <ssod/aes.h>
 
+#define RESURRECT_SECS 3600
+#define RESURRECT_SECS_PREMIUM 900
+
 void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type) {
 	db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)", {type, user_id, paragraph, message.substr(0, 140)});
+}
+
+void do_toasts(player &p, component_builder& cb) {
+	/* Display and clear toasts */
+	std::vector<std::string> toasts = p.get_toasts();
+	for (const auto& toast : toasts) {
+		dpp::embed e = dpp::embed()
+			.set_colour(0xd5b994)
+			.set_description(toast);
+		if (toast.find("# You have met your end, adventurer") != std::string::npos) {
+			e.set_image("https://images.ssod.org/resource/death.png");
+		}
+		cb.add_embed(e);
+	}
+}
+
+void death(player& p, component_builder& cb) {
+	p.stamina = 0;
+	p.in_pvp_picker = false;
+	std::string toast;
+	time_t when = RESURRECT_SECS;
+
+	toast += "# You have met your end, adventurer!\n\n";
+
+	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { p.event.command.usr.id });
+	if (!rs.empty()) {
+		when = RESURRECT_SECS_PREMIUM;
+	}
+
+	if (p.last_resurrect == 0 || time(nullptr) > p.last_resurrect + when) {
+		toast += "You can __resurrect nearby__ if you wish, which will respawn you __near to your place of death with your current inventory__.";
+		toast += "If you choose this path, then perhaps in the future you will *choose more wisely*.\n\nPlease be aware that resurrections ";
+		toast += "are limited to one per hour **or one per 15 minutes for premium users**, and if you have no resurrection available, and do ";
+		toast += "not want to wait, your only choice is to __restart from the start__.";
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("resurrect"))
+			.set_label("Ressurrect Me")
+			.set_style(dpp::cos_success)
+			.set_emoji(sprite::health_heart.name, sprite::health_heart.id)
+		);
+	} else {
+		toast += "You __can't resurrect nearby__ until your resurrection is ready again " + dpp::utility::timestamp(p.last_resurrect + when, dpp::utility::tf_relative_time) + ", ";
+		toast += "but you can respawn at the __start of the game__ right now and choose a different, *perhaps wiser* path...\n\n";
+		if (rs.empty()) {
+			toast += sprite::diamond.get_mention() + " ";
+			toast += "[Premium users](https://premium.ssod.org/) can **__resurrect every 15 minutes__ instead of every hour.** If you had Seven Spells Premium, you could ";
+			toast += "be back in the land of the living right now!";
+		}
+	}
+
+	p.add_toast(toast);
+
+	cb.add_component(dpp::component()
+		.set_type(dpp::cot_button)
+		.set_id(security::encrypt("respawn"))
+		.set_label("Respawn at start")
+		.set_style(dpp::cos_danger)
+		.set_emoji(sprite::skull.name, sprite::skull.id)
+	);
 }
 
 void add_chat(std::string& text, long paragraph_id) {
@@ -303,6 +366,7 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		claimed = true;
 	} else if (parts[0] == "respawn") {
+		p.drop_everything();
 		/* Load backup of player and save over the current */
 		player new_p = player(event.command.usr.id, true);
 		/* Keep experience points only (HARDCORE!!!) */
@@ -311,6 +375,7 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.after_fragment = 0;
 		new_p.combatant = {};
 		new_p.possessions = {};
+		new_p.breadcrumb_trail = {};
 		new_p.state = state_play;
 		new_p.gold = p.gold;
 		new_p.silver = p.silver;
@@ -321,6 +386,34 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.save(event.command.usr.id);
 		p = new_p;
 		claimed = true;
+	} else if (parts[0] == "resurrect") {
+		time_t when = RESURRECT_SECS;
+		auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
+		if (!rs.empty()) {
+			when = RESURRECT_SECS_PREMIUM;
+		}
+		if (time(nullptr) > p.last_resurrect + when) {
+			/* Load backup of player and use its stamina and skill, respawn at the
+			* start of its breadcrumb trail.
+			*/
+			player new_p = player(event.command.usr.id, true);
+			p.in_combat = false;
+			p.stamina = new_p.stamina;
+			p.skill = new_p.skill;
+			p.last_resurrect = time(nullptr);
+			if (!p.breadcrumb_trail.empty()) {
+				p.paragraph = p.breadcrumb_trail[0];
+				p.breadcrumb_trail = { p.breadcrumb_trail[0] };
+			} else {
+				new_p.reset_to_spawn_point();
+			}
+			p.after_fragment = 0;
+			p.combatant = {};
+			p.state = state_play;
+			update_live_player(event, p);
+			p.save(event.command.usr.id);
+			claimed = true;
+		}
 	} else if (parts[0] == "inventory" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_inventory = true;
 		claimed = true;
@@ -824,9 +917,6 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			break;
 		}
 	}
-	std::vector<std::string> toasts = p.get_toasts();
-	p.save(event.command.usr.id);
-	update_live_player(event, p);
 	m.add_embed(embed);
 	int64_t t = time(nullptr) - 600;
 	auto others = db::query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
@@ -863,13 +953,6 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		m.add_embed(dpp::embed()
 			.set_colour(0xd5b994)
 			.set_description(text)
-		);
-	}
-	/* Display and clear toasts */
-	for (const auto& toast : toasts) {
-		m.add_embed(dpp::embed()
-			.set_colour(0xd5b994)
-			.set_description(toast)
 		);
 	}
 
@@ -919,12 +1002,10 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				enabled_links++;
 				break;
 			case nav_type_respawn:
-				label = "Respawn";
-				id = "respawn";
-				p.stamina = 0; /* 💀 */
-				p.drop_everything();
+				death(p, cb);
 				p.save(event.command.usr.id);
 				update_live_player(event, p);
+				respawn_button_shown = true;
 				break;
 			case nav_type_modal:
 				label = "Answer: " + n.prompt;
@@ -950,21 +1031,20 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		} else if (n.type == nav_type_modal) {
 			comp.set_emoji("❓");
 		}
-		cb.add_component(comp);
+
+		if (n.type != nav_type_respawn) {
+			cb.add_component(comp);
+		}
 	}
 	if (enabled_links == 0 && !respawn_button_shown) {
-		p.stamina = 0;
-		cb.add_component(dpp::component()
-			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("respawn"))
-			.set_label("Respawn")
-			.set_style(dpp::cos_danger)
-			.set_emoji(sprite::skull.name, sprite::skull.id)
-		);
-		p.drop_everything();
-		p.save(event.command.usr.id);
-		update_live_player(event, p);
+		death(p, cb);
 	}
+
+	do_toasts(p, cb);
+
+	p.save(event.command.usr.id);
+	update_live_player(event, p);
+
 	if (enabled_links > 0 && p.stamina > 0 && p.after_fragment == 0) {
 		if (others.size() > 0) {
 			/* Can fight other players, present option */

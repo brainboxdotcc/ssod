@@ -34,6 +34,7 @@ struct sneaktest_tag : public tag {
 		p.auto_test = current_player.sneak_test(monster_sneak);
 		output << (p.auto_test ? " **PASSED**!\n" : " **FAILED**!\n");
 		p.words++;
+		p.safe = false;
 	}
 };
 

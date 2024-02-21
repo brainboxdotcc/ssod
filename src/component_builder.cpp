@@ -30,6 +30,14 @@ const dpp::message& component_builder::get_message() {
 	return message;
 }
 
+void component_builder::add_embed(const dpp::embed& e) {
+	message.add_embed(e);
+}
+
+void component_builder::add_file(const std::string& filename, const std::string& content) {
+	message.add_file(filename, content);
+}
+
 void component_builder::add_component(const dpp::component& c) {
 	if (index >= 25) {
 		/* Already at the max of 5x5 buttons */

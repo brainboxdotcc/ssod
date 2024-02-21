@@ -66,8 +66,13 @@ namespace db {
 	 * @param pass Database password
 	 * @param db Database schema name
 	 * @param port Database port number
-	 * @param unix socket path
+	 * @param socket unix socket path
 	 * @return True if the database connection succeeded
+	 * 
+	 * @note Unix socket and port number are mutually exclusive. If you set socket to a non-empty string,
+	 * you should set port to 0 and host to `localhost`. This is a special value in the mysql client and
+	 * causes a unix socket connection to occur. If you do not want to use unix sockets, keep the value
+	 * as an empty string.
 	 */
 	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port = 3306, const std::string& socket = "");
 

@@ -187,6 +187,7 @@ namespace db {
 	 * @param pass password
 	 * @param db database
 	 * @param port port
+	 * @param socket unix socket
 	 */
 	bool unsafe_connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port, const std::string &socket) {
 		if (mysql_init(&connection) != nullptr) {
