@@ -584,6 +584,7 @@ player::player(bool reroll) :
 		while ((d = dice()) == 6);
 		race = (player_race)d;
 		profession = (player_profession)dice();
+		last_resurrect = 0;
 
 		weapon = { .name = "Hunting Dagger", .rating = 1 };
 		armour = { .name = "Leather Coat", .rating = 1 };
