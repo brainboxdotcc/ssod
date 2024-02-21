@@ -608,8 +608,8 @@ player::player(bool reroll) :
 player::player(dpp::snowflake user_id, bool get_backup) : player() {
 	db::resultset a_row = db::query(fmt::format("SELECT * FROM {} WHERE user_id = ?", get_backup ? "game_default_users" : "game_users"), {user_id});
 	if (a_row.size()) {
-		race = (player_race)atoi(a_row[0].at("race").c_str());
-		profession = (player_profession)atoi(a_row[0].at("profession").c_str());
+		race = (player_race)atoi(a_row[0].at("race"));
+		profession = (player_profession)atoi(a_row[0].at("profession"));
 		name = a_row[0].at("name");
 		stamina = atol(a_row[0].at("stamina"));
 		skill = atol(a_row[0].at("skill"));
@@ -631,13 +631,13 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		weapon.rating = atol(a_row[0].at("weapon_rating"));
 		gender = a_row[0].at("gender");
 		// TODO: NOTES
-		last_use = atoll(a_row[0].at("lastuse").c_str());
-		last_strike = atoll(a_row[0].at("laststrike").c_str());
-		pinned = atoll(a_row[0].at("pinned").c_str());
-		muted = atoll(a_row[0].at("muted").c_str());
+		last_use = atoll(a_row[0].at("lastuse"));
+		last_strike = atoll(a_row[0].at("laststrike"));
+		pinned = atoll(a_row[0].at("pinned"));
+		muted = atoll(a_row[0].at("muted"));
 		mana = atol(a_row[0].at("mana"));
-		mana_tick = atoll(a_row[0].at("manatick").c_str());
-		last_resurrect = atoll(a_row[0].at("last_resurrect").c_str());
+		mana_tick = atoll(a_row[0].at("manatick"));
+		last_resurrect = atoll(a_row[0].at("last_resurrect"));
 		after_fragment = 0;
 		in_combat = false;
 		try {

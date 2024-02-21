@@ -61,17 +61,21 @@ std::string replace_string(std::string subject, const std::string& search, const
 std::string sha256(const std::string &buffer);
 
 inline long atol(const std::string& str) {
+	if (str.empty()) return 0;
 	return atol(str.c_str());
 }
 
 inline long long atoll(const std::string& str) {
+	if (str.empty()) return 0;
 	return atoll(str.c_str());
 }
 
 inline unsigned long atoul(const std::string& str) {
+	if (str.empty()) return 0;
 	return atoul(str.c_str());
 }
 
 inline int atoi(const std::string& str) {
+	if (str.empty()) return 0;
 	return atoi(str.c_str());
 }

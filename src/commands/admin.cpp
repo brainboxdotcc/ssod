@@ -120,7 +120,7 @@ void admin_command::route(const dpp::slashcommand_t &event)
 	if (subcommand.name == "reset") {
 		std::string user = std::get<std::string>(subcommand.options[0].value);
 		auto rs = db::query("SELECT id FROM game_users WHERE name = ?", {user});
-		uint64_t id = atoll(rs[0].at("id").c_str());
+		uint64_t id = atoll(rs[0].at("id"));
 		// Get the backup copy of the user
 		player p(id, true);
 		// Write the backup copy to the live copy
