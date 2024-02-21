@@ -283,4 +283,15 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 	}
 	text = output->str();
 	delete output;
+	if (id && words && safe) {
+		if (!current_player.breadcrumb_trail.empty()) {
+			if (current_player.breadcrumb_trail[current_player.breadcrumb_trail.size() - 1] == id) {
+				return;
+			}
+		}
+		current_player.breadcrumb_trail.push_back(id);
+		if (current_player.breadcrumb_trail.size() > 10) {
+			current_player.breadcrumb_trail.pop_front();
+		}
+	}
 }

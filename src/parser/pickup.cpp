@@ -27,6 +27,9 @@ struct pickup_tag : public tag {
 
 		paragraph_content >> p_text;
 
+		/* Pickup locations are not repeatable */
+		p.safe = false;
+
 		if (dpp::lowercase(p_text) == "scroll>") {
 			if (!current_player.has_flag("SCROLL", p.id)) {
 				current_player.scrolls++;

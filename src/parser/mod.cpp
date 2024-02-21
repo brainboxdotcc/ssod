@@ -69,6 +69,10 @@ struct mod_tag : public tag {
 				current_player.add_toast("# Level Up!\n\n## You are now level " + std::to_string(new_value) + "\nYou gain +1 to maximum stamina, skill, speed, sneak, and luck.");
 			}
 			p.words++;
+			if (modifier < 0 || p_text == "notoriety") {
+				/* Locations that remove stats are not safe locations */
+				p.safe = false;
+			}
 		}
 	}
 };

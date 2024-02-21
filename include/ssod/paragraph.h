@@ -99,6 +99,7 @@ struct paragraph {
 	bool magic_disabled{};
 	bool theft_disabled{};
 	bool chat_disabled{};
+	bool safe{true};
 
 	size_t links{0}, words{0};
 	std::string tag;

@@ -392,14 +392,9 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 		}
 	}
 	if (p.stamina < 1) {
-		p.in_pvp_picker = false;
-		cb.add_component(dpp::component()
-			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("respawn"))
-			.set_label("Respawn")
-			.set_style(dpp::cos_danger)
-			.set_emoji(sprite::skull.name, sprite::skull.id)
-		);
+		death(p, cb);
+		p.save(event.command.usr.id);
+		update_live_player(event, p);
 	}
 	else if (opponent.stamina < 1) {
 		p.in_combat = p.in_pvp_picker = false;
@@ -433,6 +428,8 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	
 	m = cb.get_message();
 	m.add_embed(embed);
+
+	do_toasts(p, cb);
 
 	return m;
 }
@@ -883,14 +880,9 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 
 		bool CombatEnded = false;
 		if (p.stamina < 1) {
-			cb.add_component(dpp::component()
-				.set_type(dpp::cot_button)
-				.set_id(security::encrypt("respawn"))
-				.set_label("Respawn")
-				.set_style(dpp::cos_danger)
-				.set_emoji(sprite::skull.name, sprite::skull.id)
-			);
-			p.drop_everything();
+			death(p, cb);
+			p.save(event.command.usr.id);
+			update_live_player(event, p);
 			CombatEnded = true;
 		} else if (EStamina < 1) {
 			p.after_fragment++;
@@ -954,7 +946,6 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 	}
 	
 	cb.add_component(help_button());
-	m = cb.get_message();
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -968,7 +959,9 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 	
 	p.save(event.command.usr.id);
 	update_live_player(event, p);
-	m.add_embed(embed);
+	cb.add_embed(embed);
+	do_toasts(p, cb);
+	m = cb.get_message();
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, m, p](const auto& cc) {
 		if (cc.is_error()) {

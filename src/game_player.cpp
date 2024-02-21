@@ -591,6 +591,7 @@ player::player(bool reroll) :
 		possessions.emplace_back(item{ .name = "Leather Coat", .flags = "A1" });
 		possessions.emplace_back(item{ .name = "Stamina Potion", .flags = "ST+4" });
 		possessions.emplace_back(item{ .name = "Skill Potion", .flags = "SK+4" });
+		breadcrumb_trail = {};
 		inv_change = true;
 		reset_to_spawn_point();
 		gotfrom = "__ITEMS_FROM__";
@@ -636,8 +637,18 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		muted = atoll(a_row[0].at("muted").c_str());
 		mana = atol(a_row[0].at("mana"));
 		mana_tick = atoll(a_row[0].at("manatick").c_str());
+		last_resurrect = atoll(a_row[0].at("last_resurrect").c_str());
 		after_fragment = 0;
 		in_combat = false;
+		try {
+			json crumbs = json::parse(a_row[0].at("breadcrumb_trail"));
+			for (const auto& crumb : crumbs) {
+				long p{crumb.get<long>()};
+				breadcrumb_trail.push_back(p);
+			}
+		}
+		catch (const std::exception&) {
+		}
 	}
 
 	auto res = db::query("SELECT item_desc, item_flags FROM game_owned_items WHERE user_id = ?", {user_id});
@@ -715,15 +726,22 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 	}
 	last_use = time(nullptr);
 
+	json crumbs = json::array();;
+	if (!put_backup) {
+		for (long p : breadcrumb_trail) {
+			crumbs.push_back(p);
+		}
+	}
+
 	db::query(fmt::format("INSERT INTO {} (user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph, \
-	 armour, weapon, gotfrom, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick, gender) \
-	 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
+	 armour, weapon, gotfrom, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick, gender, breadcrumb_trail, last_resurrect) \
+	 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
 	 ON DUPLICATE KEY UPDATE name = ?, race = ?, profession = ?, stamina = ?, skill = ?, luck = ?, sneak = ?, speed = ?, silver = ?, gold = ?, rations = ?, experience = ?, notoriety = ?, days = ?, scrolls = ?, paragraph = ?, \
-	 armour = ?, weapon = ?, gotfrom = ?, armour_rating = ?, weapon_rating = ?, lastuse = ?, laststrike = ?, pinned = ?, muted = ?, mana = ?, manatick = ?, gender = ?", put_backup ? "game_default_users" : "game_users"),
+	 armour = ?, weapon = ?, gotfrom = ?, armour_rating = ?, weapon_rating = ?, lastuse = ?, laststrike = ?, pinned = ?, muted = ?, mana = ?, manatick = ?, gender = ?, breadcrumb_trail = ?, last_resurrect = ?", put_backup ? "game_default_users" : "game_users"),
 		{user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
-		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender,
+		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender, crumbs.dump(), last_resurrect,
 		name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
-		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender}
+		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender, crumbs.dump(), last_resurrect}
 	);
 
 	db::commit();

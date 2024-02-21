@@ -20,6 +20,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <deque>
 #include <dpp/dpp.h>
 #include <ssod/game_enums.h>
 
@@ -245,6 +246,20 @@ struct player {
 	 * @brief Mana last time_t value when mana was ticked up
 	 */
 	time_t mana_tick;
+	/**
+	 * @brief Previous paragraphs travelled through that:
+	 * 1) did not contain combat
+	 * 2) contained a choice and displayed text
+	 * If the player is offered a do-over (normal users get two per day,
+	 * premium users get six) then they can restart from the start of their
+	 * breadcrumb trail. This puts them back somewhere safe where they can
+	 * potentially explore a different path. If they have no do-overs,
+	 * they must restart from the start. Do overs are called resurrections.
+	 */
+	std::deque<long> breadcrumb_trail;
+
+	time_t last_resurrect;
+
 	/**
 	 * @brief Destroy the player object
 	 * 

@@ -27,6 +27,7 @@ struct combat_tag : public tag {
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// combat tag
 		p.links++;
+		p.safe = false;
 		paragraph_content >> p_text;
 		extract_to_quote(p_text, paragraph_content, '"');
 		std::string monster_name = extract_value(p_text);
