@@ -65,6 +65,8 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	content += " (" + std::to_string(percent) + "%)";
 	player p2(atol(rs[0].at("user_id")), false);
 
+	std::string file = matrix_image((player_race)atoi(rs[0].at("race")), (player_profession)atoi(rs[0].at("profession")), rs[0].at("gender") == "male");
+
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title("Profile: " + user)
@@ -75,7 +77,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		})
 		.set_colour(0xd5b994)
 		.set_description(content)
-		.set_image("attachment://race.jpg")
+		.set_image(file)
 		.add_field("Stamina", sprite::health_heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)
 		.add_field("Skill", sprite::book07.get_mention() + " " + rs[0].at("skill") + "/" + std::to_string(p2.max_skill()), true)
 		.add_field("Luck", sprite::clover.get_mention() + " " + rs[0].at("luck") + "/" + std::to_string(p2.max_luck()), true)
@@ -89,7 +91,6 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field("Notoriety", sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
 		.add_field("Rations", sprite::cheese.get_mention() + " " + rs[0].at("rations"), true)
 		;
-	std::string file = matrix_image((player_race)atoi(rs[0].at("race")), (player_profession)atoi(rs[0].at("profession")), rs[0].at("gender") == "male");
 
 	auto premium = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
 	if (premium.size()) {
@@ -100,8 +101,11 @@ void profile_command::route(const dpp::slashcommand_t &event)
 			}
 			if (bio[0].at("image_name").length()) {
 				file = "../uploads/" + bio[0].at("image_name");
+				embed.set_image("attachment://race.jpg");
+				event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral).add_file("race.jpg", dpp::utility::read_file(file)));
+				return;
 			}
 		}
 	}
-	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral).add_file("race.jpg", dpp::utility::read_file(file)));	
+	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));	
 }

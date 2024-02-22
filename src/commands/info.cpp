@@ -76,10 +76,10 @@ void info_command::route(const dpp::slashcommand_t &event)
 		.add_field("SQL cache size", std::to_string(db::cache_size()), true)
 		.add_field("SQL query count", std::to_string(db::query_count()), true)
 		.add_field("Game Time", game_date(), false)
-		.set_image("attachment://app_encyclopaedia.jpg")
+		.set_image("https://images.ssod.org/resource/app_encyclopaedia.jpg")
 		;
 
 	embed.add_field("Library Version", "<:DPP1:847152435399360583><:DPP2:847152435343523881> [" + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)", false);
 
-	event.reply(dpp::message().add_embed(embed).add_file("app_encyclopaedia.jpg", dpp::utility::read_file("../resource/app_encyclopaedia.jpg")).set_flags(dpp::m_ephemeral));
+	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 }

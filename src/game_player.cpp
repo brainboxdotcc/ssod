@@ -181,6 +181,8 @@ double player::get_percent_of_current_level() {
 }
 
 dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
+
+	std::string file = matrix_image(race, profession, gender == "male");
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title("New Character Creation")
@@ -204,8 +206,7 @@ Your character is shown below. If you are not happy with your base stats, click 
 		.add_field("Notoriety", std::to_string(notoriety), true)
 		.add_field("Armour", fmt::format("{} (Rating {})", armour.name, armour.rating), true)
 		.add_field("Weapon", fmt::format("{} (Rating {})", weapon.name, weapon.rating), true)
-		.set_image("attachment://race.jpg")
-		;
+		.set_image(file);
 
 		dpp::component race_select_menu, profession_select_menu, gender_select_menu;
 		race_select_menu.set_type(dpp::cot_selectmenu)
@@ -244,8 +245,6 @@ Your character is shown below. If you are not happy with your base stats, click 
 			.add_select_option(dpp::select_option("Male", "male").set_default(gender == "male"))
 			.add_select_option(dpp::select_option("Female", "female").set_default(gender == "female"));
 
-	std::string file = matrix_image(race, profession, gender == "male");
-
 	return dpp::message()
 		.add_embed(embed)
 		.add_component(dpp::component()
@@ -274,8 +273,7 @@ Your character is shown below. If you are not happy with your base stats, click 
 				.set_emoji("➡️")
 			)
 			.add_component(help_button())
-		).set_flags(dpp::m_ephemeral)
-		.add_file("race.jpg", dpp::utility::read_file(file));
+		).set_flags(dpp::m_ephemeral);
 }
 
 bool player::has_herb(const std::string herb_name) {

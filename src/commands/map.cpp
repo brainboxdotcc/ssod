@@ -40,11 +40,10 @@ void map_command::route(const dpp::slashcommand_t &event)
 			.proxy_url = "",
 		})
 		.set_colour(0xd5b994)
-		.set_image("attachment://map.jpg")
+		.set_image("https://images.ssod.org/resource/map.jpg")
 		.set_description("");
 	event.reply(dpp::message()
 		.add_embed(embed)
 		.set_flags(dpp::m_ephemeral)
-		.add_file("map.jpg", dpp::utility::read_file("../resource/map.jpg"))
 	);
 }

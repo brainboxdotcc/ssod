@@ -52,5 +52,5 @@ const char* race(player_race r) {
 }
 
 std::string matrix_image(player_race r, player_profession p, bool male) {
-	return fmt::format("../resource/profile_matrix/{}_{}_{}.png", (int)r, (int)p, male ? 'm' : 'f');
+	return fmt::format("https://images.ssod.org/resource/profile_matrix/{}_{}_{}.png", (int)r, (int)p, male ? 'm' : 'f');
 }

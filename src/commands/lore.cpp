@@ -79,7 +79,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			.proxy_icon_url = "",
 		})
 		.set_colour(0xd5b994)
-		.set_image("attachment://app_encyclopaedia_c.jpg")
+		.set_image("https://images.ssod.org/resource/app_encyclopaedia_c.jpg")
 		.set_description("Select a choice from the options below to read information about the game world, its characters and your quest's background.");
 	dpp::message m;
 	component_builder cb(m);
@@ -130,8 +130,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 		for (const auto& ext : std::array<std::string, 3>{"webp", "png", "jpg"}) {
 			std::string image_file = replace_string(path, ".md", "") + "." + ext;
 			if (fs::exists(image_file)) {
-				m.add_file("image." + ext, dpp::utility::read_file(image_file));
-				embed.set_image("attachment://image." + ext);
+				embed.set_image("https://images.ssod.org/" + image_file);
 				break;
 			}
 		}
@@ -186,7 +185,6 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			);
 		}
 		m = cb.get_message();
-		m.add_file("app_encyclopaedia_c.jpg", dpp::utility::read_file("../resource/app_encyclopaedia_c.jpg"));
 	}
 	m.add_embed(embed);
 	if (event.command.type == dpp::it_component_button) {
