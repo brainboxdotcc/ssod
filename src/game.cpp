@@ -44,7 +44,7 @@ void do_toasts(player &p, component_builder& cb) {
 	std::vector<std::string> toasts = p.get_toasts();
 	for (const auto& toast : toasts) {
 		dpp::embed e = dpp::embed()
-			.set_colour(0xd5b994)
+			.set_colour(EMBED_COLOUR)
 			.set_description(toast);
 		if (toast.find("# You have met your end, adventurer") != std::string::npos) {
 			e.set_image("https://images.ssod.org/resource/death.png");
@@ -633,7 +633,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
 	
 	dpp::message m;
@@ -712,7 +712,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
 	
 	dpp::message m;
@@ -825,7 +825,7 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
 	
 	dpp::message m;
@@ -908,7 +908,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(location.text);
 	dpp::message m;
 	std::array<std::string, 3> types{".png", ".jpg", ".webm"};
@@ -945,14 +945,14 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 		add_chat(text, location.id);
 		m.add_embed(dpp::embed()
-			.set_colour(0xd5b994)
+			.set_colour(EMBED_COLOUR)
 			.set_description(text)
 		);
 	} else {
 		std::string text = "";
 		add_chat(text, location.id);
 		m.add_embed(dpp::embed()
-			.set_colour(0xd5b994)
+			.set_colour(EMBED_COLOUR)
 			.set_description(text)
 		);
 	}

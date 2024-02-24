@@ -64,7 +64,7 @@ void info_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description("")
 		.add_field("Bot Uptime", bot->uptime().to_string(), true)
 		.add_field("Memory Usage", std::to_string(rss() / 1024 / 1024) + "M", true)

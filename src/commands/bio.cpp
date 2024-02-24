@@ -52,7 +52,7 @@ void bio_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994);
+		.set_colour(EMBED_COLOUR);
 
 
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });

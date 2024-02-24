@@ -39,7 +39,7 @@ void map_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_image("https://images.ssod.org/resource/map.jpg")
 		.set_description("");
 	event.reply(dpp::message()

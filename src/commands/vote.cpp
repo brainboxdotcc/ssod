@@ -38,7 +38,7 @@ void vote_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description("[Vote for Seven Spells on top.gg](https://top.gg/bot/620654573547159553/vote) to gain additional loot such as helpful potions every 12 hours!\n\nIf you do not already have a stamina or skill potion, and you vote for the bot, then your supply of that item will be replenished.\n\n**Use the potions repeatedly to max out your stats.**");
 	event.reply(dpp::message()
 		.add_embed(embed)

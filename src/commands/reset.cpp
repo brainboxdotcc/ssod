@@ -49,7 +49,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 					.icon_url = bot->me.get_avatar_url(), 
 					.proxy_url = "",
 				})
-				.set_colour(0xd5b994)
+				.set_colour(EMBED_COLOUR)
 				.set_description(
 					"Your character has been cast into the void! All previous information has been deleted. You may now re-create a new character with `/start`.\n\nIf you have premium, your premium entitlement will continue on your new character."
 				);
@@ -76,7 +76,7 @@ void reset_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(
 			"Are you sure you want to reset? This will **__completely delete your character__** and is __**not reversible**__. You will then be able to `/start` to re-roll new stats and pick a new race and profession."
 		);

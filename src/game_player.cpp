@@ -191,7 +191,7 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 			.icon_url = cluster.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(fmt::format("Welcome to the world of **Utopia**, {}!\n\n\
 Your character is shown below. If you are not happy with your base stats, click **Re-Roll** for new ones.\n\
 ### Once you commit to this character, you cannot change these base stats without __restarting__.", event.command.usr.get_mention()))
@@ -456,7 +456,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 			.icon_url = cluster.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(fmt::format("Now, select your herbs and magic. Certain spells require herbs in your inventory to function.\n\n\
 Read the descriptions of the herbs to determine which types of spells they might provide access to.\n\
 ### You have selected __{}__ of up to __{}__ herbs, and __{}__ of up to __{}__ spells.\n\n\

@@ -85,7 +85,7 @@ void rename_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description("Your **" + oldname + "** has been renamed to: **" + newname + "**");
 
 	for (item& i : p.possessions) {

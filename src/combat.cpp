@@ -423,7 +423,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(output.str());
 	
 	m = cb.get_message();
@@ -954,7 +954,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(output.str());
 	
 	p.save(event.command.usr.id);

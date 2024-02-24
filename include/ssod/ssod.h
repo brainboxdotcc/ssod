@@ -28,6 +28,8 @@ namespace fs = std::filesystem;
 
 using json = dpp::json;
 
+#define EMBED_COLOUR 0xd5b994
+
 bool match(const char* str, const char* mask);
 
 /**
