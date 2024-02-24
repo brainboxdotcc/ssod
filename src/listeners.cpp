@@ -61,7 +61,7 @@ namespace listeners {
 				dpp::embed()
 				.set_description("Welcome to the land of __Utopia__! To start your adventure use the `/start` command.\n\nTo read background information about the game world and its people at any time, use the `/lore` command.\n\nYou can get help by joining the [Brainbox.cc Discord](https://discord.gg/brainbox)")
 				.set_title("Welcome, Adventurers!")
-				.set_color(0xd5b994)
+				.set_color(EMBED_COLOUR)
 				.set_url("https://ssod.org/")
 				.set_thumbnail(bot.me.get_avatar_url())
 				.set_footer("The Seven Spells Of Destruction", bot.me.get_avatar_url())

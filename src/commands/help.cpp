@@ -39,7 +39,7 @@ void help_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description("Welcome to **The Seven Spells Of Destruction**, an open world multi player role playing game played through Discord! There are not many commands for this bot as using it is simple. to get started, use `/start`. You can find a list of all the commands for the bot below:")
 		.add_field("/help", "Bring about world peace, or just show this command\nShows information about the bot's commands", false)
 		.add_field("/start", "Start a new character, or continue your game\nThe game is played via button clicks and interacting with bot messages.", false)

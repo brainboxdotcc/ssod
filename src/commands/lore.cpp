@@ -78,7 +78,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			.icon_url = "",
 			.proxy_icon_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_image("https://images.ssod.org/resource/app_encyclopaedia_c.jpg")
 		.set_description("Select a choice from the options below to read information about the game world, its characters and your quest's background.");
 	dpp::message m;

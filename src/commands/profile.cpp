@@ -75,7 +75,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(content)
 		.set_image(file)
 		.add_field("Stamina", sprite::health_heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)

@@ -41,7 +41,7 @@ void premium_command::route(const dpp::slashcommand_t &event)
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.set_colour(0xd5b994)
+		.set_colour(EMBED_COLOUR)
 		.set_description(
 			!has_premium ? "You do not yet have [Seven Spells Premium](https://premium.ssod.org?user=" + event.command.usr.id.str() +
 			") Subscriptions are just £3 a month and give access to additional areas, automatic loot drops, and more!\n\nIf you had premium, this command would give you a link to manage your subscription."
