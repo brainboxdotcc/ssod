@@ -732,14 +732,14 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		}
 		if (ds.find(inv.name) == ds.end()) {
 			dpp::emoji e = get_emoji(inv.name, inv.flags);
-			deposit_menu.add_select_option(
-				dpp::select_option(inv.name, inv.name + ";" + inv.flags, describe_item(inv.flags, inv.name).substr(0, 100))
-				.set_emoji(e.name, e.id)
-			);
-			if (index++ >= 24) {
-				break;
+			if (deposit_menu.options.size() < 25) {
+				deposit_menu.add_select_option(
+					dpp::select_option(inv.name, inv.name + ";" + inv.flags, describe_item(inv.flags, inv.name).substr(0, 100))
+					.set_emoji(e.name, e.id)
+				);
+				ds.insert(inv.name);
+				index++;
 			}
-			ds.insert(inv.name);
 		}
 	}
 	withdraw_menu.set_type(dpp::cot_selectmenu)
@@ -751,11 +751,13 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	for (const auto& bank_item : bank_items) {
 		if (dup_set.find(bank_item.at("item_desc")) == dup_set.end()) {
 			dpp::emoji e = get_emoji(bank_item.at("item_desc"), bank_item.at("item_flags"));
-			withdraw_menu.add_select_option(
-				dpp::select_option(bank_item.at("item_desc"), bank_item.at("item_desc") + ";" + bank_item.at("item_flags"), describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")).substr(0, 100))
-				.set_emoji(e.name, e.id)
-			);
-			dup_set.insert(bank_item.at("item_desc"));
+			if (withdraw_menu.options.size() < 25) {
+				withdraw_menu.add_select_option(
+					dpp::select_option(bank_item.at("item_desc"), bank_item.at("item_desc") + ";" + bank_item.at("item_flags"), describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")).substr(0, 100))
+					.set_emoji(e.name, e.id)
+				);
+				dup_set.insert(bank_item.at("item_desc"));
+			}
 		}
 	}
 
