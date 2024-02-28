@@ -759,9 +759,10 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		}
 	}
 
+	m.add_embed(embed);
 	if (dup_set.size() < 25 && index > 0) {
 		/* User has something they can deposit in their inventory and bank is not full */
-		m.add_embed(embed).add_component(dpp::component().add_component(deposit_menu));
+		m.add_component(dpp::component().add_component(deposit_menu));
 	}
 	if (withdraw_menu.options.size() > 0) {
 		/* Bank has items which can be withdrawn */
