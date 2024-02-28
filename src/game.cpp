@@ -736,7 +736,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 				dpp::select_option(inv.name, inv.name + ";" + inv.flags, describe_item(inv.flags, inv.name).substr(0, 100))
 				.set_emoji(e.name, e.id)
 			);
-			if (index++ == 25) {
+			if (index++ >= 24) {
 				break;
 			}
 			ds.insert(inv.name);
