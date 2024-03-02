@@ -52,6 +52,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		return;
 	}
 	p.experience = atol(rs[0].at("experience"));
+	auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", {rs[0].at("user_id")});
 
 	std::string content{"### Level " + std::to_string(p.get_level()) + " " + std::string(race((player_race)atoi(rs[0].at("race")))) + " " + std::string(profession((player_profession)atoi(rs[0].at("profession")))) +  "\n"};
 	int percent = p.get_percent_of_current_level();
@@ -63,13 +64,18 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		}
 	}
 	content += " (" + std::to_string(percent) + "%)";
+
+	if (!g.empty()) {
+		content += "\n\n**Guild:** " + dpp::utility::markdown_escape(g[0].at("name"));
+	}
+
 	player p2(atol(rs[0].at("user_id")), false);
 
 	std::string file = matrix_image((player_race)atoi(rs[0].at("race")), (player_profession)atoi(rs[0].at("profession")), rs[0].at("gender") == "male");
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Profile: " + user)
+		.set_title("Profile: " + dpp::utility::markdown_escape(user))
 		.set_footer(dpp::embed_footer{ 
 			.text = "Requested by " + event.command.usr.format_username(), 
 			.icon_url = bot.me.get_avatar_url(), 
@@ -90,6 +96,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field("Weapon", sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
 		.add_field("Notoriety", sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
 		.add_field("Rations", sprite::cheese.get_mention() + " " + rs[0].at("rations"), true)
+		.add_field("Scrolls", sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
 		;
 
 	auto premium = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
@@ -97,7 +104,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		auto bio = db::query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
 		if (bio.size()) {
 			if (bio[0].at("bio").length()) {
-				embed.set_description(content + "\n### Biography\n" + bio[0].at("bio") + "\n\n");
+				embed.set_description(content + "\n### Biography\n" + dpp::utility::markdown_escape(bio[0].at("bio")) + "\n\n");
 			}
 			if (bio[0].at("image_name").length()) {
 				file = "../uploads/" + bio[0].at("image_name");
