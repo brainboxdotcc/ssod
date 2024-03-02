@@ -39,6 +39,7 @@
 #include <ssod/commands/rename.h>
 #include <ssod/commands/premium.h>
 #include <ssod/commands/reset.h>
+#include <ssod/commands/guild.h>
 
 #include <ssod/botlist.h>
 #include <ssod/botlists/topgg.h>
@@ -172,6 +173,7 @@ namespace listeners {
 				register_command<rename_command>(bot),
 				register_command<premium_command>(bot),
 				register_command<reset_command>(bot),
+				register_command<guild_command>(bot),
 			});
 			bot.guild_bulk_command_create({
 				register_command<admin_command>(bot),
