@@ -66,14 +66,19 @@ void guild_command::route(const dpp::slashcommand_t &event)
 		auto param = subcommand.options[0].value;
 		std::string name = std::get<std::string>(param);
 		db::transaction();
-		auto rs = db::query("SELECT id FROM guilds WHERE name = ?", { name });
-		if (rs.empty()) {
-			db::query("INSERT INTO guilds (owner_id, name) VALUES(?, ?)", { event.command.usr.id, name });
+		auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", { event.command.usr.id });
+		if (g.empty()) {
 			auto rs = db::query("SELECT id FROM guilds WHERE name = ?", { name });
-			db::query("INSERT INTO guild_members (user_id, guild_id) VALUES(?, ?)", { event.command.usr.id, rs[0].at("id") });
-			embed.set_description("Guild has been created:\n\n" + dpp::utility::markdown_escape(name));
+			if (rs.empty()) {
+				db::query("INSERT INTO guilds (owner_id, name) VALUES(?, ?)", { event.command.usr.id, name });
+				auto rs = db::query("SELECT id FROM guilds WHERE name = ?", { name });
+				db::query("INSERT INTO guild_members (user_id, guild_id) VALUES(?, ?)", { event.command.usr.id, rs[0].at("id") });
+				embed.set_description("Guild has been created:\n\n" + dpp::utility::markdown_escape(name));
+			} else {
+				embed.set_description("Guild already exists");
+			}
 		} else {
-			embed.set_description("Guild already exists");
+			embed.set_description("You are already a member of guild:\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
 		}
 		db::commit();
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
