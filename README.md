@@ -41,7 +41,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 {
 	"token": "token goes here", 
 	"log": "log path goes here",
-    "shards": 1,
+	"shards": 1,
 	"database": {
 		"host": "localhost",
 		"username": "mysql username",
