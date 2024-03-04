@@ -3,19 +3,19 @@
 #include <unistd.h>
 #include <ssod/ssod.h>
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace commandline {
 	commandline_config parse(int argc, char const *argv[]) {
 
 		struct option long_opts[] = {
-			{ "clusterid",  required_argument,      NULL,      'c' },
-			{ "maxclusters",required_argument,      NULL,      'm' },
-			{ 0, 0, 0, 0 }
+			{ "clusterid", required_argument, nullptr, 'c' },
+			{ "maxclusters", required_argument, nullptr, 'm' },
+			{ nullptr, 0, nullptr, 0 }
 		};
 
 		int index{0};
-		char arg;
+		int arg;
 		bool clusters_defined{false};
 		uint32_t cluster_id = 0;
 		uint32_t max_clusters = 1;

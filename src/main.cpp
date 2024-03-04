@@ -17,6 +17,9 @@
  * limitations under the License.
  *
  ************************************************************************************/
+#ifndef _GNU_SOURCE
+	#define _GNU_SOURCE
+#endif
 #include <dpp/dpp.h>
 #include <ssod/listeners.h>
 #include <ssod/database.h>
