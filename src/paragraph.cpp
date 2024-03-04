@@ -22,10 +22,7 @@
 #include <ssod/paragraph.h>
 #include <ssod/database.h>
 #include <ssod/game_player.h>
-#include <ssod/game_dice.h>
-#include <ssod/game_util.h>
 #include <ssod/parser.h>
-#include <ssod/emojis.h>
 
 paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id) {
 	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});

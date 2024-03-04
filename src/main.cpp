@@ -18,8 +18,6 @@
  *
  ************************************************************************************/
 #include <dpp/dpp.h>
-#include <fmt/format.h>
-#include <ssod/ssod.h>
 #include <ssod/listeners.h>
 #include <ssod/database.h>
 #include <ssod/logger.h>
@@ -27,16 +25,24 @@
 #include <ssod/game.h>
 #include <ssod/js.h>
 #include <ssod/aes.h>
+#include <ssod/commandline.h>
 
 int main(int argc, char const *argv[])
 {
+	std::setlocale(LC_ALL, "en_GB.UTF-8");
+
 	config::init("../config.json");
 	logger::init(config::get("log"));
+	commandline_config cli = commandline::parse(argc, argv);
 
 	dpp::cluster bot(
 		config::get("token"),
 		dpp::i_guilds,
-		0, 0, 1, true, dpp::cache_policy::cpol_none
+		config::get("shards"),
+		cli.cluster_id,
+		cli.max_clusters,
+		true,
+		dpp::cache_policy::cpol_none
 	);
 
 	security::init(bot);

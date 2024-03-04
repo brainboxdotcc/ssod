@@ -18,9 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/ssod.h>
-#include <ssod/database.h>
 #include <ssod/commands/map.h>
-#include <ssod/database.h>
 #include <ssod/game_date.h>
 
 dpp::slashcommand map_command::register_command(dpp::cluster& bot)

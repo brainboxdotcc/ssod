@@ -20,9 +20,6 @@
 #include <ssod/ssod.h>
 #include <ssod/database.h>
 #include <ssod/commands/guild.h>
-#include <ssod/game_util.h>
-#include <ssod/database.h>
-#include <ssod/aes.h>
 
 dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
 	return dpp::slashcommand("guild", "Create or join a guild", bot.me.id)

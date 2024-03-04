@@ -18,7 +18,6 @@
  *
  ************************************************************************************/
 #include <string>
-#include <cstdint>
 #include <ssod/neutrino_api.h>
 
 neutrino::neutrino(dpp::cluster* cl, const std::string& userid, const std::string& apikey) : cluster(cl), user_id(userid), api_key(apikey) {

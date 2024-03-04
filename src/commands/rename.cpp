@@ -20,10 +20,8 @@
 #include <ssod/ssod.h>
 #include <ssod/database.h>
 #include <ssod/commands/rename.h>
-#include <ssod/database.h>
 #include <ssod/game_date.h>
 #include <ssod/game_player.h>
-#include <ssod/aes.h>
 #include <ssod/game_util.h>
 
 static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {

@@ -23,11 +23,8 @@
 #include <ssod/config.h>
 #include <mysql/mysql.h>
 #include <fmt/format.h>
-#include <iostream>
 #include <unordered_map>
 #include <mutex>
-#include <sstream>
-#include <type_traits>
 
 #ifdef MARIADB_VERSION_ID
 	#define CONNECT_STRING "SET @@SESSION.max_statement_time=3000"

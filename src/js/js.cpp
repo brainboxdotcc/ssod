@@ -21,19 +21,10 @@
 #include <dpp/dpp.h>
 #include <dpp/json.h>
 #include <ssod/js.h>
-#include <ssod/config.h>
-#include <ssod/database.h>
-#include <thread>
 #include <streambuf>
-#include <fstream>
-#include <iostream>
-#include <chrono>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
 #include "duktape.h"
 #include <ssod/paragraph.h>
-#include <ssod/parser.h>
 
 namespace js {
 
