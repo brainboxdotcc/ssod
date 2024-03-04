@@ -107,22 +107,22 @@ void add_chat(std::string& text, long paragraph_id) {
 	}
 	for (const auto& row : rs) {
 		if (row.at("event_type") == "chat") {
-			text += fmt::format("\033[2;31m[{}]\033[0m <\033[2;34m{}\033[0m> {}\n", row.at("message_time"), row.at("name"), row.at("message"));
+			text += fmt::format("\033[2;31m[{}]\033[0m <\033[2;34m{}\033[0m> {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), dpp::utility::markdown_escape(row.at("message")));
 		} else if (row.at("event_type") == "join") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m wanders into the location\n", row.at("message_time"), row.at("name"));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m wanders into the location\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")));
 		} else  if (row.at("event_type") == "part") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m leaves the location\n", row.at("message_time"), row.at("name"));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m leaves the location\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")));
 		} else  if (row.at("event_type") == "drop") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m drops \033[2;34m{}\033[0m {}\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", item);
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m drops {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
 		} else  if (row.at("event_type") == "pickup") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m picks up \033[2;34m{}\033[0m {}\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", item);
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m picks up {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
 		} else  if (row.at("event_type") == "combat") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m challenges \033[2;34m{}\033[0m to combat!\n", row.at("message_time"), row.at("name"), row.at("message"));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m challenges \033[2;34m{}\033[0m to combat!\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), dpp::utility::markdown_escape(row.at("message")));
 		} else  if (row.at("event_type") == "death") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m died{}...\n", row.at("message_time"), row.at("name"), row.at("message").empty() ? "" : " fighting  \033[2;34m" + row.at("message") + "\033[0m");
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m died{}...\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), row.at("message").empty() ? "" : " fighting  \033[2;34m" + dpp::utility::markdown_escape(row.at("message")) + "\033[0m");
 		}
 	}
 	text += "```\n";
