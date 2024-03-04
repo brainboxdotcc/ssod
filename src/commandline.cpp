@@ -54,6 +54,6 @@ namespace commandline {
 			exit(2);
 		}
 
-		return commandline_config{cluster_id: cluster_id, max_clusters: max_clusters};
+		return commandline_config{.cluster_id =  cluster_id, .max_clusters = max_clusters};
 	}
 }
