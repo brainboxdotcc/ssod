@@ -19,7 +19,6 @@
  ************************************************************************************/
 #include <dpp/dpp.h>
 #include <ssod/ssod.h>
-#include <iomanip>
 #include <string>
 
 bool match(const char* str, const char* mask)

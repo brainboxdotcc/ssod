@@ -39,7 +39,7 @@ struct tag {
 using tag_router = auto (*)(paragraph&, std::string&, std::stringstream&, std::stringstream&, player&) -> void;
 
 /**
- * @brief Represents a list of registered tagss stored in an unordered_map
+ * @brief Represents a list of registered tags stored in an unordered_map
  */
 using registered_tag_list = std::unordered_map<std::string_view, tag_router>;
 
@@ -60,7 +60,7 @@ template <typename T> void register_tag()
 	}
 }
 
-struct parse_end_exception {
+struct parse_end_exception : public std::exception {
 };
 
 bool route_tag(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player, bool display);

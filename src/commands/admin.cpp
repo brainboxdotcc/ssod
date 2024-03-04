@@ -20,7 +20,6 @@
 #include <ssod/ssod.h>
 #include <ssod/database.h>
 #include <ssod/commands/admin.h>
-#include <ssod/database.h>
 #include <ssod/game_date.h>
 #include <ssod/game_player.h>
 

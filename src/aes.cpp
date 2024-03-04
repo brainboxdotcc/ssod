@@ -24,14 +24,9 @@
 #include <ssod/compress.h>
 #include <vector>
 #include <memory>
-#include <cstring>
 
 #include <openssl/aes.h>
-#include <openssl/err.h>
 #include <openssl/evp.h>
-#include <openssl/evperr.h>
-#include <openssl/aes.h>
-#include <openssl/crypto.h>
 
 static const int B64index[256] = {
 	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -61,7 +56,7 @@ aes256_cbc::aes256_cbc(std::vector<uint8_t> _iv) : iv(std::move(_iv)) {
 
 void aes256_cbc::encrypt(const std::vector<uint8_t>& key, const std::vector<uint8_t>& message, std::vector<uint8_t>& output) const {
 	output.resize(message.size() * AES_BLOCK_SIZE);
-	int inlen = message.size();
+	int inlen = (int)message.size();
 	int outlen = 0;
 	size_t total_out = 0;
 
@@ -90,7 +85,7 @@ void aes256_cbc::decrypt(const std::vector<uint8_t>& key, const std::vector<uint
 	_iv = iv;
 	target_message = message;
 
-	int inlen = target_message.size();
+	int inlen = (int)target_message.size();
 
 	EVP_DecryptInit(ctx.get(), EVP_aes_256_cbc(), enc_key.data(), _iv.data());
 	EVP_DecryptUpdate(ctx.get(), output.data(), &outlen, target_message.data(), inlen);
@@ -116,13 +111,13 @@ static std::string bytes_to_str(const std::vector<uint8_t>& bytes) {
 const std::string b64decode(const void* data, size_t len) {
 	if (len == 0) return "";
 
-	unsigned char *p = (unsigned char*) data;
+	auto *p = (unsigned char*) data;
 	size_t j = 0,
 	pad1 = len % 4 || p[len - 1] == '=',
 	pad2 = pad1 && (len % 4 > 2 || p[len - 2] != '=');
 	const size_t last = (len - pad1) / 4 << 2;
 	std::string result(last / 4 * 3 + pad1 + pad2, '\0');
-	unsigned char *str = (unsigned char*) &result[0];
+	auto *str = (unsigned char*) &result[0];
 
 	for (size_t i = 0; i < last; i += 4) {
 		int n = B64index[p[i]] << 18 | B64index[p[i + 1]] << 12 | B64index[p[i + 2]] << 6 | B64index[p[i + 3]];

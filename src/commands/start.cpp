@@ -22,17 +22,14 @@
 #include <fmt/format.h>
 #include <ssod/database.h>
 #include <ssod/commands/start.h>
-#include <ssod/database.h>
 #include <ssod/game_player.h>
 #include <ssod/game.h>
-#include <ssod/neutrino_api.h>
-#include <ssod/config.h>
 #include <ssod/aes.h>
 #include <ssod/emojis.h>
 
 dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 {
-	bot.on_button_click([&bot](const dpp::button_click_t &event) {
+	bot.on_button_click([](const dpp::button_click_t &event) {
 		if (player_is_live(event)) {
 			return;
 		}
@@ -41,8 +38,8 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id.empty()) {
 			return;
 		}
-		bot.log(dpp::ll_debug, event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
 		dpp::cluster& bot = *(event.from->creator);
+		bot.log(dpp::ll_debug, event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
 		if (custom_id == "player_reroll" && p_old.state == state_roll_stats) {
 			event.reply();
 			player p_new(true);
@@ -81,7 +78,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		}
 	});
 	
-	bot.on_select_click([&bot](const dpp::select_click_t &event) {
+	bot.on_select_click([](const dpp::select_click_t &event) {
 		if (player_is_live(event)) {
 			return;
 		}
@@ -136,7 +133,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id == "name_character" && p_old.state == state_name_player) {
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
 			auto check = db::query("SELECT * FROM game_users WHERE name = ?", {name});
-			if (check.size()) {
+			if (!check.empty()) {
 				event.reply();
 				dpp::message m = p_old.get_magic_selection_message(bot, event);
 				m.embeds[0].description += "\n\n## The username you have selected already exists. Please try another.";

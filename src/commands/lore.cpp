@@ -18,9 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/ssod.h>
-#include <ssod/database.h>
 #include <ssod/commands/lore.h>
-#include <ssod/database.h>
 #include <ssod/game_date.h>
 #include <ssod/component_builder.h>
 #include <ssod/emojis.h>

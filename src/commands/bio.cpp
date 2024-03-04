@@ -21,8 +21,6 @@
 #include <ssod/database.h>
 #include <ssod/commands/bio.h>
 #include <ssod/game_util.h>
-#include <ssod/database.h>
-#include <ssod/aes.h>
 
 dpp::slashcommand bio_command::register_command(dpp::cluster& bot) {
 	return dpp::slashcommand("bio", "Update player biography", bot.me.id)

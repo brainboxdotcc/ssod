@@ -20,7 +20,6 @@
 #include <ssod/ssod.h>
 #include <ssod/database.h>
 #include <ssod/commands/premium.h>
-#include <ssod/database.h>
 #include <ssod/aes.h>
 
 dpp::slashcommand premium_command::register_command(dpp::cluster& bot)

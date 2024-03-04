@@ -18,9 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/ssod.h>
-#include <ssod/database.h>
 #include <ssod/commands/reset.h>
-#include <ssod/database.h>
 #include <ssod/aes.h>
 #include <ssod/emojis.h>
 #include <ssod/game_player.h>

@@ -20,7 +20,6 @@
 #include <ssod/ssod.h>
 #include <ssod/database.h>
 #include <ssod/commands/info.h>
-#include <ssod/database.h>
 #include <ssod/game_date.h>
 
 dpp::slashcommand info_command::register_command(dpp::cluster& bot)

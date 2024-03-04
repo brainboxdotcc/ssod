@@ -74,7 +74,6 @@ struct combat_tag : public tag {
 			throw parse_end_exception();
 		}
 		p.current_fragment++;
-		return;
 	}
 };
 

@@ -20,7 +20,6 @@
 #include <ssod/ssod.h>
 #include <ssod/database.h>
 #include <ssod/commands/profile.h>
-#include <ssod/database.h>
 #include <ssod/game_player.h>
 #include <ssod/emojis.h>
 
