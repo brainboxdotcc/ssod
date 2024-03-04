@@ -41,6 +41,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 {
 	"token": "token goes here", 
 	"log": "log path goes here",
+    "shards": 1,
 	"database": {
 		"host": "localhost",
 		"username": "mysql username",
@@ -50,7 +51,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 	},
 	"encryption": {
 		"iv": "16 character AES256 IV",
-		"key": "32 character AES256 symmetric key",
+		"key": "32 character AES256 symmetric key"
 	},
 	"botlists": {
 		"top.gg": {
@@ -66,7 +67,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 
 ## Software Dependencies
 
-* [D++](https://github.com/brainboxdotcc/dpp) v10.0.28 or later
+* [D++](https://github.com/brainboxdotcc/dpp) v10.0.29 or later
 * libcrypto/libssl
 * libmysqlclient 8.x
 * zlib
