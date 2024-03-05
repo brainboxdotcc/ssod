@@ -477,10 +477,12 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		claimed = true;
 	} else if (parts[0] == "equip" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
-		if (parts[1][0] == 'W') {
-			p.weapon = rated_item{ .name = parts[1], .rating = atol(parts[2]) };
+		if (parts[2][0] == 'W') {
+			std::string rating = parts[2].substr(1, parts[2].length());
+			p.weapon = rated_item{ .name = parts[1], .rating = atol(rating) };
 		} else {
-			p.armour = rated_item{ .name = parts[1], .rating = atol(parts[2]) };
+			std::string rating = parts[2].substr(1, parts[2].length());
+			p.armour = rated_item{ .name = parts[1], .rating = atol(rating) };
 		}
 		claimed = true;
 	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
