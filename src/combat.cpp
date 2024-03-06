@@ -409,11 +409,11 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 
 	output << "\nYour Stance: **" << (p.stance == DEFENSIVE ? "defensive " + sprite::wood03.get_mention() : "offensive " + sprite::sword008.get_mention()) << "**";
 	output << "\n\n```ansi\n";
-	output << fmt::format("{0:<30s}{1:<30s}", p.name.substr(0, 28), opponent.name.substr(0, 28)) << "\n";
-	output << fmt::format("{0:<52s}{1:<52s}", fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill), fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", opponent.skill)) << "\n";
-	output << fmt::format("{0:<52s}{1:<52s}", fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina), fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", opponent.stamina)) << "\n";
-	output << fmt::format("{0:<52s}{1:<52s}", fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating), fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", opponent.armour.rating)) << "\n";
-	output << fmt::format("{0:<52s}{1:<52s}", fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating), fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", opponent.weapon.rating)) << "\n";
+	output << fmt::format("{0:<20s}{1:<20s}", p.name.substr(0, 20), opponent.name.substr(0, 20)) << "\n";
+	output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill), fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", opponent.skill)) << "\n";
+	output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina), fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", opponent.stamina)) << "\n";
+	output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating), fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", opponent.armour.rating)) << "\n";
+	output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating), fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", opponent.weapon.rating)) << "\n";
 	output << "```\n\n";
 
 	dpp::embed embed = dpp::embed()
@@ -871,11 +871,11 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		}
 
 		output << "\n\n```ansi\n";
-		output << fmt::format("{0:<30s}{1:<30s}", p.name, p.combatant.name) << "\n";
-		output << fmt::format("{0:<52s}{1:<52s}", fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill), fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.skill)) << "\n";
-		output << fmt::format("{0:<52s}{1:<52s}", fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina), fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.stamina)) << "\n";
-		output << fmt::format("{0:<52s}{1:<52s}", fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating), fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.armour)) << "\n";
-		output << fmt::format("{0:<52s}{1:<52s}", fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating), fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.weapon)) << "\n";
+		output << fmt::format("{0:<20s}{1:<20s}", p.name.substr(0, 20), p.combatant.name.substr(0, 20)) << "\n";
+		output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill), fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.skill)) << "\n";
+		output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina), fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.stamina)) << "\n";
+		output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating), fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.armour)) << "\n";
+		output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating), fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.weapon)) << "\n";
 		output << "```\n\n";
 
 		bool CombatEnded = false;

@@ -30,7 +30,7 @@ struct sneaktest_tag : public tag {
 		std::string monster_name = extract_value(p_text);
 		paragraph_content >> p_text;
 		long monster_sneak = extract_value_number(p_text);
-		output << "\n***" << monster_name << "** *Sneak " << monster_sneak << "*,";
+		output << "\n**" << monster_name << "** *Sneak " << monster_sneak << "*,";
 		p.auto_test = current_player.sneak_test(monster_sneak);
 		output << (p.auto_test ? " **PASSED**!\n" : " **FAILED**!\n");
 		p.words++;
