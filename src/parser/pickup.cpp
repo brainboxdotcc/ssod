@@ -82,10 +82,12 @@ struct pickup_tag : public tag {
 		} else if (flags == "HERB") {
 			current_player.herbs.push_back(item{ .name = item_name, .flags = flags });
 		} else {
-			current_player.possessions.push_back(item{ .name = item_name, .flags = flags });
+			item i{ .name = item_name, .flags = flags };
+			if (!current_player.convert_rations(i)) {
+				current_player.possessions.push_back(i);
+			}
 		}
 		current_player.inv_change = true;
-		return;
 	}
 };
 
