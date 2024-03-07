@@ -23,7 +23,6 @@
 #include <ssod/ssod.h>
 #include <ssod/game.h>
 #include <ssod/game_player.h>
-#include <ssod/game_enums.h>
 #include <ssod/database.h>
 #include <ssod/paragraph.h>
 #include <ssod/game_util.h>
@@ -35,8 +34,17 @@
 #define RESURRECT_SECS 3600
 #define RESURRECT_SECS_PREMIUM 900
 
-void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type) {
-	db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)", {type, user_id, paragraph, message.substr(0, 140)});
+uint64_t get_guild_id(const player& p);
+
+void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type, uint64_t guild_id) {
+	if (guild_id) {
+		db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message, guild_id) VALUES(?,?,?,?,?)",
+			  {type, user_id, paragraph, message.substr(0, 140), guild_id});
+
+	} else {
+		db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)",
+			  {type, user_id, paragraph, message.substr(0, 140)});
+	}
 }
 
 void do_toasts(player &p, component_builder& cb) {
@@ -99,15 +107,25 @@ void death(player& p, component_builder& cb) {
 	);
 }
 
-void add_chat(std::string& text, long paragraph_id) {
+void add_chat(std::string& text, long paragraph_id, uint64_t guild_id) {
 	text += "\n__**Chat**__\n```ansi\n";
-	auto rs = db::query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND location_id = ? ORDER BY sent, id LIMIT 5", {paragraph_id});
+	auto rs = db::query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND (location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) ORDER BY sent, id LIMIT 5", {paragraph_id, guild_id});
 	for (size_t x = 0; x < 5 - rs.size(); ++x) {
 		text += std::string(80, ' ') + "\n";
 	}
 	for (const auto& row : rs) {
 		if (row.at("event_type") == "chat") {
-			text += fmt::format("\033[2;31m[{}]\033[0m <\033[2;34m{}\033[0m> {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), dpp::utility::markdown_escape(row.at("message")));
+			if (row.at("location_id") == std::to_string(paragraph_id) || row.at("guild_id").empty()) {
+				text += fmt::format("\033[2;31m[{}]\033[0m <\033[2;34m{}\033[0m> {}\n",
+						    row.at("message_time"),
+						    dpp::utility::markdown_escape(row.at("name")),
+						    dpp::utility::markdown_escape(row.at("message")));
+			} else if (row.at("guild_id") == std::to_string(guild_id)) {
+				text += fmt::format("\033[2;31m[{}]\033[0m \033[2;35m[G]\033[0m <\033[2;34m{}\033[0m> {}\n",
+						    row.at("message_time"),
+						    dpp::utility::markdown_escape(row.at("name")),
+						    dpp::utility::markdown_escape(row.at("message")));
+			}
 		} else if (row.at("event_type") == "join") {
 			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m wanders into the location\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")));
 		} else  if (row.at("event_type") == "part") {
@@ -165,7 +183,12 @@ void game_input(const dpp::form_submit_t & event) {
 		claimed = true;
 	} else if (custom_id == "chat_modal" && p.stamina > 0) {
 		std::string message = std::get<std::string>(event.components[0].components[0].value);
-		send_chat(event.command.usr.id, p.paragraph, message);
+		uint64_t guild_id = get_guild_id(p);
+		if (guild_id) {
+			send_chat(event.command.usr.id, p.paragraph, message, "chat", guild_id);
+		} else {
+			send_chat(event.command.usr.id, p.paragraph, message);
+		}
 		claimed = true;
 	} else if (custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
@@ -878,6 +901,14 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 	});
 }
 
+uint64_t get_guild_id(const player& p) {
+	auto rs = db::query("SELECT guild_id FROM guild_members WHERE user_id = ?", { p.event.command.usr.id });
+	if (!rs.empty()) {
+		return atoll(rs[0].at("guild_id"));
+	}
+	return 0;
+}
+
 void continue_game(const dpp::interaction_create_t& event, player p) {
 	if (p.in_combat) {
 		if (has_active_pvp(event.command.usr.id)) {
@@ -948,14 +979,14 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				text += "**__Items On Ground__**\n" + list_dropped + "\n\n";
 			}
 		}
-		add_chat(text, location.id);
+		add_chat(text, location.id, get_guild_id(p));
 		m.add_embed(dpp::embed()
 			.set_colour(EMBED_COLOUR)
 			.set_description(text)
 		);
 	} else {
 		std::string text = "";
-		add_chat(text, location.id);
+		add_chat(text, location.id, get_guild_id(p));
 		m.add_embed(dpp::embed()
 			.set_colour(EMBED_COLOUR)
 			.set_description(text)
