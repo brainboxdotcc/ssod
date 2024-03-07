@@ -790,7 +790,7 @@ void player::reset_to_spawn_point() {
 bool player::convert_rations(const item& i) {
 	std::string name{dpp::lowercase(i.name)};
 	if (name.find("12 ration") != std::string::npos) {
-		add_rations(4);
+		add_rations(12);
 		return true;
 	} else if (name.find("5 ration") != std::string::npos) {
 		add_rations(5);
@@ -802,7 +802,7 @@ bool player::convert_rations(const item& i) {
 		add_rations(3);
 		return true;
 	} else if (name.find("2 ration") != std::string::npos) {
-		add_rations(3);
+		add_rations(2);
 		return true;
 	} else if (name.find("ration") != std::string::npos) {
 		add_rations(1);
@@ -910,7 +910,10 @@ void player::add_silver(long modifier) {
 // returns false if out of rations (so warnings can be displayed)
 bool player::eat_ration() {
 	if (rations-- < 1) {
-		add_stamina(-2);
+		if (stamina > 3) {
+			add_stamina(-2);
+			add_toast("You are hungry. You have lost stamina as you do not have enough rations to survive. Not eating will eventually lower your stamina to 1 point.");
+		}
 		rations = 0;
 		return false;
 	}
