@@ -109,9 +109,12 @@ void death(player& p, component_builder& cb) {
 
 void add_chat(std::string& text, long paragraph_id, uint64_t guild_id) {
 	text += "\n__**Chat**__\n```ansi\n";
-	auto rs = db::query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND (location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) ORDER BY sent, id LIMIT 5", {paragraph_id, guild_id});
+	auto rs = db::query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND (location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) ORDER BY sent DESC, id DESC LIMIT 5", {paragraph_id, guild_id});
 	for (size_t x = 0; x < 5 - rs.size(); ++x) {
 		text += std::string(80, ' ') + "\n";
+	}
+	if (!rs.empty()) {
+		std::reverse(rs.begin(), rs.end());
 	}
 	for (const auto& row : rs) {
 		if (row.at("event_type") == "chat") {
