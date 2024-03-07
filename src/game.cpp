@@ -479,6 +479,9 @@ void game_nav(const dpp::button_click_t& event) {
 		if (flags.substr(0, 2) == "ST") {
 			long modifier = atol(flags.substr(2, flags.length() - 2));
 			p.add_stamina(modifier);
+		} else if (flags.substr(0, 2) == "SN") {
+			long modifier = atol(flags.substr(2, flags.length() - 2));
+			p.add_sneak(modifier);
 		} else if (flags.substr(0, 2) == "SK") {
 			long modifier = atol(flags.substr(2, flags.length() - 2));
 			p.add_skill(modifier);
