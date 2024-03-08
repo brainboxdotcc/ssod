@@ -160,24 +160,26 @@ namespace listeners {
 	void on_ready(const dpp::ready_t &event) {
 		dpp::cluster& bot = *event.from->creator;
 		if (dpp::run_once<struct register_bot_commands>()) {
-			bot.global_bulk_command_create({
-				register_command<info_command>(bot),
-				register_command<start_command>(bot),
-				register_command<map_command>(bot),
-				register_command<lore_command>(bot),
-				register_command<help_command>(bot),
-				register_command<profile_command>(bot),
-				register_command<gender_command>(bot),
-				register_command<vote_command>(bot),
-				register_command<bio_command>(bot),
-				register_command<rename_command>(bot),
-				register_command<premium_command>(bot),
-				register_command<reset_command>(bot),
-				register_command<guild_command>(bot),
-			});
-			bot.guild_bulk_command_create({
-				register_command<admin_command>(bot),
-			}, 537746810471448576);
+			if (bot.cluster_id == 0) {
+				bot.global_bulk_command_create({
+					register_command<info_command>(bot),
+					register_command<start_command>(bot),
+					register_command<map_command>(bot),
+					register_command<lore_command>(bot),
+					register_command<help_command>(bot),
+					register_command<profile_command>(bot),
+					register_command<gender_command>(bot),
+					register_command<vote_command>(bot),
+					register_command<bio_command>(bot),
+					register_command<rename_command>(bot),
+					register_command<premium_command>(bot),
+					register_command<reset_command>(bot),
+					register_command<guild_command>(bot),
+				});
+				bot.guild_bulk_command_create({
+					register_command<admin_command>(bot),
+				}, 537746810471448576);
+			}
 
 			auto set_presence = [&bot]() {
 				auto rs = db::query("SELECT (SELECT COUNT(id) FROM guild_cache) AS guild_count, (SELECT SUM(user_count) FROM guild_cache) AS discord_user_count, (SELECT COUNT(user_id) FROM game_users) AS game_user_count");
