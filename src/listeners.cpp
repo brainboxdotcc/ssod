@@ -18,6 +18,7 @@
  *
  ************************************************************************************/
 #include <set>
+#include <malloc.h>
 #include <fmt/format.h>
 #include <ssod/listeners.h>
 #include <ssod/database.h>
@@ -201,6 +202,12 @@ namespace listeners {
 			bot.start_timer([&bot](dpp::timer t) {
 				process_potion_drops(bot);
 			}, 60);
+			bot.start_timer([&bot](dpp::timer t) {
+				/* Garbage collect free memory by consolidating free malloc() blocks */
+				bot.log(dpp::ll_debug,"Begin memory consolidation...");
+				malloc_trim(0);
+				bot.log(dpp::ll_debug,"Memory consolidation completed.");
+			}, 600);
 
 			set_presence();
 			welcome_new_guilds(bot);
