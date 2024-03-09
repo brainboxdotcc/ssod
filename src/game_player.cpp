@@ -276,27 +276,30 @@ Your character is shown below. If you are not happy with your base stats, click 
 		).set_flags(dpp::m_ephemeral);
 }
 
-bool player::has_herb(const std::string herb_name) {
+bool player::has_herb(std::string herb_name) {
+	herb_name = dpp::lowercase(herb_name);
 	for (const item& herb : herbs) {
-		if (herb.name == herb_name) {
+		if (dpp::lowercase(herb.name) == herb_name) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool player::has_spell(const std::string spell_name) {
+bool player::has_spell(std::string spell_name) {
+	spell_name = dpp::lowercase(spell_name);
 	for (const item& spell : spells) {
-		if (spell.name == spell_name) {
+		if (dpp::lowercase(spell.name) == spell_name) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool player::has_possession(const std::string name) {
+bool player::has_possession(std::string name) {
+	name = dpp::lowercase(name);
 	for (const item& inv : possessions) {
-		if (inv.name == name) {
+		if (dpp::lowercase(inv.name) == name) {
 			return true;
 		}
 	}
@@ -305,7 +308,7 @@ bool player::has_possession(const std::string name) {
 
 bool player::drop_possession(const item& i) {
 	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
-		if (inv->name == i.name) {
+		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name)) {
 			possessions.erase(inv);
 			inv_change = true;
 			return true;
@@ -316,7 +319,7 @@ bool player::drop_possession(const item& i) {
 
 bool player::drop_spell(const item& i) {
 	for (auto inv = spells.begin(); inv != spells.end(); ++inv) {
-		if (inv->name == i.name) {
+		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name)) {
 			spells.erase(inv);
 			inv_change = true;
 			return true;
@@ -327,7 +330,7 @@ bool player::drop_spell(const item& i) {
 
 bool player::drop_herb(const item& i) {
 	for (auto inv = herbs.begin(); inv != herbs.end(); ++inv) {
-		if (inv->name == i.name) {
+		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name)) {
 			herbs.erase(inv);
 			inv_change = true;
 			return true;
@@ -337,109 +340,110 @@ bool player::drop_herb(const item& i) {
 }
 
 bool player::has_component_herb(const std::string& spell) {
-	if (spell == "fire" && has_herb("fireseeds")) {
+	std::string s = dpp::lowercase(spell);
+	if (s == "fire" && has_herb("fireseeds")) {
 		return true;
 	}
-	if (spell == "water" && has_herb("hartleaf")) {
+	if (s == "water" && has_herb("hartleaf")) {
 		return true;
 	}
-	if (spell == "light" && has_herb("fireseeds")) {
+	if (s == "light" && has_herb("fireseeds")) {
 		return true;
 	}
-	if (spell == "fly" && has_herb("elfbane")) {
+	if (s == "fly" && has_herb("elfbane")) {
 		return true;
 	}
-	if (spell == "strength") {
+	if (s == "strength") {
 		return true;
 	}
-	if (spell == "x-ray") {
+	if (s == "x-ray" || s == "xray") {
 		return true;
 	}
-	if (spell == "bolt" && has_herb("spikegrass")) {
+	if (s == "bolt" && has_herb("spikegrass")) {
 		return true;
 	}
-	if (spell == "fasthands" && has_herb("orcweed")) {
+	if (s == "fasthands" && has_herb("orcweed")) {
 		return true;
 	}
-	if (spell == "thunderbolt" && has_herb("wizardsivy")) {
+	if (s == "thunderbolt" && has_herb("wizardsivy")) {
 		return true;
 	}
-	if (spell == "steal" && has_herb("wizardsivy")) {
+	if (s == "steal" && has_herb("wizardsivy")) {
 		return true;
 	}
-	if (spell == "shield" && has_herb("fireseeds")) {
+	if (s == "shield" && has_herb("fireseeds")) {
 		return true;
 	}
-	if (spell == "jump" && has_herb("hartleaf")) {
+	if (s == "jump" && has_herb("hartleaf")) {
 		return true;
 	}
-	if (spell == "open") {
+	if (s == "open") {
 		return true;
 	}
-	if (spell == "spot") {
+	if (s == "spot") {
 		return true;
 	}
-	if (spell == "sneak" && has_herb("stickwart")) {
+	if (s == "sneak" && has_herb("stickwart")) {
 		return true;
 	}
-	if (spell == "esp" && has_herb("stickwart")) {
+	if (s == "esp" && has_herb("stickwart")) {
 		return true;
 	}
-	if (spell == "run" && has_herb("elfbane")) {
+	if (s == "run" && has_herb("elfbane")) {
 		return true;
 	}
-	if (spell == "invisible") {
+	if (s == "invisible") {
 		return true;
 	}
-	if (spell == "shrink" && has_herb("woodweed")) {
+	if (s == "shrink" && has_herb("woodweed")) {
 		return true;
 	}
-	if (spell == "grow" && has_herb("woodweed")) {
+	if (s == "grow" && has_herb("woodweed")) {
 		return true;
 	}
-	if (spell == "air" && has_herb("monkgrass")) {
+	if (s == "air" && has_herb("monkgrass")) {
 		return true;
 	}
-	if (spell == "animalcommunication" && has_herb("monkgrass")) {
+	if (s == "animalcommunication" && has_herb("monkgrass")) {
 		return true;
 	}
-	if (spell == "weaponskill" && has_herb("hartleaf")) {
+	if (s == "weaponskill" && has_herb("hartleaf")) {
 		return true;
 	}
-	if (spell == "healing" && has_herb("wizardsivy")) {
+	if (s == "healing" && has_herb("wizardsivy")) {
 		return true;
 	}
-	if (spell == "woodsmanship" && has_herb("wizardsivy")) {
+	if (s == "woodsmanship" && has_herb("wizardsivy")) {
 		return true;
 	}
-	if (spell == "nightvision") {
+	if (s == "nightvision") {
 		return true;
 	}
-	if (spell == "heateyes" && has_herb("fireseeds")) {
+	if (s == "heateyes" && has_herb("fireseeds")) {
 		return true;
 	}
-	if (spell == "decipher" && has_herb("blidvines")) {
+	if (s == "decipher" && has_herb("blidvines")) {
 		return true;
 	}
-	if (spell == "detect" && has_herb("blidvines")) {
+	if (s == "detect" && has_herb("blidvines")) {
 		return true;
 	}
-	if (spell == "tracking" && has_herb("blidvines")) {
+	if (s == "tracking" && has_herb("blidvines")) {
 		return true;
 	}
-	if (spell == "espsurge" && has_herb("hallucinogen")) {
+	if (s == "espsurge" && has_herb("hallucinogen")) {
 		return true;
 	}
-	if (spell == "afterimage" && has_herb("hallucinogen")) {
+	if (s == "afterimage" && has_herb("hallucinogen")) {
 		return true;
 	}
-	if (spell == "psychism" && has_herb("hallucinogen")) {
+	if (s == "psychism" && has_herb("hallucinogen")) {
 		return true;
 	}
-	if (spell == "spiritwalk" && has_herb("hallucinogen")) {
+	if (s == "spiritwalk" && has_herb("hallucinogen")) {
 		return true;
 	}
-	if (spell == "growweapon" && has_herb("woodweed")) {
+	if (s == "growweapon" && has_herb("woodweed")) {
 		return true;
 	}
 	return false;

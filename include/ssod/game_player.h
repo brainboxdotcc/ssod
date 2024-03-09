@@ -313,10 +313,10 @@ struct player {
 	void add_flag(const std::string flag, long paragraph);
 	bool has_flag(const std::string flag, long paragraph);
 
-	bool has_herb(const std::string herb_name);
+	bool has_herb(std::string herb_name);
 	bool has_component_herb(const std::string& spell);
-	bool has_spell(const std::string spell_name);
-	bool has_possession(const std::string name);
+	bool has_spell(std::string spell_name);
+	bool has_possession(std::string name);
 
 	bool drop_possession(const item& i);
 	void drop_everything();
