@@ -148,6 +148,8 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			p_old.save(event.command.usr.id, true);
 			p_old.event = event;
 			move_from_registering_to_live(event, p_old);
+			db::query("DELETE FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
+			db::query("INSERT INTO game_default_spells (user_id, name, flags) (SELECT user_id, item_desc, item_flags FROM game_owned_items WHERE user_id = ? AND flags in ('HERB','SPELL'))", {event.command.usr.id});
 			continue_game(event, p_old);
 		}
 	});

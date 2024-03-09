@@ -146,6 +146,7 @@ void delete_live_player(const dpp::interaction_create_t& event) {
 	}
 	db::query("DELETE FROM game_users WHERE user_id = ?", { event.command.usr.id });
 	db::query("DELETE FROM game_default_users WHERE user_id = ?", { event.command.usr.id });
+	db::query("DELETE FROM game_default_spells WHERE user_id = ?", { event.command.usr.id });
 	db::query("DELETE FROM game_bank WHERE owner_id = ?", { event.command.usr.id });
 	db::query("DELETE FROM game_owned_items WHERE user_id = ?", { event.command.usr.id });
 }
@@ -726,6 +727,16 @@ void player::drop_everything() {
 	possessions.emplace_back(item{ .name = "Leather Coat", .flags = "A1" });
 	possessions.emplace_back(item{ .name = "Stamina Potion", .flags = "ST+4" });
 	possessions.emplace_back(item{ .name = "Skill Potion", .flags = "SK+4" });
+	herbs.clear();
+	spells.clear();
+	auto rs = db::query("SELECT * FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
+	for (const auto & row : rs) {
+		if (row.at("flags") == "HERB") {
+			herbs.emplace_back(item{ .name = row.at("name"), .flags = row.at("flags") });
+		} else {
+			spells.emplace_back(item{ .name = row.at("name"), .flags = row.at("flags") });
+		}
+	}
 	inv_change = true;
 }
 
