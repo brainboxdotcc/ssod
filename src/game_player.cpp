@@ -22,7 +22,6 @@
 #include <fmt/format.h>
 #include <ssod/database.h>
 #include <ssod/game_dice.h>
-#include <fmt/format.h>
 #include <ssod/game_util.h>
 #include <ssod/aes.h>
 
@@ -85,6 +84,35 @@ player get_registering_player(const dpp::interaction_create_t& event) {
 	p.event = event;
 	registering_players[event.command.usr.id] = p;
 	return p;
+}
+
+void cleanup_idle_live_players() {
+	/**
+	 * These functions remove players from the list who havent interacted with the bot in 10 mins.
+	 * This just ensures they are removed from local cache,they still exist in the database. Also
+	 * serves to rehash the unordered maps saving memory.
+	 */
+	std::lock_guard<std::mutex> l(live_list_lock);
+	player_list copy;
+	time_t ten_mins_ago = time(nullptr) - 3600;
+	for (const std::pair<const dpp::snowflake, player>& pair : live_players) {
+		if (pair.second.last_use > ten_mins_ago) {
+			copy[pair.first] = pair.second;
+		}
+	}
+	live_players = copy;
+}
+
+void cleanup_idle_reg_players() {
+	std::lock_guard<std::mutex> l(reg_list_lock);
+	player_list copy;
+	time_t ten_mins_ago = time(nullptr) - 3600;
+	for (const std::pair<const dpp::snowflake, player>& pair : registering_players) {
+		if (pair.second.last_use > ten_mins_ago) {
+			copy[pair.first] = pair.second;
+		}
+	}
+	registering_players = copy;
 }
 
 void update_registering_player(const dpp::interaction_create_t& event, player p) {
