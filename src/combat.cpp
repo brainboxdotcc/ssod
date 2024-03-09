@@ -322,7 +322,7 @@ long get_spell_rating(const std::string& name)
 		{"growweapon", 4},
 		{"vortex", 10},
 	};
-	auto r = ratings.find(name);
+	auto r = ratings.find(dpp::lowercase(name));
 	if (r != ratings.end()) {
 		return r->second;
 	}
