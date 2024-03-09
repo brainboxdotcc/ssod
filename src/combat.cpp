@@ -407,13 +407,19 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	}
 
 	output << "\nYour Stance: **" << (p.stance == DEFENSIVE ? "defensive " + sprite::wood03.get_mention() : "offensive " + sprite::sword008.get_mention()) << "**";
-	output << "\n\n```ansi\n";
-	output << fmt::format("{0:<20s}{1:<20s}", p.name.substr(0, 20), opponent.name.substr(0, 20)) << "\n";
-	output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill), fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", opponent.skill)) << "\n";
-	output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina), fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", opponent.stamina)) << "\n";
-	output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating), fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", opponent.armour.rating)) << "\n";
-	output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating), fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", opponent.weapon.rating)) << "\n";
-	output << "```\n\n";
+	std::stringstream output1, output2;
+	output1 << "\n\n```ansi\n";
+	output1 << fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill) << "\n";
+	output1 << fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina) << "\n";
+	output1 << fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating) << "\n";
+	output1 << fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating) << "\n";
+	output1 << "```\n\n";
+	output2 << "\n\n```ansi\n";
+	output2 << fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", opponent.skill) << "\n";
+	output2 << fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", opponent.stamina) << "\n";
+	output2 << fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", opponent.armour.rating) << "\n";
+	output2 << fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", opponent.weapon.rating) << "\n";
+	output2 << "```\n\n";
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -422,6 +428,8 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			.icon_url = "", 
 			.proxy_url = "",
 		})
+		.add_field(p.name.substr(0, 20),output1.str(), true)
+		.add_field(opponent.name.substr(0, 20),output2.str(), true)
 		.set_colour(EMBED_COLOUR)
 		.set_description(output.str());
 	
@@ -674,6 +682,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	dpp::message m;
 	component_builder cb(m);
+	std::stringstream output1, output2;
 
 	long PArmour = p.armour.rating, PWeapon = p.weapon.rating;
 	long& ESkill = p.combatant.skill;
@@ -712,6 +721,18 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 		);
+		output1 << "\n\n```ansi\n";
+		output1 << fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill) << "\n";
+		output1 << fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina) << "\n";
+		output1 << fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating) << "\n";
+		output1 << fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating) << "\n";
+		output1 << "```\n\n";
+		output2 << "\n\n```ansi\n";
+		output2 << fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.skill) << "\n";
+		output2 << fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.stamina) << "\n";
+		output2 << fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.armour) << "\n";
+		output2 << fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.weapon) << "\n";
+		output2 << "```\n\n";
 	} else {
 
 		long EAttack = dice() + dice() + ESkill + EWeapon;
@@ -868,13 +889,18 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			}
 		}
 
-		output << "\n\n```ansi\n";
-		output << fmt::format("{0:<20s}{1:<20s}", p.name.substr(0, 20), p.combatant.name.substr(0, 20)) << "\n";
-		output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill), fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.skill)) << "\n";
-		output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina), fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.stamina)) << "\n";
-		output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating), fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.armour)) << "\n";
-		output << fmt::format("{0:<42s}{1:<42s}", fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating), fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.weapon)) << "\n";
-		output << "```\n\n";
+		output1 << "\n\n```ansi\n";
+		output1 << fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill) << "\n";
+		output1 << fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina) << "\n";
+		output1 << fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating) << "\n";
+		output1 << fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating) << "\n";
+		output1 << "```\n\n";
+		output2 << "\n\n```ansi\n";
+		output2 << fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.skill) << "\n";
+		output2 << fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.stamina) << "\n";
+		output2 << fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.armour) << "\n";
+		output2 << fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.combatant.weapon) << "\n";
+		output2 << "```\n\n";
 
 		bool CombatEnded = false;
 		if (p.stamina < 1) {
@@ -953,8 +979,18 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
+		.add_field(p.name.substr(0, 20),output1.str(), true)
+		.add_field(p.combatant.name.substr(0, 20),output2.str(), true)
 		.set_description(output.str());
-	
+
+	std::array<std::string, 3> types{".png", ".jpg", ".webm"};
+	for (const std::string& ext : types) {
+		if (fs::exists("../resource/paragraph_pictures/" + std::to_string(p.paragraph) + ext)) {
+			embed.set_image("https://images.ssod.org/resource/paragraph_pictures/" + std::to_string(p.paragraph) + ext);
+			break;
+		}
+	}
+
 	p.save(event.command.usr.id);
 	update_live_player(event, p);
 	cb.add_embed(embed);
