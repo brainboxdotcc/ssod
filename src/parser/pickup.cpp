@@ -35,6 +35,7 @@ struct pickup_tag : public tag {
 				current_player.scrolls++;
 				current_player.add_flag("SCROLL", p.id);
 			}
+			current_player.inv_change = true;
 			return;
 		}
 
@@ -42,6 +43,7 @@ struct pickup_tag : public tag {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
 			current_player.add_gold(atoi(p_text.c_str()));
+			current_player.inv_change = true;
 			return;
 		}
 
@@ -49,6 +51,7 @@ struct pickup_tag : public tag {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
 			current_player.add_silver(atoi(p_text.c_str()));
+			current_player.inv_change = true;
 			return;
 		}
 

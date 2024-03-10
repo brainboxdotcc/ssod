@@ -163,8 +163,11 @@ void game_input(const dpp::form_submit_t & event) {
 	bot.log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (custom_id == "deposit_gold_amount_modal" && p.in_bank) {
+		auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
+		long balance_amount = atol(bank_amount[0].at("gold"));
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
 		amount = std::min(amount, p.gold);
+		amount = std::min(amount, p.max_gold() - balance_amount);
 		if (p.gold > 0 && amount > 0) {
 			p.add_gold(-amount);
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, amount});
@@ -312,7 +315,6 @@ void game_nav(const dpp::button_click_t& event) {
 						p.gold -= cost;
 						p.scrolls++;
 						p.add_flag("SCROLL", p.paragraph);
-						p.possessions.push_back(item{ .name = name, .flags = flags });
 					}
 				} else {
 					p.gold -= cost;
@@ -725,12 +727,12 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 	long amount = atol(bank_amount[0].at("gold"));
 	content << "__**Welcome to the Bank Of Utopia**__\n\n";
-	content << "Your balance: " + std::to_string(amount) + " Gold " + sprite::gold_coin.get_mention() + "\n";
-	content << "Coin purse: " + std::to_string(p.gold) + " Gold " + sprite::gold_coin.get_mention() + "\n";
+	content << "The bank can hold a maximum of **" << p.max_gold() << "** gold pieces. Level up to increase this limit.\n";
+	content << "We will soon be offering competitive exchange rates for changing silver coins to gold. Check back later at a branch near you.\n";
 
 	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
 	auto bank_items = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc != ? ORDER BY item_desc LIMIT 25",{event.command.usr.id, "__GOLD__"});
-	if (bank_items.size() > 0) {
+	if (!bank_items.empty()) {
 		content << "\n__**" << bank_items.size() << "/25 Bank Items**__\n";
 		for (const auto& bank_item : bank_items) {
 			content << sprite::backpack.get_mention() << " " << bank_item.at("item_desc") << " - *" << describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")) << "*\n";
@@ -744,6 +746,8 @@ void bank(const dpp::interaction_create_t& event, player p) {
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
+		.add_field("Your Balance", std::to_string(amount) + " Gold " + sprite::gold_coin.get_mention(), true)
+		.add_field("Coin Purse", std::to_string(p.gold) + " Gold " + sprite::gold_coin.get_mention(), true)
 		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
 	
