@@ -493,44 +493,48 @@ void game_nav(const dpp::button_click_t& event) {
 		db::commit();
 		claimed = true;
 	} else if (parts[0] == "use" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
-		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
-		std::string flags = parts[2];
-		if (flags.substr(0, 2) == "ST") {
-			long modifier = atol(flags.substr(2, flags.length() - 2));
-			p.add_stamina(modifier);
-		} else if (flags.substr(0, 2) == "SN") {
-			long modifier = atol(flags.substr(2, flags.length() - 2));
-			p.add_sneak(modifier);
-		} else if (flags.substr(0, 2) == "SK") {
-			long modifier = atol(flags.substr(2, flags.length() - 2));
-			p.add_skill(modifier);
-		} else if (flags.substr(0, 2) == "MA") {
-			long modifier = atol(flags.substr(2, flags.length() - 2));
-			p.add_mana(modifier);
-		} else if (flags.substr(0, 2) == "SD") {
-			long modifier = atol(flags.substr(2, flags.length() - 2));
-			p.add_speed(modifier);
-		} else if (flags.substr(0, 2) == "EX") {
-			long modifier = atol(flags.substr(2, flags.length() - 2));
-			p.add_experience(modifier);
-		} else if (flags.substr(0, 2) == "LK") {
-			long modifier = atol(flags.substr(2, flags.length() - 2));
-			p.add_luck(modifier);
-		} else if (flags.substr(0, 1) == "A") {
-			long modifier = atol(flags.substr(1, flags.length() - 1));
-			p.armour.rating += modifier;
-		} else if (flags.substr(0, 1) == "W") {
-			long modifier = atol(flags.substr(1, flags.length() - 1));
-			p.weapon.rating += modifier;
+		if (p.has_possession(parts[1])) {
+			p.drop_possession(item{.name = parts[1], .flags = parts[2]});
+			std::string flags = parts[2];
+			if (flags.substr(0, 2) == "ST") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_stamina(modifier);
+			} else if (flags.substr(0, 2) == "SN") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_sneak(modifier);
+			} else if (flags.substr(0, 2) == "SK") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_skill(modifier);
+			} else if (flags.substr(0, 2) == "MA") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_mana(modifier);
+			} else if (flags.substr(0, 2) == "SD") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_speed(modifier);
+			} else if (flags.substr(0, 2) == "EX") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_experience(modifier);
+			} else if (flags.substr(0, 2) == "LK") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_luck(modifier);
+			} else if (flags.substr(0, 1) == "A") {
+				long modifier = atol(flags.substr(1, flags.length() - 1));
+				p.armour.rating += modifier;
+			} else if (flags.substr(0, 1) == "W") {
+				long modifier = atol(flags.substr(1, flags.length() - 1));
+				p.weapon.rating += modifier;
+			}
 		}
 		claimed = true;
 	} else if (parts[0] == "equip" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
-		if (parts[2][0] == 'W') {
-			std::string rating = parts[2].substr(1, parts[2].length());
-			p.weapon = rated_item{ .name = parts[1], .rating = atol(rating) };
-		} else {
-			std::string rating = parts[2].substr(1, parts[2].length());
-			p.armour = rated_item{ .name = parts[1], .rating = atol(rating) };
+		if (p.has_possession(parts[1])) {
+			if (parts[2][0] == 'W') {
+				std::string rating = parts[2].substr(1, parts[2].length());
+				p.weapon = rated_item{.name = parts[1], .rating = atol(rating)};
+			} else {
+				std::string rating = parts[2].substr(1, parts[2].length());
+				p.armour = rated_item{.name = parts[1], .rating = atol(rating)};
+			}
 		}
 		claimed = true;
 	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
