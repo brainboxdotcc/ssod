@@ -448,19 +448,21 @@ void game_nav(const dpp::button_click_t& event) {
 		p.in_inventory = true;
 		claimed = true;
 	} else if (parts[0] == "drop" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
-		if (dpp::lowercase(parts[1]) != "scroll") {
-			/* Can't drop a scroll (is quest item) */
-			p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
-			if (p.armour.name == parts[1]) {
-				p.armour.name = "Undergarments 👙";
-				p.armour.rating = 0;
-			} else if (p.weapon.name == parts[1]) {
-				p.weapon.name = "Unarmed 👊";
-				p.weapon.rating = 0;
+		if (p.has_possession(parts[1])) {
+			if (dpp::lowercase(parts[1]) != "scroll") {
+				/* Can't drop a scroll (is quest item) */
+				p.drop_possession(item{.name = parts[1], .flags = parts[2]});
+				if (p.armour.name == parts[1]) {
+					p.armour.name = "Undergarments 👙";
+					p.armour.rating = 0;
+				} else if (p.weapon.name == parts[1]) {
+					p.weapon.name = "Unarmed 👊";
+					p.weapon.rating = 0;
+				}
+				/* Drop to floor */
+				db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
+				send_chat(event.command.usr.id, p.paragraph, parts[1], "drop");
 			}
-			/* Drop to floor */
-			db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
-			send_chat(event.command.usr.id, p.paragraph, parts[1], "drop");
 		}
 		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
@@ -468,13 +470,18 @@ void game_nav(const dpp::button_click_t& event) {
 		long paragraph = atol(parts[1]);
 		std::string name = parts[2];
 		std::string flags = parts[3];
-		db::query("DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
-		item i{ .name = name, .flags = flags };
-		if (!p.convert_rations(i)) {
-			p.possessions.push_back(i);
+		db::transaction();
+		auto rs = db::query("SELECT * FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
+		if (!rs.empty()) {
+			db::query("DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
+			item i{ .name = name, .flags = flags };
+			if (!p.convert_rations(i)) {
+				p.possessions.push_back(i);
+			}
+			p.inv_change = true;
+			send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 		}
-		p.inv_change = true;
-		send_chat(event.command.usr.id, p.paragraph, name, "pickup");
+		db::commit();
 		claimed = true;
 	} else if (parts[0] == "use" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
 		p.drop_possession(item{ .name = parts[1], .flags = parts[2] });
