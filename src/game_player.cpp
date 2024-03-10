@@ -1113,12 +1113,12 @@ long player::max_speed() {
 
 long player::max_gold() {
 	long level = get_level();
-	return 50 * level;
+	return 50 + (level * 10);
 }
 
 long player::max_silver() {
 	long level = get_level();
-	return 100 * level;
+	return 100 + (level * 10);
 }
 
 void player::add_toast(const std::string& message) {
