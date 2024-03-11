@@ -1077,7 +1077,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				dpp::emoji e = get_emoji(inv.name, inv.flags);
 				if (sell_menu.options.size() < 25) {
 					sell_menu.add_select_option(
-						dpp::select_option(inv.name, inv.name + ";" + inv.flags, "Value: " + std::to_string(s.value) + " - " + describe_item(inv.flags, inv.name).substr(0, 90))
+						dpp::select_option(inv.name, inv.name + ";" + inv.flags, "Value: " + std::to_string(s.value) + " - " + describe_item(inv.flags, inv.name).substr(0, 80))
 							.set_emoji(e.name, e.id)
 					);
 					ds.insert(inv.name);
