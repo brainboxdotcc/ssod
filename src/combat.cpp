@@ -881,7 +881,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 					output << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, p.combatant.name);
 				} else {
 					/* Add experience on victory equal to remaining skill of enemy (indicates difficulty of the fight) */
-					long xp = abs(std::min(p.combatant.skill, 0l) * 0.15f) + 1;
+					long xp = abs(std::max(p.combatant.skill, 0l) * 0.15f) + 1;
 					output << "\n\n***+" + std::to_string(xp) + " experience points!***\n\n";
 					p.add_experience(xp);
 					output << "**" << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.combatant.name, p.name) << "**";
