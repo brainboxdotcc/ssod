@@ -100,6 +100,7 @@ struct paragraph {
 	bool theft_disabled{};
 	bool chat_disabled{};
 	bool safe{true};
+	bool trader{false};
 
 	size_t links{0}, words{0};
 	std::string tag;

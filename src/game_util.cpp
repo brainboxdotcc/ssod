@@ -22,6 +22,7 @@
 #include <ssod/database.h>
 #include <dpp/dpp.h>
 #include <ssod/aes.h>
+#include <ssod/ssod.h>
 
 dpp::component help_button() {
 	return dpp::component()
@@ -32,8 +33,20 @@ dpp::component help_button() {
 		.set_style(dpp::cos_link);		
 }
 
-std::string describe_item(const std::string& modifier_flags, const std::string& name)
-{
+sale_info get_sale_info(const std::string& name) {
+	auto res = db::query("SELECT * FROM game_item_descs WHERE name = ?", {name});
+	if (res.empty()) {
+		return sale_info{};
+	}
+	return sale_info{
+		.flags = res[0].at("flags"),
+		.value = atol(res[0].at("value")),
+		.sellable = res[0].at("sellable") == "1",
+		.quest_item = res[0].at("quest_item") == "1",
+	};
+}
+
+std::string describe_item(const std::string& modifier_flags, const std::string& name) {
 	auto res = db::query("SELECT idesc FROM game_item_descs WHERE name = ?", {name});
 	std::string rv{res.size() ? res[0].at("idesc") : ""};
 	if (!rv.empty()) {

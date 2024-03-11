@@ -253,6 +253,22 @@ void game_select(const dpp::select_click_t &event) {
 		}
 		db::commit();
 		claimed = true;
+	} else if (custom_id == "sell" && !p.in_inventory && !p.in_bank && !event.values.empty() && !p.in_combat) {
+		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		sale_info s = get_sale_info(parts[0]);
+		if (p.has_possession(parts[0]) && s.sellable && !s.quest_item && dpp::lowercase(parts[0]) != "scroll") {
+			if (p.armour.name == parts[0]) {
+				p.armour.name = "Undergarments 👙";
+				p.armour.rating = 0;
+			} else if (p.weapon.name == parts[0]) {
+				p.weapon.name = "Unarmed 👊";
+				p.weapon.rating = 0;
+			}
+			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
+			p.gold += s.value;
+			p.inv_change = true;
+		}
+		claimed = true;
 	} else if (custom_id == "fight_pvp" && p.in_pvp_picker && !event.values.empty()) {
 		dpp::snowflake user(event.values[0]);
 		challenge_pvp(event, user);
@@ -469,7 +485,9 @@ void game_nav(const dpp::button_click_t& event) {
 					p.weapon.rating = 0;
 				}
 				/* Drop to floor */
-				db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p.paragraph, parts[1], parts[2]});
+				db::query(
+					"INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)",
+					{p.paragraph, parts[1], parts[2]});
 				send_chat(event.command.usr.id, p.paragraph, parts[1], "drop");
 			}
 		}
@@ -654,7 +672,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		content << "<:" << sprite::gold_coin.format() << ">" << " " << p.gold << " Gold Pieces\n";
 	}
 	if (p.silver > 0) {
-		content << "<:" << sprite::silver_coin.format() << ">" << " " << p.gold << " Silver Pieces\n";
+		content << "<:" << sprite::silver_coin.format() << ">" << " " << p.silver << " Silver Pieces\n";
 	}
 	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
 	for (const auto& inv : p.possessions) {
@@ -666,6 +684,13 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		} else if (p.weapon.name == inv.name && !equip_w) {
 			content << " <:" << sprite::light02.format() << "> - **Equipped**";
 			equip_w = true;
+		}
+		sale_info value = get_sale_info(inv.name);
+		if (value.quest_item) {
+			content << " ❗";
+		}
+		if (value.sellable && !value.quest_item) {
+			content << " [" << value.value <<  "<:" << sprite::gold_coin.format() << ">]";
 		}
 		content << "\n";
 	}
@@ -704,14 +729,17 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 
 	size_t index{0};
 	for (const auto& inv : p.possessions) {
-		cb.add_component(dpp::component()
-			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("drop;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
-			.set_label("Drop " + inv.name)
-			.set_style(dpp::cos_danger)
-			.set_emoji(sprite::inv_drop.name, sprite::inv_drop.id)
-		);
-		if (inv.flags.find("+") != std::string::npos) {
+		sale_info value = get_sale_info(inv.name);
+		if (!value.quest_item && !value.sellable) {
+			cb.add_component(dpp::component()
+						 .set_type(dpp::cot_button)
+						 .set_id(security::encrypt("drop;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
+						 .set_label("Drop " + inv.name)
+						 .set_style(dpp::cos_danger)
+						 .set_emoji(sprite::inv_drop.name, sprite::inv_drop.id)
+			);
+		}
+		if (inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("use;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
@@ -985,6 +1013,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			break;
 		}
 	}
+
 	m.add_embed(embed);
 	int64_t t = time(nullptr) - 600;
 	auto others = db::query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
@@ -1028,6 +1057,40 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	size_t index{0}, enabled_links{0};
 	bool respawn_button_shown{false};
 	size_t unique{0};
+
+	if (location.trader) {
+		/* Can sell items here */
+		dpp::component sell_menu;
+
+		sell_menu.set_type(dpp::cot_selectmenu)
+			.set_min_values(0)
+			.set_max_values(1)
+			.set_placeholder("Sell Item")
+			.set_id(security::encrypt("sell"));
+		size_t index2{0};
+		std::set<std::string> ds;
+		for (const auto& inv : p.possessions) {
+			sale_info s = get_sale_info(inv.name);
+			if (!s.sellable || s.quest_item || dpp::lowercase(inv.name) == "scroll") {
+				continue;
+			}
+			if (ds.find(inv.name) == ds.end()) {
+				dpp::emoji e = get_emoji(inv.name, inv.flags);
+				if (sell_menu.options.size() < 25) {
+					sell_menu.add_select_option(
+						dpp::select_option(inv.name, inv.name + ";" + inv.flags, "Value: " + std::to_string(s.value) + " - " + describe_item(inv.flags, inv.name).substr(0, 90))
+							.set_emoji(e.name, e.id)
+					);
+					ds.insert(inv.name);
+					index2++;
+				}
+			}
+		}
+
+		if (!sell_menu.options.empty()) {
+			cb.add_menu(sell_menu);
+		}
+	}
 
 	for (const auto & n : location.navigation_links) {
 		std::string label{"Travel"}, id;
