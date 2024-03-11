@@ -323,7 +323,7 @@ struct player {
 	bool drop_spell(const item& i);
 	bool drop_herb(const item& i);
 
-	long get_level();
+	long get_level() const;
 	void death_xp_loss();
 	double get_percent_of_current_level();
 	long xp_worth();
@@ -337,6 +337,7 @@ struct player {
 using player_list = std::unordered_map<dpp::snowflake, player>;
 
 bool player_is_registering(dpp::snowflake user_id);
+uint64_t get_active_player_count();
 player get_registering_player(const dpp::interaction_create_t& event);
 void update_registering_player(const dpp::interaction_create_t& event, player p);
 void move_from_registering_to_live(const dpp::interaction_create_t& event, player p);
