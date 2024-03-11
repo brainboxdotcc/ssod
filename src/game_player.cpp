@@ -51,6 +51,14 @@ bool player_is_registering(dpp::snowflake user_id) {
 	return registering_players.find(user_id) != registering_players.end();
 }
 
+uint64_t get_active_player_count() {
+	std::lock(reg_list_lock, live_list_lock);
+	uint64_t count = registering_players.size() + live_players.size();
+	reg_list_lock.unlock();
+	live_list_lock.unlock();
+	return count;
+}
+
 bool player_is_live(const dpp::interaction_create_t& event) {
 	{
 		std::lock_guard<std::mutex> l(live_list_lock);
@@ -167,10 +175,9 @@ player get_live_player(const dpp::interaction_create_t& event, bool update_event
 	return p;
 }
 
-player::~player() {
-}
+player::~player() = default;
 
-long player::get_level() {
+long player::get_level() const {
 	long level = 1;
 	while ((experience >= levels[level]) && (level != MAX_LEVEL)) level++;
 	return std::max(1l, level - 1);

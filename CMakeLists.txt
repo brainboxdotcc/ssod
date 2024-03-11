@@ -8,20 +8,6 @@ set(BOT_NAME "ssod")
 
 project(${BOT_NAME})
 
-# Get the current working branch
-execute_process(
-    COMMAND git rev-parse --abbrev-ref HEAD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_BRANCH
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-# Get the latest commit hash
-execute_process(
-    COMMAND git rev-parse HEAD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_COMMIT_HASH
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-
 aux_source_directory("src" coresrc)
 aux_source_directory("src/commands" coresrc)
 aux_source_directory("src/parser" coresrc)
@@ -51,7 +37,7 @@ else()
 endif()
 
 set(CMAKE_CXX_FLAGS "-g -O2 -Wall -Wno-psabi -Wempty-body -Wignored-qualifiers -Wimplicit-fallthrough -Wmissing-field-initializers -Wsign-compare -Wtype-limits -Wuninitialized -Wshift-negative-value -fuse-ld=mold")
-target_compile_definitions(${BOT_NAME} PUBLIC DPP_CORO=ON GIT_COMMIT_HASH="${GIT_COMMIT_HASH}" GIT_BRANCH="${GIT_BRANCH}")
+target_compile_definitions(${BOT_NAME} PUBLIC DPP_CORO=ON)
 
 target_include_directories(${BOT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
