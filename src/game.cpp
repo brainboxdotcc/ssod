@@ -729,7 +729,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	size_t index{0};
 	for (const auto& inv : p.possessions) {
 		sale_info value = get_sale_info(inv.name);
-		if (!value.quest_item && !value.sellable) {
+		if (!value.quest_item && value.sellable) {
 			cb.add_component(dpp::component()
 						 .set_type(dpp::cot_button)
 						 .set_id(security::encrypt("drop;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
