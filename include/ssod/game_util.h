@@ -21,6 +21,14 @@
 #include <string>
 #include <dpp/dpp.h>
 
+struct sale_info {
+	std::string flags;
+	long value{1};
+	bool sellable{false};
+	bool quest_item{false};
+};
+
 std::string describe_item(const std::string& modifier_flags, const std::string& name);
 dpp::component help_button();
 void premium_required(const dpp::interaction_create_t& event);
+sale_info get_sale_info(const std::string& name);

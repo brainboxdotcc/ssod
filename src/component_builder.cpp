@@ -30,6 +30,24 @@ const dpp::message& component_builder::get_message() {
 	return message;
 }
 
+void component_builder::add_menu(const dpp::component& c) {
+	if (index >= 25) {
+		/* Already at the max of 5x5 buttons */
+		return;
+	}
+	if (ids.find(c.custom_id) != ids.end()) {
+		/* Drop duplicate ids */
+		return;
+	}
+	message.components[component_parent].add_component(c);
+	index += 5;
+	ids.insert(c.custom_id);
+	if (index && (index % 5 == 0)) {
+		message.add_component(dpp::component());
+		component_parent++;
+	}
+}
+
 void component_builder::add_embed(const dpp::embed& e) {
 	message.add_embed(e);
 }

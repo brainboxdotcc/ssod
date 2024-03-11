@@ -56,6 +56,9 @@ struct component_builder {
 	 * @param c Component
 	 */
 	void add_component(const dpp::component& c);
+
+	void add_menu(const dpp::component& c);
+
 	/**
 	 * @brief Add an embed to the message
 	 * 

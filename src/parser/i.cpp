@@ -25,6 +25,7 @@ struct i_tag : public tag {
 	i_tag() { register_tag<i_tag>(); }
 	static constexpr std::string_view tags[]{"<i"};
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+		p.trader = true;
 		// purchase item tag
 		paragraph_content >> p_text; // always: NAME="ItemName"
 		std::string Value{"[none]"}, Cost;
