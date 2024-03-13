@@ -25,6 +25,7 @@
 #include <ssod/aes.h>
 #include <filesystem>
 #include <set>
+#include <ssod/wildcard.h>
 
 namespace fs = std::filesystem;
 

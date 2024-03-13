@@ -30,8 +30,6 @@ using json = dpp::json;
 
 #define EMBED_COLOUR 0xd5b994
 
-bool match(const char* str, const char* mask);
-
 /**
  *  trim from end of string (right)
  */
@@ -57,8 +55,6 @@ inline std::string trim(std::string s)
 {
 	return ltrim(rtrim(s));
 }
-
-std::string replace_string(std::string subject, const std::string& search, const std::string& replace);
 
 std::string sha256(const std::string &buffer);
 

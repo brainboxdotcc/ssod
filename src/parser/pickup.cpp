@@ -18,6 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/parser.h>
+#include <ssod/wildcard.h>
 
 struct pickup_tag : public tag {
 	pickup_tag() { register_tag<pickup_tag>(); }
@@ -81,9 +82,16 @@ struct pickup_tag : public tag {
 		}
 		current_player.add_flag(item_name, p.id);
 		if (flags == "SPELL") {
-			current_player.spells.push_back(item{ .name = item_name, .flags = flags });
+			item_name = replace_string(item_name, " ", "");
+			item_name = replace_string(item_name, "-", "");
+			item_name = replace_string(item_name, ".", "");
+			if (!current_player.has_spell(item_name)) {
+				current_player.spells.push_back(item{.name = dpp::lowercase(item_name), .flags = flags});
+			}
 		} else if (flags == "HERB") {
-			current_player.herbs.push_back(item{ .name = item_name, .flags = flags });
+			if (!current_player.has_herb(item_name)) {
+				current_player.herbs.push_back(item{.name = dpp::lowercase(item_name), .flags = flags});
+			}
 		} else {
 			item i{ .name = item_name, .flags = flags };
 			if (!current_player.convert_rations(i)) {

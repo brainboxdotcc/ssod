@@ -30,6 +30,7 @@
 #include <ssod/emojis.h>
 #include <ssod/combat.h>
 #include <ssod/aes.h>
+#include <ssod/wildcard.h>
 
 #define RESURRECT_SECS 3600
 #define RESURRECT_SECS_PREMIUM 900
@@ -333,10 +334,17 @@ void game_nav(const dpp::button_click_t& event) {
 		if (p.gold >= cost) {
 			if (flags == "SPELL") {
 				p.gold -= cost;
-				p.spells.push_back(item{ .name = name, .flags = flags });
+				item_name = replace_string(item_name, " ", "");
+				item_name = replace_string(item_name, "-", "");
+				item_name = replace_string(item_name, ".", "");
+				if (!p.has_spell(name)) {
+					p.spells.push_back(item{.name = dpp::lowercase(name), .flags = flags});
+				}
 			} else if (flags == "HERB") {
 				p.gold -= cost;
-				p.herbs.push_back(item{ .name = name, .flags = flags });
+				if (!p.has_herb(name)) {
+					p.herbs.push_back(item{.name = dpp::lowercase(name), .flags = flags});
+				}
 			} else {
 				if (dpp::lowercase(name) == "scroll") {
 					if (!p.has_flag("SCROLL", p.paragraph)) {

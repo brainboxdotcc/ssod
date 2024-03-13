@@ -21,6 +21,7 @@
 #include <ssod/botlist.h>
 #include <ssod/database.h>
 #include <ssod/config.h>
+#include <ssod/wildcard.h>
 
 /**
  * @brief Internal list of botlist site configs
