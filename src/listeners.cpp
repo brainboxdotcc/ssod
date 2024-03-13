@@ -46,6 +46,7 @@
 #include <ssod/botlists/topgg.h>
 #include <ssod/botlists/discordbotlist.h>
 #include <ssod/botlists/infinitybots.h>
+#include <ssod/botlists/voidbots.h>
 
 namespace listeners {
 
