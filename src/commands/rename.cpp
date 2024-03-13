@@ -23,6 +23,7 @@
 #include <ssod/game_date.h>
 #include <ssod/game_player.h>
 #include <ssod/game_util.h>
+#include <ssod/wildcard.h>
 
 static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
 	if (!player_is_live(event)) {
