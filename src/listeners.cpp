@@ -218,6 +218,7 @@ namespace listeners {
 			register_botlist<topgg>();
 			register_botlist<discordbotlist>();
 			register_botlist<infinitybots>();
+			register_botlist<voidbots>();
 
 			post_botlists(bot);
 		}
