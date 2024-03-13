@@ -186,13 +186,16 @@ void game_input(const dpp::form_submit_t & event) {
 		} else {
 			p.add_toast("### " + sprite::inv_drop.get_mention() + " The answer you entered is not correct, adventurer! Please try again!");
 		}
+		bot.log(dpp::ll_debug, "Answered: " + entered_answer);
 		claimed = true;
 	} else if (custom_id == "chat_modal" && p.stamina > 0) {
 		std::string message = std::get<std::string>(event.components[0].components[0].value);
 		uint64_t guild_id = get_guild_id(p);
 		if (guild_id) {
+			bot.log(dpp::ll_info, "Chat: [G(" + std::to_string(p.paragraph) + "," + std::to_string(guild_id) + ")] " + event.command.usr.id + " <" + p.name + "> " + message);
 			send_chat(event.command.usr.id, p.paragraph, message, "chat", guild_id);
 		} else {
+			bot.log(dpp::ll_info, "Chat: [L(" + std::to_string(p.paragraph) + ")] " + event.command.usr.id + " <" + p.name + "> " + message);
 			send_chat(event.command.usr.id, p.paragraph, message);
 		}
 		claimed = true;
