@@ -151,6 +151,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			db::query("DELETE FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
 			db::query("INSERT INTO game_default_spells (user_id, name, flags) SELECT user_id, item_desc, item_flags FROM game_owned_items WHERE user_id = ? AND item_flags in ('HERB','SPELL')", {event.command.usr.id});
 			continue_game(event, p_old);
+			bot.log(dpp::ll_info, "New player creation: " + name + " for id: " + event.command.usr.id.str());
 		}
 	});
 	return dpp::slashcommand("start", "Start a new character or resume game", bot.me.id).set_dm_permission(true);
