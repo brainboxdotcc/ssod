@@ -334,9 +334,9 @@ void game_nav(const dpp::button_click_t& event) {
 		if (p.gold >= cost) {
 			if (flags == "SPELL") {
 				p.gold -= cost;
-				item_name = replace_string(item_name, " ", "");
-				item_name = replace_string(item_name, "-", "");
-				item_name = replace_string(item_name, ".", "");
+				name = replace_string(name, " ", "");
+				name = replace_string(name, "-", "");
+				name = replace_string(name, ".", "");
 				if (!p.has_spell(name)) {
 					p.spells.push_back(item{.name = dpp::lowercase(name), .flags = flags});
 				}
