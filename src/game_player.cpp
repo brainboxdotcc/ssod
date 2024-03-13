@@ -724,8 +724,9 @@ void player::tick_mana() {
 void player::drop_everything() {
 	/* Drop everything to floor */
 	for (const auto& i : possessions) {
-		/* Scrolls arent dropped to the floor */
-		if (dpp::lowercase(i.name) != "scroll") {
+		/* We don't drop quest items */
+		sale_info value = get_sale_info(i.name);
+		if (!value.quest_item && dpp::lowercase(i.name) != "scroll") {
 			db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {paragraph, i.name, i.flags});
 		}
 	}
