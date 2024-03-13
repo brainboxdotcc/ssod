@@ -192,10 +192,10 @@ void game_input(const dpp::form_submit_t & event) {
 		std::string message = std::get<std::string>(event.components[0].components[0].value);
 		uint64_t guild_id = get_guild_id(p);
 		if (guild_id) {
-			bot.log(dpp::ll_info, "Chat: [G(" + std::to_string(p.paragraph) + "," + std::to_string(guild_id) + ")] " + event.command.usr.id + " <" + p.name + "> " + message);
+			bot.log(dpp::ll_info, "Chat: [G(" + std::to_string(p.paragraph) + "," + std::to_string(guild_id) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
 			send_chat(event.command.usr.id, p.paragraph, message, "chat", guild_id);
 		} else {
-			bot.log(dpp::ll_info, "Chat: [L(" + std::to_string(p.paragraph) + ")] " + event.command.usr.id + " <" + p.name + "> " + message);
+			bot.log(dpp::ll_info, "Chat: [L(" + std::to_string(p.paragraph) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
 			send_chat(event.command.usr.id, p.paragraph, message);
 		}
 		claimed = true;
