@@ -28,8 +28,26 @@
  * @note Tags self-register via static initialisation
  */
 struct tag {
+
+	/**
+	 * If true, this tag will be called even when the parser is not currently displaying content.
+	 * In short, the parser will never skip these tags. Used mainly for conditionals.
+	 */
 	static constexpr bool overrides_display{false};
+
+	/**
+	 * Names of tags in the content, without trailing > symbol
+	 */
 	static constexpr std::string_view tags[]{};
+
+	/**
+	 * Handle the tag
+	 * @param p current paragraph
+	 * @param p_text paragraph raw text
+	 * @param paragraph_content paragraph input content
+	 * @param output output text content
+	 * @param current_player current player
+	 */
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player);
 };
 
@@ -43,6 +61,9 @@ using tag_router = auto (*)(paragraph&, std::string&, std::stringstream&, std::s
  */
 using registered_tag_list = std::unordered_map<std::string_view, tag_router>;
 
+/**
+ * @brief Represents a list of registered tags that can override display
+ */
 using registered_over_list = std::set<std::string>;
 
 registered_tag_list& get_tag_map();
@@ -60,6 +81,9 @@ template <typename T> void register_tag()
 	}
 }
 
+/**
+ * Thrown when parsing should immediately end regardless of what is left in the input
+ */
 struct parse_end_exception : public std::exception {
 };
 
