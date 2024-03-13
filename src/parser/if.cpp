@@ -135,7 +135,7 @@ struct if_tag : public tag {
 			// <if premium>
 			// ------------------------------------------------------
 			auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { current_player.event.command.usr.id });
-			p.display.push_back(rs.size() > 0);
+			p.display.push_back(!rs.empty());
 			return;
 		}
 	}
