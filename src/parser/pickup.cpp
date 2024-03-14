@@ -43,6 +43,10 @@ struct pickup_tag : public tag {
 		if (dpp::lowercase(p_text) == "gold") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
+			if (current_player.has_flag(p_text, p.id)) {
+				return;
+			}
+			current_player.add_flag(p_text, p.id);
 			current_player.add_gold(atoi(p_text.c_str()));
 			current_player.inv_change = true;
 			return;
@@ -51,6 +55,10 @@ struct pickup_tag : public tag {
 		if (dpp::lowercase(p_text) == "silver") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
+			if (current_player.has_flag(p_text, p.id)) {
+				return;
+			}
+			current_player.add_flag(p_text, p.id);
 			current_player.add_silver(atoi(p_text.c_str()));
 			current_player.inv_change = true;
 			return;
@@ -77,7 +85,7 @@ struct pickup_tag : public tag {
 		}
 
 		if (current_player.has_flag(item_name, p.id)) {
-			// crafty player trying to get the same item twice! Not good if its unique!
+			// crafty player trying to get the same item twice! Not good if it's unique!
 			return;
 		}
 		current_player.add_flag(item_name, p.id);
