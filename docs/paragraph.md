@@ -64,6 +64,7 @@ Paragraph tags are never considered to be a DOM. Only certain tags have range an
         <p>&lt;if race orc&gt;, &lt;if race human&gt;....</p>
         <p>&lt;if prof wizard&gt;, &lt;if prof warrior&gt;</p>
         <p>&lt;if premium&gt;</p>
+        <p>&lt;if mounted&gt;</p>
       </td>
       <td>
         Display next part of the paragraph if STAT is equal (eq), greater than (gt), less than (lt) or not equal (ne) to the value you provide. Valid values for STAT are: stm - stamina; skl - skill; wpn - weapon; arm - armour; exp - experience; luck - luck; spd - speed; scrolls - scrolls; level - level; mana - mana; notoriety - notoriety; rations - rations
