@@ -31,6 +31,7 @@
 #include <ssod/combat.h>
 #include <ssod/aes.h>
 #include <ssod/wildcard.h>
+#include <ssod/inventory.h>
 
 #define RESURRECT_SECS 3600
 #define RESURRECT_SECS_PREMIUM 900
@@ -331,36 +332,58 @@ void game_nav(const dpp::button_click_t& event) {
 		long cost = atol(parts[4]);
 		std::string name = parts[5];
 		p.paragraph = atol(parts[1]);
-		if (p.gold >= cost) {
-			if (flags == "SPELL") {
-				p.gold -= cost;
-				name = replace_string(name, " ", "");
-				name = replace_string(name, "-", "");
-				name = replace_string(name, ".", "");
-				if (!p.has_spell(name)) {
-					p.spells.push_back(item{.name = dpp::lowercase(name), .flags = flags});
-				}
-			} else if (flags == "HERB") {
-				p.gold -= cost;
-				if (!p.has_herb(name)) {
-					p.herbs.push_back(item{.name = dpp::lowercase(name), .flags = flags});
-				}
-			} else {
-				if (dpp::lowercase(name) == "scroll") {
-					if (!p.has_flag("SCROLL", p.paragraph)) {
-						p.gold -= cost;
-						p.scrolls++;
-						p.add_flag("SCROLL", p.paragraph);
+		size_t max = p.max_inventory_slots();
+		if (p.possessions.size() < max - 1) {
+			if (p.gold >= cost) {
+				if (flags == "SPELL") {
+					p.gold -= cost;
+					name = replace_string(name, " ", "");
+					name = replace_string(name, "-", "");
+					name = replace_string(name, ".", "");
+					if (!p.has_spell(name)) {
+						p.spells.push_back(item{.name = dpp::lowercase(name), .flags = flags});
+					}
+				} else if (flags == "HERB") {
+					p.gold -= cost;
+					if (!p.has_herb(name)) {
+						p.herbs.push_back(item{.name = dpp::lowercase(name), .flags = flags});
 					}
 				} else {
-					p.gold -= cost;
-					item i{ .name = name, .flags = flags };
-					if (!p.convert_rations(i)) {
-						p.possessions.push_back(i);
+					if (dpp::lowercase(name) == "scroll") {
+						if (!p.has_flag("SCROLL", p.paragraph)) {
+							p.gold -= cost;
+							p.scrolls++;
+							p.add_flag("SCROLL", p.paragraph);
+						}
+					} else {
+						p.gold -= cost;
+						item i{ .name = name, .flags = flags };
+						if (!p.convert_rations(i)) {
+							bool special{false};
+							if (dpp::lowercase(name) == "horse" || dpp::lowercase(name) == "pack pony" || dpp::lowercase(name) == "donkey" || dpp::lowercase(name) == "mule") {
+								if (!p.has_flag("horse")) {
+									p.add_flag("horse");
+									special = true;
+								}
+							} else if (dpp::lowercase(name) == "backpack" || dpp::lowercase(name) == "pack") {
+								if (!p.has_flag("pack")) {
+									p.add_flag("pack");
+									special = true;
+								}
+							} else if (dpp::lowercase(name) == "saddle bags") {
+								if (!p.has_flag("saddlebags")) {
+									p.add_flag("saddlebags");
+									special = true;
+								}
+							}
+							if (!special) {
+								p.possessions.push_back(i);
+							}
+						}
 					}
 				}
+				p.inv_change = true;
 			}
-			p.inv_change = true;
 		}
 		claimed = true;
 	} else if (parts[0] == "combat" && parts.size() >= 7) {
@@ -420,13 +443,16 @@ void game_nav(const dpp::button_click_t& event) {
 		return;
 	} else if (parts[0] == "pick_one" && parts.size() >= 5) {
 		p.paragraph = atol(parts[1]);
-		if (!p.has_flag("PICKED", p.paragraph)) {
-			item i{ .name = parts[3], .flags = parts[4] };
-			if (!p.convert_rations(i)) {
-				p.possessions.push_back(i);
+		size_t max = p.max_inventory_slots();
+		if (p.possessions.size() < max - 1) {
+			if (!p.has_flag("PICKED", p.paragraph)) {
+				item i{.name = parts[3], .flags = parts[4]};
+				if (!p.convert_rations(i)) {
+					p.possessions.push_back(i);
+				}
+				p.inv_change = true;
+				p.add_flag("PICKED", p.paragraph);
 			}
-			p.inv_change = true;
-			p.add_flag("PICKED", p.paragraph);
 		}
 		claimed = true;
 	} else if (parts[0] == "respawn") {
@@ -479,8 +505,9 @@ void game_nav(const dpp::button_click_t& event) {
 			p.save(event.command.usr.id);
 			claimed = true;
 		}
-	} else if (parts[0] == "inventory" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
+	} else if (parts[0] == "inventory" && parts.size() >= 2 && !p.in_combat && p.stamina > 0) {
 		p.in_inventory = true;
+		p.inventory_page = atoi(parts[1].c_str());
 		claimed = true;
 	} else if (parts[0] == "drop" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
 		if (p.has_possession(parts[1])) {
@@ -507,18 +534,25 @@ void game_nav(const dpp::button_click_t& event) {
 		long paragraph = atol(parts[1]);
 		std::string name = parts[2];
 		std::string flags = parts[3];
-		db::transaction();
-		auto rs = db::query("SELECT * FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
-		if (!rs.empty()) {
-			db::query("DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {paragraph, name, flags});
-			item i{ .name = name, .flags = flags };
-			if (!p.convert_rations(i)) {
-				p.possessions.push_back(i);
+		size_t max = p.max_inventory_slots();
+		if (p.possessions.size() < max - 1) {
+			db::transaction();
+			auto rs = db::query(
+				"SELECT * FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
+				{paragraph, name, flags});
+			if (!rs.empty()) {
+				db::query(
+					"DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
+					{paragraph, name, flags});
+				item i{.name = name, .flags = flags};
+				if (!p.convert_rations(i)) {
+					p.possessions.push_back(i);
+				}
+				p.inv_change = true;
+				send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 			}
-			p.inv_change = true;
-			send_chat(event.command.usr.id, p.paragraph, name, "pickup");
+			db::commit();
 		}
-		db::commit();
 		claimed = true;
 	} else if (parts[0] == "use" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
 		if (p.has_possession(parts[1])) {
@@ -662,120 +696,6 @@ dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
 		emoji = sprite::orange03;
 	}
 	return emoji;
-}
-
-void inventory(const dpp::interaction_create_t& event, player p) {
-	dpp::cluster& bot = *(event.from->creator);
-	std::stringstream content;
-	bool equip_w{false}, equip_a{false};
-
-	content << "__**Stats**__\n\n";
-	content << "<:" << sprite::health_heart.format() << "> Stamina: __" << p.stamina << "__";
-	content << " <:" << sprite::book07.format() << "> Skill: __" << p.skill << "__";
-	content << " <:" << sprite::clover.format() << "> Luck: __" << p.luck << "__";
-	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__ (Level: __" << p.get_level() << "__)";
-	content << " <:" << sprite::shoes03.format() << "> Speed: __" << p.speed << "__";
-	content << "\n";
-
-	content << "\n__**Inventory**__\n";
-	if (p.gold > 0) {
-		content << "<:" << sprite::gold_coin.format() << ">" << " " << p.gold << " Gold Pieces\n";
-	}
-	if (p.silver > 0) {
-		content << "<:" << sprite::silver_coin.format() << ">" << " " << p.silver << " Silver Pieces\n";
-	}
-	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
-	for (const auto& inv : p.possessions) {
-		std::string emoji = get_emoji(inv.name, inv.flags).format();
-		content << "<:" << emoji << ">" << " " << inv.name << " - *" << describe_item(inv.flags, inv.name) << "*";
-		if (p.armour.name == inv.name && !equip_a) {
-			content << " <:" << sprite::light02.format() << "> - **Equipped**";
-			equip_a = true;
-		} else if (p.weapon.name == inv.name && !equip_w) {
-			content << " <:" << sprite::light02.format() << "> - **Equipped**";
-			equip_w = true;
-		}
-		sale_info value = get_sale_info(inv.name);
-		if (value.quest_item) {
-			content << " ❗";
-		}
-		if (value.sellable && !value.quest_item) {
-			content << " [" << value.value <<  "<:" << sprite::gold_coin.format() << ">]";
-		}
-		content << "\n";
-	}
-	content << "\n__**Spells**__\n";
-	std::ranges::sort(p.spells, [](const item &a, const item& b) -> bool { return a.name < b.name; });
-	for (const auto& inv : p.spells) {
-		content << "<:" << sprite::hat02.format() << ">" << " " << inv.name << "\n";
-	}
-	content << "\n__**Herbs**__\n";
-	std::ranges::sort(p.herbs, [](const item &a, const item& b) -> bool { return a.name < b.name; });
-	for (const auto& inv : p.herbs) {
-		content << "<:" << sprite::leaf.format() << ">" << " " << inv.name << "\n";
-	}
-
-	dpp::embed embed = dpp::embed()
-		.set_url("https://ssod.org/")
-		.set_footer(dpp::embed_footer{ 
-			.text = "Inventory",
-			.icon_url = bot.me.get_avatar_url(), 
-			.proxy_url = "",
-		})
-		.set_colour(EMBED_COLOUR)
-		.set_description(content.str());
-	
-	dpp::message m;
-	m.add_embed(embed);
-	component_builder cb(m);
-
-	cb.add_component(dpp::component()
-		.set_type(dpp::cot_button)
-		.set_id(security::encrypt("exit_inventory"))
-		.set_label("Back")
-		.set_style(dpp::cos_primary)
-		.set_emoji(sprite::magic05.name, sprite::magic05.id)
-	);
-
-	size_t index{0};
-	for (const auto& inv : p.possessions) {
-		sale_info value = get_sale_info(inv.name);
-		if (!value.quest_item && value.sellable) {
-			cb.add_component(dpp::component()
-						 .set_type(dpp::cot_button)
-						 .set_id(security::encrypt("drop;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
-						 .set_label("Drop " + inv.name)
-						 .set_style(dpp::cos_danger)
-						 .set_emoji(sprite::inv_drop.name, sprite::inv_drop.id)
-			);
-		}
-		if (inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
-			cb.add_component(dpp::component()
-				.set_type(dpp::cot_button)
-				.set_id(security::encrypt("use;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
-				.set_label("Use " + inv.name)
-				.set_style(dpp::cos_success)
-				.set_emoji("➕")
-			);
-		} else if (inv.flags.length() && inv.flags[0] == 'A') {
-			cb.add_component(dpp::component()
-				.set_type(dpp::cot_button)
-				.set_id(security::encrypt("equip;" + inv.name + ";" + inv.flags + ";" + std::to_string(++index)))
-				.set_label("Wear " + inv.name)
-				.set_style(dpp::cos_secondary)
-				.set_emoji(sprite::armor04.name, sprite::armor04.id)
-			);
-		}
-	}
-
-	m = cb.get_message();
-
-	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
-		if (cc.is_error()) {
-			bot.log(dpp::ll_error, "Internal error displaying inventory:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
-			event.reply(dpp::message("Internal error displaying inventory:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
-		}
-	});
 }
 
 void bank(const dpp::interaction_create_t& event, player p) {
@@ -1199,7 +1119,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("inventory"))
+			.set_id(security::encrypt("inventory;0"))
 			.set_label("Inventory")
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::backpack.name, sprite::backpack.id)

@@ -24,6 +24,7 @@
 #include <ssod/game_dice.h>
 #include <ssod/game_util.h>
 #include <ssod/aes.h>
+#include <span>
 
 /* List of registering players, creating character profiles. These don't get saved to the database until
  * they name their character at the end of the process. The old version of this used to save them temporarily
@@ -44,7 +45,6 @@ constexpr long levels[MAX_LEVEL] = {
 	-100000000, 0, 10, 20, 40, 80, 160, 250, 500, 550, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 8000, 10000, 20000,
 	40000, 80000, 160000, 240000, 480000, 960000, 1920000, 3840000, 7680000, 15360000, 30720000, 61440000, 122880000,
 };
-
 
 bool player_is_registering(dpp::snowflake user_id) {
 	std::lock_guard<std::mutex> l(reg_list_lock);
@@ -601,11 +601,41 @@ Once you are happy with your choices, click **Continue** to name your character.
 		).set_flags(dpp::m_ephemeral);
 }
 
+std::vector<item> player::possessions_page(size_t page_number) {
+	if (possessions.size() < page_number * 25) {
+		return {};
+	}
+	std::vector<item> nv;
+	for (size_t i = page_number * 25; i < (page_number + 1) * 25; ++i) {
+		if (i < possessions.size()) {
+			nv.emplace_back(possessions[i]);
+		}
+	}
+	return nv;
+}
+
+size_t player::max_inventory_slots() {
+	int pages_max = 1;
+	if (has_flag("horse")) {
+		pages_max++;
+	}
+	if (has_flag("pack")) {
+		pages_max++;
+	}
+	if (has_flag("saddlebags")) {
+		pages_max++;
+	}
+	if (has_flag("steamcopter")) {
+		pages_max += 3;
+	}
+	return pages_max * 25;
+}
+
 player::player(bool reroll) :
 	state(state_roll_stats), in_combat(false), in_inventory(false), in_bank(false), in_pvp_picker(false), inv_change(false),
 	challenged_by(0), after_fragment(0), race(player_race::race_error), profession(player_profession::prof_error), stamina(0),
 	skill(0), luck(0), sneak(0), speed(0), silver(0), gold(0), rations(0), experience(0), notoriety(0), days(0), scrolls(0),
-	last_use(0), last_strike(0), pinned(0), muted(0), mana(0), mana_tick(0) {
+	last_use(0), last_strike(0), pinned(0), muted(0), mana(0), mana_tick(0), inventory_page(0) {
 	if (reroll) {
 		skill = dice() + 5;
 		stamina = dice() + 5;
@@ -808,7 +838,7 @@ void player::add_flag(const std::string flag, long paragraph) {
 }
 
 bool player::has_flag(const std::string flag, long paragraph) {
-	std::string f{" [" + flag+ std::to_string(paragraph) + "]"};
+	std::string f{" [" + flag + std::to_string(paragraph) + "]"};
 	return gotfrom.find(f) != std::string::npos;
 }
 
