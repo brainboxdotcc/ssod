@@ -26,8 +26,11 @@ struct set_tag : public tag {
 		// set a state-flag
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
-		if (!current_player.has_flag(p_text, p.id)) {
+		if (!current_player.has_flag("gamestate_"+ p_text, p.id)) {
 			current_player.add_flag("gamestate_" + p_text, p.id);
+			if (p_text == "steam_copter" && !current_player.has_flag("steamcopter")) {
+				current_player.add_flag("steamcopter");
+			}
 		}
 	}
 };

@@ -27,6 +27,7 @@ struct pickup_tag : public tag {
 		std::string item_name, item_flags, flags;
 
 		paragraph_content >> p_text;
+		size_t max = current_player.max_inventory_slots();
 
 		/* Pickup locations are not repeatable */
 		p.safe = false;
@@ -86,6 +87,10 @@ struct pickup_tag : public tag {
 
 		if (current_player.has_flag(item_name, p.id)) {
 			// crafty player trying to get the same item twice! Not good if it's unique!
+			return;
+		}
+		if (current_player.possessions.size() >= max - 1) {
+			// Inventory full
 			return;
 		}
 		current_player.add_flag(item_name, p.id);

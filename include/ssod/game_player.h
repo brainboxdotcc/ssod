@@ -247,6 +247,10 @@ struct player {
 	 */
 	time_t mana_tick;
 	/**
+	 * @brief Current inventory page number
+	 */
+	size_t inventory_page;
+	/**
 	 * @brief Previous paragraphs travelled through that:
 	 * 1) did not contain combat
 	 * 2) contained a choice and displayed text
@@ -310,13 +314,15 @@ struct player {
 	void add_toast(const std::string& message);
 	std::vector<std::string> get_toasts();
 
-	void add_flag(const std::string flag, long paragraph);
-	bool has_flag(const std::string flag, long paragraph);
+	void add_flag(const std::string flag, long paragraph = -1);
+	bool has_flag(const std::string flag, long paragraph = -1);
 
 	bool has_herb(std::string herb_name);
 	bool has_component_herb(const std::string& spell);
 	bool has_spell(std::string spell_name);
 	bool has_possession(std::string name);
+	std::vector<item> possessions_page(size_t page_number);
+	size_t max_inventory_slots();
 
 	bool drop_possession(const item& i);
 	void drop_everything();

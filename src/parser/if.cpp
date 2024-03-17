@@ -130,6 +130,12 @@ struct if_tag : public tag {
 				(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman)
 			);
 			return;
+		} else if (dpp::lowercase(p_text) == "mounted>") {
+			// ------------------------------------------------------
+			// <if mounted>
+			// ------------------------------------------------------
+			p.display.push_back(current_player.has_flag("horse"));
+			return;
 		} else if (dpp::lowercase(p_text) == "premium>") {
 			// ------------------------------------------------------
 			// <if premium>
