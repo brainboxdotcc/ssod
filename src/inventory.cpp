@@ -169,14 +169,13 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	for (const auto& inv : possessions) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
-		std::string desc = replace_string(describe_item(inv.flags, inv.name), "**", "").substr(0, 80);
 		if (!value.quest_item && value.sellable) {
-			drop_menu.add_select_option(dpp::select_option("Drop " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index), desc).set_emoji(sprite::inv_drop.name, sprite::inv_drop.id));
+			drop_menu.add_select_option(dpp::select_option("Drop " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(sprite::inv_drop.name, sprite::inv_drop.id));
 		}
 		if (inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
-			use_menu.add_select_option(dpp::select_option("Use " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index), desc).set_emoji(e.name, e.id));
+			use_menu.add_select_option(dpp::select_option("Use " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		} else if (!inv.flags.empty() && (inv.flags[0] == 'A' || inv.flags[0] == 'W')) {
-			equip_menu.add_select_option(dpp::select_option("Equip " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index), desc).set_emoji(e.name, e.id));
+			equip_menu.add_select_option(dpp::select_option("Equip " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		}
 	}
 
