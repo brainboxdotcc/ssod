@@ -258,6 +258,75 @@ void game_select(const dpp::select_click_t &event) {
 		}
 		db::commit();
 		claimed = true;
+	} else if (custom_id == "drop_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
+		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.size() >= 2 && p.has_possession(parts[0])) {
+			sale_info si = get_sale_info(parts[0]);
+			if (dpp::lowercase(parts[0]) != "scroll" && !si.quest_item) {
+				/* Can't drop a scroll (is quest item) */
+				p.drop_possession(item{.name = parts[0], .flags = parts[1]});
+				if (p.armour.name == parts[0]) {
+					p.armour.name = "Undergarments 👙";
+					p.armour.rating = 0;
+				} else if (p.weapon.name == parts[0]) {
+					p.weapon.name = "Unarmed 👊";
+					p.weapon.rating = 0;
+				}
+				/* Drop to floor */
+				db::query(
+					"INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)",
+					{p.paragraph, parts[0], parts[1]});
+				send_chat(event.command.usr.id, p.paragraph, parts[0], "drop");
+			}
+		}
+		claimed = true;
+	} else if (custom_id == "use_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
+		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.size() >= 2 && p.has_possession(parts[0])) {
+			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
+			std::string flags = parts[1];
+			if (flags.substr(0, 2) == "ST") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_stamina(modifier);
+			} else if (flags.substr(0, 2) == "SN") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_sneak(modifier);
+			} else if (flags.substr(0, 2) == "SK") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_skill(modifier);
+			} else if (flags.substr(0, 2) == "MA") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_mana(modifier);
+			} else if (flags.substr(0, 2) == "SD") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_speed(modifier);
+			} else if (flags.substr(0, 2) == "EX") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_experience(modifier);
+			} else if (flags.substr(0, 2) == "LK") {
+				long modifier = atol(flags.substr(2, flags.length() - 2));
+				p.add_luck(modifier);
+			} else if (flags.substr(0, 1) == "A") {
+				long modifier = atol(flags.substr(1, flags.length() - 1));
+				p.armour.rating += modifier;
+			} else if (flags.substr(0, 1) == "W") {
+				long modifier = atol(flags.substr(1, flags.length() - 1));
+				p.weapon.rating += modifier;
+			}
+		}
+		claimed = true;
+	} else if (custom_id == "equip_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
+		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.size() >= 2 && p.has_possession(parts[0])) {
+			if (parts[1][0] == 'W') {
+				std::string rating = parts[1].substr(1, parts[1].length());
+				p.weapon = rated_item{.name = parts[0], .rating = atol(rating)};
+			} else {
+				std::string rating = parts[1].substr(1, parts[1].length());
+				p.armour = rated_item{.name = parts[0], .rating = atol(rating)};
+			}
+		}
+		claimed = true;
 	} else if (custom_id == "sell" && !p.in_inventory && !p.in_bank && !event.values.empty() && !p.in_combat) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		sale_info s = get_sale_info(parts[0]);
@@ -509,26 +578,6 @@ void game_nav(const dpp::button_click_t& event) {
 		p.in_inventory = true;
 		p.inventory_page = atoi(parts[1].c_str());
 		claimed = true;
-	} else if (parts[0] == "drop" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
-		if (p.has_possession(parts[1])) {
-			if (dpp::lowercase(parts[1]) != "scroll") {
-				/* Can't drop a scroll (is quest item) */
-				p.drop_possession(item{.name = parts[1], .flags = parts[2]});
-				if (p.armour.name == parts[1]) {
-					p.armour.name = "Undergarments 👙";
-					p.armour.rating = 0;
-				} else if (p.weapon.name == parts[1]) {
-					p.weapon.name = "Unarmed 👊";
-					p.weapon.rating = 0;
-				}
-				/* Drop to floor */
-				db::query(
-					"INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)",
-					{p.paragraph, parts[1], parts[2]});
-				send_chat(event.command.usr.id, p.paragraph, parts[1], "drop");
-			}
-		}
-		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
 		/* Pick up frm floor */
 		long paragraph = atol(parts[1]);
@@ -552,51 +601,6 @@ void game_nav(const dpp::button_click_t& event) {
 				send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 			}
 			db::commit();
-		}
-		claimed = true;
-	} else if (parts[0] == "use" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
-		if (p.has_possession(parts[1])) {
-			p.drop_possession(item{.name = parts[1], .flags = parts[2]});
-			std::string flags = parts[2];
-			if (flags.substr(0, 2) == "ST") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_stamina(modifier);
-			} else if (flags.substr(0, 2) == "SN") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_sneak(modifier);
-			} else if (flags.substr(0, 2) == "SK") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_skill(modifier);
-			} else if (flags.substr(0, 2) == "MA") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_mana(modifier);
-			} else if (flags.substr(0, 2) == "SD") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_speed(modifier);
-			} else if (flags.substr(0, 2) == "EX") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_experience(modifier);
-			} else if (flags.substr(0, 2) == "LK") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_luck(modifier);
-			} else if (flags.substr(0, 1) == "A") {
-				long modifier = atol(flags.substr(1, flags.length() - 1));
-				p.armour.rating += modifier;
-			} else if (flags.substr(0, 1) == "W") {
-				long modifier = atol(flags.substr(1, flags.length() - 1));
-				p.weapon.rating += modifier;
-			}
-		}
-		claimed = true;
-	} else if (parts[0] == "equip" && parts.size() >= 3 && p.in_inventory && p.stamina > 0) {
-		if (p.has_possession(parts[1])) {
-			if (parts[2][0] == 'W') {
-				std::string rating = parts[2].substr(1, parts[2].length());
-				p.weapon = rated_item{.name = parts[1], .rating = atol(rating)};
-			} else {
-				std::string rating = parts[2].substr(1, parts[2].length());
-				p.armour = rated_item{.name = parts[1], .rating = atol(rating)};
-			}
 		}
 		claimed = true;
 	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
@@ -1119,8 +1123,18 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	p.save(event.command.usr.id);
 	update_live_player(event, p);
 
+	if (enabled_links > 0 && p.stamina > 0) {
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("inventory;0"))
+			.set_label("Inventory")
+			.set_style(dpp::cos_secondary)
+			.set_emoji(sprite::backpack.name, sprite::backpack.id)
+		);
+	}
+
 	if (enabled_links > 0 && p.stamina > 0 && p.after_fragment == 0) {
-		if (others.size() > 0) {
+		if (!others.empty()) {
 			/* Can fight other players, present option */
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
@@ -1130,13 +1144,6 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				.set_emoji(sprite::bow09.name, sprite::bow09.id)
 			);
 		}
-		cb.add_component(dpp::component()
-			.set_type(dpp::cot_button)
-			.set_id(security::encrypt("inventory;0"))
-			.set_label("Inventory")
-			.set_style(dpp::cos_secondary)
-			.set_emoji(sprite::backpack.name, sprite::backpack.id)
-		);
 
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)

@@ -46,26 +46,26 @@ sale_info get_sale_info(const std::string& name) {
 	};
 }
 
-std::string describe_item(const std::string& modifier_flags, const std::string& name) {
+std::string describe_item(const std::string& modifier_flags, const std::string& name, bool ansi) {
 	auto res = db::query("SELECT idesc FROM game_item_descs WHERE name = ?", {name});
 	std::string rv{res.size() ? res[0].at("idesc") : name};
 
 	if (modifier_flags.substr(0, 3) == "ST+") {
-		return fmt::format("Stamina **+{}**: {}", modifier_flags.substr(3), rv);
+		return fmt::format(fmt::runtime(ansi ? "\033[2;36mStamina\033[0m \033[2;34m+{}\033[0m: {}" : "Stamina **+{}**: {}"), modifier_flags.substr(3), rv);
 	} else if (modifier_flags.substr(0, 3) == "SK+") {
-		return fmt::format("Skill **+{}**: {}", modifier_flags.substr(3), rv);
+		return fmt::format(fmt::runtime(ansi ? "\033[2;36mSkill\033[0m \033[2;34m+{}\033[0m: {}" : "Skill **+{}**: {}"), modifier_flags.substr(3), rv);
 	} else if (modifier_flags.substr(0, 3) == "LK+") {
-		return fmt::format("Luck **+{}**: {}", modifier_flags.substr(3), rv);
+		return fmt::format(fmt::runtime(ansi ? "\033[2;36mLuck\033[0m \033[2;34m+{}\033[0m: {}" : "Luck **+{}**: {}"), modifier_flags.substr(3), rv);
 	} else if (modifier_flags.substr(0, 3) == "SN+") {
-		return fmt::format("Sneak **+{}**: {}", modifier_flags.substr(3), rv);
+		return fmt::format(fmt::runtime(ansi ? "\033[2;36mSneak\033[0m \033[2;34m+{}\033[0m: {}" : "Sneak **+{}**: {}"), modifier_flags.substr(3), rv);
 	} else if (modifier_flags.substr(0, 2) == "W+") {
-		return fmt::format("Weapon **+{}**: {}", modifier_flags.substr(2), rv);
+		return fmt::format(fmt::runtime(ansi ? "\033[2;36mWeapon\033[0m \033[2;34m+{}\033[0m: {}" : "Weapon **+{}**: {}"), modifier_flags.substr(2), rv);
 	} else if (modifier_flags.substr(0, 2) == "A+") {
-		return fmt::format("Armour **+{}**: {}", modifier_flags.substr(2), rv);
+		return fmt::format(fmt::runtime(ansi ? "\033[2;36mArmour\033[0m \033[2;34m+{}\033[0m: {}" : "Armour **+{}**: {}"), modifier_flags.substr(2), rv);
 	} else if (!modifier_flags.empty() && modifier_flags[0] == 'W') {
-		return fmt::format("Weapon **{}**: {}",modifier_flags.substr(1), rv);
+		return fmt::format(fmt::runtime(ansi ? "\033[2;36mWeapon\033[0m \033[2;34m{}\033[0m: {}" : "Weapon **{}**: {}"),modifier_flags.substr(1), rv);
 	} else if (!modifier_flags.empty() && modifier_flags[0] == 'A') {
-		return fmt::format("Armour **{}**: {}",modifier_flags.substr(1), rv);
+		return fmt::format(fmt::runtime(ansi ? "\033[2;36mArmour\033[0m \033[2;34m{}\033[0m: {}" : "Armour **{}**: {}"),modifier_flags.substr(1), rv);
 	}
 	return rv;
 }
@@ -86,4 +86,71 @@ void premium_required(const dpp::interaction_create_t& event) {
 			)
 		)
 	);
+}
+
+static const std::map<std::string, std::string> human_readable_spells = {
+	{ "fire", "Fire" },
+	{ "water", "Water" },
+	{ "light", "Light" },
+	{ "fly", "Fly" },
+	{ "strength", "Strength" },
+	{ "xray", "X-Ray" },
+	{ "bolt", "Bolt" },
+	{ "fasthands", "Fast Hands" },
+	{ "thunderbolt", "Thunderbolt" },
+	{ "steal", "Steal" },
+	{ "shield", "Shield" },
+	{ "jump", "Jump" },
+	{ "open", "Open" },
+	{ "spot", "Spot" },
+	{ "sneak", "Sneak" },
+	{ "esp", "E.S.P." },
+	{ "run", "Run" },
+	{ "invisible", "Invisible" },
+	{ "shrink", "Shrink" },
+	{ "grow", "Grow" },
+	{ "air", "Air" },
+	{ "animalcommunication", "Animal Communication" },
+	{ "weaponskill", "Weapon Skill" },
+	{ "healing", "Healing" },
+	{ "woodsmanship", "Woodsmanship" },
+	{ "nightvision", "Night Vision" },
+	{ "heateyes", "Heat Eyes" },
+	{ "decipher", "Decipher" },
+	{ "detect", "Detect" },
+	{ "tracking", "Tracking" },
+	{ "espsurge", "E.S.P. Surge" },
+	{ "afterimage", "After Image" },
+	{ "psychism", "Psychism" },
+	{ "spiritwalk", "Spirit Walk" },
+	{ "growweapon", "Grow Weapon" },
+	{ "teleport", "Teleport" },
+	{ "vortex", "Vortex" },
+};
+
+static const std::map<std::string, std::string> human_readable_herbs = {
+	{ "hartleaf", "Hartleaf" },
+	{ "elfbane", "Elfbane" },
+	{ "monkgrass", "Monkgrass" },
+	{ "fireseeds", "Fireseeds" },
+	{ "woodweed", "Woodweed" },
+	{ "blidvines", "Blidvines" },
+	{ "stickwart", "Stickwart" },
+	{ "spikegrass", "Spikegrass" },
+	{ "hallucinogen", "Hallucinogen" },
+	{ "wizardsivy", "Wizard's Ivy" },
+	{ "orcweed", "Orcweed" },
+	{ "arrowroot", "Arrowroot" },
+	{ "windherb", "Windherb" },
+};
+
+
+std::string human_readable_spell_name(const std::string& spell) {
+	auto s = human_readable_spells.find(spell);
+	return s == human_readable_spells.end() ? spell : s->second;
+}
+
+std::string human_readable_herb_name(const std::string& herb) {
+	auto h = human_readable_herbs.find(herb);
+	return h == human_readable_herbs.end() ? herb : h->second;
 }
