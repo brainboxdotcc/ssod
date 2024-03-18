@@ -530,7 +530,7 @@ Once you are happy with your choices, click **Continue** to name your character.
 		dpp::select_option("Light", "light", "Summons light around the caster"),
 		dpp::select_option("Fly", "fly", "Allows the caster to fly for a short amount of time"),
 		dpp::select_option("Strength", "strength", "Gives the caster increased strength"),
-		dpp::select_option("X-Ray", "x-ray", "Allows the caster to see through many objects"),
+		dpp::select_option("X-Ray", "xray", "Allows the caster to see through many objects"),
 		dpp::select_option("Bolt", "bolt", "Fires a sharp and hard projectile from the hand of the caster"),
 		dpp::select_option("Fast Hands", "fasthands", "Allows for faster movement"),
 		dpp::select_option("Thunderbolt", "thunderbolt", "Summons lightning from the heavens!"),
