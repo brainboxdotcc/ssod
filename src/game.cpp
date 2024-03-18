@@ -637,8 +637,8 @@ void game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "pvp_accept" && p.stamina > 0) {
 		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
-		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 		accept_pvp(event.command.usr.id, opponent);
+		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 		p.in_pvp_picker = false;
 		p = set_in_pvp_combat(event);
 		update_opponent_message(event, get_pvp_round(p2.event), std::stringstream());
@@ -866,8 +866,10 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 
 	m.add_embed(embed);
 
-	if (others.size() > 0) {
-		m.add_component(dpp::component().add_component(fight_menu));
+	if (!opponent_id) {
+		if (others.size() > 0) {
+			m.add_component(dpp::component().add_component(fight_menu));
+		}
 	}
 
 	m.add_component(
@@ -882,10 +884,21 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 		.add_component(help_button())
 	);
 
-
-	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
+	event.reply(event.command.type == dpp::it_application_command || event.command.type == dpp::it_component_button ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
 		if (cc.is_error()) {
-			event.reply(dpp::message("The player you have selected has is not active at this location! Perhaps they left the area while you were choosing?").set_flags(dpp::m_ephemeral));
+			bot.log(dpp::ll_error, cc.http_info.body);
+			event.reply(dpp::message("The player you have selected has is not active at this location! Perhaps they left the area while you were choosing?").add_component(
+				dpp::component()
+				.add_component(dpp::component()
+				       .set_type(dpp::cot_button)
+				       .set_id(security::encrypt("exit_pvp_picker"))
+				       .set_label("Back")
+				       .set_style(dpp::cos_secondary)
+				       .set_emoji(sprite::magic05.name, sprite::magic05.id)
+				)
+				.add_component(help_button())
+			)
+			.add_component(help_button()).set_flags(dpp::m_ephemeral));
 		}
 	});
 }

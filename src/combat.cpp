@@ -217,18 +217,22 @@ void update_opponent_message(const dpp::interaction_create_t& event, dpp::messag
 void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
 	std::lock_guard<std::mutex> l(pvp_list_lock);
 	bool turn = random(0, 1);
-	pvp_list[id2] = {
-		.opponent = id1,
-		.accepted = true,
-		.my_turn = turn,
-		.last_updated = time(nullptr),
-	};
-	pvp_list[id1] = {
-		.opponent = id2,
-		.accepted = true,
-		.my_turn = !turn,
-		.last_updated = time(nullptr),
-	};
+	if (id1 != 0 && id2 != 0) {
+		pvp_list[id2] = {
+			.opponent = id1,
+			.accepted = true,
+			.my_turn = turn,
+			.last_updated = time(nullptr),
+		};
+		pvp_list[id1] = {
+			.opponent = id2,
+			.accepted = true,
+			.my_turn = !turn,
+			.last_updated = time(nullptr),
+		};
+	} else {
+		std::cout << "accept pvp with id 0!\n";
+	}
 }
 
 player end_pvp_combat(const dpp::interaction_create_t& event) {
