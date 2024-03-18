@@ -75,12 +75,12 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	content << "\n__**Spells**__\n";
 	std::ranges::sort(p.spells, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	for (const auto &inv: p.spells) {
-		content << "<:" << sprite::hat02.format() << ">" << " " << human_readable_spell_name(inv.name) << "\n";
+		content << "🪄 " << human_readable_spell_name(inv.name) << "\n";
 	}
 	content << "\n__**Herbs**__\n";
 	std::ranges::sort(p.herbs, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	for (const auto &inv: p.herbs) {
-		content << "<:" << sprite::leaf.format() << ">" << " " << human_readable_herb_name(inv.name) << "\n";
+		content << "🌿 " << human_readable_herb_name(inv.name) << "\n";
 	}
 
 	content << "\n__**Inventory (page " << (p.inventory_page + 1) << " of " << pages_max ++ << ")**__\n";
