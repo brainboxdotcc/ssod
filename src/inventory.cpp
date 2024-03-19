@@ -27,7 +27,6 @@
 #include <ssod/component_builder.h>
 #include <ssod/emojis.h>
 #include <ssod/aes.h>
-#include <ssod/wildcard.h>
 
 void inventory(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
