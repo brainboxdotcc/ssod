@@ -6,7 +6,7 @@
 
 use DBI;
 
-my $dbh = DBI->connect('DBI:mysql:brain:localhost','brain','wjr84lik',{ RaiseError => 1});
+my $dbh = DBI->connect('DBI:mysql:XXXXXX:localhost','XXXXXX','XXXXXX',{ RaiseError => 1});
 if (!$dbh)
 {
 	die "Cannot connect to database";
