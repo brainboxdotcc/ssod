@@ -1,27 +1,27 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//																								//
-// The Seven Spells Of Destruction																//
-// -------------------------------																//
-//																								//
-// At last, SSOD exists as it always should have - as a web-based game :o)						//
-// Programmed By BRAiN (C. J. Edwards), project started May 2001.								//
-//																								//
-// Greets to Thor, Angel_F, The Shadow and Halo Unit											//
-//																								//
-// Recommended: Apache 1.3.9 or greater, 50mb hard disk space, ANSI C++ compiler				//
-// (and pure luck if you REALLY don't want it to crash - sack/dual crew+shining)				//
-//																								//
+//												//
+// The Seven Spells Of Destruction								//
+// -------------------------------								//
+//												//
+// At last, SSOD exists as it always should have - as a web-based game :o)			//
+// Programmed By BRAiN (C. J. Edwards), project started May 2001.				//
+//												//
+// Greets to Thor, Angel_F, The Shadow and Halo Unit						//
+//												//
+// Recommended: Apache 1.3.9 or greater, 50mb hard disk space, ANSI C++ compiler		//
+// (and pure luck if you REALLY don't want it to crash - sack/dual crew+shining)		//
+//												//
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//																								//
-// Tested on:																					//
-// ----------																					//
-//																								//
-// (1) Apache/1.3.9+win32, MSVC++ 6.0, 64mb, 333mhz, Microsoft Windows Millenium				//
-// (2) Apache/1.3.9-7mdk, G++ pgcc-2.91.66, 64mb, 400mhz, Mandrake Linux 6.1 (Helios)			//
-// (3) Apache/1.3.13, G++ pgcc-2.91.66, ???mb, 2x400mhz, SuSE Linux 7.2							//
-// (4) Apache/1.3.14+ExtraNet, G++ 2.95.3, 64mb, 400mhz, Mandrake Linux 7.2 (Oddesey)			//
-// (5) Apache/2.0.x, g++-2.96, 128mb, 200mhz, Redhat Linux 7.2									//
-//																								//
+//												//
+// Tested on:											//
+// ----------											//
+//												//
+// (1) Apache/1.3.9+win32, MSVC++ 6.0, 64mb, 333mhz, Microsoft Windows Millenium		//
+// (2) Apache/1.3.9-7mdk, G++ pgcc-2.91.66, 64mb, 400mhz, Mandrake Linux 6.1 (Helios)		//
+// (3) Apache/1.3.13, G++ pgcc-2.91.66, ???mb, 2x400mhz, SuSE Linux 7.2				//
+// (4) Apache/1.3.14+ExtraNet, G++ 2.95.3, 64mb, 400mhz, Mandrake Linux 7.2 (Oddesey)		//
+// (5) Apache/2.0.x, g++-2.96, 128mb, 200mhz, Redhat Linux 7.2					//
+//												//
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Project: SSOD

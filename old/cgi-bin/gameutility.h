@@ -14,6 +14,294 @@
 
 const long Levels[20] = {0,10,20,40,80,160,250,500,550,1000,1500,2000,2500,3000,3500,4000,5000,8000,10000,20000};
 
+const char* Day[] = {		"<b>L</b>unae",
+				"<b>M</b>artis",
+				"<b>J</b>ovis",
+				"<b>V</b>eneris",
+				"<b>S</b>aturni"};
+
+const char* Month[] = {		"<b>I</b>vonium",
+				"<b>H</b>ornath",
+				"<b>I</b>llium",
+				"<b>V</b>ernum",
+				"<b>U</b>lium",
+				"<b>N</b>ixium"};
+
+const char* Fraction[] = {	"<b>D</b>ead hours",
+				"<b>M</b>orning",
+				"<b>A</b>fternoon",
+				"<b>E</b>vening"};
+
+const int YearModifier = 1542;
+
+static char yf[1024];
+
+char* UtopianDate()
+{
+	time_t a = time(NULL);
+	tm* realtime = localtime(&a);
+	int yday = realtime->tm_yday+1;
+	int UtopiaMonth = (yday / 60);
+	int UtopiaIndx = (yday % 31)+1;
+	int UtopiaDay = yday % 5;
+	int UtopiaYear = (realtime->tm_year / 2) + YearModifier;
+	int Frac = (((realtime->tm_hour)+1) / 6);
+	if (Frac > 3) Frac = 3;
+	if (Frac < 0) Frac = 0;
+	if (UtopiaDay > 4) UtopiaDay = 4;
+	if (UtopiaDay < 0) UtopiaDay = 0;
+	if (UtopiaMonth > 5) UtopiaMonth = 5;
+	if (UtopiaMonth < 0) UtopiaMonth = 0;
+	snprintf(yf,1024,"%s, %s, %d %s in the year %d<br>%d days remaining this round.",Fraction[Frac],Day[UtopiaDay],UtopiaIndx,Month[UtopiaMonth],UtopiaYear,50);
+	return yf;
+}
+
+char* Race(PlayerRace R)
+{
+	switch (R)
+	{
+		case Human:
+			return "Human";
+		break;
+		case Dwarf:
+			return "Dwarf";
+		break;
+		case Orc:
+			return "Orc";
+		break;
+		case LesserOrc:
+			return "Lesser Orc";
+		break;
+		case Elf:
+			return "Elf";
+		break;
+		case Barbarian:
+			return "Barbarian";
+		break;
+		case Goblin:
+			return "Goblin";
+		break;
+		case DarkElf:
+			return "Dark Elf";
+		break;
+	}
+
+	return "Error!";
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+char* Profession(PlayerProfession P)
+{
+	switch (P)
+	{
+		case Warrior:
+			return "Warrior";
+		break;
+		case Wizard:
+			return "Wizard";
+		break;
+		case Thief:
+			return "Thief";
+		break;
+		case Woodsman:
+			return "Woodsman";
+		break;
+		case Assassin:
+			return "Assassin";
+		break;
+		case Mercenary:
+			return "Mercenary";
+		break;
+	}
+
+	return "Error!";
+
+}
+
+char* _Profession(PlayerProfession P)
+{
+	return Profession(P);
+}
+
+char* _Race(PlayerRace R)
+{
+	return Race(R);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+char Bonus[256];
+
+char* Bonuses(int type,PlayerRace R,PlayerProfession P)
+{
+	long mod_stm = 0, mod_skl = 0, mod_luk = 0, mod_snk = 0, mod_spd = 0, bonus = 0;
+	
+	switch (type)
+	{
+		case 1:
+			if (R==Human)		mod_stm+=1;
+			if (R==Elf)		mod_stm+=-1;
+			if (R==Orc)   		mod_stm+=4;
+			if (R==LesserOrc)	mod_stm+=-1;
+			if (R==Goblin)		mod_stm+=-1;
+			if (R==Dwarf)		mod_stm+=1;
+			if (R==Barbarian)	mod_stm+=3;
+			if (R==DarkElf)		mod_stm+=-1;
+
+			if (P==Warrior)		mod_stm+=3;
+			if (P==Mercenary)	mod_stm+=2;
+			bonus = mod_stm;
+		break;
+		case 2:
+			if (R==Human)		mod_skl+=1;
+			if (R==Elf)		mod_skl+=2;
+			if (R==Orc)   		mod_skl+=-1;
+			if (R==LesserOrc)	mod_skl+=-2;
+			if (R==Goblin)		mod_skl+=-1;
+			if (R==Dwarf)		mod_skl+=1;
+			if (R==Barbarian)	mod_skl+=-1;
+			if (R==DarkElf)		mod_skl+=+2;
+
+			if (P==Wizard)		mod_skl+=3;
+			if (P==Assassin)	mod_skl+=2;
+			if (P==Mercenary)	mod_skl+=1;
+			bonus = mod_skl;
+		break;
+		case 3:
+			if (R==Human)		mod_luk+=0;
+			if (R==Elf)		mod_luk+=-2;
+			if (R==Orc)   		mod_luk+=-1;
+			if (R==LesserOrc)	mod_luk+=2;
+			if (R==Goblin)		mod_luk+=1;
+			if (R==Dwarf)		mod_luk+=0;
+			if (R==Barbarian)	mod_luk+=0;
+			if (R==DarkElf)		mod_luk+=-4;
+
+			if (P==Woodsman)	mod_luk+=2;
+			bonus = mod_luk;
+		break;
+		case 4:
+			if (R==Human)		mod_snk+=-1;
+			if (R==Elf)		mod_snk+=0;
+			if (R==Orc)   		mod_snk+=-1;
+			if (R==LesserOrc)	mod_snk+=2;
+			if (R==Goblin)		mod_snk+=1;
+			if (R==Dwarf)		mod_snk+=0;
+			if (R==Barbarian)	mod_snk+=-1;
+			if (R==DarkElf)		mod_snk+=2;
+
+			if (P==Thief)		mod_snk+=3;
+			if (P==Assassin)	mod_snk+=1;
+			bonus = mod_snk;
+		break;
+		case 5:
+			if (R==Human)		mod_spd+=-1;
+			if (R==Elf)		mod_spd+=1;
+			if (R==Orc)   		mod_spd+=-1;
+			if (R==LesserOrc)	mod_spd+=0;
+			if (R==Goblin)		mod_spd+=0;
+			if (R==Dwarf)		mod_spd+=-2;
+			if (R==Barbarian)	mod_spd+=-1;
+			if (R==DarkElf)		mod_spd+=1;
+
+			if (P==Woodsman)	mod_spd+=1;
+			bonus = mod_spd;
+		break;
+	}
+
+	if (bonus>0) sprintf(Bonus," <font color=#2F2FFF>(+%d)</font>",bonus);
+	if (bonus==0) strcpy(Bonus," ");
+	if (bonus<0) sprintf(Bonus," <font color=#2F2FFF>(%d)</font>",bonus);
+
+	return Bonus;
+
+}
+
+long Bonuses_Numeric(int type,PlayerRace R,PlayerProfession P)
+{
+	long mod_stm = 0, mod_skl = 0, mod_luk = 0, mod_snk = 0, mod_spd = 0, bonus = 0;
+	
+	switch (type)
+	{
+		case 1:
+			if (R==Human)		mod_stm+=1;
+			if (R==Elf)		mod_stm+=-1;
+			if (R==Orc)   		mod_stm+=4;
+			if (R==LesserOrc)	mod_stm+=-1;
+			if (R==Goblin)		mod_stm+=-1;
+			if (R==Dwarf)		mod_stm+=1;
+			if (R==Barbarian)	mod_stm+=3;
+			if (R==DarkElf)		mod_stm+=-1;
+
+			if (P==Warrior)		mod_stm+=3;
+			if (P==Mercenary)	mod_stm+=2;
+			bonus = mod_stm;
+		break;
+		case 2:
+			if (R==Human)		mod_skl+=1;
+			if (R==Elf)		mod_skl+=2;
+			if (R==Orc)   		mod_skl+=-1;
+			if (R==LesserOrc)	mod_skl+=-2;
+			if (R==Goblin)		mod_skl+=-1;
+			if (R==Dwarf)		mod_skl+=1;
+			if (R==Barbarian)	mod_skl+=-1;
+			if (R==DarkElf)		mod_skl+=+2;
+
+			if (P==Wizard)		mod_skl+=3;
+			if (P==Assassin)	mod_skl+=2;
+			if (P==Mercenary)	mod_skl+=1;
+			bonus = mod_skl;
+		break;
+		case 3:
+			if (R==Human)		mod_luk+=0;
+			if (R==Elf)		mod_luk+=-2;
+			if (R==Orc)   		mod_luk+=-1;
+			if (R==LesserOrc)	mod_luk+=2;
+			if (R==Goblin)		mod_luk+=1;
+			if (R==Dwarf)		mod_luk+=0;
+			if (R==Barbarian)	mod_luk+=0;
+			if (R==DarkElf)		mod_luk+=-4;
+
+			if (P==Woodsman)	mod_luk+=2;
+			bonus = mod_luk;
+		break;
+		case 4:
+			if (R==Human)		mod_snk+=-1;
+			if (R==Elf)		mod_snk+=0;
+			if (R==Orc)   		mod_snk+=-1;
+			if (R==LesserOrc)	mod_snk+=2;
+			if (R==Goblin)		mod_snk+=1;
+			if (R==Dwarf)		mod_snk+=0;
+			if (R==Barbarian)	mod_snk+=-1;
+			if (R==DarkElf)		mod_snk+=2;
+
+			if (P==Thief)		mod_snk+=3;
+			if (P==Assassin)	mod_snk+=1;
+			bonus = mod_snk;
+		break;
+		case 5:
+			if (R==Human)		mod_spd+=-1;
+			if (R==Elf)		mod_spd+=1;
+			if (R==Orc)   		mod_spd+=-1;
+			if (R==LesserOrc)	mod_spd+=0;
+			if (R==Goblin)		mod_spd+=0;
+			if (R==Dwarf)		mod_spd+=-2;
+			if (R==Barbarian)	mod_spd+=-1;
+			if (R==DarkElf)		mod_spd+=1;
+
+			if (P==Woodsman)	mod_spd+=1;
+			bonus = mod_spd;
+		break;
+	}
+
+	return bonus;
+
+}
+
+
 // Returns true if its "legal" to go from "current" to "next"...
 
 char VPList[1024];
@@ -196,6 +484,43 @@ Player GetByGuid(char* GUID)
 	return ThePlayer;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void log(const char *fmt,...)
+{
+	char msg_buff[1024];
+
+	va_list argptr;
+
+	va_start(argptr,fmt);
+	vsprintf(msg_buff,fmt,argptr);
+	va_end(argptr);
+
+	char* address;
+	char addr[256];
+	address = getenv("REMOTE_ADDR");
+	if (!address)
+	{
+		strcpy(addr,"<UNKNOWN>"); // safety check in case REMOTE_ADDR isn't defined...
+	}
+	else
+	{
+		strcpy(addr,address);
+	}
+	time_t now = time(NULL);
+	char time_now[256];
+	strcpy(time_now,ctime(&now));
+	time_now[strlen(time_now)-1]='\0';
+        int res;
+
+        {
+              char query[1024];
+              sprintf(query,"INSERT INTO game_logs VALUES('%s','%s','%s')",time_now,addr,msg_buff);
+              res = mysql_query(&my_connection,query);
+        }
+
+	return;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -349,6 +674,30 @@ void LpToGuid(char* Fn, char* Login, char* Pass) // Convert a login name and pas
 	return;
 }
 
+void Extract_Without_Quotes(char* p_text,char* value) // extracts from any NAME=Value pair
+{
+	char ItemName[1024];
+	ItemName[0] = '\0';
+	bool copying = false;
+	int z = 0;
+	for (unsigned int w=0; w<=strlen(p_text); w++)
+	{
+		if ((p_text[w] == '=') || (p_text[w] == ' ') || (p_text[w] == '>'))
+		{
+			copying = !copying;
+			continue;
+		}
+		if (copying)
+		{
+			ItemName[z++] = p_text[w];
+		}
+	}
+	ItemName[z]='\0';
+	strcpy(value,ItemName);
+	return;
+
+}
+
 bool IsCombatSpell(char* Name)
 {
 	if ((!strcmp(Name,"fire")) || (!strcmp(Name,"water")) || (!strcmp(Name,"strength")) ||
@@ -381,6 +730,44 @@ long GetSpellRating(char* Name)
 	if (!strcmp(Name,"growweapon")) return 4;
 	if (!strcmp(Name,"vortex")) return 10;
 	return 0;
+}
+
+
+void ExtractValue(char* p_text,char* value) // extracts a value from any NAME="Value" pair
+{
+	if (!strstr(p_text,"\""))
+	{
+		// name/value pair without speech marks around the value
+		Extract_Without_Quotes(p_text,value);
+		return;
+	}
+	char ItemName[1024];
+	ItemName[0] = '\0';
+	bool copying = false;
+	int z = 0;
+	for (unsigned int w=0; w<=strlen(p_text); w++)
+	{
+		if (p_text[w] == '\"')
+		{
+			copying = !copying;
+			continue;
+		}
+		if (copying)
+		{
+			ItemName[z++] = p_text[w];
+		}
+	}
+	ItemName[z]='\0';
+	strcpy(value,ItemName);
+	return;
+}
+
+void ExtractValueNumber(char* p_text, long &numeric)
+{
+	char strvalue[1024];
+	ExtractValue(p_text, strvalue);
+	numeric = atoi(strvalue);
+	return;
 }
 
 char* Maxed(long A,long B)

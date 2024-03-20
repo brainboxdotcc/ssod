@@ -248,6 +248,43 @@ void HtmlStart_NoBanner(char* GUID,bool dorefresh,bool wantbg)
 }
 
 
+void HtmlStart_Combat(char* GUID, char* GUID2, bool dorefresh)
+{
+        cout << "<html xmlns=\"http://www.w3.org/TR/REC-html40\">" << endl;
+        cout << "<!-- Dynamic HTML page: Created by SSOD.CGI By C.J.Edwards -->" << endl;
+        cout << "<style type='text/css'>" << endl;
+        int res;
+        MYSQL_RES *a_res;
+        MYSQL_ROW a_row;
+        char query[1024];
+        char pdata[65536];
+
+        sprintf(query,"SELECT data FROM game_css WHERE id=1");
+        res = mysql_query(&my_connection,query);
+        if (!res)
+        {
+                a_res = mysql_use_result(&my_connection);
+                if (a_res)
+                {
+                        while (a_row = mysql_fetch_row(a_res))
+                        {
+                                cout << a_row[0];
+                        }
+
+                }
+                mysql_free_result(a_res);
+        }
+        cout << "</STYLE>";
+        cout << "<META NAME=\"Generator\" CONTENT=\"SSOD.CGI By C.J.Edwards\">";
+        cout << "<META NAME=\"Originator\" CONTENT=\"SSOD.CGI By C.J.Edwards\">";
+        if (dorefresh)
+                cout << "<META HTTP-EQUIV=\"refresh\" CONTENT=\"15; URL=" << me << "?action=pattack&guid1=" << GUID << "&guid2=" << GUID2 << "\">";
+	else
+		cout << "<META HTTP-EQUIV=\"refresh\" CONTENT=\"5; URL=" << me << "?action=pattack&guid1=" << GUID << "&guid2=" << GUID2 << "\">";
+        cout << "<body bgcolor=black background=\"" << IMAGE_DIR << "/backdrop.jpg\" bgproperties='fixed'><title>The Seven Spells Of Destruction</title>";
+}
+
+
 char __box[1024];
 
 char* Box(char* name)
@@ -261,6 +298,289 @@ char* HBox(char* name, long value)
 	sprintf(__box,"<INPUT TYPE=\"hidden\" NAME=\"%s\" VALUE=\"%d\">",name,value);
 	return __box;
 }
+
+
+void HerbPick(char* Herb, Player &SomePlayer)
+{
+	char Internal[1024];
+	char TheName[1024];
+	char flags[1024];
+	if (!SomePlayer.Herbs.Get(Herb,flags))
+	{
+		strcpy(Internal,"action=addherb&guid=");
+		strcat(Internal,formData[1]);
+		strcat(Internal,"&type=");
+		strcat(Internal,Herb);
+		strcpy(TheName,"HERB_");
+		strcat(TheName,Herb);
+		strcat(TheName,"0.jpg");
+		ImageLink(TheName,Herb,Internal);
+	}
+	else
+	{
+		strcpy(Internal,"action=delherb&guid=");
+		strcat(Internal,formData[1]);
+		strcat(Internal,"&type=");
+		strcat(Internal,Herb);
+		strcpy(TheName,"HERB_");
+		strcat(TheName,Herb);
+		strcat(TheName,"1.jpg");
+		ImageLink(TheName,Herb,Internal);
+	}
+	cout << CR;
+}
+
+
+void HerbImg(char* Herb, Player &SomePlayer)
+{
+	char Internal[1024];
+	char TheName[1024];
+	char flags[1024];
+	if (!SomePlayer.Herbs.Get(Herb,flags))
+	{
+		strcpy(TheName,"HERB_");
+		strcat(TheName,Herb);
+		strcat(TheName,"0.jpg");
+		Image(TheName,Herb);
+	}
+	else
+	{
+		strcpy(TheName,"HERB_");
+		strcat(TheName,Herb);
+		strcat(TheName,"1.jpg");
+		Image(TheName,Herb);
+	}
+	cout << CR;
+}
+
+
+bool HasComponentHerb(char* S,Player P)
+{
+	char flags[256]; // not used here
+	if ((!strcmp(S,"fire")) && (P.Herbs.Get("fireseeds",flags)))
+		return true;
+	if ((!strcmp(S,"water")) && (P.Herbs.Get("hartleaf",flags)))
+		return true;
+	if ((!strcmp(S,"light")) && (P.Herbs.Get("fireseeds",flags)))
+		return true;
+	if ((!strcmp(S,"fly")) && (P.Herbs.Get("elfbane",flags)))
+		return true;
+	if (!strcmp(S,"strength"))
+		return true;
+	if (!strcmp(S,"x-ray"))
+		return true;
+	if ((!strcmp(S,"bolt")) && (P.Herbs.Get("spikegrass",flags)))
+		return true;
+	if ((!strcmp(S,"fasthands")) && (P.Herbs.Get("orcweed",flags)))
+		return true;
+	if ((!strcmp(S,"thunderbolt")) && (P.Herbs.Get("wizardsivy",flags)))
+		return true;
+	if ((!strcmp(S,"steal")) && (P.Herbs.Get("wizardsivy",flags)))
+		return true;
+	if ((!strcmp(S,"shield")) && (P.Herbs.Get("fireseeds",flags)))
+		return true;
+	if ((!strcmp(S,"jump")) && (P.Herbs.Get("hartleaf",flags)))
+		return true;
+	if (!strcmp(S,"open"))
+		return true;
+	if (!strcmp(S,"spot"))
+		return true;
+	if ((!strcmp(S,"sneak")) && (P.Herbs.Get("stickwart",flags)))
+		return true;
+	if ((!strcmp(S,"esp")) && (P.Herbs.Get("stickwart",flags)))
+		return true;
+	if ((!strcmp(S,"run")) && (P.Herbs.Get("elfbane",flags)))
+		return true;
+	if (!strcmp(S,"invisible"))
+		return true;
+	if ((!strcmp(S,"shrink")) && (P.Herbs.Get("woodweed",flags)))
+		return true;
+	if ((!strcmp(S,"grow")) && (P.Herbs.Get("woodweed",flags)))
+		return true;
+	if ((!strcmp(S,"air")) && (P.Herbs.Get("monkgrass",flags)))
+		return true;
+	if ((!strcmp(S,"animalcommunication")) && (P.Herbs.Get("monkgrass",flags)))
+		return true;
+	if ((!strcmp(S,"weaponskill")) && (P.Herbs.Get("hartleaf",flags)))
+		return true;
+	if ((!strcmp(S,"healing")) && (P.Herbs.Get("wizardsivy",flags)))
+		return true;
+	if ((!strcmp(S,"woodsmanship")) && (P.Herbs.Get("wizardsivy",flags)))
+		return true;
+	if (!strcmp(S,"nightvision"))
+		return true;
+	if (!strcmp(S,"heateyes"))
+		return true;
+	if ((!strcmp(S,"decipher")) && (P.Herbs.Get("blidvines",flags)))
+		return true;
+	if ((!strcmp(S,"detect")) && (P.Herbs.Get("blidvines",flags)))
+		return true;
+	if ((!strcmp(S,"tracking")) && (P.Herbs.Get("blidvines",flags)))
+		return true;
+	if ((!strcmp(S,"espsurge")) && (P.Herbs.Get("hallucinogen",flags)))
+		return true;
+	if ((!strcmp(S,"afterimage")) && (P.Herbs.Get("hallucinogen",flags)))
+		return true;
+	if (!strcmp(S,"psychism"))
+		return true;
+	if (!strcmp(S,"spiritwalk"))
+		return true;
+	if (!strcmp(S,"growweapon"))
+		return true;
+	return false;
+}
+
+char* SpExp(char* S)
+{
+	char flags[256]; // not used here
+	if (!strcmp(S,"fire")) return "Fire";
+	if (!strcmp(S,"water")) return "Water";
+	if (!strcmp(S,"light")) return "Light";
+	if (!strcmp(S,"fly")) return "Fly";
+	if (!strcmp(S,"strength")) return "Strength";
+	if (!strcmp(S,"x-ray")) return "X-Ray";
+	if (!strcmp(S,"bolt")) return "Bolt";
+	if (!strcmp(S,"fasthands")) return "Fast Hands";
+	if (!strcmp(S,"thunderbolt")) return "Thunderbolt";
+	if (!strcmp(S,"steal")) return "Steal";
+	if (!strcmp(S,"shield")) return "Shield";
+	if (!strcmp(S,"jump")) return "Jump";
+	if (!strcmp(S,"open")) return "Open";
+	if (!strcmp(S,"spot")) return "Spot";
+	if (!strcmp(S,"sneak")) return "Sneak";
+	if (!strcmp(S,"esp")) return "E.S.P.";
+	if (!strcmp(S,"run")) return "Run";
+	if (!strcmp(S,"invisible")) return "Invisible";
+	if (!strcmp(S,"shrink")) return "Shrink";
+	if (!strcmp(S,"grow")) return "Grow";
+	if (!strcmp(S,"air")) return "Air";
+	if (!strcmp(S,"animalcommunication")) return "Animal Communication";
+	if (!strcmp(S,"weaponskill")) return "Weapon Skill";
+	if (!strcmp(S,"healing")) return "Healing";
+	if (!strcmp(S,"woodsmanship")) return "Woodsmanship";
+	if (!strcmp(S,"nightvision")) return "Night Vision";
+	if (!strcmp(S,"heateyes")) return "Heat Eyes";
+	if (!strcmp(S,"decipher")) return "Decipher";
+	if (!strcmp(S,"detect")) return "Detect";
+	if (!strcmp(S,"tracking")) return "Tracking";
+	if (!strcmp(S,"espsurge")) return "E.S.P. Surge";
+	if (!strcmp(S,"afterimage")) return "After Image";
+	if (!strcmp(S,"psychism")) return "Psychism";
+	if (!strcmp(S,"spiritwalk")) return "Spirit Walk";
+	if (!strcmp(S,"growweapon")) return "Grow Weapon";
+	return "Unknown Spell";
+}
+
+void SpellPick(char* Spell, Player &SomePlayer)
+{
+	char Internal[1024];
+	char TheName[1024];
+	char flags[1024];
+	if (!SomePlayer.Spells.Get(Spell,flags))
+	{
+		// spell greyed out (index 0) - isnt in the list at all
+		strcpy(Internal,"action=addspell&guid=");
+		strcat(Internal,formData[1]);
+		strcat(Internal,"&type=");
+		strcat(Internal,Spell);
+		strcpy(TheName,"SPELL_");
+		strcat(TheName,Spell);
+		strcat(TheName,"0.jpg");
+		ImageLink(TheName,SpExp(Spell),Internal);
+	}
+	else
+	{
+		// spell may be yellow or red depending on if herbs are selected for it
+		// red = index 1, glowing yellow = index 2
+		strcpy(Internal,"action=delspell&guid=");
+		strcat(Internal,formData[1]);
+		strcat(Internal,"&type=");
+		strcat(Internal,Spell);
+		strcpy(TheName,"SPELL_");
+		strcat(TheName,Spell);
+		if (HasComponentHerb(Spell,SomePlayer))
+		{
+			strcat(TheName,"2.jpg");
+		}
+		else
+		{
+			strcat(TheName,"1.jpg");
+		}
+		ImageLink(TheName,SpExp(Spell),Internal);
+	}
+}
+
+
+
+void SpellImg(char* Spell, Player &SomePlayer)
+{
+	char Internal[1024];
+	char TheName[1024];
+	char flags[1024];
+	if (!SomePlayer.Spells.Get(Spell,flags))
+	{
+		// spell greyed out (index 0) - isnt in the list at all
+		strcpy(TheName,"SPELL_");
+		strcat(TheName,Spell);
+		strcat(TheName,"0.jpg");
+		Image(TheName,SpExp(Spell));
+	}
+	else
+	{
+		// spell may be yellow or red depending on if herbs are selected for it
+		// red = index 1, glowing yellow = index 2
+		strcpy(TheName,"SPELL_");
+		strcat(TheName,Spell);
+		if (HasComponentHerb(Spell,SomePlayer))
+		{
+			strcat(TheName,"2.jpg");
+		}
+		else
+		{
+			strcat(TheName,"1.jpg");
+		}
+		Image(TheName,SpExp(Spell));
+	}
+}
+
+void SpellImgA(char* Spell, Player &SomePlayer)
+{
+        char Internal[1024];
+        char TheName[1024];
+        char flags[1024];
+	char guid[1024];
+	LpToGuid(guid,SomePlayer.GetUsername(),SomePlayer.GetPassword());
+        if (!SomePlayer.Spells.Get(Spell,flags))
+        {
+                // spell greyed out (index 0) - isnt in the list at all
+                strcpy(TheName,"SPELL_");
+                strcat(TheName,Spell);
+                strcat(TheName,"0.jpg");
+                Image(TheName,SpExp(Spell));
+        }
+        else
+        {
+                // spell may be yellow or red depending on if herbs are selected for it
+                // red = index 1, glowing yellow = index 2
+                strcpy(TheName,"SPELL_");
+                strcat(TheName,Spell);
+                if (HasComponentHerb(Spell,SomePlayer))
+                {
+                        strcat(TheName,"2.jpg");
+			cout << "<a href='" << me << "?action=cast&guid=" << guid << "&spell=" << Spell << "'>";
+			Image(TheName,SpExp(Spell));
+			cout << "</a>";
+                }
+                else
+                {
+                        strcat(TheName,"1.jpg");
+			Image(TheName,SpExp(Spell));
+                }
+        }
+}
+
+
+
 
 void PoweredBy()
 {
@@ -285,6 +605,52 @@ void PoweredBy()
 		";
 	cout << "</td></tr></table></html>";
 }
+
+char __a[1024],__b[1024],__c[1024];
+
+char* SysName()
+{
+	FILE* foobar;
+	strcpy(__a,"");
+	foobar = popen("/bin/uname -s -m -o","r");
+	fread(__a, 1, 1024, foobar); 
+	pclose(foobar);
+	return __a;
+}
+
+char* QuoteMe()
+{
+	FILE* foobar;
+	strcpy(__c,"");
+	foobar = popen("/usr/games/fortune -s","r");
+	fread(__c, 1, 1024, foobar); 
+	pclose(foobar);
+	return __c;
+}
+
+char* Getmysqlver()
+{
+        FILE* foobar;
+	strcpy(__b,"");
+	foobar = popen("/usr/bin/mysql -V","r");
+	fread(__b, 1, 1024, foobar);
+	pclose(foobar);
+	return __b;
+}
+
+void ValidationMail(char* GUID, char* MailTo)
+{
+	FILE* mail;
+	char cmd[1024];
+	char b[10240];
+	clearenv(); // set environment to empty for security
+	sprintf(b,"You are required to validate your game account before you may log in. To validate your game account, please visit the following URL.\n\nhttp://www.ssod.org/cgi-bin/ssod.cgi?action=activate&guid=%s\n.\n\n",GUID);
+	sprintf(cmd,"/usr/bin/mail -s \"Seven Spells Of Destruction Account Activation\" \"%s\"",MailTo);
+	mail = popen(cmd,"w");
+	fwrite(b, strlen(b), 1, mail);
+	pclose(mail);
+}
+
 
 void TitlePage()
 {
