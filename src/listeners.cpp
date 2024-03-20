@@ -47,6 +47,7 @@
 #include <ssod/botlists/discordbotlist.h>
 #include <ssod/botlists/infinitybots.h>
 #include <ssod/botlists/voidbots.h>
+#include <ssod/botlists/discords.h>
 
 namespace listeners {
 
@@ -222,6 +223,7 @@ namespace listeners {
 			register_botlist<discordbotlist>();
 			register_botlist<infinitybots>();
 			register_botlist<voidbots>();
+			register_botlist<discords>();
 
 			post_botlists(bot);
 		}
