@@ -26,7 +26,7 @@
  */
 struct discords : public botlist {
 	static constexpr std::string_view name{"discords.com"};
-	static constexpr std::string_view url{"https://discords.com/bots/api/bot/{}"};
+	static constexpr std::string_view url{"https://discords.com/bots/api/bot/{}/setservers"};
 	static constexpr std::string_view server_count_field{"server_count"};
 	static constexpr std::string_view shard_count_field{""};
 
