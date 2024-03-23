@@ -19,6 +19,7 @@
  ************************************************************************************/
 #include <dpp/dpp.h>
 #include <string>
+#include <regex>
 #include <fmt/format.h>
 #include <ssod/ssod.h>
 #include <ssod/game.h>
@@ -412,9 +413,29 @@ void game_nav(const dpp::button_click_t& event) {
 					if (!p.has_spell(name)) {
 						p.spells.push_back(item{.name = dpp::lowercase(name), .flags = flags});
 					}
-				} else if (flags == "HERB") {
+				} else if (flags.substr(0, 4) == "CURE") {
 					p.gold -= cost;
+					std::regex lung_rasp("\\s*\\[gamestate_lungrasp[0-9]+\\]");
+					std::regex blood_plague("\\s*\\[gamestate_blood_plague[0-9]+\\]");
+					std::regex bubonic_plague("\\s*\\[gamestate_bubonic_plague[0-9]+\\]");
+					if (flags == "CUREALL") {
+						p.gotfrom = std::regex_replace(p.gotfrom, lung_rasp, "");
+						p.gotfrom = std::regex_replace(p.gotfrom, blood_plague, "");
+						p.gotfrom = std::regex_replace(p.gotfrom, bubonic_plague, "");
+						p.add_toast("You feel well again. You have been cured of all diseases!");
+					} else if (flags == "CURERASP") {
+						p.gotfrom = std::regex_replace(p.gotfrom, lung_rasp, "");
+						p.add_toast("You feel well again. You have been cured of lung rasp!");
+					} else if (flags == "CUREBLOOD") {
+						p.gotfrom = std::regex_replace(p.gotfrom, blood_plague, "");
+						p.add_toast("You feel well again. You have been cured of blood plague!");
+					} else if (flags == "CUREPLAGUE") {
+						p.gotfrom = std::regex_replace(p.gotfrom, bubonic_plague, "");
+						p.add_toast("You feel well again. You have been cured of bubonic plague!");
+					}
+				} else if (flags == "HERB") {
 					if (!p.has_herb(name)) {
+						p.gold -= cost;
 						p.herbs.push_back(item{.name = dpp::lowercase(name), .flags = flags});
 					}
 				} else {
@@ -425,22 +446,24 @@ void game_nav(const dpp::button_click_t& event) {
 							p.add_flag("SCROLL", p.paragraph);
 						}
 					} else {
-						p.gold -= cost;
 						item i{ .name = name, .flags = flags };
 						if (!p.convert_rations(i)) {
 							bool special{false};
 							if (dpp::lowercase(name) == "horse" || dpp::lowercase(name) == "pack pony" || dpp::lowercase(name) == "donkey" || dpp::lowercase(name) == "mule") {
 								if (!p.has_flag("horse")) {
+									p.gold -= cost;
 									p.add_flag("horse");
 									special = true;
 								}
 							} else if (dpp::lowercase(name) == "backpack" || dpp::lowercase(name) == "pack") {
 								if (!p.has_flag("pack")) {
+									p.gold -= cost;
 									p.add_flag("pack");
 									special = true;
 								}
 							} else if (dpp::lowercase(name) == "saddle bags") {
 								if (!p.has_flag("saddlebags")) {
+									p.gold -= cost;
 									p.add_flag("saddlebags");
 									special = true;
 								}
