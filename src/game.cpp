@@ -767,7 +767,8 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	size_t index{0};
 	std::set<std::string> ds;
 	for (const auto& inv : p.possessions) {
-		if (dpp::lowercase(inv.name) == "scroll") {
+		sale_info si = get_sale_info(inv.name);
+		if (si.quest_item || dpp::lowercase(inv.name) == "scroll") {
 			/* Can't bank a scroll! */
 			continue;
 		}
@@ -803,7 +804,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	}
 
 	m.add_embed(embed);
-	if (dup_set.size() < 25 && index > 0) {
+	if (dup_set.size() < 25 && index > 0 && withdraw_menu.options.size() < 25) {
 		/* User has something they can deposit in their inventory and bank is not full */
 		m.add_component(dpp::component().add_component(deposit_menu));
 	}
