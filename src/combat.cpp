@@ -22,7 +22,6 @@
 #include <ssod/component_builder.h>
 #include <ssod/game_util.h>
 #include <ssod/game_dice.h>
-#include <ssod/database.h>
 #include <ssod/ssod.h>
 #include <ssod/emojis.h>
 #include <ssod/aes.h>
