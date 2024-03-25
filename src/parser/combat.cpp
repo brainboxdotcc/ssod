@@ -20,6 +20,7 @@
 #include <ssod/parser.h>
 #include <ssod/game_player.h>
 #include <fmt/format.h>
+#include <ssod/database.h>
 
 struct combat_tag : public tag {
 	combat_tag() { register_tag<combat_tag>(); }
@@ -47,21 +48,18 @@ struct combat_tag : public tag {
 
 			if (!p.sick) {
 				/* Once per paragraph, check for existing illnesses and apply debuffs */
-				std::string flag_bubonic = "[gamestate_bubonic_plague";
-				std::string flag_blood = "[gamestate_blood_plague";
-				if (current_player.gotfrom.find(flag_bubonic) != std::string::npos) {
-					current_player.add_stamina(-4);
-					current_player.add_toast(
-						"The bubonic plague takes its toll on your body, subtracting 4 stamina..."
-						"\n\nFind an antidote or healer before this proves fatal!");
+				auto illnesses = db::query("SELECT * FROM diseases");
+				for (auto& illness : illnesses) {
+					std::string flag = "[gamestate_" + illness.at("flag");
+					if (current_player.gotfrom.find(flag) != std::string::npos) {
+						current_player.add_stamina(atol(illness.at("stamina_debuff").c_str()));
+						current_player.add_toast(
+							illness.at("name") + " its toll on your body, subtracting " +
+							illness.at("stamina_debuff") + " stamina..."
+							"\n\nFind an antidote or healer before this proves fatal!");
+						p.sick = true;
+					}
 				}
-				if (current_player.gotfrom.find(flag_blood) != std::string::npos) {
-					current_player.add_stamina(-3);
-					current_player.add_toast(
-						"The blood plague takes its toll on your body, subtracting 3 stamina..."
-						"\n\nFind an antidote or healer before this proves fatal!");
-				}
-				p.sick = true;
 			}
 
 			output << fmt::format(
