@@ -52,7 +52,7 @@ struct combat_tag : public tag {
 				for (auto& illness : illnesses) {
 					std::string flag = "[gamestate_" + illness.at("flag");
 					if (current_player.gotfrom.find(flag) != std::string::npos) {
-						current_player.add_stamina(atol(illness.at("stamina_debuff").c_str()));
+						current_player.add_stamina(-atol(illness.at("stamina_debuff").c_str()));
 						current_player.add_toast(
 							illness.at("name") + " its toll on your body, subtracting " +
 							illness.at("stamina_debuff") + " stamina..."
