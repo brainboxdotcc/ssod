@@ -418,14 +418,19 @@ void game_nav(const dpp::button_click_t& event) {
 					std::regex lung_rasp("\\s*\\[gamestate_lungrasp[0-9]+\\]");
 					std::regex blood_plague("\\s*\\[gamestate_blood_plague[0-9]+\\]");
 					std::regex bubonic_plague("\\s*\\[gamestate_bubonic_plague[0-9]+\\]");
+					std::regex green_rot("\\s*\\[gamestate_green_rot[0-9]+\\]");
 					if (flags == "CUREALL") {
 						p.gotfrom = std::regex_replace(p.gotfrom, lung_rasp, "");
 						p.gotfrom = std::regex_replace(p.gotfrom, blood_plague, "");
 						p.gotfrom = std::regex_replace(p.gotfrom, bubonic_plague, "");
+						p.gotfrom = std::regex_replace(p.gotfrom, green_rot, "");
 						p.add_toast("You feel well again. You have been cured of all diseases!");
 					} else if (flags == "CURERASP") {
 						p.gotfrom = std::regex_replace(p.gotfrom, lung_rasp, "");
 						p.add_toast("You feel well again. You have been cured of lung rasp!");
+					} else if (flags == "CUREROT") {
+						p.gotfrom = std::regex_replace(p.gotfrom, green_rot, "");
+						p.add_toast("You feel well again. You have been cured of green rot!");
 					} else if (flags == "CUREBLOOD") {
 						p.gotfrom = std::regex_replace(p.gotfrom, blood_plague, "");
 						p.add_toast("You feel well again. You have been cured of blood plague!");
