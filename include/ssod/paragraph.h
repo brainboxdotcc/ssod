@@ -101,6 +101,7 @@ struct paragraph {
 	bool chat_disabled{};
 	bool safe{true};
 	bool trader{false};
+	bool sick{false};
 
 	size_t links{0}, words{0};
 	std::string tag;

@@ -28,17 +28,23 @@ struct combat_tag : public tag {
 		// combat tag
 		p.links++;
 		p.safe = false;
-		std::string flag_bubonic = "[gamestate_bubonic_plague";
-		std::string flag_blood = "[gamestate_blood_plague";
-		if (current_player.gotfrom.find(flag_bubonic) != std::string::npos) {
-			current_player.add_stamina(-4);
-			current_player.add_toast("The bubonic plague takes its toll on your body, subtracting 4 stamina..."
-						 "\n\nFind an antidote or healer before this proves fatal!");
-		}
-		if (current_player.gotfrom.find(flag_blood) != std::string::npos) {
-			current_player.add_stamina(-3);
-			current_player.add_toast("The blood plague takes its toll on your body, subtracting 3 stamina..."
-						 "\n\nFind an antidote or healer before this proves fatal!");
+		if (!p.sick) {
+			/* Once per paragraph, check for existing illnesses and apply debuffs */
+			std::string flag_bubonic = "[gamestate_bubonic_plague";
+			std::string flag_blood = "[gamestate_blood_plague";
+			if (current_player.gotfrom.find(flag_bubonic) != std::string::npos) {
+				current_player.add_stamina(-4);
+				current_player.add_toast(
+					"The bubonic plague takes its toll on your body, subtracting 4 stamina..."
+					"\n\nFind an antidote or healer before this proves fatal!");
+			}
+			if (current_player.gotfrom.find(flag_blood) != std::string::npos) {
+				current_player.add_stamina(-3);
+				current_player.add_toast(
+					"The blood plague takes its toll on your body, subtracting 3 stamina..."
+					"\n\nFind an antidote or healer before this proves fatal!");
+			}
+			p.sick = true;
 		}
 		paragraph_content >> p_text;
 		extract_to_quote(p_text, paragraph_content, '"');
