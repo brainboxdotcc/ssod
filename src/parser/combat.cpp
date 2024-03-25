@@ -28,24 +28,6 @@ struct combat_tag : public tag {
 		// combat tag
 		p.links++;
 		p.safe = false;
-		if (!p.sick) {
-			/* Once per paragraph, check for existing illnesses and apply debuffs */
-			std::string flag_bubonic = "[gamestate_bubonic_plague";
-			std::string flag_blood = "[gamestate_blood_plague";
-			if (current_player.gotfrom.find(flag_bubonic) != std::string::npos) {
-				current_player.add_stamina(-4);
-				current_player.add_toast(
-					"The bubonic plague takes its toll on your body, subtracting 4 stamina..."
-					"\n\nFind an antidote or healer before this proves fatal!");
-			}
-			if (current_player.gotfrom.find(flag_blood) != std::string::npos) {
-				current_player.add_stamina(-3);
-				current_player.add_toast(
-					"The blood plague takes its toll on your body, subtracting 3 stamina..."
-					"\n\nFind an antidote or healer before this proves fatal!");
-			}
-			p.sick = true;
-		}
 		paragraph_content >> p_text;
 		extract_to_quote(p_text, paragraph_content, '"');
 		std::string monster_name = extract_value(p_text);
@@ -62,7 +44,26 @@ struct combat_tag : public tag {
 			// paragraph it came from, but the next fragment of it.
 			// fragments can only be requested on a paragraph
 			// that contains at least one combat.
-			
+
+			if (!p.sick) {
+				/* Once per paragraph, check for existing illnesses and apply debuffs */
+				std::string flag_bubonic = "[gamestate_bubonic_plague";
+				std::string flag_blood = "[gamestate_blood_plague";
+				if (current_player.gotfrom.find(flag_bubonic) != std::string::npos) {
+					current_player.add_stamina(-4);
+					current_player.add_toast(
+						"The bubonic plague takes its toll on your body, subtracting 4 stamina..."
+						"\n\nFind an antidote or healer before this proves fatal!");
+				}
+				if (current_player.gotfrom.find(flag_blood) != std::string::npos) {
+					current_player.add_stamina(-3);
+					current_player.add_toast(
+						"The blood plague takes its toll on your body, subtracting 3 stamina..."
+						"\n\nFind an antidote or healer before this proves fatal!");
+				}
+				p.sick = true;
+			}
+
 			output << fmt::format(
 				"\n```ansi\n⚔ \033[2;34m{0:16s}\033[0m \033[2;31mSTM\033[0m:\033[2;33m{1:2d}\033[0m \033[2;31mSKL\033[0m:\033[2;33m{2:2d}\033[0m \033[2;31mARM\033[0m:\033[2;33m{3:2d}\033[0m \033[2;31mWPN\033[0m:\033[2;33m{4:2d}\033[0m {5}\n```\n",
 				monster_name.substr(0, 16),
