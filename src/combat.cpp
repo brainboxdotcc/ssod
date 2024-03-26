@@ -431,8 +431,8 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			.icon_url = "", 
 			.proxy_url = "",
 		})
-		.add_field(p.name.substr(0, 20),output1.str(), true)
-		.add_field(opponent.name.substr(0, 20),output2.str(), true)
+		.add_field(p.name.substr(0, 80),output1.str(), true)
+		.add_field(opponent.name.substr(0, 80),output2.str(), true)
 		.set_colour(EMBED_COLOUR)
 		.set_description(output.str());
 	
@@ -982,8 +982,8 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.add_field(p.name.substr(0, 20),output1.str(), true)
-		.add_field(p.combatant.name.substr(0, 20),output2.str(), true)
+		.add_field(p.name.substr(0, 80),output1.str(), true)
+		.add_field(p.combatant.name.substr(0, 80),output2.str(), true)
 		.set_description(output.str());
 
 	std::array<std::string, 3> types{".png", ".jpg", ".webm"};
