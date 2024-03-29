@@ -73,7 +73,7 @@ const std::vector<std::string_view> death_messages{
 	"{} goes to look if god really exists",
 	"{} goes the fast way to hell",
 	"And there was much rejoicing as {} left the mortal coil",
-	"{} was terminated with extreme predjudice",
+	"{} was terminated with extreme prejudice",
 	"{} simply expires",
 	"{} was mortally wounded",
 	"{} falls to the ground oozing",

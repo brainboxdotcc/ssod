@@ -340,7 +340,7 @@ void game_select(const dpp::select_click_t &event) {
 				p.weapon.rating = 0;
 			}
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
-			p.gold += s.value;
+			p.add_gold(s.value);
 			p.inv_change = true;
 		}
 		claimed = true;
