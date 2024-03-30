@@ -99,17 +99,14 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		;
 
 	auto premium = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
-	if (premium.size()) {
+	if (!premium.empty()) {
 		auto bio = db::query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
-		if (bio.size()) {
-			if (bio[0].at("bio").length()) {
+		if (!bio.empty()) {
+			if (!bio[0].at("bio").empty()) {
 				embed.set_description(content + "\n### Biography\n" + dpp::utility::markdown_escape(bio[0].at("bio")) + "\n\n");
 			}
-			if (bio[0].at("image_name").length()) {
-				file = "../uploads/" + bio[0].at("image_name");
-				embed.set_image("attachment://race.jpg");
-				event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral).add_file("race.jpg", dpp::utility::read_file(file)));
-				return;
+			if (!bio[0].at("image_name").empty()) {
+				embed.set_image("https://premium.ssod.org/profiles/" + bio[0].at("image_name"));
 			}
 		}
 	}
