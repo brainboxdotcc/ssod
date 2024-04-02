@@ -33,9 +33,15 @@
 #include <ssod/aes.h>
 #include <ssod/wildcard.h>
 #include <ssod/inventory.h>
+#include <ssod/regex.h>
 
 #define RESURRECT_SECS 3600
 #define RESURRECT_SECS_PREMIUM 900
+
+pcre_regex lung_rasp(R"(\s*\[gamestate_lungrasp[0-9]+\])");
+pcre_regex blood_plague(R"(\s*\[gamestate_blood_plague[0-9]+\])");
+pcre_regex bubonic_plague(R"(\s*\[gamestate_bubonic_plague[0-9]+\])");
+pcre_regex green_rot(R"(\s*\[gamestate_green_rot[0-9]+\])");
 
 uint64_t get_guild_id(const player& p);
 
@@ -415,27 +421,23 @@ void game_nav(const dpp::button_click_t& event) {
 					}
 				} else if (flags.substr(0, 4) == "CURE") {
 					p.gold -= cost;
-					std::regex lung_rasp("\\s*\\[gamestate_lungrasp[0-9]+\\]");
-					std::regex blood_plague("\\s*\\[gamestate_blood_plague[0-9]+\\]");
-					std::regex bubonic_plague("\\s*\\[gamestate_bubonic_plague[0-9]+\\]");
-					std::regex green_rot("\\s*\\[gamestate_green_rot[0-9]+\\]");
 					if (flags == "CUREALL") {
-						p.gotfrom = std::regex_replace(p.gotfrom, lung_rasp, "");
-						p.gotfrom = std::regex_replace(p.gotfrom, blood_plague, "");
-						p.gotfrom = std::regex_replace(p.gotfrom, bubonic_plague, "");
-						p.gotfrom = std::regex_replace(p.gotfrom, green_rot, "");
+						p.gotfrom = lung_rasp.replace_all(p.gotfrom, "");
+						p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
+						p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
+						p.gotfrom = green_rot.replace_all(p.gotfrom, "");
 						p.add_toast("You feel well again. You have been cured of all diseases!");
 					} else if (flags == "CURERASP") {
-						p.gotfrom = std::regex_replace(p.gotfrom, lung_rasp, "");
+						p.gotfrom = lung_rasp.replace_all(p.gotfrom, "");
 						p.add_toast("You feel well again. You have been cured of lung rasp!");
 					} else if (flags == "CUREROT") {
-						p.gotfrom = std::regex_replace(p.gotfrom, green_rot, "");
+						p.gotfrom = green_rot.replace_all(p.gotfrom, "");
 						p.add_toast("You feel well again. You have been cured of green rot!");
 					} else if (flags == "CUREBLOOD") {
-						p.gotfrom = std::regex_replace(p.gotfrom, blood_plague, "");
+						p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
 						p.add_toast("You feel well again. You have been cured of blood plague!");
 					} else if (flags == "CUREPLAGUE") {
-						p.gotfrom = std::regex_replace(p.gotfrom, bubonic_plague, "");
+						p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
 						p.add_toast("You feel well again. You have been cured of bubonic plague!");
 					}
 				} else if (flags == "HERB") {

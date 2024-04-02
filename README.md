@@ -74,6 +74,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 * g++ 11.4 or later
 * cmake
 * fmtlib
+* PCRE
 * spdlog
 * screen
 
