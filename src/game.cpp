@@ -38,6 +38,11 @@
 #define RESURRECT_SECS 3600
 #define RESURRECT_SECS_PREMIUM 900
 
+/**
+ * These are compiled at program startup before the rest of the bot is initialised.
+ * As such they are compiled and ready to use before we try to use them. A failure to
+ * compile the regular expression will manifest as a fatal error during startup.
+ */
 pcre_regex lung_rasp(R"(\s*\[gamestate_lungrasp[0-9]+\])");
 pcre_regex blood_plague(R"(\s*\[gamestate_blood_plague[0-9]+\])");
 pcre_regex bubonic_plague(R"(\s*\[gamestate_bubonic_plague[0-9]+\])");
@@ -367,6 +372,7 @@ void game_nav(const dpp::button_click_t& event) {
 	if (!player_is_live(event)) {
 		return;
 	}
+	dpp::cluster& bot = *(event.from->creator);
 	player p = get_live_player(event);
 	bool claimed = false;
 	if (p.state != state_play || event.custom_id.empty()) {
@@ -421,24 +427,34 @@ void game_nav(const dpp::button_click_t& event) {
 					}
 				} else if (flags.substr(0, 4) == "CURE") {
 					p.gold -= cost;
-					if (flags == "CUREALL") {
-						p.gotfrom = lung_rasp.replace_all(p.gotfrom, "");
-						p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
-						p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
-						p.gotfrom = green_rot.replace_all(p.gotfrom, "");
-						p.add_toast("You feel well again. You have been cured of all diseases!");
-					} else if (flags == "CURERASP") {
-						p.gotfrom = lung_rasp.replace_all(p.gotfrom, "");
-						p.add_toast("You feel well again. You have been cured of lung rasp!");
-					} else if (flags == "CUREROT") {
-						p.gotfrom = green_rot.replace_all(p.gotfrom, "");
-						p.add_toast("You feel well again. You have been cured of green rot!");
-					} else if (flags == "CUREBLOOD") {
-						p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
-						p.add_toast("You feel well again. You have been cured of blood plague!");
-					} else if (flags == "CUREPLAGUE") {
-						p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
-						p.add_toast("You feel well again. You have been cured of bubonic plague!");
+					try {
+						if (flags == "CUREALL") {
+							p.gotfrom = lung_rasp.replace_all(p.gotfrom, "");
+							p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
+							p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
+							p.gotfrom = green_rot.replace_all(p.gotfrom, "");
+							p.add_toast(
+								"You feel well again. You have been cured of all diseases!");
+						} else if (flags == "CURERASP") {
+							p.gotfrom = lung_rasp.replace_all(p.gotfrom, "");
+							p.add_toast(
+								"You feel well again. You have been cured of lung rasp!");
+						} else if (flags == "CUREROT") {
+							p.gotfrom = green_rot.replace_all(p.gotfrom, "");
+							p.add_toast(
+								"You feel well again. You have been cured of green rot!");
+						} else if (flags == "CUREBLOOD") {
+							p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
+							p.add_toast(
+								"You feel well again. You have been cured of blood plague!");
+						} else if (flags == "CUREPLAGUE") {
+							p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
+							p.add_toast(
+								"You feel well again. You have been cured of bubonic plague!");
+						}
+					}
+					catch (const regex_exception& e) {
+						bot.log(dpp::ll_error, std::string("Regular expression error: ") + e.what());
 					}
 				} else if (flags == "HERB") {
 					if (!p.has_herb(name)) {
