@@ -21,27 +21,35 @@
 #include <ssod/regex.h>
 #include <pcre.h>
 #include <string>
-#include <utility>
 #include <vector>
 
 /**
- * Constructor for an exception in a regex
- */
-regex_exception::regex_exception(std::string _message) : std::exception(), message(std::move(_message)) {
-}
+* @brief Flags used for keeping expressions sane
+*/
+static pcre_extra flags{
+	.flags = PCRE_EXTRA_MATCH_LIMIT | PCRE_EXTRA_MATCH_LIMIT_RECURSION,
+	.study_data = nullptr,
+	.match_limit = 100,
+	.callout_data = nullptr,
+	.tables = nullptr,
+	.match_limit_recursion = 100,
+	.mark = nullptr,
+	.executable_jit = nullptr,
+};
 
 /**
  * Constructor for PCRE regular expression. Takes an expression to match against and optionally a boolean to
  * indicate if the expression should be treated as case sensitive (defaults to false).
  * Construction compiles the regex, which for a well formed regex may be more expensive than matching against a string.
  */
-pcre_regex::pcre_regex(const std::string &match, bool case_insensitive, int max_match) : pcre_error(nullptr), pcre_error_ofs(0), match_arr(nullptr), max_matches(max_match) {
+pcre_regex::pcre_regex(const std::string &match, bool case_insensitive, int max_match) : pcre_error(nullptr), pcre_error_ofs(0) {
 	compiled_regex = pcre_compile(match.c_str(), case_insensitive ? PCRE_CASELESS | PCRE_MULTILINE : PCRE_MULTILINE, &pcre_error, &pcre_error_ofs, nullptr);
 	if (!compiled_regex) {
 		throw regex_exception(pcre_error);
 	}
-	if (max_matches > 0) {
-		match_arr = new int[max_matches * 3];
+	if (max_match > 0) {
+		match_arr.reserve(max_match * 3);
+		match_arr.resize(max_match * 3);
 	}
 }
 
@@ -49,7 +57,7 @@ pcre_regex::pcre_regex(const std::string &match, bool case_insensitive, int max_
  * Match regular expression against a string, returns true on match, false if no match.
  */
 bool pcre_regex::match(const std::string &comparison) {
-	return (pcre_exec(compiled_regex, nullptr, comparison.c_str(), comparison.length(), 0, 0, nullptr, 0) > -1);
+	return (pcre_exec(compiled_regex, &flags, comparison.c_str(), comparison.length(), 0, 0, nullptr, 0) > -1);
 }
 
 /**
@@ -59,13 +67,17 @@ bool pcre_regex::match(const std::string &comparison) {
  */
 bool pcre_regex::match(const std::string &comparison, std::vector<std::string>& matches) {
 	matches.clear();
-	auto match_count = pcre_exec(compiled_regex, nullptr, comparison.c_str(), comparison.length(), 0, 0, match_arr, max_matches * 3);
+	auto match_count = pcre_exec(compiled_regex, &flags, comparison.c_str(), (int)comparison.length(), 0, 0,
+		match_arr.empty() ? nullptr : match_arr.data(), (int)match_arr.size());
 	if (match_count == 0) {
 		throw regex_exception("Too many matches");
 	}
 	for (auto i = 0; i < match_count; ++i) {
 		/* Ugly char ops */
-		matches.emplace_back(comparison.c_str() + match_arr[2 * i], (size_t)(match_arr[2 * i + 1] - match_arr[2 * i]));
+		matches.emplace_back(
+			comparison.c_str() + match_arr[2 * i],
+			(size_t)(match_arr[2 * i + 1] - match_arr[2 * i])
+		);
 	}
 	return match_count > 0;
 }
@@ -86,7 +98,8 @@ std::string pcre_regex::replace(std::string comparison, const std::string &repla
 	if (comparison.empty()) {
 		return comparison;
 	}
-	auto match_count = pcre_exec(compiled_regex, nullptr, comparison.c_str(), comparison.length(), 0, 0, match_arr, max_matches * 3);
+	auto match_count = pcre_exec(compiled_regex, &flags, comparison.c_str(), (int)comparison.length(), 0, 0,
+		match_arr.empty() ? nullptr : match_arr.data(), (int)match_arr.size());
 	if (match_count == 0) {
 		throw regex_exception("Too many matches");
 	}
@@ -111,8 +124,5 @@ pcre_regex::~pcre_regex()
 {
 	/* Ugh, C libraries */
 	free(compiled_regex);
-	if (max_matches > 0) {
-		delete[] match_arr;
-	}
 }
 
