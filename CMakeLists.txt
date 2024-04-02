@@ -21,8 +21,8 @@ string(ASCII 27 Esc)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set_target_properties(${BOT_NAME} PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
+	CXX_STANDARD 20
+	CXX_STANDARD_REQUIRED ON
 )
 
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
@@ -40,22 +40,23 @@ set(CMAKE_CXX_FLAGS "-g -O2 -Wall -Wno-psabi -Wempty-body -Wignored-qualifiers -
 target_compile_definitions(${BOT_NAME} PUBLIC DPP_CORO=ON)
 
 target_include_directories(${BOT_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${DPP_INCLUDE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${DPP_INCLUDE_DIR}
 )
 
 target_link_libraries(${BOT_NAME}
-    fmt
-    spdlog
-    mysqlclient
-    crypto
-    ssl
-    z
-    ${CMAKE_THREAD_LIBS_INIT}
-    ${DPP_LIBRARIES}
+	fmt
+	spdlog
+	mysqlclient
+	crypto
+	ssl
+	z
+	pcre
+	${CMAKE_THREAD_LIBS_INIT}
+	${DPP_LIBRARIES}
 )
 
 #add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#   WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-#   COMMAND "../sentry-symbols.sh"
+#	WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+#	COMMAND "../sentry-symbols.sh"
 #)
