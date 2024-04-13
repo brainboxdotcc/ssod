@@ -111,6 +111,17 @@ void cleanup_idle_live_players() {
 	live_players = copy;
 }
 
+void unload_live_player(uint64_t id) {
+	std::lock_guard<std::mutex> l(live_list_lock);
+	player_list copy;
+	for (const std::pair<const dpp::snowflake, player>& pair : live_players) {
+		if (pair.first != id) {
+			copy[pair.first] = pair.second;
+		}
+	}
+	live_players = copy;
+}
+
 void cleanup_idle_reg_players() {
 	std::lock_guard<std::mutex> l(reg_list_lock);
 	player_list copy;

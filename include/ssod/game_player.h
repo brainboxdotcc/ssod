@@ -353,6 +353,7 @@ void update_live_player(const dpp::interaction_create_t& event, player p);
 void delete_live_player(const dpp::interaction_create_t& event);
 void cleanup_idle_live_players();
 void cleanup_idle_reg_players();
+void unload_live_player(uint64_t id);
 
 long bonuses_numeric(int type, player_race R, player_profession P);
 std::string bonuses(int type, player_race R, player_profession P);
