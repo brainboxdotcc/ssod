@@ -649,13 +649,13 @@ void game_nav(const dpp::button_click_t& event) {
 			db::commit();
 		}
 		claimed = true;
-	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
+	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat) {
 		p.in_inventory = false;
 		claimed = true;
-	} else if (parts[0] == "exit_bank" && parts.size() == 1 && !p.in_combat && p.stamina > 0) {
+	} else if (parts[0] == "exit_bank" && parts.size() == 1 && !p.in_combat) {
 		p.in_bank = false;
 		claimed = true;
-	} else if (parts[0] == "refresh" && p.stamina > 0) {
+	} else if (parts[0] == "refresh") {
 		claimed = true;
 	} else if (parts[0] == "pvp_picker" && p.stamina > 0) {
 		p.in_pvp_picker = true;
@@ -1162,6 +1162,8 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 	}
 	if (enabled_links == 0 && !respawn_button_shown) {
+		death(p, cb);
+	} else if (p.stamina < 1) {
 		death(p, cb);
 	}
 

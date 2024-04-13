@@ -60,7 +60,7 @@ namespace listeners {
 	 * @param channel_id 
 	 */
 	void send_welcome(dpp::cluster& bot, dpp::snowflake guild_id, dpp::snowflake channel_id) {
-		bot.message_create(
+		/*bot.message_create(
 			dpp::message(channel_id, "")
 			.add_embed(
 				dpp::embed()
@@ -71,7 +71,7 @@ namespace listeners {
 				.set_thumbnail(bot.me.get_avatar_url())
 				.set_footer("The Seven Spells Of Destruction", bot.me.get_avatar_url())
 			)
-		);
+		);*/
 		/* Probably successfully welcomed */
 		db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
 	}

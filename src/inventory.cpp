@@ -83,28 +83,6 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	}
 
 	content << "\n__**Inventory (page " << (p.inventory_page + 1) << " of " << pages_max ++ << ")**__\n";
-	std::vector<item> possessions = p.possessions_page(p.inventory_page);
-	std::ranges::sort(possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
-	for (const auto& inv : possessions) {
-		std::string emoji = get_emoji(inv.name, inv.flags).format();
-		std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, true) + "\n"};
-		if (p.armour.name == inv.name && !equip_a) {
-			description += "\033[2;31m🫱🏼 Equipped\033[0m ";
-			equip_a = true;
-		} else if (p.weapon.name == inv.name && !equip_w) {
-			description += "\033[2;31m🫱🏼 Equipped\033[0m ";
-			equip_w = true;
-		}
-		sale_info value = get_sale_info(inv.name);
-		if (value.quest_item) {
-			description += "\033[2;32m❗ Quest Item\033[0m ";
-		}
-		if (value.sellable && !value.quest_item) {
-			description += "\033[2;33m🪙 " + std::to_string(value.value) + " Value\033[0m ";
-		}
-		description += "\n```\n";
-		fields.emplace_back(dpp::embed_field("<:" + emoji + "> " + inv.name, description, true));
-	}
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -115,10 +93,12 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		})
 		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
-	embed.fields = fields;
 
 	dpp::message m;
-	m.add_embed(embed);
+
+	std::vector<item> possessions = p.possessions_page(p.inventory_page);
+	std::ranges::sort(possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
+
 	component_builder cb(m);
 	size_t index{0};
 
@@ -144,6 +124,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 				 .set_emoji("▶")
 				 .set_disabled(p.inventory_page >= pages_max - 2)
 	);
+	cb.add_component(help_button());
 
 	m = cb.get_message();
 
@@ -169,7 +150,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
 		if (!value.quest_item && value.sellable) {
-			drop_menu.add_select_option(dpp::select_option("Drop " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(sprite::inv_drop.name, sprite::inv_drop.id));
+			drop_menu.add_select_option(dpp::select_option("Drop " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
 		}
 		if (inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
 			use_menu.add_select_option(dpp::select_option("Use " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
@@ -186,6 +167,43 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	}
 	if (!equip_menu.options.empty()) {
 		m.add_component(dpp::component().add_component(equip_menu));
+	}
+
+	if (possessions.empty()) {
+		embed.fields = fields;
+		m.embeds = { embed };
+	} else {
+		for (const auto &inv: possessions) {
+			std::string emoji = get_emoji(inv.name, inv.flags).format();
+			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, true) + "\n"};
+			if (p.armour.name == inv.name && !equip_a) {
+				description += "\033[2;31m🫱🏼 Equipped\033[0m ";
+				equip_a = true;
+			} else if (p.weapon.name == inv.name && !equip_w) {
+				description += "\033[2;31m🫱🏼 Equipped\033[0m ";
+				equip_w = true;
+			}
+			sale_info value = get_sale_info(inv.name);
+			if (value.quest_item) {
+				description += "\033[2;32m❗ Quest Item\033[0m ";
+			}
+			if (value.sellable && !value.quest_item) {
+				description += "\033[2;33m🪙 " + std::to_string(value.value) + " Value\033[0m ";
+			}
+			description += "\n```\n";
+			fields.emplace_back(dpp::embed_field("<:" + emoji + "> " + inv.name, description, true));
+
+			dpp::message saved = m;
+			embed.fields = fields;
+			m.embeds = {embed};
+			if (m.build_json().length() > 6000) {
+				/* Check the inventory is not too big to view */
+				m = saved;
+				bot.log(dpp::ll_warning,
+					"Inventory page too big for discord, ended render at 6000 characters");
+				break;
+			}
+		}
 	}
 
 	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {

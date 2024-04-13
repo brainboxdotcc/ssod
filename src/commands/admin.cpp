@@ -63,6 +63,10 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
 			dpp::command_option(dpp::co_sub_command, "teleport", "Teleport yourself to new location ID")
 			.add_option(dpp::command_option(dpp::co_integer, "location", "Location to teleport to", true))
 		)
+		.add_option(
+			dpp::command_option(dpp::co_sub_command, "unload", "Unload a user from memory")
+			.add_option(dpp::command_option(dpp::co_string, "user", "User to unload", true).set_auto_complete(true))
+		)
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "mute", "Mute a user")
 			.add_option(dpp::command_option(dpp::co_string, "user", "User to mute", true).set_auto_complete(true))
@@ -82,8 +86,8 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
 void admin_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
-	auto rs = db::query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
-	if (rs.empty()) {
+	auto admin_rs = db::query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
+	if (admin_rs.empty()) {
 		event.reply("This command is for game admins only");
 		return;
 	}
@@ -118,13 +122,29 @@ void admin_command::route(const dpp::slashcommand_t &event)
 	}
 	if (subcommand.name == "reset") {
 		std::string user = std::get<std::string>(subcommand.options[0].value);
-		auto rs = db::query("SELECT id FROM game_users WHERE name = ?", {user});
-		uint64_t id = atoll(rs[0].at("id"));
+		auto rs = db::query("SELECT user_id FROM game_users WHERE name = ?", {user});
+		if (rs.empty()) {
+			event.reply(dpp::message(user + " does not exist.").set_flags(dpp::m_ephemeral));
+			return;
+		}
+		uint64_t id = atoll(rs[0].at("user_id"));
 		// Get the backup copy of the user
 		player p(id, true);
 		// Write the backup copy to the live copy
 		p.save(id, false);
 		event.reply(dpp::message(user + " has been reset.").set_flags(dpp::m_ephemeral));
 		bot.log(dpp::ll_info, "ADMIN RESET by " + event.command.usr.global_name + " -> " + user);
+	}
+	if (subcommand.name == "unload") {
+		std::string user = std::get<std::string>(subcommand.options[0].value);
+		auto rs = db::query("SELECT user_id FROM game_users WHERE name = ?", {user});
+		if (rs.empty()) {
+			event.reply(dpp::message(user + " does not exist.").set_flags(dpp::m_ephemeral));
+			return;
+		}
+		uint64_t id = atoll(rs[0].at("user_id"));
+		unload_live_player(id);
+		event.reply(dpp::message(user + " has been unloaded.").set_flags(dpp::m_ephemeral));
+		bot.log(dpp::ll_info, "ADMIN UNLOAD by " + event.command.usr.global_name + " -> " + user);
 	}
 }
