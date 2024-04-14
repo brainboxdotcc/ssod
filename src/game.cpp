@@ -252,9 +252,9 @@ void game_select(const dpp::select_click_t &event) {
 	if (custom_id == "withdraw" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		db::transaction();
-		auto rs = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ?", {event.command.usr.id, parts[0], parts[1]});
+		auto rs = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {event.command.usr.id, parts[0], parts[1]});
 		if (!rs.empty()) {
-			db::query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ?", {event.command.usr.id, parts[0], parts[1]});
+			db::query("DELETE FROM game_bank WHERE id = ?", { rs[0].at("id") });
 			p.possessions.push_back(item{.name = parts[0], .flags = parts[1]});
 			p.inv_change = true;
 		}
@@ -264,7 +264,7 @@ void game_select(const dpp::select_click_t &event) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		db::transaction();
 		if (p.has_possession(parts[0])) {
-			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags ) VALUES(?,?,?)", {event.command.usr.id, parts[0], parts[1]});
+			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,?,?)", {event.command.usr.id, parts[0], parts[1]});
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
 			p.inv_change = true;
 		}
