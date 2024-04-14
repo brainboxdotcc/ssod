@@ -46,9 +46,16 @@ sale_info get_sale_info(const std::string& name) {
 	};
 }
 
-std::string describe_item(const std::string& modifier_flags, const std::string& name, bool ansi) {
+std::string ellipsis(const std::string& in, size_t max_len) {
+	if (in.length() > max_len) {
+		return in.substr(0, max_len) + "…";
+	}
+	return in;
+}
+
+std::string describe_item(const std::string& modifier_flags, const std::string& name, bool ansi, size_t max_desc_len) {
 	auto res = db::query("SELECT idesc FROM game_item_descs WHERE name = ?", {name});
-	std::string rv{res.size() ? res[0].at("idesc") : name};
+	std::string rv{ellipsis(res.size() ? res[0].at("idesc") : name, max_desc_len)};
 
 	if (modifier_flags.substr(0, 3) == "ST+") {
 		return fmt::format(fmt::runtime(ansi ? "\033[2;36mStamina\033[0m \033[2;34m+{}\033[0m: {}" : "Stamina **+{}**: {}"), modifier_flags.substr(3), rv);

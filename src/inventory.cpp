@@ -128,7 +128,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 
 	m = cb.get_message();
 
-	dpp::component use_menu, drop_menu, equip_menu;
+	dpp::component use_menu, drop_menu, equip_menu/*, examine_menu*/;
 
 	use_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
@@ -145,10 +145,22 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		.set_max_values(1)
 		.set_placeholder("Equip Item")
 		.set_id(security::encrypt("equip_item"));
+	/*examine_menu.set_type(dpp::cot_selectmenu)
+		.set_min_values(0)
+		.set_max_values(1)
+		.set_placeholder("Examine Item")
+		.set_id(security::encrypt("examine_item"));*/
 
+	std::set<std::string> dup;
 	for (const auto& inv : possessions) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
+		/*if (dup.find(inv.name) == dup.end()) {
+			examine_menu.add_select_option(dpp::select_option("Examine " + inv.name,
+				inv.name + ";" + inv.flags + ";" +
+				std::to_string(++index)));
+			dup.insert(inv.name);
+		}*/
 		if (!value.quest_item && value.sellable) {
 			drop_menu.add_select_option(dpp::select_option("Drop " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
 		}
@@ -173,9 +185,12 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		embed.fields = fields;
 		m.embeds = { embed };
 	} else {
+		//m.add_component(dpp::component().add_component(examine_menu));
+		size_t c{content.str().length()};
 		for (const auto &inv: possessions) {
 			std::string emoji = get_emoji(inv.name, inv.flags).format();
-			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, true) + "\n"};
+			//std::string description{" "};
+			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, true, 80) + "\n"};
 			if (p.armour.name == inv.name && !equip_a) {
 				description += "\033[2;31m🫱🏼 Equipped\033[0m ";
 				equip_a = true;
@@ -191,18 +206,20 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 				description += "\033[2;33m🪙 " + std::to_string(value.value) + " Value\033[0m ";
 			}
 			description += "\n```\n";
-			fields.emplace_back(dpp::embed_field("<:" + emoji + "> " + inv.name, description, true));
+			auto f = dpp::embed_field("<:" + emoji + "> " + inv.name, description, true);
+			fields.push_back(f);
 
 			dpp::message saved = m;
 			embed.fields = fields;
-			m.embeds = {embed};
-			if (m.build_json().length() > 6000) {
+			m.embeds = { embed };
+			c += f.name.length() + f.value.length();
+			if (c > 6000) {
 				/* Check the inventory is not too big to view */
 				m = saved;
-				bot.log(dpp::ll_warning,
-					"Inventory page too big for discord, ended render at 6000 characters");
+				bot.log(dpp::ll_warning, "Inventory page too big for discord, ended render at " + std::to_string(m.build_json().length()) + " characters after index " + std::to_string(c));
 				break;
 			}
+			++c;
 		}
 	}
 

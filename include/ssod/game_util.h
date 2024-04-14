@@ -19,6 +19,7 @@
  ************************************************************************************/
 #pragma once
 #include <string>
+#include <cstdint>
 #include <dpp/dpp.h>
 
 struct sale_info {
@@ -28,7 +29,7 @@ struct sale_info {
 	bool quest_item{false};
 };
 
-std::string describe_item(const std::string& modifier_flags, const std::string& name, bool ansi = false);
+std::string describe_item(const std::string& modifier_flags, const std::string& name, bool ansi = false, size_t max_desc_len = 250);
 dpp::component help_button();
 void premium_required(const dpp::interaction_create_t& event);
 sale_info get_sale_info(const std::string& name);
