@@ -26,7 +26,12 @@ struct else_tag : public tag {
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// simply invert the display flag for anything inside an <else> tag...
 		if (!p.display.empty()) {
-			p.display[p.display.size() - 1] = !p.display[p.display.size() - 1];
+			if (p.display.size() > 1 && !p.display[p.display.size() - 2]) {
+				/* Parent display is false, so this is false */
+				p.display[p.display.size() - 1] = false;
+			} else {
+				p.display[p.display.size() - 1] = !p.display[p.display.size() - 1];
+			}
 		}
 	}
 };

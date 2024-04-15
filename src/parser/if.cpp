@@ -55,25 +55,41 @@ struct if_tag : public tag {
 			paragraph_content >> p_text;
 			extract_to_quote(p_text, paragraph_content, '>');
 			p_text = remove_last_char(p_text);
-			p.display.push_back(current_player.has_herb(p_text) || current_player.has_spell(p_text) || current_player.has_possession(p_text));
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(current_player.has_herb(p_text) || current_player.has_spell(p_text) || current_player.has_possession(p_text));
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		} else if (dpp::lowercase(p_text) == "!item") {
 			paragraph_content >> p_text;
 			extract_to_quote(p_text, paragraph_content, '>');
 			p_text = remove_last_char(p_text);
-			p.display.push_back(!current_player.has_herb(p_text) && !current_player.has_spell(p_text) && !current_player.has_possession(p_text));
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(!current_player.has_herb(p_text) && !current_player.has_spell(p_text) && !current_player.has_possession(p_text));
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		} else if (dpp::lowercase(p_text) == "flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
 			std::string flag = "[gamestate_" + p_text;
-			p.display.push_back(current_player.gotfrom.find(flag) != std::string::npos || global_set(p_text));
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(current_player.gotfrom.find(flag) != std::string::npos || global_set(p_text));
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		} else if (dpp::lowercase(p_text) == "!flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
 			std::string flag = "[gamestate_" + p_text;
-			p.display.push_back(current_player.gotfrom.find(flag) == std::string::npos && !global_set(p_text));
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(current_player.gotfrom.find(flag) == std::string::npos && !global_set(p_text));
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		}
 		// -------------------------------------------------------
@@ -100,7 +116,11 @@ struct if_tag : public tag {
 		if (check != scorename_map.end()) {
 			paragraph_content >> condition;
 			paragraph_content >> p_text;
-			p.display.push_back(comparison(condition, check->second, p_text, p.g_dice));
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(comparison(condition, check->second, p_text, p.g_dice));
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		} else if (dpp::lowercase(p_text) == "race") {
 			// ------------------------------------------------------
@@ -108,17 +128,21 @@ struct if_tag : public tag {
 			// ------------------------------------------------------
 			// if false, nothing displayed until an <endif> is reached.
 			paragraph_content >> p_text;
-			p.display.push_back(
-				(dpp::lowercase(p_text) == "human>" && (current_player.race == race_human || current_player.race == race_barbarian))
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(
+					(dpp::lowercase(p_text) == "human>" && (current_player.race == race_human || current_player.race == race_barbarian))
 					||
-				(dpp::lowercase(p_text) == "orc>" && (current_player.race == race_orc || current_player.race == race_goblin))
+					(dpp::lowercase(p_text) == "orc>" && (current_player.race == race_orc || current_player.race == race_goblin))
 					||
-				(dpp::lowercase(p_text) == "elf>" && (current_player.race == race_elf || current_player.race == race_dark_elf))
+					(dpp::lowercase(p_text) == "elf>" && (current_player.race == race_elf || current_player.race == race_dark_elf))
 					||
-				(dpp::lowercase(p_text) == "dwarf>" && current_player.race == race_dwarf)
+					(dpp::lowercase(p_text) == "dwarf>" && current_player.race == race_dwarf)
 					||
-				(dpp::lowercase(p_text) == "lesserorc>" && current_player.race == race_lesser_orc)
-			);
+					(dpp::lowercase(p_text) == "lesserorc>" && current_player.race == race_lesser_orc)
+				);
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		} else if (dpp::lowercase(p_text) == "prof") {
 			// ------------------------------------------------------
@@ -126,28 +150,40 @@ struct if_tag : public tag {
 			// ------------------------------------------------------
 			// if false, nothing displayed until an <endif> is reached.
 			paragraph_content >> p_text;
-			p.display.push_back( 
-				(dpp::lowercase(p_text) == "warrior>" && (current_player.profession == prof_warrior || current_player.profession == prof_mercenary))
-					||
-				(dpp::lowercase(p_text) == "wizard>" && current_player.profession == prof_wizard)
-					||
-				(dpp::lowercase(p_text) == "thief>" && (current_player.profession == prof_thief || current_player.profession == prof_assassin))
-					||
-				(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman)
-			);
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(
+					(dpp::lowercase(p_text) == "warrior>" && (current_player.profession == prof_warrior || current_player.profession == prof_mercenary))
+						||
+					(dpp::lowercase(p_text) == "wizard>" && current_player.profession == prof_wizard)
+						||
+					(dpp::lowercase(p_text) == "thief>" && (current_player.profession == prof_thief || current_player.profession == prof_assassin))
+						||
+					(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman)
+				);
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		} else if (dpp::lowercase(p_text) == "mounted>") {
 			// ------------------------------------------------------
 			// <if mounted>
 			// ------------------------------------------------------
-			p.display.push_back(current_player.has_flag("horse"));
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(current_player.has_flag("horse"));
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		} else if (dpp::lowercase(p_text) == "premium>") {
 			// ------------------------------------------------------
 			// <if premium>
 			// ------------------------------------------------------
 			auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { current_player.event.command.usr.id });
-			p.display.push_back(!rs.empty());
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(!rs.empty());
+			} else {
+				p.display.push_back(false);
+			}
 			return;
 		}
 	}
