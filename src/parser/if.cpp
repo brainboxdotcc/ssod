@@ -71,6 +71,24 @@ struct if_tag : public tag {
 				p.display.push_back(false);
 			}
 			return;
+		} if (dpp::lowercase(p_text) == "has") {
+			size_t number{};
+			paragraph_content >> number;
+			paragraph_content >> p_text;
+			extract_to_quote(p_text, paragraph_content, '>');
+			p_text = remove_last_char(p_text);
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				size_t n{};
+				if (current_player.has_possession(p_text)) {
+					for (const auto& item : current_player.possessions) {
+						n += (dpp::lowercase(item.name) == dpp::lowercase(p_text));
+					}
+				}
+				p.display.push_back(n >= number);
+			} else {
+				p.display.push_back(false);
+			}
+			return;
 		} else if (dpp::lowercase(p_text) == "flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
