@@ -132,10 +132,20 @@ void cleanup_idle_live_players() {
 	 * This just ensures they are removed from local cache,they still exist in the database. Also
 	 * serves to rehash the unordered maps saving memory.
 	 */
+	auto rs = db::query("SELECT * FROM cache_purge_queue ORDER BY id");
 	std::lock_guard<std::mutex> l(live_list_lock);
+	if (!rs.empty()) {
+		for (const auto &row : rs) {
+			auto p = live_players.find(atoll(row.at("user_id")));
+			if (p != live_players.end()) {
+				p->second.last_use = 0;
+			}
+		}
+		db::query("DELETE FROM cache_purge_queue");
+	}
 	player_list copy;
 	time_t ten_mins_ago = time(nullptr) - 3600;
-	for (const std::pair<const dpp::snowflake, player>& pair : live_players) {
+	for (const std::pair<const dpp::snowflake, player> &pair: live_players) {
 		if (pair.second.last_use > ten_mins_ago) {
 			copy[pair.first] = pair.second;
 		}
@@ -158,7 +168,7 @@ void cleanup_idle_reg_players() {
 	std::lock_guard<std::mutex> l(reg_list_lock);
 	player_list copy;
 	time_t ten_mins_ago = time(nullptr) - 3600;
-	for (const std::pair<const dpp::snowflake, player>& pair : registering_players) {
+	for (const std::pair<const dpp::snowflake, player> &pair: registering_players) {
 		if (pair.second.last_use > ten_mins_ago) {
 			copy[pair.first] = pair.second;
 		}
