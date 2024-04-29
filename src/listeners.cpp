@@ -26,6 +26,7 @@
 #include <ssod/combat.h>
 #include <ssod/command.h>
 #include <ssod/game_player.h>
+#include <ssod/lang.h>
 
 #include <ssod/commands/info.h>
 #include <ssod/commands/start.h>
@@ -208,6 +209,7 @@ namespace listeners {
 				process_potion_drops(bot);
 				cleanup_idle_live_players();
 				cleanup_idle_reg_players();
+				check_lang_reload(bot);
 			}, 60);
 			bot.start_timer([&bot](dpp::timer t) {
 				/* Garbage collect free memory by consolidating free malloc() blocks */

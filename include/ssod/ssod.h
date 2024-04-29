@@ -72,3 +72,5 @@ inline int atoi(const std::string& str) {
 	if (str.empty()) return 0;
 	return atoi(str.c_str());
 }
+
+std::string _(const std::string &k, const dpp::interaction_create_t& interaction);
