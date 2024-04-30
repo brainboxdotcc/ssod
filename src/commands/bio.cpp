@@ -24,15 +24,15 @@
 #include <fmt/format.h>
 
 dpp::slashcommand bio_command::register_command(dpp::cluster& bot) {
-	return _(dpp::slashcommand("bio", "update_bio", bot.me.id)
+	return _(dpp::slashcommand("cmd_bio", "update_bio", bot.me.id)
 		.set_dm_permission(true)
                 .add_option(
-			dpp::command_option(dpp::co_sub_command, "picture", "set_bio_picture")
-			.add_option(dpp::command_option(dpp::co_attachment, "image", "image_to_upload", true))
+			dpp::command_option(dpp::co_sub_command, "opt_picture", "set_bio_picture")
+			.add_option(dpp::command_option(dpp::co_attachment, "opt_image", "image_to_upload", true))
 		)
                 .add_option(
-			dpp::command_option(dpp::co_sub_command, "text", "set_custom_bio")
-			.add_option(dpp::command_option(dpp::co_string, "bio", "bio_to_set", true))
+			dpp::command_option(dpp::co_sub_command, "opt_text", "set_custom_bio")
+			.add_option(dpp::command_option(dpp::co_string, "cmd_bio", "bio_to_set", true))
 		)
 	);
 }
