@@ -21,18 +21,20 @@
 #include <ssod/database.h>
 #include <ssod/commands/bio.h>
 #include <ssod/game_util.h>
+#include <fmt/format.h>
 
 dpp::slashcommand bio_command::register_command(dpp::cluster& bot) {
-	return dpp::slashcommand("bio", "Update player biography", bot.me.id)
+	return _(dpp::slashcommand("bio", "update_bio", bot.me.id)
 		.set_dm_permission(true)
                 .add_option(
-			dpp::command_option(dpp::co_sub_command, "picture", "Set a custom profile picture")
-			.add_option(dpp::command_option(dpp::co_attachment, "image", "Image to upload", true))
+			dpp::command_option(dpp::co_sub_command, "picture", "set_bio_picture")
+			.add_option(dpp::command_option(dpp::co_attachment, "image", "image_to_upload", true))
 		)
                 .add_option(
-			dpp::command_option(dpp::co_sub_command, "text", "Set custom biography")
-			.add_option(dpp::command_option(dpp::co_string, "text", "Biography to set", true))
-		);
+			dpp::command_option(dpp::co_sub_command, "text", "set_custom_bio")
+			.add_option(dpp::command_option(dpp::co_string, "bio", "bio_to_set", true))
+		)
+	);
 }
 
 void bio_command::route(const dpp::slashcommand_t &event)
@@ -44,9 +46,9 @@ void bio_command::route(const dpp::slashcommand_t &event)
 
 	dpp::embed embed;
 	embed.set_url("https://ssod.org/")
-		.set_title("Custom Player Bio")
+		.set_title(_("CUSTOM_BIO", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 
+			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
@@ -60,7 +62,7 @@ void bio_command::route(const dpp::slashcommand_t &event)
 		auto param = subcommand.options[0].value;
 		std::string text = std::get<std::string>(param);
 		db::query("INSERT INTO character_bio (user_id, bio) VALUES(?, ?) ON DUPLICATE KEY UPDATE bio = ?", { event.command.usr.id, text, text });
-		embed.set_description("Your custom bio text has been set to:\n\n" + text);
+		embed.set_description(_("CUSTOM_BIO_SET", event) +"\n\n" + text);
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	} else if (subcommand.name == "picture") {
 		auto param = subcommand.options[0].value;
@@ -74,7 +76,7 @@ void bio_command::route(const dpp::slashcommand_t &event)
 			file.write(data.body.data(), data.body.length());
 			file.close();
 			db::query("INSERT INTO character_bio (user_id, image_name) VALUES(?, ?) ON DUPLICATE KEY UPDATE image_name = ?", { event.command.usr.id, filename, filename });
-			e.set_description("Your custom bio profile picture has been uploaded.");
+			e.set_description(_("CUSTOM_PIC_UPLOADED", event));
 			e.set_image("attachment://" + filename);
 			event.reply(dpp::message().add_embed(e).add_file(filename, data.body).set_flags(dpp::m_ephemeral));
 		});

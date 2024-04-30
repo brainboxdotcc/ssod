@@ -20,6 +20,7 @@
 #include <ssod/ssod.h>
 #include <ssod/commands/help.h>
 #include <ssod/game_date.h>
+#include <fmt/format.h>
 
 dpp::slashcommand help_command::register_command(dpp::cluster& bot)
 {
@@ -31,9 +32,9 @@ void help_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Help - The Seven Spells Of Destruction")
+		.set_title(_("HELP_TITLE", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 
+			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})

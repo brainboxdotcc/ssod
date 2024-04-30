@@ -20,7 +20,6 @@
 #include <ssod/ssod.h>
 #include <ssod/lang.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <fmt/format.h>
 #include <dpp/dpp.h>
 
@@ -82,4 +81,57 @@ std::string _(const std::string &k, const dpp::interaction_create_t& interaction
 		return _(k, english);
 	}
 	return k;
+}
+
+std::string discord_lang(const std::string& l) {
+	if (l == "es") {
+		return "es-ES";
+	} else if (l == "pt") {
+		return "pt-BR";
+	} else if (l == "sv") {
+		return "sv-SE";
+	} else if (l == "zh") {
+		return "zh-CN";
+	}
+	return l;
+};
+
+dpp::command_option _(dpp::command_option opt) {
+	auto o = lang->find(opt.name);
+	if (o != lang->end()) {
+		dpp::interaction_create_t e{};
+		for (auto v = o->begin(); v != o->end(); ++v) {
+			if (v.key() == "en") {
+				continue;
+			}
+			e.command.locale = discord_lang(v.key());
+			opt.add_localization(e.command.locale, _(opt.name, e), _(opt.description, e));
+		}
+		opt.name = _(opt.name, english);
+		opt.description = _(opt.description, english);
+	}
+	for (auto & option : opt.options) {
+		option = _(option);
+	}
+	return opt;
+}
+
+dpp::slashcommand _(dpp::slashcommand cmd) {
+	auto o = lang->find(cmd.name);
+	if (o != lang->end()) {
+		dpp::interaction_create_t e{};
+		for (auto v = o->begin(); v != o->end(); ++v) {
+			if (v.key() == "en") {
+				continue;
+			}
+			e.command.locale = discord_lang(v.key());
+			cmd.add_localization(e.command.locale, _(cmd.name, e), _(cmd.description, e));
+		}
+		cmd.name = _(cmd.name, english);
+		cmd.description = _(cmd.description, english);
+	}
+	for (auto & option : cmd.options) {
+		option = _(option);
+	}
+	return cmd;
 }
