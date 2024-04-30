@@ -182,6 +182,10 @@ namespace listeners {
 					register_command<premium_command>(bot),
 					register_command<reset_command>(bot),
 					register_command<guild_command>(bot),
+				}, [&bot](const auto& cc) {
+					if (cc.is_error()) {
+						bot.log(dpp::ll_error, cc.http_info.body);
+					}
 				});
 				bot.guild_bulk_command_create({
 					register_command<admin_command>(bot),

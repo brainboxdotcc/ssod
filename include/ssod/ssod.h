@@ -74,3 +74,4 @@ inline int atoi(const std::string& str) {
 }
 
 std::string _(const std::string &k, const dpp::interaction_create_t& interaction);
+dpp::slashcommand _(dpp::slashcommand cmd);
