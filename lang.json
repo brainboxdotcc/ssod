@@ -1763,7 +1763,8 @@
         "cs": "vytvořit",
         "el": "δημιουργώ",
         "uk": "створити",
-        "th": "สร้าง"
+        "th": "สร้าง",
+        "pl": "tworzyć"
     },
     "opt_join": {
         "en": "join",
@@ -1793,7 +1794,8 @@
         "cs": "připojit",
         "el": "Συμμετοχή",
         "uk": "приєднатися",
-        "th": "เข้าร่วม"
+        "th": "เข้าร่วม",
+        "pl": "dołączyć"
     },
     "opt_leave": {
         "en": "leave",
@@ -1805,7 +1807,7 @@
         "hi": "छुट्टी",
         "sv": "lämna",
         "ru": "оставлять",
-        "it": "Partire",
+        "it": "partire",
         "ko": "떠나다",
         "ja": "離れる",
         "bg": "напускам",
@@ -1823,7 +1825,8 @@
         "cs": "odejít",
         "el": "άδεια",
         "uk": "залишати",
-        "th": "ออกจาก"
+        "th": "ออกจาก",
+        "pl": "zostawić"
     },
     "info_desc": {
         "en": "Show bot information",
@@ -1853,7 +1856,8 @@
         "cs": "Zobrazit informace o robotu",
         "el": "Εμφάνιση πληροφοριών bot",
         "uk": "Показати інформацію про бота",
-        "th": "แสดงข้อมูลบอท"
+        "th": "แสดงข้อมูลบอท",
+        "pl": "Pokaż informacje o bocie"
     },
     "lore_desc": {
         "en": "Show lore pages about the game world",
@@ -1883,7 +1887,8 @@
         "cs": "Zobrazit stránky s historií o herním světě",
         "el": "Εμφάνιση σελίδων παραδόσεων για τον κόσμο του παιχνιδιού",
         "uk": "Показувати сторінки знань про ігровий світ",
-        "th": "แสดงหน้าตำนานเกี่ยวกับโลกของเกม"
+        "th": "แสดงหน้าตำนานเกี่ยวกับโลกของเกม",
+        "pl": "Pokaż strony wiedzy o świecie gry"
     },
     "map_desc": {
         "en": "Show a map of the game world",
@@ -1913,7 +1918,8 @@
         "cs": "Ukažte mapu herního světa",
         "el": "Δείξτε έναν χάρτη του κόσμου του παιχνιδιού",
         "uk": "Покажіть карту ігрового світу",
-        "th": "แสดงแผนที่โลกของเกม"
+        "th": "แสดงแผนที่โลกของเกม",
+        "pl": "Pokaż mapę świata gry"
     },
     "premium_desc": {
         "en": "Provide a link to manage your premium subscription or to subscribe",
@@ -1943,7 +1949,8 @@
         "cs": "Poskytněte odkaz ke správě prémiového předplatného nebo k předplatnému",
         "el": "Δώστε έναν σύνδεσμο για τη διαχείριση της premium συνδρομής σας ή για να εγγραφείτε",
         "uk": "Надайте посилання для керування преміум-підпискою або для підписки",
-        "th": "ระบุลิงก์เพื่อจัดการการสมัครสมาชิกแบบพรีเมียมของคุณหรือเพื่อสมัครสมาชิก"
+        "th": "ระบุลิงก์เพื่อจัดการการสมัครสมาชิกแบบพรีเมียมของคุณหรือเพื่อสมัครสมาชิก",
+        "pl": "Podaj link do zarządzania subskrypcją premium lub do subskrypcji"
     },
     "profile_desc": {
         "en": "View User Profile",
@@ -1973,7 +1980,8 @@
         "cs": "Zobrazit uživatelský profil",
         "el": "Προβολή προφίλ χρήστη",
         "uk": "Переглянути профіль користувача",
-        "th": "ดูโปรไฟล์ผู้ใช้"
+        "th": "ดูโปรไฟล์ผู้ใช้",
+        "pl": "Wyświetl profil użytkownika"
     },
     "opt_user": {
         "en": "user",
@@ -2003,7 +2011,8 @@
         "cs": "uživatel",
         "el": "χρήστης",
         "uk": "користувача",
-        "th": "ผู้ใช้"
+        "th": "ผู้ใช้",
+        "pl": "użytkownik"
     },
     "user_profile_desc": {
         "en": "User to view profile of",
@@ -2033,7 +2042,8 @@
         "cs": "Uživatel k zobrazení profilu",
         "el": "Χρήστης για προβολή του προφίλ του",
         "uk": "Користувач для перегляду профілю",
-        "th": "ผู้ใช้เพื่อดูโปรไฟล์ของ"
+        "th": "ผู้ใช้เพื่อดูโปรไฟล์ของ",
+        "pl": "Użytkownik, którego profil chcesz wyświetlić"
     },
     "rename_desc": {
         "en": "Rename one of your weapons or armour pieces",
@@ -2063,7 +2073,8 @@
         "cs": "Přejmenujte jednu ze svých zbraní nebo kusů brnění",
         "el": "Μετονομάστε ένα από τα όπλα ή τα κομμάτια της πανοπλίας σας",
         "uk": "Перейменуйте одну зі своїх частин зброї чи броні",
-        "th": "เปลี่ยนชื่ออาวุธหรือชุดเกราะของคุณ"
+        "th": "เปลี่ยนชื่ออาวุธหรือชุดเกราะของคุณ",
+        "pl": "Zmień nazwę jednej ze swoich broni lub elementów zbroi"
     },
     "opt_item": {
         "en": "item",
@@ -2093,7 +2104,8 @@
         "cs": "položka",
         "el": "είδος",
         "uk": "пункт",
-        "th": "รายการ"
+        "th": "รายการ",
+        "pl": "przedmiot"
     },
     "opt_name": {
         "en": "name",
@@ -2123,7 +2135,8 @@
         "cs": "název",
         "el": "όνομα",
         "uk": "назва",
-        "th": "ชื่อ"
+        "th": "ชื่อ",
+        "pl": "nazwa"
     },
     "rename_item_desc": {
         "en": "Item to rename",
@@ -2153,7 +2166,8 @@
         "cs": "Položka k přejmenování",
         "el": "Στοιχείο προς μετονομασία",
         "uk": "Елемент для перейменування",
-        "th": "รายการที่จะเปลี่ยนชื่อ"
+        "th": "รายการที่จะเปลี่ยนชื่อ",
+        "pl": "Element do zmiany nazwy"
     },
     "rename_name_desc": {
         "en": "New Name",
@@ -2183,7 +2197,8 @@
         "cs": "Nové jméno",
         "el": "Νέο όνομα",
         "uk": "Нова назва",
-        "th": "ชื่อใหม่"
+        "th": "ชื่อใหม่",
+        "pl": "Nowe imie"
     },
     "male": {
         "en": "Male",
@@ -2213,7 +2228,8 @@
         "cs": "mužský",
         "el": "Αρσενικός",
         "uk": "Чоловік",
-        "th": "ชาย"
+        "th": "ชาย",
+        "pl": "Mężczyzna"
     },
     "female": {
         "en": "Female",
@@ -2243,7 +2259,8 @@
         "cs": "ženský",
         "el": "Θηλυκός",
         "uk": "Жінка",
-        "th": "หญิง"
+        "th": "หญิง",
+        "pl": "Kobieta"
     },
     "reset_desc": {
         "en": "Completely reset character allowing for re-creation and re-roll",
@@ -2273,7 +2290,8 @@
         "cs": "Zcela resetujte postavu, která umožňuje znovu vytvořit a znovu hodit",
         "el": "Πλήρης επαναφορά του χαρακτήρα που επιτρέπει την εκ νέου δημιουργία και την εκ νέου κύλιση",
         "uk": "Повністю скинути персонажа, дозволяючи відтворювати та перекидати",
-        "th": "รีเซ็ตอักขระโดยสมบูรณ์เพื่อให้สามารถสร้างและม้วนใหม่ได้"
+        "th": "รีเซ็ตอักขระโดยสมบูรณ์เพื่อให้สามารถสร้างและม้วนใหม่ได้",
+        "pl": "Całkowicie zresetuj postać, umożliwiając jej ponowne utworzenie i przerzucenie"
     },
     "start_desc": {
         "en": "Start a new character or resume game",
@@ -2303,7 +2321,8 @@
         "cs": "Spusťte novou postavu nebo pokračujte ve hře",
         "el": "Ξεκινήστε έναν νέο χαρακτήρα ή επαναλάβετε το παιχνίδι",
         "uk": "Почніть нового персонажа або відновіть гру",
-        "th": "เริ่มตัวละครใหม่หรือเล่นเกมต่อ"
+        "th": "เริ่มตัวละครใหม่หรือเล่นเกมต่อ",
+        "pl": "Rozpocznij nową postać lub wznów grę"
     },
     "vote_desc": {
         "en": "Show how to vote for the bot to gain loot drops",
@@ -2333,6 +2352,7 @@
         "cs": "Ukažte, jak hlasovat pro robota, abyste získali kapky kořisti",
         "el": "Δείξτε πώς να ψηφίσετε το ρομπότ για να κερδίσετε λάφυρα",
         "uk": "Покажіть, як голосувати за бота, щоб отримати здобич",
-        "th": "แสดงวิธีการโหวตให้บอทเพื่อรับไอเทมดรอป"
+        "th": "แสดงวิธีการโหวตให้บอทเพื่อรับไอเทมดรอป",
+        "pl": "Pokaż, jak głosować na bota, aby zdobyć łupy"
     }
 }
