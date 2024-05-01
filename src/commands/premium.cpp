@@ -21,10 +21,11 @@
 #include <ssod/database.h>
 #include <ssod/commands/premium.h>
 #include <ssod/aes.h>
+#include <fmt/format.h>
 
 dpp::slashcommand premium_command::register_command(dpp::cluster& bot)
 {
-	return dpp::slashcommand("premium", "Provide a link to manage your premium subscription or to subscribe", bot.me.id).set_dm_permission(true);
+	return _(dpp::slashcommand("cmd_premium", "premium_desc", bot.me.id).set_dm_permission(true));
 }
 
 void premium_command::route(const dpp::slashcommand_t &event)
@@ -36,7 +37,7 @@ void premium_command::route(const dpp::slashcommand_t &event)
 		.set_url("https://ssod.org/")
 		.set_title("Seven Spells Premium")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 	
+			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})

@@ -22,10 +22,11 @@
 #include <ssod/commands/info.h>
 #include <ssod/game_date.h>
 #include <ssod/game_player.h>
+#include <fmt/format.h>
 
 dpp::slashcommand info_command::register_command(dpp::cluster& bot)
 {
-	return dpp::slashcommand("info", "Show bot information", bot.me.id).set_dm_permission(true);
+	return (dpp::slashcommand("cmd_info", "info_desc", bot.me.id).set_dm_permission(true));
 }
 
 int64_t proc_self_value(const std::string& find_token) {
@@ -55,7 +56,7 @@ void info_command::route(const dpp::slashcommand_t &event)
 		.set_url("https://ssod.org/")
 		.set_title("The Seven Spells Of Destruction")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 
+			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})

@@ -96,6 +96,23 @@ std::string discord_lang(const std::string& l) {
 	return l;
 };
 
+dpp::command_option_choice _(dpp::command_option_choice choice) {
+	auto o = lang->find(choice.name);
+	if (o != lang->end()) {
+		dpp::interaction_create_t e{};
+		for (auto v = o->begin(); v != o->end(); ++v) {
+			if (v.key() == "en") {
+				continue;
+			}
+			/* Note: We don't translate the value for choice, this remains constant internally */
+			e.command.locale = discord_lang(v.key());
+			choice.add_localization(e.command.locale, _(choice.name, e));
+		}
+		choice.name = _(choice.name, english);
+	}
+	return choice;
+}
+
 dpp::command_option _(dpp::command_option opt) {
 	auto o = lang->find(opt.name);
 	if (o != lang->end()) {
@@ -109,6 +126,9 @@ dpp::command_option _(dpp::command_option opt) {
 		}
 		opt.name = _(opt.name, english);
 		opt.description = _(opt.description, english);
+	}
+	for (auto & choice : opt.choices) {
+		choice = _(choice);
 	}
 	for (auto & option : opt.options) {
 		option = _(option);

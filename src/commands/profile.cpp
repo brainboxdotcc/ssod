@@ -22,11 +22,12 @@
 #include <ssod/commands/profile.h>
 #include <ssod/game_player.h>
 #include <ssod/emojis.h>
+#include <fmt/format.h>
 
 dpp::slashcommand profile_command::register_command(dpp::cluster& bot) {
-	return dpp::slashcommand("profile", "View User Profile", bot.me.id)
+	return _(dpp::slashcommand("cmd_profile", "profile_desc", bot.me.id)
 		.set_dm_permission(true)
-		.add_option(dpp::command_option(dpp::co_string, "user", "User to view profile of", false));
+		.add_option(dpp::command_option(dpp::co_string, "opt_user", "user_profile_desc", false)));
 }
 
 void profile_command::route(const dpp::slashcommand_t &event)
@@ -76,7 +77,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.set_url("https://ssod.org/")
 		.set_title("Profile: " + dpp::utility::markdown_escape(user))
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 
+			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})

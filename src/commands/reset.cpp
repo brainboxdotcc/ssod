@@ -22,6 +22,7 @@
 #include <ssod/aes.h>
 #include <ssod/emojis.h>
 #include <ssod/game_player.h>
+#include <fmt/format.h>
 
 dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 {
@@ -43,7 +44,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 				.set_url("https://ssod.org/")
 				.set_title("Player Reset Complete!")
 				.set_footer(dpp::embed_footer{ 
-					.text = "Requested by " + event.command.usr.format_username(), 	
+					.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 					.icon_url = bot->me.get_avatar_url(), 
 					.proxy_url = "",
 				})
@@ -60,7 +61,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 			delete_live_player(event);
 		}
 	});
-	return dpp::slashcommand("reset", "Completely reset character allowing for re-creation and re-roll", bot.me.id).set_dm_permission(true);
+	return _(dpp::slashcommand("cmd_reset", "reset_desc", bot.me.id).set_dm_permission(true));
 }
 
 void reset_command::route(const dpp::slashcommand_t &event)
@@ -70,7 +71,7 @@ void reset_command::route(const dpp::slashcommand_t &event)
 		.set_url("https://ssod.org/")
 		.set_title("Seven Spells Of Destruction")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 	
+			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})

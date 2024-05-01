@@ -154,7 +154,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			bot.log(dpp::ll_info, "New player creation: " + name + " for id: " + event.command.usr.id.str());
 		}
 	});
-	return dpp::slashcommand("start", "Start a new character or resume game", bot.me.id).set_dm_permission(true);
+	return _(dpp::slashcommand("cmd_start", "start_desc", bot.me.id).set_dm_permission(true));
 }
 
 void start_command::route(const dpp::slashcommand_t &event)
