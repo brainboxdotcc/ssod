@@ -33,54 +33,6 @@ const time_t combat_timeout = 60 * 5;
 std::map<dpp::snowflake, combat_state> pvp_list;
 std::mutex pvp_list_lock;
 
-const std::vector<std::string_view> death_messages{
-	"{} departs the land of the living.",
-	"{} travels to the next world courtesy of {}.",
-	"{} lead a heroic, but brief life.",
-	"The life of {} was cut short by {}.",
-	"{} is now dancing with the reaper.",
-	"{} wins a free trip across the styx from {}.",
-	"{} takes a one way trip to Hades.",
-	"{}, worried, looks down and sees their corpse.",
-	"{} is carried off by the Valkyries.",
-	"Let {}'s name be praised.",
-	"{} no longer resides within the mortal realm.",
-	"{} becomes the corpus delecti.",
-	"{} is sent to the pearly gates by {}.",
-	"{} is introduced to death by {}.",
-	"{} now understands the agony of defeat.",
-	"Nice try {}, but no cigar.",
-	"{} becomes a part of history.",
-	"{} suffers an untimely death at the hands of {}.",
-	"{} was chopped into pieces by {}.",
-	"The legend of {} was ended rather suddenly by {}",
-	"{} is now a stain on {}'s weapon.",
-	"{} is now an extension of {}'s weapon.",
-	"The insects now have {} to themselves.",
-	"{}'s corpse is now suffering at the hands of {}.",
-	"{} floats around in the insides of {}",
-	"{} expires due to {}'s blow.",
-	"{} is now an ex-player... has ceased to be... is no more!",
-	"{} wanders into the light with a helping hand from {}",
-	"{} gets recycled by {}",
-	"{} becomes a greasy smear on {}'s boot",
-	"{} is now a greasy puddle.",
-	"{}'s grave is danced on by {}, with great merriment",
-	"{} has a hole in his stomach!",
-	"{} finds themselves both diced AND sliced",
-	"No guts, no glory. {}'s guts now belong to {}",
-	"{} looks at the grass from below",
-	"{} goes to look if god really exists",
-	"{} goes the fast way to hell",
-	"And there was much rejoicing as {} left the mortal coil",
-	"{} was terminated with extreme prejudice",
-	"{} simply expires",
-	"{} was mortally wounded",
-	"{} falls to the ground oozing",
-	"Pause a moment and mourn the loss of {}",
-	"All your {} are belong to {}.",
-};
-
 void remove_pvp(const dpp::snowflake id) {
 	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p1 = pvp_list.find(id);
@@ -253,19 +205,19 @@ player end_pvp_combat(const dpp::interaction_create_t& event) {
 bool has_active_pvp(const dpp::snowflake id) {
 	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p = pvp_list.find(id);
-	return (p != pvp_list.end() && p->second.accepted == true);
+	return (p != pvp_list.end() && p->second.accepted);
 }
 
 bool is_my_pvp_turn(const dpp::snowflake id) {
 	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p = pvp_list.find(id);
-	return (p != pvp_list.end() && p->second.accepted == true && p->second.my_turn == true);
+	return (p != pvp_list.end() && p->second.accepted && p->second.my_turn);
 }
 
 void swap_pvp_turn(const dpp::snowflake id) {
 	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p = pvp_list.find(id);
-	if (p != pvp_list.end() && p->second.accepted == true) {
+	if (p != pvp_list.end() && p->second.accepted) {
 		p->second.my_turn = !p->second.my_turn;
 		p->second.last_updated = time(nullptr);
 		auto p2 = pvp_list.find(p->second.opponent);
@@ -599,12 +551,15 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 				output2 << "Your hands are trembling and you are unable to properly aim at the enemy, ";
 			}
 			if (opponent.stamina < 1 || p.stamina < 1) {
+
+				const size_t max_death_messages = 44;
+				std::string death_message = _(fmt::format("DEATH_MSG_{}", random(0, max_death_messages)), event);
 				if (p.stamina < 1) {
-					output1 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
-					output2 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
+					output1 << fmt::format(fmt::runtime(death_message), p.name, opponent.name);
+					output2 << fmt::format(fmt::runtime(death_message), p.name, opponent.name);
 				} else {
-					output1 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
-					output2 << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, opponent.name);
+					output1 << fmt::format(fmt::runtime(death_message), p.name, opponent.name);
+					output2 << fmt::format(fmt::runtime(death_message), p.name, opponent.name);
 				}
 			}
 		}			
