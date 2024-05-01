@@ -208,7 +208,7 @@ dpp::slashcommand lore_command::register_command(dpp::cluster& bot) {
 			page(event, parts[0] == "lore-read", parts.size() >= 2 ? parts[1] : "");
 		}
 	});
-	return dpp::slashcommand("lore", "Show lore pages about the game world", bot.me.id).set_dm_permission(true);
+	return _(dpp::slashcommand("cmd_lore", "lore_desc", bot.me.id).set_dm_permission(true));
 }
 
 void lore_command::route(const dpp::slashcommand_t &event) {

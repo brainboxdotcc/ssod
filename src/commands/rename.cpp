@@ -20,10 +20,10 @@
 #include <ssod/ssod.h>
 #include <ssod/database.h>
 #include <ssod/commands/rename.h>
-#include <ssod/game_date.h>
 #include <ssod/game_player.h>
 #include <ssod/game_util.h>
 #include <ssod/wildcard.h>
+#include <fmt/format.h>
 
 static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
 	if (!player_is_live(event)) {
@@ -52,10 +52,10 @@ dpp::slashcommand rename_command::register_command(dpp::cluster& bot) {
 		autocomplete(bot, event, partial);
 	});
 
-	return dpp::slashcommand("rename", "Rename one of your weapons or armour pieces", bot.me.id)
+	return _(dpp::slashcommand("cmd_rename", "rename_desc", bot.me.id)
 		.set_dm_permission(true)
-		.add_option(dpp::command_option(dpp::co_string, "item", "Item to rename", true).set_auto_complete(true))
-		.add_option(dpp::command_option(dpp::co_string, "name", "New Name", true).set_max_value(20));
+		.add_option(dpp::command_option(dpp::co_string, "opt_item", "rename_item_desc", true).set_auto_complete(true))
+		.add_option(dpp::command_option(dpp::co_string, "opt_name", "rename_name_desc", true).set_max_value(20)));
 }
 
 void rename_command::route(const dpp::slashcommand_t &event)
@@ -80,7 +80,7 @@ void rename_command::route(const dpp::slashcommand_t &event)
 	embed.set_url("https://ssod.org/")
 		.set_title("Rename Equipment")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 
+			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})

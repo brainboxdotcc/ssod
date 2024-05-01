@@ -24,13 +24,13 @@
 #include <fmt/format.h>
 
 dpp::slashcommand gender_command::register_command(dpp::cluster& bot) {
-	return dpp::slashcommand("gender", "Set player's in-game gender for their profile image (male or female)", bot.me.id)
+	return _(dpp::slashcommand("gender", "Set player's in-game gender for their profile image (male or female)", bot.me.id)
 		.set_dm_permission(true)
 		.add_option(
 			dpp::command_option(dpp::co_string, "gender", "Gender to set", true)
-			.add_choice(dpp::command_option_choice("Male", "male"))
-			.add_choice(dpp::command_option_choice("Female", "female"))
-		);
+			.add_choice(dpp::command_option_choice("male", "male"))
+			.add_choice(dpp::command_option_choice("female", "female"))
+		));
 }
 
 void gender_command::route(const dpp::slashcommand_t &event)

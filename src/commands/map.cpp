@@ -19,11 +19,11 @@
  ************************************************************************************/
 #include <ssod/ssod.h>
 #include <ssod/commands/map.h>
-#include <ssod/game_date.h>
+#include <fmt/format.h>
 
 dpp::slashcommand map_command::register_command(dpp::cluster& bot)
 {
-	return dpp::slashcommand("map", "Show a map of the game world", bot.me.id).set_dm_permission(true);
+	return _(dpp::slashcommand("cmd_map", "map_desc", bot.me.id).set_dm_permission(true));
 }
 
 void map_command::route(const dpp::slashcommand_t &event)
@@ -33,7 +33,7 @@ void map_command::route(const dpp::slashcommand_t &event)
 		.set_url("https://ssod.org/")
 		.set_title("Game World Map")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Requested by " + event.command.usr.format_username(), 
+			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})

@@ -23,23 +23,23 @@
 #include <fmt/format.h>
 
 dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
-	return dpp::slashcommand("guild", "Create or join a guild", bot.me.id)
+	return (dpp::slashcommand("cmd_guild", "Create or join a guild", bot.me.id)
 		.set_dm_permission(true)
 		.add_option(
-			dpp::command_option(dpp::co_sub_command, "create", "Create a guild")
+			dpp::command_option(dpp::co_sub_command, "opt_create", "Create a guild")
 			.add_option(dpp::command_option(dpp::co_string, "name", "Guild name to create", true))
 		)
 		.add_option(
-			dpp::command_option(dpp::co_sub_command, "join", "Join a guild")
+			dpp::command_option(dpp::co_sub_command, "opt_join", "Join a guild")
 			.add_option(dpp::command_option(dpp::co_string, "name", "Guild name to join", true))
 		)
 		.add_option(
-			dpp::command_option(dpp::co_sub_command, "info", "Show guild information")
+			dpp::command_option(dpp::co_sub_command, "cmd_info", "Show guild information")
 			.add_option(dpp::command_option(dpp::co_string, "name", "Guild name to show", true))
 		)
 		.add_option(
-			dpp::command_option(dpp::co_sub_command, "leave", "Leave your guild")
-		);
+			dpp::command_option(dpp::co_sub_command, "opt_leave", "Leave your guild")
+		));
 }
 
 void guild_command::route(const dpp::slashcommand_t &event)
