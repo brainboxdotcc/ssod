@@ -67,7 +67,7 @@ void rename_command::route(const dpp::slashcommand_t &event)
 		return;
 	}
 	if (!player_is_live(event)) {
-		event.reply(dpp::message("You do not have a character yet. You must create a character by using the `/start` command!").set_flags(dpp::m_ephemeral));
+		event.reply(dpp::message(_("NOPROFILE", event)).set_flags(dpp::m_ephemeral));
 		return;
 	}
 
@@ -78,14 +78,14 @@ void rename_command::route(const dpp::slashcommand_t &event)
 
 	dpp::embed embed;
 	embed.set_url("https://ssod.org/")
-		.set_title("Rename Equipment")
+		.set_title(_("RENAME", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
+			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description("Your **" + oldname + "** has been renamed to: **" + newname + "**");
+		.set_description(_("RENAMED", event, oldname, newname));
 
 	for (item& i : p.possessions) {
 		if (dpp::lowercase(i.name) == dpp::lowercase(oldname) && i.flags.length() >= 2 && (i.flags[0] == 'W' || i.flags[0] == 'A') && isdigit(i.flags[1])) {

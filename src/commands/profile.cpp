@@ -48,13 +48,13 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	}
 	auto rs = db::query("SELECT * FROM game_users WHERE name = ?", {user});
 	if (rs.empty()) {
-		event.reply(dpp::message(self ? "You do not have a profile yet. You must create a character by using the `/start` command!" : "No such user. Remember, you must use an in-game nickname, not a discord username!").set_flags(dpp::m_ephemeral));
+		event.reply(dpp::message(_(self ? "NOPROFILE" : "NOSUCHUSER", event)).set_flags(dpp::m_ephemeral));
 		return;
 	}
 	p.experience = atol(rs[0].at("experience"));
 	auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", {rs[0].at("user_id")});
 
-	std::string content{"### Level " + std::to_string(p.get_level()) + " " + std::string(race((player_race)atoi(rs[0].at("race")))) + " " + std::string(profession((player_profession)atoi(rs[0].at("profession")))) +  "\n"};
+	std::string content{"### " + _("LEVEL", event) + " " + std::to_string(p.get_level()) + " " + std::string(race((player_race)atoi(rs[0].at("race")))) + " " + std::string(profession((player_profession)atoi(rs[0].at("profession")))) +  "\n"};
 	int percent = p.get_percent_of_current_level();
 	for (int x = 0; x < 100; x += 10) {
 		if (x < percent) {
@@ -66,7 +66,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	content += " (" + std::to_string(percent) + "%)";
 
 	if (!g.empty()) {
-		content += "\n\n**Guild:** " + dpp::utility::markdown_escape(g[0].at("name"));
+		content += "\n\n**" + _("GUILD", event) + ":** " + dpp::utility::markdown_escape(g[0].at("name"));
 	}
 
 	player p2(atol(rs[0].at("user_id")), false);
@@ -75,28 +75,28 @@ void profile_command::route(const dpp::slashcommand_t &event)
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Profile: " + dpp::utility::markdown_escape(user))
+		.set_title(_("PROFILE", event) + ": " + dpp::utility::markdown_escape(user))
 		.set_footer(dpp::embed_footer{ 
-			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
+			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
 		.set_description(content)
 		.set_image(file)
-		.add_field("Stamina", sprite::health_heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)
-		.add_field("Skill", sprite::book07.get_mention() + " " + rs[0].at("skill") + "/" + std::to_string(p2.max_skill()), true)
-		.add_field("Luck", sprite::clover.get_mention() + " " + rs[0].at("luck") + "/" + std::to_string(p2.max_luck()), true)
+		.add_field(_("Stamina", event), sprite::health_heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)
+		.add_field(_("Skill", event), sprite::book07.get_mention() + " " + rs[0].at("skill") + "/" + std::to_string(p2.max_skill()), true)
+		.add_field(_("Luck", event), sprite::clover.get_mention() + " " + rs[0].at("luck") + "/" + std::to_string(p2.max_luck()), true)
 		.add_field("XP", sprite::medal01.get_mention() + " " + rs[0].at("experience"), true)
-		.add_field("Speed", sprite::shoes03.get_mention() + " " + rs[0].at("speed") + "/" + std::to_string(p2.max_speed()), true)
-		.add_field("Sneak", sprite::throw05.get_mention() + " " + rs[0].at("sneak") + "/" + std::to_string(p2.max_sneak()), true)
-		.add_field("Gold", sprite::gold_coin.get_mention() + " " + rs[0].at("gold") + "/" + std::to_string(p2.max_gold()), true)
-		.add_field("Mana", sprite::hat02.get_mention() + " " + rs[0].at("mana") + "/" + std::to_string(p2.max_mana()), true)
-		.add_field("Armour", sprite::helm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
-		.add_field("Weapon", sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
-		.add_field("Notoriety", sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
-		.add_field("Rations", sprite::cheese.get_mention() + " " + rs[0].at("rations"), true)
-		.add_field("Scrolls", sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
+		.add_field(_("Speed", event), sprite::shoes03.get_mention() + " " + rs[0].at("speed") + "/" + std::to_string(p2.max_speed()), true)
+		.add_field(_("Sneak", event), sprite::throw05.get_mention() + " " + rs[0].at("sneak") + "/" + std::to_string(p2.max_sneak()), true)
+		.add_field(_("Gold", event), sprite::gold_coin.get_mention() + " " + rs[0].at("gold") + "/" + std::to_string(p2.max_gold()), true)
+		.add_field(_("Mana", event), sprite::hat02.get_mention() + " " + rs[0].at("mana") + "/" + std::to_string(p2.max_mana()), true)
+		.add_field(_("Armour", event), sprite::helm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
+		.add_field(_("Weapon", event), sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
+		.add_field(_("Notoriety", event), sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
+		.add_field(_("Rations", event), sprite::cheese.get_mention() + " " + rs[0].at("rations"), true)
+		.add_field(_("Scrolls", event), sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
 		;
 
 	auto premium = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
@@ -104,7 +104,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		auto bio = db::query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
 		if (!bio.empty()) {
 			if (!bio[0].at("bio").empty()) {
-				embed.set_description(content + "\n### Biography\n" + dpp::utility::markdown_escape(bio[0].at("bio")) + "\n\n");
+				embed.set_description(content + "\n### " + _("BIOGRAPHY", event) + "\n" + dpp::utility::markdown_escape(bio[0].at("bio")) + "\n\n");
 			}
 			if (!bio[0].at("image_name").empty()) {
 				embed.set_image("https://premium.ssod.org/profiles/" + bio[0].at("image_name"));

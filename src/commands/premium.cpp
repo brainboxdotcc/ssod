@@ -37,7 +37,7 @@ void premium_command::route(const dpp::slashcommand_t &event)
 		.set_url("https://ssod.org/")
 		.set_title(_("SSPREMIUM", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
+			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})

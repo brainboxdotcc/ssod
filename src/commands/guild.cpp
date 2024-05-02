@@ -26,19 +26,19 @@ dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
 	return (dpp::slashcommand("cmd_guild", "Create or join a guild", bot.me.id)
 		.set_dm_permission(true)
 		.add_option(
-			dpp::command_option(dpp::co_sub_command, "opt_create", "Create a guild")
-			.add_option(dpp::command_option(dpp::co_string, "name", "Guild name to create", true))
+			dpp::command_option(dpp::co_sub_command, "opt_create", "G_CREATE_DESC")
+			.add_option(dpp::command_option(dpp::co_string, "name", "G_NAME_DESC", true))
 		)
 		.add_option(
-			dpp::command_option(dpp::co_sub_command, "opt_join", "Join a guild")
-			.add_option(dpp::command_option(dpp::co_string, "name", "Guild name to join", true))
+			dpp::command_option(dpp::co_sub_command, "opt_join", "G_JOIN_DESC")
+			.add_option(dpp::command_option(dpp::co_string, "name", "G_JOIN_NAME_DESC", true))
 		)
 		.add_option(
-			dpp::command_option(dpp::co_sub_command, "cmd_info", "Show guild information")
-			.add_option(dpp::command_option(dpp::co_string, "name", "Guild name to show", true))
+			dpp::command_option(dpp::co_sub_command, "cmd_info", "G_INFO_DESC")
+			.add_option(dpp::command_option(dpp::co_string, "name", "G_INFO_NAME_DESC", true))
 		)
 		.add_option(
-			dpp::command_option(dpp::co_sub_command, "opt_leave", "Leave your guild")
+			dpp::command_option(dpp::co_sub_command, "opt_leave", "G_LEAVE_DESC")
 		));
 }
 
@@ -53,7 +53,7 @@ void guild_command::route(const dpp::slashcommand_t &event)
 	embed.set_url("https://ssod.org/")
 		.set_title(_(subcommand.name == "create" ? "CREATE_GUILD" : "JOIN_GUILD", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
+			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
