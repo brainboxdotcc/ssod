@@ -100,7 +100,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
 					.set_id(security::encrypt("lore-read;" + remove_lead(replace_string(fullpath.string() + std::to_string(p) + partial_name, "//", "/"))))
-					.set_label("Page " + std::to_string(p) + " of " + std::to_string(pages))
+					.set_label(_("PAGE", event) + " " + std::to_string(p) + " of " + std::to_string(pages))
 					.set_style(dpp::cos_secondary)
 					.set_emoji(sprite::scroll02.name, sprite::scroll02.id)
 					.set_disabled(current_page == p)
@@ -113,7 +113,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("lore;" + remove_lead(replace_string(fullpath.string() + "/", "//", "/"))))
-				.set_label("Back")
+				.set_label(_("BACK", event))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::spear003.name, sprite::spear003.id)
 			);

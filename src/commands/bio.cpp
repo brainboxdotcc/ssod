@@ -48,7 +48,7 @@ void bio_command::route(const dpp::slashcommand_t &event)
 	embed.set_url("https://ssod.org/")
 		.set_title(_("CUSTOM_BIO", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
+			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})

@@ -42,16 +42,14 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 			dpp::cluster* bot = event.from->creator;
 			dpp::embed embed = dpp::embed()
 				.set_url("https://ssod.org/")
-				.set_title("Player Reset Complete!")
+				.set_title(_("RESETCOMPLETE", event))
 				.set_footer(dpp::embed_footer{ 
 					.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 					.icon_url = bot->me.get_avatar_url(), 
 					.proxy_url = "",
 				})
 				.set_colour(EMBED_COLOUR)
-				.set_description(
-					"Your character has been cast into the void! All previous information has been deleted. You may now re-create a new character with `/start`.\n\nIf you have premium, your premium entitlement will continue on your new character."
-				);
+				.set_description(_("NUKED", event));
 				
 			event.reply(dpp::message()
 				.add_embed(embed)
@@ -69,16 +67,14 @@ void reset_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Seven Spells Of Destruction")
+		.set_title(_("SSOD", event))
 		.set_footer(dpp::embed_footer{ 
 			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(
-			"Are you sure you want to reset? This will **__completely delete your character__** and is __**not reversible**__. You will then be able to `/start` to re-roll new stats and pick a new race and profession."
-		);
+		.set_description(_("RESETPROMPT", event));
 		
 	event.reply(dpp::message()
 		.add_component(
@@ -86,7 +82,7 @@ void reset_command::route(const dpp::slashcommand_t &event)
 				dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_reset"))
-				.set_label("Yes, Reset!")
+				.set_label(_("DORESET", event))
 				.set_style(dpp::cos_danger)
 				.set_emoji(sprite::skull.name, sprite::skull.id)
 			)

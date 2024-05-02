@@ -31,14 +31,14 @@ void vote_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Vote to gain loot drops")
+		.set_title(_("VOTETITLE", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
+			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description("[Vote for Seven Spells on top.gg](https://top.gg/bot/620654573547159553/vote) to gain additional loot such as helpful potions every 12 hours!\n\nIf you do not already have a stamina or skill potion, and you vote for the bot, then your supply of that item will be replenished.\n\n**Use the potions repeatedly to max out your stats.**");
+		.set_description(_("VOTEBODY", event));
 	event.reply(dpp::message()
 		.add_embed(embed)
 		.set_flags(dpp::m_ephemeral)
