@@ -73,7 +73,7 @@ void info_command::route(const dpp::slashcommand_t &event)
 		.add_field(_("CACHECOUNT", event), std::to_string(db::query_count()), true)
 		.add_field(_("TIME", event), game_date(), false)
 		.add_field(_("VERSION", event), "<:DPP1:847152435399360583><:DPP2:847152435343523881> [" + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)", false)
-		.set_image(_("https://images.ssod.org/resource/app_encyclopaedia.jpg")
+		.set_image("https://images.ssod.org/resource/app_encyclopaedia.jpg")
 		;
 
 	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
