@@ -31,7 +31,7 @@ void map_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Game World Map")
+		.set_title(_("MAP", event))
 		.set_footer(dpp::embed_footer{ 
 			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 

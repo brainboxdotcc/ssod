@@ -21,6 +21,7 @@
 #include <dpp/dpp.h>
 #include <atomic>
 #include <cstdint>
+#include <fmt/core.h>
 
 namespace fs = std::filesystem;
 
@@ -75,3 +76,6 @@ inline int atoi(const std::string& str) {
 
 std::string _(const std::string &k, const dpp::interaction_create_t& interaction);
 dpp::slashcommand _(dpp::slashcommand cmd);
+template<typename... T> std::string _(const std::string& key, const dpp::interaction_create_t& interaction, T&&... args) {
+	return fmt::format(fmt::runtime(_(key, interaction)), std::forward<T>(args)...);
+}

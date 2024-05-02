@@ -35,19 +35,14 @@ void premium_command::route(const dpp::slashcommand_t &event)
 	bool has_premium = !rs.empty();
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Seven Spells Premium")
+		.set_title(_("SSPREMIUM", event))
 		.set_footer(dpp::embed_footer{ 
 			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(
-			!has_premium ? "You do not yet have [Seven Spells Premium](https://premium.ssod.org?user=" + event.command.usr.id.str() +
-			") Subscriptions are just £3 a month and give access to additional areas, automatic loot drops, and more!\n\nIf you had premium, this command would give you a link to manage your subscription."
-			:
-			"Thank you for being a **Seven Spells Premium** subscriber! Click the button below to manage your subscription."
-		);
+		.set_description(!has_premium ? _("UPSELL", event, event.command.usr.id.str()) : _("THANKS", event));
 		
 	event.reply(dpp::message()
 		.add_component(
@@ -56,7 +51,7 @@ void premium_command::route(const dpp::slashcommand_t &event)
 				dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_premium_manage"))
-				.set_label("Manage Subscription")
+				.set_label(_("MANAGESUB", event))
 				.set_url("https://premium.ssod.org/manage-subscription?user=" + event.command.usr.id.str())
 				.set_style(dpp::cos_link)
 			)
@@ -65,7 +60,7 @@ void premium_command::route(const dpp::slashcommand_t &event)
 				dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_premium_cta"))
-				.set_label("Get Premium")
+				.set_label(_("GETPREM", event))
 				.set_url("https://premium.ssod.org/?user=" + event.command.usr.id.str())
 				.set_style(dpp::cos_link)
 			)	

@@ -79,7 +79,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 		})
 		.set_colour(EMBED_COLOUR)
 		.set_image("https://images.ssod.org/resource/app_encyclopaedia_c.jpg")
-		.set_description("Select a choice from the options below to read information about the game world, its characters and your quest's background.");
+		.set_description(_("LORECHOICE", event));
 	dpp::message m;
 	component_builder cb(m);
 	if (document) {
@@ -120,7 +120,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 		}
 		embed.set_title(title);
 		embed.set_footer(dpp::embed_footer{ 
-			.text = document ? std::to_string(pages) + " page" + (pages > 1 ? "s" : "") + ", " + std::to_string(mins_read_time(whole_doc)) + " minutes read time" : "Lore Information", 
+			.text = document ? std::to_string(pages) + " " + _("PAGE", event) + (pages > 1 ? "s" : "") + ", " + std::to_string(mins_read_time(whole_doc)) + " " + _("MINSREAD", event) : _("LORE", event), 
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		});
@@ -178,7 +178,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("lore;"))
-				.set_label("Back")
+				.set_label(_("BACK", event))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::spear003.name, sprite::spear003.id)
 			);
