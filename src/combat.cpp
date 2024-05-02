@@ -76,7 +76,7 @@ void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake 
 	}
 	player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 	send_chat(event.command.usr.id, p.paragraph, p2.name, "combat");
-	dpp::message m = dpp::message("<@" + opponent.str() +  "> You have been challenged to combat by " + p.name).set_allowed_mentions(true, false, false, false, {}, {});
+	dpp::message m = dpp::message(_("CHALLENGE_PVP", event, opponent.str(), p.name)).set_allowed_mentions(true, false, false, false, {}, {});
 	m.channel_id = p2.event.command.channel_id;
 	m.guild_id = p2.event.command.guild_id;
 	m.add_component(
@@ -84,14 +84,14 @@ void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake 
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("pvp_accept;" + event.command.usr.id.str() + ";" + opponent.str()))
-			.set_label("Accept")
+			.set_label(_("ACCEPT", event))
 			.set_style(dpp::cos_success)
 			.set_emoji(sprite::sword008.name, sprite::sword008.id)
 		)
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("pvp_reject;" + event.command.usr.id.str() + ";" + opponent.str()))
-			.set_label("Reject")
+			.set_label(_("REJECT", event))
 			.set_style(dpp::cos_danger)
 			.set_emoji(sprite::magic05.name, sprite::magic05.id)
 		)
@@ -151,12 +151,12 @@ void update_opponent_message(const dpp::interaction_create_t& event, dpp::messag
 						opponent.save(event.command.usr.id);
 						update_live_player(event, p);
 						update_save_opponent(event, opponent);
-						update_opponent_message(event, get_pvp_round(opponent.event), std::stringstream(opponent.name + " timed out, left Discord?"));
-						update_opponent_message(opponent.event, get_pvp_round(event), std::stringstream(opponent.name + " timed out, left Discord?"));
+						update_opponent_message(event, get_pvp_round(opponent.event), std::stringstream(_("TIMEOUT", event, opponent.name)));
+						update_opponent_message(opponent.event, get_pvp_round(event), std::stringstream(_("TIMEOUT", event, opponent.name)));
 						p = end_pvp_combat(event);
 						/* To the victor go the spoils */
 						p.add_experience(opponent.xp_worth());
-						send_chat(opponent.event.command.usr.id, p.paragraph, "the whims of Discord", "death");
+						send_chat(opponent.event.command.usr.id, p.paragraph, _("WHIMS", event), "death");
 						update_save_opponent(event, opponent);
 					}
 				}
@@ -181,8 +181,6 @@ void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
 			.my_turn = !turn,
 			.last_updated = time(nullptr),
 		};
-	} else {
-		std::cout << "accept pvp with id 0!\n";
 	}
 }
 
@@ -250,12 +248,12 @@ void end_abandoned_pvp() {
 				p.save(event.command.usr.id);
 				update_live_player(event, p);
 				update_save_opponent(event, opponent);
-				update_opponent_message(event, get_pvp_round(opponent.event), std::stringstream(p.name + " timed out after 5 minutes without activity"));
-				update_opponent_message(opponent.event, get_pvp_round(event), std::stringstream(p.name + " timed out after 5 minutes without activity"));
+				update_opponent_message(event, get_pvp_round(opponent.event), std::stringstream(_("TIMEOUT5", event, p.name)));
+				update_opponent_message(opponent.event, get_pvp_round(event), std::stringstream(_("TIMEOUT5", event, p.name)));
 				p = end_pvp_combat(event);
 				/* To the victor go the spoils */
 				opponent.add_experience(p.xp_worth());
-				send_chat(event.command.usr.id, p.paragraph, "the raveges of time", "death");
+				send_chat(event.command.usr.id, p.paragraph, _("RAVAGES", event), "death");
 				update_save_opponent(event, opponent);
 			}
 		}
@@ -297,7 +295,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 
 	if (turn) {
 		if (p.stamina > 0) {
-			output << "**Your turn!** - Respond with an action before the time runs out " + dpp::utility::timestamp(time(nullptr) + combat_timeout, dpp::utility::tf_relative_time) + "!";
+			output << _("YOUR_TURN", event) << " " << dpp::utility::timestamp(time(nullptr) + combat_timeout, dpp::utility::tf_relative_time) << "!";
 			size_t index = 0;
 			for (const auto & inv :  p.possessions) {
 				if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
@@ -305,7 +303,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
 						.set_id(security::encrypt("pvp_attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
-						.set_label("Attack using " + inv.name)
+						.set_label(_("ATTACK_USING", event, inv.name))
 						.set_style(dpp::cos_secondary)
 						.set_emoji(e.name, e.id)
 					);
@@ -318,7 +316,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
 						.set_id(security::encrypt("pvp_attack;" + spell.name + ";" + std::to_string(rating) + ";" + std::to_string(++index)))
-						.set_label("Cast " + spell.name)
+						.set_label(_("CAST", event, spell.name))
 						.set_style(dpp::cos_secondary)
 						.set_emoji(e.name, e.id)
 						.set_disabled(p.mana < rating)
@@ -328,21 +326,21 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("pvp_change_stance;" + std::string(p.stance == DEFENSIVE ? "o" : "d")))
-				.set_label("Stance: " + std::string(p.stance == DEFENSIVE ? "Defensive" : "Offensive") + " (click to change)")
+				.set_label("Stance: " + std::string(_(p.stance == DEFENSIVE ? "DEFENSIVE" : "OFFENSIVE", event)) + " " + _("CLICK_TO_CHANGE", event))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::wood03.name, sprite::wood03.id)
 			);
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("pvp_change_strike;" + std::string(p.attack == CUTTING ? "p" : "c")))
-				.set_label("Attack Type: " + std::string(p.attack == CUTTING ? "Cutting" : "Piercing") + " (click to change)")
+				.set_label("Attack Type: " + std::string(_(p.attack == CUTTING ? "CUTTING" : "PIERCING", event)) + " " + _("CLICK_TO_CHANGE", event))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::shoes04.name, sprite::shoes04.id)
 			);
 		}
 	} else {
 		if (p.stamina > 0) { 
-			output << "**" << opponent.name << "'s turn!** - They must respond " + dpp::utility::timestamp(time(nullptr) + combat_timeout, dpp::utility::tf_relative_time) + " or will forfeit combat";
+			output << _("OTHER_TURN", event, opponent.name, dpp::utility::timestamp(time(nullptr) + combat_timeout, dpp::utility::tf_relative_time));
 		}
 	}
 	if (p.stamina < 1) {
@@ -355,7 +353,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
-			.set_label("Victory!")
+			.set_label(_("VICTORY", event))
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 		);
@@ -834,15 +832,18 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				output << "The enemy is unable to focus properly upon you and stares at you trying to predict your next move. ";
 			}
 
+
 			if (EStamina < 1 || p.stamina < 1) {
+				const size_t max_death_messages = 44;
+				std::string death_message = _(fmt::format("DEATH_MSG_{}", random(0, max_death_messages)), event);
 				if (p.stamina < 1) {
-					output << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.name, p.combatant.name);
+					output << fmt::format(fmt::runtime(death_message), p.name, p.combatant.name);
 				} else {
 					/* Add experience on victory equal to remaining skill of enemy (indicates difficulty of the fight) */
 					long xp = abs(std::max(p.combatant.skill, 0l) * 0.15f) + 1;
 					output << "\n\n***+" + std::to_string(xp) + " experience points!***\n\n";
 					p.add_experience(xp);
-					output << "**" << fmt::format(fmt::runtime(death_messages[random(0, death_messages.size() - 1)].data()), p.combatant.name, p.name) << "**";
+					output << "**" << fmt::format(fmt::runtime(death_message), p.combatant.name, p.name) << "**";
 				}
 			}
 		}
