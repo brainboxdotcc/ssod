@@ -118,7 +118,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
 		} else {
-			event.reply(dpp::message(_("EXPIRED", event, sprite::skull.get_mention()).set_flags(dpp::m_ephemeral));
+			event.reply(dpp::message(_("EXPIRED", event, sprite::skull.get_mention())).set_flags(dpp::m_ephemeral));
 		}
 	});
 	bot.on_form_submit([&bot](const dpp::form_submit_t & event) {
