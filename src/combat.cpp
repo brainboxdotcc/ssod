@@ -362,22 +362,22 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 	output << "\nYour Stance: **" << (p.stance == DEFENSIVE ? "defensive " + sprite::wood03.get_mention() : "offensive " + sprite::sword008.get_mention()) << "**";
 	std::stringstream output1, output2;
 	output1 << "\n\n```ansi\n";
-	output1 << fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", p.skill) << "\n";
-	output1 << fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", p.stamina) << "\n";
-	output1 << fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", p.armour.rating) << "\n";
-	output1 << fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", p.weapon.rating) << "\n";
+	output1 << fmt::format("\033[2;31m{}\033[0m: \033[2;33m{0:2d}\033[0m", _("SKILL", event), p.skill) << "\n";
+	output1 << fmt::format("\033[2;31m{}\033[0m: \033[2;33m{0:2d}\033[0m", _("STAMINA", event), p.stamina) << "\n";
+	output1 << fmt::format("\033[2;31m{}\033[0m: \033[2;33m{0:2d}\033[0m", _("ARMOUR", event), p.armour.rating) << "\n";
+	output1 << fmt::format("\033[2;31m{}\033[0m: \033[2;33m{0:2d}\033[0m", _("WEAPON", event), p.weapon.rating) << "\n";
 	output1 << "```\n\n";
 	output2 << "\n\n```ansi\n";
-	output2 << fmt::format("\033[2;31mSkill\033[0m: \033[2;33m{0:2d}\033[0m", opponent.skill) << "\n";
-	output2 << fmt::format("\033[2;31mStamina\033[0m: \033[2;33m{0:2d}\033[0m", opponent.stamina) << "\n";
-	output2 << fmt::format("\033[2;31mArmour\033[0m: \033[2;33m{0:2d}\033[0m", opponent.armour.rating) << "\n";
-	output2 << fmt::format("\033[2;31mWeapon\033[0m: \033[2;33m{0:2d}\033[0m", opponent.weapon.rating) << "\n";
+	output2 << fmt::format("\033[2;31m{}\033[0m: \033[2;33m{0:2d}\033[0m", _("SKILL", event), opponent.skill) << "\n";
+	output2 << fmt::format("\033[2;31m{}\033[0m: \033[2;33m{0:2d}\033[0m", _("STAMINA", event), opponent.stamina) << "\n";
+	output2 << fmt::format("\033[2;31m{}\033[0m: \033[2;33m{0:2d}\033[0m", _("ARMOUR", event), opponent.armour.rating) << "\n";
+	output2 << fmt::format("\033[2;31m{}\033[0m: \033[2;33m{0:2d}\033[0m", _("WEAPON", event), opponent.weapon.rating) << "\n";
 	output2 << "```\n\n";
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{ 
-			.text = "In PvP combat with " + opponent.name + ", Location: " + std::to_string(opponent.paragraph),
+			.text = _("INPVP", event, opponent.name, opponent.paragraph),
 			.icon_url = "", 
 			.proxy_url = "",
 		})
@@ -425,7 +425,7 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 		if (p.has_spell(p.weapon.name)) {
 			if (p.mana < p.weapon.rating) {
 				p.weapon.rating = 0;
-				p.weapon.name = "Unarmed (out of mana!)";
+				p.weapon.name = _("NOMANA", event);
 			} else {
 				p.mana -= p.weapon.rating;
 			}
@@ -435,16 +435,16 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 		if ((p.stance == OFFENSIVE) && (opponent.stance == DEFENSIVE)) {
 			int Bonus = dice();
 			PAttack += Bonus;
-			output1 << "You are being offensive in stance, and " << opponent.name << " is shielding themselves from your blow (**+" << Bonus << " to your attack score**).";
-			output2 << "You are defensive in stance, and the " << p.name << " is bearing down on you (**+" << Bonus << " to their attack score**).";
+			output1 << _("PVPOFF", event, opponent.name, Bonus);
+			output2 << _("PFPDEF", event, p.name, Bonus);
 		}
-		output1 << "You get a total attack score of **" << PAttack << "** using your **" << p.weapon.name << "**\n\n";
-		output2 << p.name << " gets a total attack score of **" << PAttack << "** using their **" << p.weapon.name << "**\n\n";
+		output1 << _("PVPATKME", event, PAttack, p.weapon.name) << "\n\n";
+		output2 << _("PVPATKOP", p.name, PAttack, p.weapon.name) << "\n\n";
 		long SaveRoll = dice() + dice();
 		bool Saved = false;		
 		if (opponent.stance == DEFENSIVE) {
-			output1 << " Because " << opponent.name << " is in a defensive position this round, they gains extra bonuses to their armour which may increase their chances of avoiding damage.";
-			output2 << " Because you are in a defensive position this round, you gain extra bonuses to your armour which may increase your chances of avoiding damage.";
+			output1 << " " << _("PVPOPDEF", event, opponent.name);
+			output2 << " " << _("PVPMEDEF", event);
 			SaveRoll -= dice();
 		}
 		if (SaveRoll <= opponent.armour.rating) {
@@ -454,84 +454,80 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 		long SDamage{}, KDamage{};
 		combat_strike KAttackType = p.attack;
 		if (Saved) {
-			output1 << " The blow bounces harmlessly off their " << opponent.armour.name <<"...";
-			output2 << " The blow bounces harmlessly off your " << opponent.armour.name <<"...";
+			output1 << _("PVPOPARMOUR", event, opponent.armour.name);
+			output2 << _("PVPMEARMOUR", event, opponent.armour.name);
 		} else {
-			output1 << " The blow cuts through their " << opponent.armour.name << " and lands in the **";
-			output2 << " The blow cuts through your " << opponent.armour.name << " and lands in the **";
+			output1 << _("PVPBREAKOP", event, opponent.armour.name);
+			output2 << _("PVPBREAKME", event, opponent.armour.name);
 			switch (D6) {
 				case 1:
-					output1 << "head/neck";
-					output2 << "head/neck";
+					output1 << _("HEAD", event);
+					output2 << _("HEAD", event);
 					SDamage = dice();
 					KDamage = 1;
 					break;
 				case 2:
-					output1 << "legs";
-					output2 << "legs";
+					output1 << _("LEGS", event);
+					output2 << _("LEGS", event);
 					SDamage = 3;
 					KDamage = 1;
 					break;
 				case 3:
-					output1 << "torso";
-					output2 << "torso";
+					output1 << _("TORSO", event);
+					output2 << _("TORSO", event);
 					SDamage = dice();
 					KDamage = 0;
 					break;
 				case 4:
-					output1 << "arms";
-					output2 << "arms";
+					output1 << _("ARMS", event);
+					output2 << _("ARMS", event);
 					SDamage = 2;
 					KDamage = 2;
 					break;
 				case 5:
-					output1 << "hands";
-					output2 << "hands";
+					output1 << _("HANDS", event);
+					output2 << _("HANDS", event);
 					SDamage = 2;
 					KDamage = 1;
 					break;
 				case 6:
-					output1 << "weapon";
-					output2 << "weapon";
+					output1 << _("BWEAPON", event);
+					output2 << _("BWEAPON", event);
 					SDamage = 0;
 					KDamage = 1;
 					break;
 			}
-			output1 << "** area, ";
-			output2 << "** area, ";
+			output1 << "** " << _("AREA", event) << ", ";
+			output2 << "** " << _("AREA", event) << ", ";
 			switch (D6) {
 				case 1:
 					if (KAttackType == CUTTING) {
-						output1 << "Because the attack was a cutting attack, it causes severe damage to this part of the body, and extra stamina points are lost as a result!";
-						output2 << "Because the attack was a cutting attack, it causes severe damage to this part of the body, and extra stamina points are lost as a result!";
+						output1 << _("CUTTINGOUTCOME", event);
+						output2 << _("CUTTINGOUTCOME", event);
 						SDamage += dice();
 					}
 					break;
 				case 2:
 					if (KAttackType == PIERCING) {
-						output1 << "Because the attack was a piercing attack, it causes severe damage to the body, and extra stamina is lost due to the attack!";
-						output2 << "Because the attack was a piercing attack, it causes severe damage to the body, and extra stamina is lost due to the attack!";
+						output1 << _("PIERCINGOUTCOME", event);
+						output2 << _("PIERCINGOUTCOME", event);
 						SDamage += dice();
 					}
 					break;
 			}
-			output1 << " This causes ";
-			output2 << " This causes ";
 			if (SDamage == 0) {
-				output1 << "no **stamina** loss, ";
-				output2 << "no **stamina** loss, ";
+				output1 << "This causes no **stamina** loss, ";
+				output2 << "This causes no **stamina** loss, ";
 			} else {
-				output1 << SDamage << " points of **stamina** loss, ";
-				output2 << SDamage << " points of **stamina** loss, ";
+				output1 << "This causes " << SDamage << " points of **stamina** loss, ";
+				output2 << "This causes " << SDamage << " points of **stamina** loss, ";
 			}
-			output1 << "and ";
-			output2 << "and ";
 			if (KDamage == 0) {
-				output1 << "no **skill** loss. ";
-				output2 << "no **skill** loss. ";
+				output1 << "and no **skill** loss. ";
+				output2 << "and no **skill** loss. ";
 			} else {
-				output1 << KDamage << " points of **skill** loss. ";
-				output2 << KDamage << " points of **skill** loss. ";
+				output1 << "and " << KDamage << " points of **skill** loss. ";
+				output2 << "and " << KDamage << " points of **skill** loss. ";
 			}
 			opponent.stamina -= SDamage;
 			opponent.skill -= KDamage;
