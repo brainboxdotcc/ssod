@@ -59,5 +59,5 @@ std::string game_date() {
 	frac = std::min(3, std::max(0, frac));
 	game_day = std::min(4, std::max(0, game_day));
 	game_month = std::min(5, std::max(0, game_month));
-	return fmt::format("{}, {}, {} {} in the year {}\n{} days remaining this round.", fraction[frac], day[game_day], game_index, month[game_month], game_year, 50);
+	return fmt::format("{}, {}, {} {}, {}", fraction[frac], day[game_day], game_index, month[game_month], game_year);
 }

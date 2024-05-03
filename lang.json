@@ -7531,5 +7531,173 @@
         "el": "Επειδή η επίθεση ήταν διάτρηση, προκαλεί σοβαρή ζημιά στο σώμα και χάνεται επιπλέον αντοχή λόγω της επίθεσης!",
         "uk": "Оскільки атака була пронизливою, вона завдає серйозної шкоди тілу, і через атаку втрачається додаткова витривалість!",
         "th": "เนื่องจากการโจมตีเป็นการโจมตีแบบเจาะทะลุ จึงทำให้เกิดความเสียหายอย่างรุนแรงต่อร่างกาย และความแข็งแกร่งพิเศษจะสูญเสียไปเนื่องจากการโจมตี!"
+    },
+    "DED": {
+        "en": "You have met your end, adventurer!"
+    },
+    "DEATH_EXPLAIN": {
+        "en": "You can __resurrect nearby__ if you wish, which will respawn you __near to your place of death with your current inventory__. If you choose this path, then perhaps in the future you will *choose more wisely*.\\n\\nPlease be aware that resurrections are limited to one per hour **or one per 15 minutes for premium users**, and if you have no resurrection available, and do not want to wait, your only choice is to __restart from the start__."
+    },
+    "RESURRET_ME": {
+        "en": "Ressurrect Me"
+    },
+    "RESURRECT_NOT_AVAILABLE": {
+        "en": "You __can't resurrect nearby__ until your resurrection is ready again {}, but you can respawn at the __start of the game__ right now and choose a different, *perhaps wiser* path...\n\n"
+    },
+    "PREMIUM_RESURRECT": {
+        "en": "[Premium users](https://premium.ssod.org/) can **__resurrect every 15 minutes__ instead of every hour.** If you had Seven Spells Premium, you could be back in the land of the living right now!"
+    },
+    "RESPAWN_AT_START": {
+        "en": "Respawn at start"
+    },
+    "WANDERS_IN": {
+        "en": "wanders into the location"
+    },
+    "LEAVES": {
+        "en": "leaves the location"
+    },
+    "DROPS": {
+        "en": "has dropped"
+    },
+    "CHALLENGES": {
+        "en": "has challenged"
+    },
+    "TO_COMBAT": {
+        "en": "to combat"
+    },
+    "DIED": {
+        "en": "died"
+    },
+    "FIGHTING": {
+        "en": "fighting"
+    },
+    "INCORRECT_RIDDLE": {
+        "en": "The answer you entered is not correct, adventurer! Please try again!"
+    },
+    "NO_ARMOUR": {
+        "en": "Undergarments"
+    },
+    "NO_WEAPON": {
+        "en": "Unarmed"
+    },
+    "CURE_ALL": {
+        "en": "You feel well again. You have been cured of all diseases!"
+    },
+    "CURE_RASP": {
+        "en": "You feel well again. You have been cured of lung rasp!"
+    },
+    "CURE_ROT": {
+        "en": "You feel well again. You have been cured of green rot!"
+    },
+    "CURE_BLOOD": {
+        "en": "You feel well again. You have been cured of blood plague!"
+    },
+    "CURE_PLAGUE": {
+        "en": "You feel well again. You have been cured of bubonic plague!"
+    },
+    "PVP_REJECTED": {
+        "en": "{0}, {1} rejected your combat request."
+    },
+    "GO_BACK": {
+        "en": "Go Back"
+    },
+    "ENTER_MESSAGE": {
+        "en": "Enter Message"
+    },
+    "HELLO": {
+        "en": "hello"
+    },
+    "BANK_WELCOME": {
+        "en": "Welcome to the Bank Of Utopia"
+    },
+    "BANK_MAX": {
+        "en": "The bank can hold a maximum of **{}** gold pieces. Level up to increase this limit."
+    },
+    "SILVER_UPSELL": {
+        "en": "We will soon be offering competitive exchange rates for changing silver coins to gold. Check back later at a branch near you."
+    },
+    "BANK_ITEMS": {
+        "en": "Bank Items"
+    },
+    "BANK": {
+        "en": "Bank Of Utopia"
+    },
+    "YOUR_BALANCE": {
+        "en": "Your Balance:"
+    },
+    "COIN_PURSE": {
+        "en": "Coin Purse:"
+    },
+    "DEPOSIT_ITEM": {
+        "en": "Deposit Item"
+    },
+    "WITHDRAW_ITEM": {
+        "en": "Withdraw Item"
+    },
+    "DEPOSIT_GOLD": {
+        "en": "Deposit Gold"
+    },
+    "WITHDRAW_GOLD": {
+        "en": "Withdraw Gold"
+    },
+    "PVP_SELECT": {
+        "en": "\n__**Select player to fight**__\n\nThe player you pick will be sent a request and must accept it to fight you. If they leave the area, the request will be cancelled.\n"
+    },
+    "PVP_WAIT": {
+        "en": "\n__**Please wait for your challenge to be accepted**__\n\nIf the user does not accept or reject your request, you will receive no response. If you wish to give up waiting, simply click the {} Back button.\n"
+    },
+    "PVP_SEL_FOOTER": {
+        "en": "PvP Player Selection for {}"
+    },
+    "SELECT_PLAYER": {
+        "en": "Select Player"
+    },
+    "CRICKETS": {
+        "en": "There are no players here to fight. You must go back."
+    },
+    "GONE_AWAY": {
+        "en": "The player you have selected has is not active at this location! Perhaps they left the area while you were choosing?"
+    },
+    "LOCATION": {
+        "en": "Location"
+    },
+    "OTHERS": {
+        "en": "Other players here:"
+    },
+    "ITEMS": {
+        "en": "Items On Ground"
+    },
+    "SELL_ITEM": {
+        "en": "Sell Item"
+    },
+    "VALUE": {
+        "en": "Value:"
+    },
+    "PAYLINK": {
+        "en": "Pay {} Gold"
+    },
+    "CHOOSE": {
+        "en": "Choose {}"
+    },
+    "BUY": {
+        "en": "Buy {0} ({1} Gold)"
+    },
+    "USE_BANK": {
+        "en": "Use Bank"
+    },
+    "FIGHT": {
+        "en": "Fight {}"
+    },
+    "ANSWER": {
+        "en": "Answer: {}"
+    },
+    "INVENTORY": {
+        "en": "Inventory"
+    },
+    "PVP": {
+        "en": "PvP"
+    },
+    "PICK": {
+        "en": "Pick up {}"
     }
 }

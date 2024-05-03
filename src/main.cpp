@@ -31,8 +31,7 @@
 #include <ssod/commandline.h>
 #include <ssod/lang.h>
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
 	std::setlocale(LC_ALL, "en_GB.UTF-8");
 
 	config::init("../config.json");
@@ -48,6 +47,8 @@ int main(int argc, char const *argv[])
 		true,
 		dpp::cache_policy::cpol_none
 	);
+
+	bot.set_websocket_protocol(dpp::ws_etf);
 
 	security::init(bot);
 	js::init(bot);
