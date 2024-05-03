@@ -211,8 +211,8 @@ namespace listeners {
 			}, 10);
 			bot.start_timer([&bot](dpp::timer t) {
 				process_potion_drops(bot);
-				cleanup_idle_live_players();
-				cleanup_idle_reg_players();
+				//cleanup_idle_live_players();
+				//cleanup_idle_reg_players();
 				check_lang_reload(bot);
 			}, 60);
 			bot.start_timer([&bot](dpp::timer t) {

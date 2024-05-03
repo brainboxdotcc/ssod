@@ -23,7 +23,7 @@
 #include <fmt/format.h>
 
 dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
-	return (dpp::slashcommand("cmd_guild", "Create or join a guild", bot.me.id)
+	return _(dpp::slashcommand("cmd_guild", "Create or join a guild", bot.me.id)
 		.set_dm_permission(true)
 		.add_option(
 			dpp::command_option(dpp::co_sub_command, "opt_create", "G_CREATE_DESC")

@@ -26,7 +26,7 @@
 
 dpp::slashcommand info_command::register_command(dpp::cluster& bot)
 {
-	return (dpp::slashcommand("cmd_info", "info_desc", bot.me.id).set_dm_permission(true));
+	return _(dpp::slashcommand("cmd_info", "info_desc", bot.me.id).set_dm_permission(true));
 }
 
 int64_t proc_self_value(const std::string& find_token) {
