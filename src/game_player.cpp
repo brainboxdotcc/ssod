@@ -291,7 +291,7 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 		.add_field(_("SILVER", event), std::to_string(silver), true)
 		.add_field(_("RATIONS", event), std::to_string(rations), true)
 		.add_field(_("NOTORIETY", event), std::to_string(notoriety), true)
-		.add_field(_("ARMOUR", event), fmt::format("{} ({} {})", armour.name, _("RATING", event) armour.rating), true)
+		.add_field(_("ARMOUR", event), fmt::format("{} ({} {})", armour.name, _("RATING", event), armour.rating), true)
 		.add_field(_("WEAPON", event), fmt::format("{} ({} {})", weapon.name, _("RATING", event), weapon.rating), true)
 		.set_image(file);
 
@@ -316,12 +316,12 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 			.set_placeholder(_("SELECTPROFESSION", event))
 			.set_required(true)
 			.set_id(security::encrypt("select_player_profession"))
-			.add_select_option(dpp::select_option(_("WARRIOR", "1", _("WARRIOR_DESC", event)).set_default(profession == prof_warrior))
-			.add_select_option(dpp::select_option(_("WIZARD", "2", _("WIZARD_DESC", event)).set_default(profession == prof_wizard))
-			.add_select_option(dpp::select_option(_("THIEF", "3", _("THIEF_DESC", event)).set_default(profession == prof_thief))
-			.add_select_option(dpp::select_option(_("WOODSMAN", "4", _("WOODSMAN_DESC", event)).set_default(profession == prof_woodsman))
-			.add_select_option(dpp::select_option(_("ASSASSIN", "5", _("ASSASSIN_DESC", event)).set_default(profession == prof_assassin))
-			.add_select_option(dpp::select_option(_("MERCENARY", "6", _("MERCENARY_DESC", event)).set_default(profession == prof_mercenary));
+			.add_select_option(dpp::select_option(_("WARRIOR", event), "1", _("WARRIOR_DESC", event)).set_default(profession == prof_warrior))
+			.add_select_option(dpp::select_option(_("WIZARD", event), "2", _("WIZARD_DESC", event)).set_default(profession == prof_wizard))
+			.add_select_option(dpp::select_option(_("THIEF", event), "3", _("THIEF_DESC", event)).set_default(profession == prof_thief))
+			.add_select_option(dpp::select_option(_("WOODSMAN", event), "4", _("WOODSMAN_DESC", event)).set_default(profession == prof_woodsman))
+			.add_select_option(dpp::select_option(_("ASSASSIN", event), "5", _("ASSASSIN_DESC", event)).set_default(profession == prof_assassin))
+			.add_select_option(dpp::select_option(_("MERCENARY", event), "6", _("MERCENARY_DESC", event)).set_default(profession == prof_mercenary));
 		gender_select_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(1)
 			.set_max_values(1)
@@ -329,7 +329,7 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 			.set_required(true)
 			.set_default_value("male")
 			.set_id(security::encrypt("select_player_gender"))
-			.add_select_option(dpp::select_option(_("male", event) "male").set_default(gender == "male"))
+			.add_select_option(dpp::select_option(_("male", event), "male").set_default(gender == "male"))
 			.add_select_option(dpp::select_option(_("female", event), "female").set_default(gender == "female"));
 
 	return dpp::message()
@@ -548,7 +548,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(fmt::format(_("MAGIC_MSG", event, herbs.size(), 3, spells.size(), max_spells));
+		.set_description(_("MAGIC_MSG", event, herbs.size(), 3, spells.size(), max_spells));
 
 	dpp::component herb_select_menu, spell_select_menu;
 	herb_select_menu.set_type(dpp::cot_selectmenu)
