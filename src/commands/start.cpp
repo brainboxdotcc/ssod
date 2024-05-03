@@ -41,13 +41,11 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		dpp::cluster& bot = *(event.from->creator);
 		bot.log(dpp::ll_debug, event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
 		if (custom_id == "player_reroll" && p_old.state == state_roll_stats) {
-			event.reply();
 			player p_new(true);
 			p_new.event = p_old.event;
 			update_registering_player(event, p_new);
 			event.reply(p_new.get_registration_message(bot, event));
 		} else if (custom_id == "player_herb_spell_selection" && p_old.state == state_roll_stats) {
-			event.reply();
 			p_old.state = state_pick_magic;
 			p_old.stamina += bonuses_numeric(1, p_old.race, p_old.profession);
 			p_old.skill += bonuses_numeric(2, p_old.race, p_old.profession);
@@ -82,7 +80,6 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (player_is_live(event)) {
 			return;
 		}
-		event.reply();
 		player p_old = get_registering_player(event);
 		std::string custom_id = security::decrypt(event.custom_id);
 		if (custom_id.empty()) {
