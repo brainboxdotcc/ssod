@@ -41,11 +41,13 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		dpp::cluster& bot = *(event.from->creator);
 		bot.log(dpp::ll_debug, event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
 		if (custom_id == "player_reroll" && p_old.state == state_roll_stats) {
+			event.reply();
 			player p_new(true);
 			p_new.event = p_old.event;
 			update_registering_player(event, p_new);
-			event.reply(p_new.get_registration_message(bot, event));
+			p_new.event.edit_original_response(p_new.get_registration_message(bot, event));
 		} else if (custom_id == "player_herb_spell_selection" && p_old.state == state_roll_stats) {
+			event.reply();
 			p_old.state = state_pick_magic;
 			p_old.stamina += bonuses_numeric(1, p_old.race, p_old.profession);
 			p_old.skill += bonuses_numeric(2, p_old.race, p_old.profession);
@@ -53,7 +55,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			p_old.sneak += bonuses_numeric(4, p_old.race, p_old.profession);
 			p_old.speed += bonuses_numeric(5, p_old.race, p_old.profession);
 			update_registering_player(event, p_old);
-			event.reply(p_old.get_magic_selection_message(bot, event));
+			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
 		} else if (custom_id == "player_name" && p_old.state == state_pick_magic) {
 			p_old.state = state_name_player;
 			update_registering_player(event, p_old);
@@ -80,6 +82,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (player_is_live(event)) {
 			return;
 		}
+		event.reply();
 		player p_old = get_registering_player(event);
 		std::string custom_id = security::decrypt(event.custom_id);
 		if (custom_id.empty()) {
@@ -89,15 +92,15 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id == "select_player_race" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.race = (player_race)atoi(event.values[0]);
 			update_registering_player(event, p_old);
-			event.reply(p_old.get_registration_message(bot, event));
+			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_gender" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.gender = event.values[0];
 			update_registering_player(event, p_old);
-			event.reply(p_old.get_registration_message(bot, event));
+			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_profession" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.profession = (player_profession)atoi(event.values[0]);
 			update_registering_player(event, p_old);
-			event.reply(p_old.get_registration_message(bot, event));
+			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_herbs" && p_old.state == state_pick_magic) {
 			p_old.herbs.clear();
 			for (const auto & h : event.values) {
@@ -105,7 +108,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			}
 			p_old.inv_change = true;
 			update_registering_player(event, p_old);
-			event.reply(p_old.get_magic_selection_message(bot, event));
+			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
 		} else if (custom_id == "select_player_spells" && p_old.state == state_pick_magic) {
 			p_old.spells.clear();
 			for (const auto & s : event.values) {
@@ -113,7 +116,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			}
 			p_old.inv_change = true;
 			update_registering_player(event, p_old);
-			event.reply(p_old.get_magic_selection_message(bot, event));
+			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
 		} else {
 			event.reply(dpp::message(_("EXPIRED", event, sprite::skull.get_mention())).set_flags(dpp::m_ephemeral));
 		}
@@ -133,7 +136,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			if (!check.empty()) {
 				event.reply();
 				dpp::message m = p_old.get_magic_selection_message(bot, event);
-				m.embeds[0].description += "\n\n## " + _("EXPIRED", event);
+				m.embeds[0].description += "\n\n## " + _("EXISTS", event);
 				p_old.event.edit_original_response(m);
 				return;
 			}
