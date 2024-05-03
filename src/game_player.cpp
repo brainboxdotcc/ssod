@@ -274,27 +274,25 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 	std::string file = matrix_image(race, profession, gender == "male");
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("New Character Creation")
+		.set_title(_("NEWCHAR", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = "New player creation for " + event.command.usr.format_username(), 
+			.text = _("NEWPLAY", event, event.command.usr.format_username()), 
 			.icon_url = cluster.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(fmt::format("Welcome to the world of **Utopia**, {}!\n\n\
-Your character is shown below. If you are not happy with your base stats, click **Re-Roll** for new ones.\n\
-### Once you commit to this character, you cannot change these base stats without __restarting__.", event.command.usr.get_mention()))
-		.add_field("Stamina", std::to_string(stamina) + bonuses(1, race, profession), true)
-		.add_field("Skill", std::to_string(skill) + bonuses(2, race, profession), true)
-		.add_field("Luck", std::to_string(luck) + bonuses(3, race, profession), true)
-		.add_field("Sneak", std::to_string(sneak) + bonuses(4, race, profession), true)
-		.add_field("Speed", std::to_string(speed) + bonuses(5, race, profession), true)
-		.add_field("Gold", std::to_string(gold), true)
-		.add_field("Silver", std::to_string(silver), true)
-		.add_field("Rations", std::to_string(rations), true)
-		.add_field("Notoriety", std::to_string(notoriety), true)
-		.add_field("Armour", fmt::format("{} (Rating {})", armour.name, armour.rating), true)
-		.add_field("Weapon", fmt::format("{} (Rating {})", weapon.name, weapon.rating), true)
+		.set_description(_("WELCOME_MSG", event, event.command.usr.get_mention()))
+		.add_field(_("STAMINA", event), std::to_string(stamina) + bonuses(1, race, profession), true)
+		.add_field(_("SKILL", event), std::to_string(skill) + bonuses(2, race, profession), true)
+		.add_field(_("LUCK", event), std::to_string(luck) + bonuses(3, race, profession), true)
+		.add_field(_("SNEAK", event), std::to_string(sneak) + bonuses(4, race, profession), true)
+		.add_field(_("SPEED", event), std::to_string(speed) + bonuses(5, race, profession), true)
+		.add_field(_("GOLD", event), std::to_string(gold), true)
+		.add_field(_("SILVER", event), std::to_string(silver), true)
+		.add_field(_("RATIONS", event), std::to_string(rations), true)
+		.add_field(_("NOTORIETY", event), std::to_string(notoriety), true)
+		.add_field(_("ARMOUR", event), fmt::format("{} ({} {})", armour.name, _("RATING", event) armour.rating), true)
+		.add_field(_("WEAPON", event), fmt::format("{} ({} {})", weapon.name, _("RATING", event), weapon.rating), true)
 		.set_image(file);
 
 		dpp::component race_select_menu, profession_select_menu, gender_select_menu;
@@ -302,37 +300,37 @@ Your character is shown below. If you are not happy with your base stats, click 
 			.set_min_values(1)
 			.set_max_values(1)
 			.set_required(true)
-			.set_placeholder("Select Your Race")
+			.set_placeholder(_("SELECTRACE", event))
 			.set_id(security::encrypt("select_player_race"))
-			.add_select_option(dpp::select_option("Human", "1", "The jack-of-all-trades").set_default(race == race_human))
-			.add_select_option(dpp::select_option("Elf", "2", "Experts in the arcane and the forests").set_default(race == race_elf))
-			.add_select_option(dpp::select_option("Orc", "3", "Battle hardened and never backs down from a fight").set_default(race == race_orc))
-			.add_select_option(dpp::select_option("Dwarf", "4", "Small and hardy with a love of treasure").set_default(race == race_dwarf))
-			.add_select_option(dpp::select_option("Lesser Orc", "5", "A rebel from the servant-race of the Orcs").set_default(race == race_lesser_orc))
-			.add_select_option(dpp::select_option("Barbarian", "6", "A tough human of the northern wastes").set_default(race == race_barbarian))
-			.add_select_option(dpp::select_option("Goblin", "7", "A dumber, but craftier creature of Orc blood").set_default(race == race_goblin))
-			.add_select_option(dpp::select_option("Dark Elf", "8", "Experts in dark magic and subterfuge").set_default(race == race_dark_elf));
+			.add_select_option(dpp::select_option(_("HUMAN", event), "1", _("HUMAN_DESC", event)).set_default(race == race_human))
+			.add_select_option(dpp::select_option(_("ELF", event), "2", _("ELF_DESC", event)).set_default(race == race_elf))
+			.add_select_option(dpp::select_option(_("ORC", event), "3", _("ORC_DESC", event)).set_default(race == race_orc))
+			.add_select_option(dpp::select_option(_("DWARF", event), "4", _("DWARF_DESC", event)).set_default(race == race_dwarf))
+			.add_select_option(dpp::select_option(_("LORC", event), "5", _("LORC_DESC", event)).set_default(race == race_lesser_orc))
+			.add_select_option(dpp::select_option(_("BARBARIAN", event), "6", _("BARBARIAN_DESC", event)).set_default(race == race_barbarian))
+			.add_select_option(dpp::select_option(_("GOBLIN", event), "7", _("GOBLIN_DESC", event)).set_default(race == race_goblin))
+			.add_select_option(dpp::select_option(_("DARKELF", event), "8", _("DARKELF_DESC", event)).set_default(race == race_dark_elf));
 		profession_select_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(1)
 			.set_max_values(1)
-			.set_placeholder("Select Your Profession")
+			.set_placeholder(_("SELECTPROFESSION", event))
 			.set_required(true)
 			.set_id(security::encrypt("select_player_profession"))
-			.add_select_option(dpp::select_option("Warrior", "1", "Experts with bladed and blunt weapons").set_default(profession == prof_warrior))
-			.add_select_option(dpp::select_option("Wizard", "2", "Skilled in use of magic and potions").set_default(profession == prof_wizard))
-			.add_select_option(dpp::select_option("Thief", "3", "Sleight of hand is their game").set_default(profession == prof_thief))
-			.add_select_option(dpp::select_option("Woodsman", "4", "Experts in bows, and navigating forests").set_default(profession == prof_woodsman))
-			.add_select_option(dpp::select_option("Assassin", "5", "A stealthy and efficient professional killer for hire").set_default(profession == prof_assassin))
-			.add_select_option(dpp::select_option("Mercenary", "6", "A sword for hire, who gets the job done... for a price.").set_default(profession == prof_mercenary));
+			.add_select_option(dpp::select_option(_("WARRIOR", "1", _("WARRIOR_DESC", event)).set_default(profession == prof_warrior))
+			.add_select_option(dpp::select_option(_("WIZARD", "2", _("WIZARD_DESC", event)).set_default(profession == prof_wizard))
+			.add_select_option(dpp::select_option(_("THIEF", "3", _("THIEF_DESC", event)).set_default(profession == prof_thief))
+			.add_select_option(dpp::select_option(_("WOODSMAN", "4", _("WOODSMAN_DESC", event)).set_default(profession == prof_woodsman))
+			.add_select_option(dpp::select_option(_("ASSASSIN", "5", _("ASSASSIN_DESC", event)).set_default(profession == prof_assassin))
+			.add_select_option(dpp::select_option(_("MERCENARY", "6", _("MERCENARY_DESC", event)).set_default(profession == prof_mercenary));
 		gender_select_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(1)
 			.set_max_values(1)
-			.set_placeholder("Select Your Gender")
+			.set_placeholder(_("SELGENDER", event))
 			.set_required(true)
 			.set_default_value("male")
 			.set_id(security::encrypt("select_player_gender"))
-			.add_select_option(dpp::select_option("Male", "male").set_default(gender == "male"))
-			.add_select_option(dpp::select_option("Female", "female").set_default(gender == "female"));
+			.add_select_option(dpp::select_option(_("male", event) "male").set_default(gender == "male"))
+			.add_select_option(dpp::select_option(_("female", event), "female").set_default(gender == "female"));
 
 	return dpp::message()
 		.add_embed(embed)
@@ -350,14 +348,14 @@ Your character is shown below. If you are not happy with your base stats, click 
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_reroll"))
-				.set_label("Re-Roll")
+				.set_label(_("REROLL", event))
 				.set_style(dpp::cos_danger)
 				.set_emoji("🎲")
 			)
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_herb_spell_selection"))
-				.set_label("Continue")
+				.set_label(_("CONTINUE", event))
 				.set_style(dpp::cos_success)
 				.set_emoji("➡️")
 			)
@@ -543,38 +541,35 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 	size_t max_spells = (profession == prof_wizard ? 5 : 2);
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title("Magic Selection")
+		.set_title(_("SELMAGIC", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = "New player creation for " + event.command.usr.format_username(), 
+			.text = _("NEWPLAY", event, event.command.usr.format_username()), 
 			.icon_url = cluster.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(fmt::format("Now, select your herbs and magic. Certain spells require herbs in your inventory to function.\n\n\
-Read the descriptions of the herbs to determine which types of spells they might provide access to.\n\
-### You have selected __{}__ of up to __{}__ herbs, and __{}__ of up to __{}__ spells.\n\n\
-Once you are happy with your choices, click **Continue** to name your character.", herbs.size(), 3, spells.size(), max_spells));
+		.set_description(fmt::format(_("MAGIC_MSG", event, herbs.size(), 3, spells.size(), max_spells));
 
 	dpp::component herb_select_menu, spell_select_menu;
 	herb_select_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(3)
-		.set_placeholder("Select Herbs")
+		.set_placeholder(_("SELHERB", event))
 		.set_id(security::encrypt("select_player_herbs"))
-		.add_select_option(dpp::select_option("Hartleaf", "hartleaf", "A herb associated with movement and water").set_default(has_herb("hartleaf")))
-		.add_select_option(dpp::select_option("Elfbane", "elfbane", "Commonly found around fast moving birds").set_default(has_herb("elfbane")))
-		.add_select_option(dpp::select_option("Monkgrass", "monkgrass", "Opens the mind to other languages").set_default(has_herb("monkgrass")))
-		.add_select_option(dpp::select_option("Fireseeds", "fireseeds", "Used for spells involving heat and fire").set_default(has_herb("fireseeds")))
-		.add_select_option(dpp::select_option("Woodweed", "woodweed", "Has properties that allow rapid change in size").set_default(has_herb("woodweed")))
-		.add_select_option(dpp::select_option("Blidvines", "blidvines", "Used to reveal what is hidden").set_default(has_herb("blidvines")))
-		.add_select_option(dpp::select_option("Stickwart", "stickwart", "Said to allow the user to read minds").set_default(has_herb("stickwart")))
-		.add_select_option(dpp::select_option("Spikegrass", "spikegrass", "A very sharp bladed plant").set_default(has_herb("spikegrass")))
-		.add_select_option(dpp::select_option("Hallucinogen", "hallucinogen", "Alters perception for the user and those nearby").set_default(has_herb("hallucinogen")))
-		.add_select_option(dpp::select_option("Wizards Ivy", "wizardsivy", "A truly powerful but mysterious plant").set_default(has_herb("wizardsivy")))
-		.add_select_option(dpp::select_option("Orcweed", "orcweed", "Literally a weed, abundant around Orc camps").set_default(has_herb("orcweed")));
+		.add_select_option(dpp::select_option(_("HARTLEAF", event), "hartleaf", _("HARTLEAFD", event)).set_default(has_herb("hartleaf")))
+		.add_select_option(dpp::select_option(_("ELFBANE", event), "elfbane", _("ELFBANED", event)).set_default(has_herb("elfbane")))
+		.add_select_option(dpp::select_option(_("MONKGRASS", event), "monkgrass", _("MONKGRASSD", event)).set_default(has_herb("monkgrass")))
+		.add_select_option(dpp::select_option(_("FIRESEEDS", event), "fireseeds", _("FIRESEEDSD", event)).set_default(has_herb("fireseeds")))
+		.add_select_option(dpp::select_option(_("WOODWEED", event), "woodweed", _("WOODWEEDD", event)).set_default(has_herb("woodweed")))
+		.add_select_option(dpp::select_option(_("BLIDVINES", event), "blidvines", _("BLIDVINESD", event)).set_default(has_herb("blidvines")))
+		.add_select_option(dpp::select_option(_("STICKWART", event), "stickwart", _("STICKWARTD", event)).set_default(has_herb("stickwart")))
+		.add_select_option(dpp::select_option(_("SPIKEGRASS", event), "spikegrass", _("SPIKEGRASSD", event)).set_default(has_herb("spikegrass")))
+		.add_select_option(dpp::select_option(_("HALLUCINOGEN", event), "hallucinogen", _("HALLUCINOGEND", event)).set_default(has_herb("hallucinogen")))
+		.add_select_option(dpp::select_option(_("WIZARDSIVY", event), "wizardsivy", _("WIZARDSIVYD", event)).set_default(has_herb("wizardsivy")))
+		.add_select_option(dpp::select_option(_("ORCWEED", event), "orcweed", _("ORCWEEDD", event)).set_default(has_herb("orcweed")));
 	spell_select_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
-		.set_placeholder("Select Spells")
+		.set_placeholder(_("SELSPELL", event))
 		.set_id(security::encrypt("select_player_spells"));
 	/* Fill spell select menu only with spells applicable to the chosen herbs up to a max of 25 choices */
 	const std::vector<dpp::select_option> all_spells{
@@ -646,7 +641,7 @@ Once you are happy with your choices, click **Continue** to name your character.
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_name"))
-				.set_label("Continue")
+				.set_label(_("CONTINUE", event))
 				.set_style(dpp::cos_success)
 				.set_emoji("➡️")
 			)
