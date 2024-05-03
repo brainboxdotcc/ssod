@@ -68,7 +68,7 @@ void do_toasts(player &p, component_builder& cb) {
 		dpp::embed e = dpp::embed()
 			.set_colour(EMBED_COLOUR)
 			.set_description(toast);
-		if (toast.find("# You have met your end, adventurer") != std::string::npos) {
+		if (toast.find("# " +_("DED", p.event)) != std::string::npos) {
 			e.set_image("https://images.ssod.org/resource/death.png");
 		}
 		cb.add_embed(e);
@@ -81,7 +81,7 @@ void death(player& p, component_builder& cb) {
 	std::string toast;
 	time_t when = RESURRECT_SECS;
 
-	toast += "# You have met your end, adventurer!\n\n";
+	toast += "# " + _("DED", p.event) + "\n\n";
 
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { p.event.command.usr.id });
 	if (!rs.empty()) {
@@ -89,24 +89,19 @@ void death(player& p, component_builder& cb) {
 	}
 
 	if (p.last_resurrect == 0 || time(nullptr) > p.last_resurrect + when) {
-		toast += "You can __resurrect nearby__ if you wish, which will respawn you __near to your place of death with your current inventory__.";
-		toast += "If you choose this path, then perhaps in the future you will *choose more wisely*.\n\nPlease be aware that resurrections ";
-		toast += "are limited to one per hour **or one per 15 minutes for premium users**, and if you have no resurrection available, and do ";
-		toast += "not want to wait, your only choice is to __restart from the start__.";
+		toast += _("DEATH_EXPLAIN", p.event);
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("resurrect"))
-			.set_label("Ressurrect Me")
+			.set_label(_("RESURRECT_ME", p.event))
 			.set_style(dpp::cos_success)
 			.set_emoji(sprite::health_heart.name, sprite::health_heart.id)
 		);
 	} else {
-		toast += "You __can't resurrect nearby__ until your resurrection is ready again " + dpp::utility::timestamp(p.last_resurrect + when, dpp::utility::tf_relative_time) + ", ";
-		toast += "but you can respawn at the __start of the game__ right now and choose a different, *perhaps wiser* path...\n\n";
+		toast += _("RESURRECT_NOT_AVAILABLE", p.event, dpp::utility::timestamp(p.last_resurrect + when, dpp::utility::tf_relative_time));
 		if (rs.empty()) {
 			toast += sprite::diamond.get_mention() + " ";
-			toast += "[Premium users](https://premium.ssod.org/) can **__resurrect every 15 minutes__ instead of every hour.** If you had Seven Spells Premium, you could ";
-			toast += "be back in the land of the living right now!";
+			toast += _("PREMIUM_RESURRECT", p.event);
 		}
 	}
 
@@ -115,13 +110,13 @@ void death(player& p, component_builder& cb) {
 	cb.add_component(dpp::component()
 		.set_type(dpp::cot_button)
 		.set_id(security::encrypt("respawn"))
-		.set_label("Respawn at start")
+		.set_label(_("RESPAWN_AT_START", p.event))
 		.set_style(dpp::cos_danger)
 		.set_emoji(sprite::skull.name, sprite::skull.id)
 	);
 }
 
-void add_chat(std::string& text, long paragraph_id, uint64_t guild_id) {
+void add_chat(std::string& text, const dpp::interaction_create_t& event, long paragraph_id, uint64_t guild_id) {
 	text += "\n__**Chat**__\n```ansi\n";
 	auto rs = db::query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND (location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) ORDER BY sent DESC, id DESC LIMIT 5", {paragraph_id, guild_id});
 	for (size_t x = 0; x < 5 - rs.size(); ++x) {
@@ -144,20 +139,20 @@ void add_chat(std::string& text, long paragraph_id, uint64_t guild_id) {
 						    dpp::utility::markdown_escape(row.at("message")));
 			}
 		} else if (row.at("event_type") == "join") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m wanders into the location\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), _("WANDERS_IN", event));
 		} else  if (row.at("event_type") == "part") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m leaves the location\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), _("LEAVES", event));
 		} else  if (row.at("event_type") == "drop") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m drops {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("name"), _("DROPS", event), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
 		} else  if (row.at("event_type") == "pickup") {
 			std::string item = row.at("message");
 			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m picks up {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
 		} else  if (row.at("event_type") == "combat") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m challenges \033[2;34m{}\033[0m to combat!\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), dpp::utility::markdown_escape(row.at("message")));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} \033[2;34m{}\033[0m to combat!\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), _("CHALLENGES", event), dpp::utility::markdown_escape(row.at("message")), _("TO_COMBAT", event));
 		} else  if (row.at("event_type") == "death") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m died{}...\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), row.at("message").empty() ? "" : " fighting  \033[2;34m" + dpp::utility::markdown_escape(row.at("message")) + "\033[0m");
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}{}...\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), _("DIED", event), row.at("message").empty() ? "" : _("FIGHTING", event) + " \033[2;34m" + dpp::utility::markdown_escape(row.at("message")) + "\033[0m");
 		}
 	}
 	text += "```\n";
@@ -198,7 +193,7 @@ void game_input(const dpp::form_submit_t & event) {
 			send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
 			p.paragraph = atol(parts[1]);
 		} else {
-			p.add_toast("### " + sprite::inv_drop.get_mention() + " The answer you entered is not correct, adventurer! Please try again!");
+			p.add_toast("### " + sprite::inv_drop.get_mention() + " " + _("INCORRECT_RIDDLE", event));
 		}
 		bot.log(dpp::ll_debug, "Answered: " + entered_answer);
 		claimed = true;
@@ -278,10 +273,10 @@ void game_select(const dpp::select_click_t &event) {
 				/* Can't drop a scroll (is quest item) */
 				p.drop_possession(item{.name = parts[0], .flags = parts[1]});
 				if (p.armour.name == parts[0]) {
-					p.armour.name = "Undergarments 👙";
+					p.armour.name = _("NO_ARMOUR", event) + " 👙";
 					p.armour.rating = 0;
 				} else if (p.weapon.name == parts[0]) {
-					p.weapon.name = "Unarmed 👊";
+					p.weapon.name = _("NO_WEAPON", event) + " 👊";
 					p.weapon.rating = 0;
 				}
 				/* Drop to floor */
@@ -344,10 +339,10 @@ void game_select(const dpp::select_click_t &event) {
 		sale_info s = get_sale_info(parts[0]);
 		if (p.has_possession(parts[0]) && s.sellable && !s.quest_item && dpp::lowercase(parts[0]) != "scroll") {
 			if (p.armour.name == parts[0]) {
-				p.armour.name = "Undergarments 👙";
+				p.armour.name = _("NO_ARMOUR", event) + " 👙";
 				p.armour.rating = 0;
 			} else if (p.weapon.name == parts[0]) {
-				p.weapon.name = "Unarmed 👊";
+				p.weapon.name = _("NO_WEAPON", event) + " 👊";
 				p.weapon.rating = 0;
 			}
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
@@ -433,24 +428,19 @@ void game_nav(const dpp::button_click_t& event) {
 							p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
 							p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
 							p.gotfrom = green_rot.replace_all(p.gotfrom, "");
-							p.add_toast(
-								"You feel well again. You have been cured of all diseases!");
+							p.add_toast(_("CURE_ALL", event));
 						} else if (flags == "CURERASP") {
 							p.gotfrom = lung_rasp.replace_all(p.gotfrom, "");
-							p.add_toast(
-								"You feel well again. You have been cured of lung rasp!");
+							p.add_toast(_("CURE_RASP", event));
 						} else if (flags == "CUREROT") {
 							p.gotfrom = green_rot.replace_all(p.gotfrom, "");
-							p.add_toast(
-								"You feel well again. You have been cured of green rot!");
+							p.add_toast(_("CURE_ROT", event));
 						} else if (flags == "CUREBLOOD") {
 							p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
-							p.add_toast(
-								"You feel well again. You have been cured of blood plague!");
+							p.add_toast(_("CURE_BLOOD", event));
 						} else if (flags == "CUREPLAGUE") {
 							p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
-							p.add_toast(
-								"You feel well again. You have been cured of bubonic plague!");
+							p.add_toast(_("CURE_PLAGUE", event));
 						}
 					}
 					catch (const regex_exception& e) {
@@ -667,7 +657,7 @@ void game_nav(const dpp::button_click_t& event) {
 		p.in_pvp_picker = false;
 		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
-		dpp::message m = dpp::message("<@" + opponent.str() +  "> " + p.name + " rejected your combat request.").set_allowed_mentions(true, false, false, false, {}, {});
+		dpp::message m = dpp::message(_("PVP_REJECTED", event, "<@" + opponent.str() +  ">",  p.name)).set_allowed_mentions(true, false, false, false, {}, {});
 		m.channel_id = p2.event.command.channel_id;
 		m.guild_id = p2.event.command.guild_id;
 		m.add_component(
@@ -675,7 +665,7 @@ void game_nav(const dpp::button_click_t& event) {
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("exit_pvp_picker"))
-				.set_label("Go Back")
+				.set_label(_("GO_BACK", event))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::magic05.name, sprite::magic05.id)
 			)
@@ -696,10 +686,10 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "chat" && p.stamina > 0) {
 		dpp::interaction_modal_response modal(security::encrypt("chat_modal"), "Chat",	{
 			dpp::component()
-			.set_label("Enter Message")
+			.set_label(_("ENTER_MESSAGE", event))
 			.set_id(security::encrypt("chat_message"))
 			.set_type(dpp::cot_text)
-			.set_placeholder("hello")
+			.set_placeholder(_("HELLO", event))
 			.set_min_length(1)
 			.set_max_length(140)
 			.set_required(true)
@@ -754,14 +744,14 @@ void bank(const dpp::interaction_create_t& event, player p) {
 
 	auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 	long amount = atol(bank_amount[0].at("gold"));
-	content << "__**Welcome to the Bank Of Utopia**__\n\n";
-	content << "The bank can hold a maximum of **" << p.max_gold() << "** gold pieces. Level up to increase this limit.\n";
-	content << "We will soon be offering competitive exchange rates for changing silver coins to gold. Check back later at a branch near you.\n";
+	content << "__**" << _("BANK_WELCOME", event) << "**__\n\n";
+	content << _("BANK_MAX", event, p.max_gold()) << "\n";
+	content << _("SILVER_UPSELL", event) << "\n";
 
 	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
 	auto bank_items = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc != ? ORDER BY item_desc LIMIT 25",{event.command.usr.id, "__GOLD__"});
 	if (!bank_items.empty()) {
-		content << "\n__**" << bank_items.size() << "/25 Bank Items**__\n";
+		content << "\n__**" << bank_items.size() << "/25 " << _("BANK_ITEMS", event) << "**__\n";
 		for (const auto& bank_item : bank_items) {
 			content << sprite::backpack.get_mention() << " " << bank_item.at("item_desc") << " - *" << describe_item(bank_item.at("item_flags"), bank_item.at("item_desc")) << "*\n";
 		}
@@ -770,12 +760,12 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Bank Of Utopia",
+			.text = _("BANK", event),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.add_field("Your Balance", std::to_string(amount) + " Gold " + sprite::gold_coin.get_mention(), true)
-		.add_field("Coin Purse", std::to_string(p.gold) + " Gold " + sprite::gold_coin.get_mention(), true)
+		.add_field(_("YOUR_BALANCE", event), std::to_string(amount) + " " + _("GOLD", event) + " " + sprite::gold_coin.get_mention(), true)
+		.add_field(_("COIN_PURSE", event), std::to_string(p.gold) + " " + _("GOLD", event) + " " + sprite::gold_coin.get_mention(), true)
 		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
 	
@@ -785,7 +775,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	deposit_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(1)
-		.set_placeholder("Deposit Item")
+		.set_placeholder(_("DEPOSIT_ITEM", event))
 		.set_id(security::encrypt("deposit"));
 	size_t index{0};
 	std::set<std::string> ds;
@@ -810,7 +800,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	withdraw_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(1)
-		.set_placeholder("Withdraw Item")
+		.set_placeholder(_("WITHDRAW_ITEM", event))
 		.set_id(security::encrypt("withdraw"));
 	std::set<std::string> dup_set;
 	for (const auto& bank_item : bank_items) {
@@ -840,14 +830,14 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("exit_bank"))
-			.set_label("Back")
+			.set_label(_("BACK", event))
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::magic05.name, sprite::magic05.id)
 		)
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("deposit_gold"))
-			.set_label("Deposit Gold")
+			.set_label(_("DEPOSIT_GOLD", event))
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
 			.set_disabled(p.gold == 0)
@@ -855,7 +845,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("withdraw_gold"))
-			.set_label("Withdraw Gold")
+			.set_label(_("WITHDRAW_GOLD", event))
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
 			.set_disabled(amount == 0)
@@ -881,15 +871,15 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 	dpp::snowflake opponent_id = get_pvp_opponent_id(event.command.usr.id);
 
 	if (opponent_id.empty()) {
-		content << "\n__**Select player to fight**__\n\nThe player you pick will be sent a request and must accept it to fight you. If they leave the area, the request will be cancelled.\n";
+		content << _("PVP_SELECT", event);
 	} else {
-		content << "\n__**Please wait for your challenge to be accepted**__\n\nIf the user does not accept or reject your request, you will receive no response. If you wish to give up waiting, simply click the " + sprite::magic05.get_mention() + " Back button.\n";
+		content << _("PVP_WAIT", event, sprite::magic05.get_mention());
 	}
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{ 
-			.text = "PvP Player Selection for " + p.name,
+			.text = _("PVP_SEL_FOOTER", event, p.name),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
@@ -904,15 +894,15 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 		fight_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(0)
 			.set_max_values(1)
-			.set_placeholder("Select Player")
+			.set_placeholder(_("SELECT_PLAYER", event))
 			.set_id(security::encrypt("fight_pvp"));
 		for (const auto& other: others) {
 			fight_menu.add_select_option(
-				dpp::select_option(other.at("name"), other.at("user_id"), "Stamina: " + other.at("stamina") + ", Skill: " + other.at("skill") + ", " + other.at("experience") + " XP")
+				dpp::select_option(other.at("name"), other.at("user_id"), _("STAMINA", event) + ": " + other.at("stamina") + ", " + _("SKILL", event) + ": " + other.at("skill") + ", " + other.at("experience") + " XP")
 			);
 		}
 	} else {
-		content << "\nThere are no players here to fight. You must go back.";
+		content << "\n" << _("CRICKETS", event);
 	}
 
 	m.add_embed(embed);
@@ -928,7 +918,7 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 		.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("exit_pvp_picker"))
-			.set_label("Back")
+			.set_label(_("BACK", event))
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::magic05.name, sprite::magic05.id)
 		)
@@ -938,12 +928,12 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 	event.reply(event.command.type == dpp::it_application_command || event.command.type == dpp::it_component_button ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
 		if (cc.is_error()) {
 			bot.log(dpp::ll_error, cc.http_info.body);
-			event.reply(dpp::message("The player you have selected has is not active at this location! Perhaps they left the area while you were choosing?").add_component(
+			event.reply(dpp::message(_("GONE_AWAY", event)).add_component(
 				dpp::component()
 				.add_component(dpp::component()
 				       .set_type(dpp::cot_button)
 				       .set_id(security::encrypt("exit_pvp_picker"))
-				       .set_label("Back")
+				       .set_label(_("BACK", event))
 				       .set_style(dpp::cos_secondary)
 				       .set_emoji(sprite::magic05.name, sprite::magic05.id)
 				)
@@ -993,7 +983,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{ 
-			.text = "Location " + location.secure_id,
+			.text = _("LOCATION", event) + " " + location.secure_id,
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
@@ -1018,7 +1008,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 		if (list_others.length()) {
 			list_others = list_others.substr(0, list_others.length() - 2);
-			text += "**__Other players here:__**\n" + list_others + "\n\n";
+			text += "**__" + _("OTHERS", event) + "__**\n" + list_others + "\n\n";
 		}
 		if (location.dropped_items.size()) {
 			for (const auto & dropped : location.dropped_items) {
@@ -1030,17 +1020,17 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			}
 			if (list_dropped.length()) {
 				list_dropped = list_dropped.substr(0, list_dropped.length() - 2);
-				text += "**__Items On Ground__**\n" + list_dropped + "\n\n";
+				text += "**__" + _("ITEMS", event) + "__**\n" + list_dropped + "\n\n";
 			}
 		}
-		add_chat(text, location.id, get_guild_id(p));
+		add_chat(text, p.event, location.id, get_guild_id(p));
 		m.add_embed(dpp::embed()
 			.set_colour(EMBED_COLOUR)
 			.set_description(text)
 		);
 	} else {
 		std::string text = "";
-		add_chat(text, location.id, get_guild_id(p));
+		add_chat(text, p.event, location.id, get_guild_id(p));
 		m.add_embed(dpp::embed()
 			.set_colour(EMBED_COLOUR)
 			.set_description(text)
@@ -1059,7 +1049,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		sell_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(0)
 			.set_max_values(1)
-			.set_placeholder("Sell Item")
+			.set_placeholder(_("SELL_ITEM", event))
 			.set_id(security::encrypt("sell"));
 		size_t index2{0};
 		std::set<std::string> ds;
@@ -1072,7 +1062,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				dpp::emoji e = get_emoji(inv.name, inv.flags);
 				if (sell_menu.options.size() < 25) {
 					sell_menu.add_select_option(
-						dpp::select_option(inv.name, inv.name + ";" + inv.flags, "Value: " + std::to_string(s.value) + " - " + describe_item(inv.flags, inv.name).substr(0, 80))
+						dpp::select_option(inv.name, inv.name + ";" + inv.flags, _("VALUE", event) + " " + std::to_string(s.value) + " - " + describe_item(inv.flags, inv.name).substr(0, 80))
 							.set_emoji(e.name, e.id)
 					);
 					ds.insert(inv.name);
@@ -1097,18 +1087,18 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 		switch (n.type) {
 			case nav_type_paylink:
-				label = "Pay " + std::to_string(n.cost) + " Gold";
+				label = _("PAYLINK", event, n.cost);
 				id = "follow_nav_pay;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(n.cost) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
 			case nav_type_pick_one:
 				// PICKED
-				label = "Choose " + n.buyable.name;
+				label = _("CHOOSE", event, n.buyable.name);
 				id = "pick_one;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + n.buyable.name + ";" + n.buyable.flags + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
 			case nav_type_shop:
-				label = "Buy " + n.buyable.name + " (" + std::to_string(n.cost) + " Gold)";
+				label = _("BUY", event, n.buyable.name, n.cost);
 				id = "shop;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::string(n.buyable.flags) + ";" + std::to_string(n.cost) + ";" + n.buyable.name + ";" + std::to_string(++unique);
 				if (p.has_herb(n.buyable.name) || p.has_spell(n.buyable.name) || p.gold < n.cost) {
 					comp.set_disabled(true);
@@ -1117,12 +1107,12 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				}
 				break;
 			case nav_type_bank:
-				label = "Use Bank";
+				label = _("USE_BANK", event);
 				id = "bank;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
 			case nav_type_combat:
-				label = "Fight " + n.monster.name;
+				label = _("FIGHT", event, n.monster.name);
 				id = "combat;" + std::to_string(n.paragraph) + ";" + n.monster.name + ";" + std::to_string(n.monster.stamina) + ";" + std::to_string(n.monster.skill) + ";" + std::to_string(n.monster.armour) + ";" + std::to_string(n.monster.weapon) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
@@ -1133,7 +1123,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				respawn_button_shown = true;
 				break;
 			case nav_type_modal:
-				label = "Answer: " + n.prompt;
+				label = _("ANSWER", event, n.prompt);
 				id = "answer;" + std::to_string(n.paragraph) + ";" + n.prompt + ";" + n.answer + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
@@ -1176,7 +1166,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("inventory;0"))
-			.set_label("Inventory")
+			.set_label(_("INVENTORY", event))
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::backpack.name, sprite::backpack.id)
 		);
@@ -1188,7 +1178,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("pvp_picker"))
-				.set_label("PvP")
+				.set_label(_("PVP", event))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::bow09.name, sprite::bow09.id)
 			);
@@ -1212,7 +1202,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("pick;" + std::to_string(p.paragraph) + ";" + dropped.name + ";" + dropped.flags))
-				.set_label("Pick up " + dropped.name)
+				.set_label(_("PICK", event, dropped.name))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::backpack.name, sprite::backpack.id)
 			);

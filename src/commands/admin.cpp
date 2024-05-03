@@ -22,6 +22,7 @@
 #include <ssod/commands/admin.h>
 #include <ssod/game_date.h>
 #include <ssod/game_player.h>
+#include <dpp/etf.h>
 
 static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
 	auto rs = db::query("SELECT lower(name) AS name FROM game_users WHERE name LIKE ?", {uservalue + "%"});
@@ -35,10 +36,11 @@ static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, co
 dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
 	bot.on_autocomplete([&bot](const dpp::autocomplete_t & event) {
 		for (auto & opt : event.options) {
-			if (opt.name != "mute" && opt.name != "pin" && opt.name != "reset") {
+			if (opt.name != "mute" && opt.name != "pin" && opt.name != "reset" && opt.name != "unload") {
 				return;
 			}
-			json j = json::parse(event.raw_event);
+			dpp::etf_parser etf;
+			json j = etf.parse(event.raw_event);
 			j = j["d"];
 			if (j.at("data").contains("options")) {
 				json& choices = j["data"]["options"][0]["options"][0];
