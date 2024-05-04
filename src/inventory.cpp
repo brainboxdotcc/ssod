@@ -40,54 +40,54 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 
 	std::vector<dpp::embed_field> fields;
 
-	content << "__**Stats**__\n";
-	content << "<:" << sprite::health_heart.format() << "> Stamina: __" << p.stamina << "__";
-	content << " <:" << sprite::book07.format() << "> Skill: __" << p.skill << "__";
-	content << " <:" << sprite::clover.format() << "> Luck: __" << p.luck << "__";
-	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__ (Level: __" << p.get_level() << "__)\n";
-	content << " <:" << sprite::shoes03.format() << "> Speed: __" << p.speed << "__";
+	content << "__**" << _("Stats", event) << "**__\n";
+	content << "<:" << sprite::health_heart.format() << "> " << _("STAMINA", event) << ": __" << p.stamina << "__";
+	content << " <:" << sprite::book07.format() << "> " << _("SKILL", event) << ": __" << p.skill << "__";
+	content << " <:" << sprite::clover.format() << "> " << _("LUCK", event) << ": __" << p.luck << "__";
+	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__ (" << _("LEVEL", event) << ": __" << p.get_level() << "__)\n";
+	content << " <:" << sprite::shoes03.format() << "> " << _("SPEED", event) << ": __" << p.speed << "__";
 	if (p.gold > 0) {
-		content << " <:" << sprite::gold_coin.format() << "> Gold: __" << p.gold << "__";
+		content << " <:" << sprite::gold_coin.format() << "> " << _("GOLD", event) << ": __" << p.gold << "__";
 	}
 	if (p.silver > 0) {
-		content << " <:" << sprite::silver_coin.format() << "> Silver: __" << p.silver << "__";
+		content << " <:" << sprite::silver_coin.format() << "> " << _("SILVER", event) << ": __" << p.silver << "__";
 	}
 
 	content << "\n";
 	if (p.has_flag("pack") || p.has_flag("horse") || p.has_flag("steamcopter") || p.has_flag("saddlebags")) {
-		content << "\n__**Storage**__\n";
+		content << "\n__**" << _("STORAGE", event) << "**__\n";
 		if (p.has_flag("pack")) {
-			content << sprite::backpack.get_mention() << " Backpack (__+1__) ";
+			content << sprite::backpack.get_mention() << " " << _("BACKPACK", event) << " (__+1__) ";
 		}
 		if (p.has_flag("horse")) {
-			content << "🐴 Horse (__+1__) ";
+			content << "🐴 " << _("HORSE", event) << " (__+1__) ";
 		}
 		if (p.has_flag("saddlebags")) {
-			content << sprite::backpack.get_mention() << " Saddle Bags (__+1__) ";
+			content << sprite::backpack.get_mention() << " " << _("SADDLEBAGS", event) << " (__+1__) ";
 		}
 		if (p.has_flag("steamcopter")) {
-			content << "🚁 Steam-Copter (__+3__) ";
+			content << "🚁 " << _("STEAMCOPTER", event) << " (__+3__) ";
 		}
 		content << "\n";
 	}
 
-	content << "\n__**Spells**__\n";
+	content << "\n__**" << _("SPELLS", event) << "**__\n";
 	std::ranges::sort(p.spells, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	for (const auto &inv: p.spells) {
 		content << "🪄 " << human_readable_spell_name(inv.name) << "\n";
 	}
-	content << "\n__**Herbs**__\n";
+	content << "\n__**" << _("HERBS", event) << "**__\n";
 	std::ranges::sort(p.herbs, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	for (const auto &inv: p.herbs) {
 		content << "🌿 " << human_readable_herb_name(inv.name) << "\n";
 	}
 
-	content << "\n__**Inventory (page " << (p.inventory_page + 1) << " of " << pages_max ++ << ")**__\n";
+	content << "\n__**" << _("INVENTORYPAGE", event, p.inventory_page + 1, pages_max++) << "**__\n";
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{
-			.text = p.name + "'s Inventory (Page " + std::to_string(p.inventory_page + 1) + ")",
+			.text = _("INVENTORYFOOTER", event, p.name, p.inventory_page + 1),
 			.icon_url = bot.me.get_avatar_url(),
 			.proxy_url = "",
 		})
@@ -105,7 +105,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	cb.add_component(dpp::component()
 				 .set_type(dpp::cot_button)
 				 .set_id(security::encrypt("exit_inventory"))
-				 .set_label("Back")
+				 .set_label(_("BACK", event))
 				 .set_style(dpp::cos_primary)
 				 .set_emoji(sprite::magic05.name, sprite::magic05.id)
 	);
@@ -133,41 +133,30 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	use_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(1)
-		.set_placeholder("Use Item")
+		.set_placeholder(_("USEITEM", event))
 		.set_id(security::encrypt("use_item"));
 	drop_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(1)
-		.set_placeholder("Drop Item")
+		.set_placeholder(_("DROPITEM", event))
 		.set_id(security::encrypt("drop_item"));
 	equip_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(1)
-		.set_placeholder("Equip Item")
+		.set_placeholder(_("EQUIPITEM", event))
 		.set_id(security::encrypt("equip_item"));
-	/*examine_menu.set_type(dpp::cot_selectmenu)
-		.set_min_values(0)
-		.set_max_values(1)
-		.set_placeholder("Examine Item")
-		.set_id(security::encrypt("examine_item"));*/
 
 	std::set<std::string> dup;
 	for (const auto& inv : possessions) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
-		/*if (dup.find(inv.name) == dup.end()) {
-			examine_menu.add_select_option(dpp::select_option("Examine " + inv.name,
-				inv.name + ";" + inv.flags + ";" +
-				std::to_string(++index)));
-			dup.insert(inv.name);
-		}*/
 		if (!value.quest_item && value.sellable) {
-			drop_menu.add_select_option(dpp::select_option("Drop " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
+			drop_menu.add_select_option(dpp::select_option(_("DROP", event) + " " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
 		}
 		if (inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
-			use_menu.add_select_option(dpp::select_option("Use " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
+			use_menu.add_select_option(dpp::select_option(_("USE", event) + " " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		} else if (!inv.flags.empty() && (inv.flags[0] == 'A' || inv.flags[0] == 'W')) {
-			equip_menu.add_select_option(dpp::select_option("Equip " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
+			equip_menu.add_select_option(dpp::select_option(_("EQUIP", event) + " " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		}
 	}
 
@@ -185,25 +174,23 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		embed.fields = fields;
 		m.embeds = { embed };
 	} else {
-		//m.add_component(dpp::component().add_component(examine_menu));
 		size_t c{content.str().length()};
 		for (const auto &inv: possessions) {
 			std::string emoji = get_emoji(inv.name, inv.flags).format();
-			//std::string description{" "};
 			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, true, 80) + "\n"};
 			if (p.armour.name == inv.name && !equip_a) {
 				description += "\033[2;31m🫱🏼 Equipped\033[0m ";
 				equip_a = true;
 			} else if (p.weapon.name == inv.name && !equip_w) {
-				description += "\033[2;31m🫱🏼 Equipped\033[0m ";
+				description += "\033[2;31m🫱🏼 " + _("EQUIPPED", event) + "\033[0m ";
 				equip_w = true;
 			}
 			sale_info value = get_sale_info(inv.name);
 			if (value.quest_item) {
-				description += "\033[2;32m❗ Quest Item\033[0m ";
+				description += "\033[2;32m❗ " + _("QUESTITEM", event) + "\033[0m ";
 			}
 			if (value.sellable && !value.quest_item) {
-				description += "\033[2;33m🪙 " + std::to_string(value.value) + " Value\033[0m ";
+				description += "\033[2;33m🪙 " + std::to_string(value.value) + " " + _("VALUE2", event) + "\033[0m ";
 			}
 			description += "\n```\n";
 			auto f = dpp::embed_field("<:" + emoji + "> " + inv.name, description, true);

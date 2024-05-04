@@ -618,7 +618,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 		}
 	}
 	if (!spell_count) {
-		spell_select_menu.add_select_option(dpp::select_option("Select at least one herb", "0", "You must select some herbs. The herbs facilitate spell casting."));
+		spell_select_menu.add_select_option(dpp::select_option(_("SELECTONEHERB", event), "0", _("MUSTCHOOSE", event)));
 		spell_select_menu.set_max_values(0);
 	} else {
 		if (spell_count < max_spells) {
@@ -966,7 +966,7 @@ void player::add_experience(long modifier) {
 	experience = std::max((long)0, experience + modifier);
 	long new_value = get_level();
 	if (new_value > old_value && new_value > 1) {
-		add_toast("# Level Up!\n\n## You are now level " + std::to_string(new_value) + "\nYou gain +1 to maximum stamina, skill, speed, sneak, and luck.");
+		add_toast(_("LEVELUP", event));
 	}
 }
 
@@ -1041,7 +1041,7 @@ bool player::eat_ration() {
 	if (rations-- < 1) {
 		if (stamina > 3) {
 			add_stamina(-2);
-			add_toast("You are hungry. You have lost stamina as you do not have enough rations to survive. Not eating will eventually lower your stamina to 1 point.");
+			add_toast(_("HUNGER", event));
 		}
 		rations = 0;
 		return false;
