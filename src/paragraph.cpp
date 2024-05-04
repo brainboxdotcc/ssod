@@ -236,10 +236,10 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 					while (p_text[i] != '>') {
 						pnum += p_text[i++];
 					}
-					label = "Travel";
+					label = _("TRAVEL", current_player.event);
 				}
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
-					*output << " (unable to follow this path)";
+					*output << " " << _("CANTFOLLOW", current_player.event);
 				} else {
 					links++;
 					LastLink = pnum;
