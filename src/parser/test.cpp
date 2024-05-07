@@ -18,7 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/parser.h>
-#include <ssod/database.h>
+#include <ssod/ssod.h>
 
 struct test_tag : public tag {
 	test_tag() { register_tag<test_tag>(); }
@@ -31,19 +31,19 @@ struct test_tag : public tag {
 		p.safe = false;
 
 		if (p_text.find("luck>") != std::string::npos) {
-			output << " Test your __**luck**__. ";
+			output << " " << _("TESTLUCK", current_player.event) << " ";
 			p.auto_test = current_player.test_luck();
 		} else if (p_text.find("stamina>") != std::string::npos) {
-			output << " Test your __**stamina**__. ";
+			output << " " << _("TESTSTM", current_player.event) << " ";
 			p.auto_test = current_player.test_stamina();
 		} else if (p_text.find("skill>") != std::string::npos) {
-			output << " Test your __**skill**__. ";
+			output << " " << _("TESTSKL", current_player.event) << " ";
 			p.auto_test = current_player.test_skill();
 		} else if (p_text.find("speed>") != std::string::npos) {
-			output << " Test your __**speed**__. ";
+			output << " " << _("TESTSPD", current_player.event) << " ";
 			p.auto_test = current_player.test_speed();
 		} else if (p_text.find("exp>") != std::string::npos) {
-			output << " Test your __**experience**__. ";
+			output << " " << _("TESTXP", current_player.event) << " ";
 			p.auto_test = current_player.test_experience();
 		}
 	}

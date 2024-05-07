@@ -18,6 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/parser.h>
+#include <ssod/ssod.h>
 
 struct sneaktest_tag : public tag {
 	sneaktest_tag() { register_tag<sneaktest_tag>(); }
@@ -30,9 +31,9 @@ struct sneaktest_tag : public tag {
 		std::string monster_name = extract_value(p_text);
 		paragraph_content >> p_text;
 		long monster_sneak = extract_value_number(p_text);
-		output << "\n**" << monster_name << "** *Sneak " << monster_sneak << "*,";
+		output << "\n**" << monster_name << "** *" << _("SNEAK", current_player.event) << " " << monster_sneak << "*,";
 		p.auto_test = current_player.sneak_test(monster_sneak);
-		output << (p.auto_test ? " **PASSED**!\n" : " **FAILED**!\n");
+		output << (p.auto_test ? " **" + _("PASS", current_player.event) + "**!\n" : " **" + _("FAIL", current_player.event) + "**!\n");
 		p.words++;
 		p.safe = false;
 	}
