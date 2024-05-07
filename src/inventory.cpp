@@ -74,12 +74,12 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	content << "\n__**" << _("SPELLS", event) << "**__\n";
 	std::ranges::sort(p.spells, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	for (const auto &inv: p.spells) {
-		content << "🪄 " << human_readable_spell_name(inv.name) << "\n";
+		content << "🪄 " << human_readable_spell_name(inv.name, event) << "\n";
 	}
 	content << "\n__**" << _("HERBS", event) << "**__\n";
 	std::ranges::sort(p.herbs, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	for (const auto &inv: p.herbs) {
-		content << "🌿 " << human_readable_herb_name(inv.name) << "\n";
+		content << "🌿 " << human_readable_herb_name(inv.name, event) << "\n";
 	}
 
 	content << "\n__**" << _("INVENTORYPAGE", event, p.inventory_page + 1, pages_max++) << "**__\n";
@@ -177,7 +177,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		size_t c{content.str().length()};
 		for (const auto &inv: possessions) {
 			std::string emoji = get_emoji(inv.name, inv.flags).format();
-			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, true, 80) + "\n"};
+			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, event, true, 80) + "\n"};
 			if (p.armour.name == inv.name && !equip_a) {
 				description += "\033[2;31m🫱🏼 Equipped\033[0m ";
 				equip_a = true;
