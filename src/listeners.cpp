@@ -22,7 +22,6 @@
 #include <fmt/format.h>
 #include <ssod/listeners.h>
 #include <ssod/database.h>
-#include <ssod/ssod.h>
 #include <ssod/combat.h>
 #include <ssod/command.h>
 #include <ssod/game_player.h>
