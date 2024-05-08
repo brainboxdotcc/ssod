@@ -1013,7 +1013,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		if (location.dropped_items.size()) {
 			for (const auto & dropped : location.dropped_items) {
 				item dropped_single{ .name = dropped.name, .flags = dropped.flags };
-				auto i = _(dropped_single, event);
+				auto i = _(dropped_single, "", event);
 				list_dropped += dpp::utility::markdown_escape(i.name, true);
 				if (dropped.qty > 1) {
 					list_dropped += " (x " + std::to_string(dropped.qty) + ")";
@@ -1063,8 +1063,9 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			if (ds.find(inv.name) == ds.end()) {
 				dpp::emoji e = get_emoji(inv.name, inv.flags);
 				if (sell_menu.options.size() < 25) {
+					auto i = _(inv, "", event);
 					sell_menu.add_select_option(
-						dpp::select_option(inv.name, inv.name + ";" + inv.flags, _("VALUE", event) + " " + std::to_string(s.value) + " - " + describe_item(inv.flags, inv.name, event).substr(0, 80))
+						dpp::select_option(i.name, inv.name + ";" + inv.flags, _("VALUE", event) + " " + std::to_string(s.value) + " - " + describe_item(inv.flags, inv.name, event).substr(0, 80))
 							.set_emoji(e.name, e.id)
 					);
 					ds.insert(inv.name);
@@ -1201,6 +1202,8 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		);
 
 		for (const auto & dropped : location.dropped_items) {
+			item dropped_single{ .name = dropped.name, .flags = dropped.flags };
+			auto i = _(dropped_single, "", event);
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("pick;" + std::to_string(p.paragraph) + ";" + dropped.name + ";" + dropped.flags))
