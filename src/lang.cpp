@@ -22,6 +22,8 @@
 #include <sys/stat.h>
 #include <fmt/format.h>
 #include <dpp/dpp.h>
+#include <ssod/game_player.h>
+#include <ssod/database.h>
 
 std::shared_mutex lang_mutex;
 static dpp::interaction_create_t english{};
@@ -134,6 +136,24 @@ dpp::command_option _(dpp::command_option opt) {
 		option = _(option);
 	}
 	return opt;
+}
+
+item_desc _(const item& i, const std::string& description, const dpp::interaction_create_t& event) {
+	if (event.command.locale.substr(0, 2) == "en") {
+		return { .name = i.name, .description = description };
+	}
+	auto res = db::query("SELECT id FROM game_item_descs WHERE name = ?", {i.name});
+	if (res.empty()) {
+		return { .name = i.name, .description = description };
+	}
+	auto translated_text = db::query("SELECT * FROM translations WHERE (table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col", {
+		"game_item_descs/name", "game_item_descs/idesc", res[0].at("id"), event.command.locale.substr(0, 2)
+	});
+	if (translated_text.size() != 2) {
+		return { .name = i.name, .description = description };
+	}
+
+	return { .name = translated_text[1].at("translation"), .description = translated_text[0].at("translation") };
 }
 
 dpp::slashcommand _(dpp::slashcommand cmd) {

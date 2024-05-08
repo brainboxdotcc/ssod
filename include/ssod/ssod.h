@@ -74,8 +74,19 @@ inline int atoi(const std::string& str) {
 	return atoi(str.c_str());
 }
 
+struct item_desc {
+	std::string name{};
+	std::string description{};
+};
+
+struct item {
+	std::string name{};
+	std::string flags{};
+};
+
 std::string _(const std::string &k, const dpp::interaction_create_t& interaction);
 dpp::slashcommand _(dpp::slashcommand cmd);
+item_desc _(const item& i, const std::string& description, const dpp::interaction_create_t& event);
 template<typename... T> std::string _(const std::string& key, const dpp::interaction_create_t& interaction, T&&... args) {
 	return fmt::format(fmt::runtime(_(key, interaction)), std::forward<T>(args)...);
 }

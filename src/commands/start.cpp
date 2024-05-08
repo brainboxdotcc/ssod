@@ -161,17 +161,20 @@ void start_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 
-	if (player_is_live(event)) {
-		player p = get_live_player(event);
+	auto kludge_language = event;
+	kludge_language.command.locale = "fr";
+
+	if (player_is_live(kludge_language)) {
+		player p = get_live_player(kludge_language);
 		send_chat(event.command.usr.id, p.paragraph, "", "join");
-		continue_game(event, p);
+		continue_game(kludge_language, p);
 		return;
 	}
 
-	player p = get_registering_player(event);
+	player p = get_registering_player(kludge_language);
 	p.state = state_roll_stats;
-	p.event = event;
-	update_registering_player(event, p);
+	p.event = kludge_language;
+	update_registering_player(kludge_language, p);
 
-	event.reply(p.get_registration_message(*bot, event));
+	event.reply(p.get_registration_message(*bot, kludge_language));
 }

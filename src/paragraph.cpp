@@ -31,7 +31,17 @@ paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user
 		throw dpp::logic_exception("Invalid location, internal error");
 	}
 	id = paragraph_id;
-	text = location[0].at("data");
+	/* Check for a translation for the user's locale, if there is one */
+	if (current.event.command.locale.substr(0, 2) != "en") {
+		auto translated_text = db::query("SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ?", {"game_locations/data", paragraph_id, current.event.command.locale.substr(0, 2)});
+		if (!translated_text.empty()) {
+			text = translated_text[0].at("translation");
+		} else {
+			text = location[0].at("data");
+		}
+	} else {
+		text = location[0].at("data");
+	}
 	secure_id = location[0].at("secure_id");
 	combat_disabled = location[0].at("combat_disabled") == "1";
 	magic_disabled = location[0].at("magic_disabled") == "1";

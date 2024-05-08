@@ -151,12 +151,15 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
 		if (!value.quest_item && value.sellable) {
-			drop_menu.add_select_option(dpp::select_option(_("DROP", event) + " " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
+			auto i = _(inv, "", event);
+			drop_menu.add_select_option(dpp::select_option(_("DROP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
 		}
 		if (inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
-			use_menu.add_select_option(dpp::select_option(_("USE", event) + " " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
+			auto i = _(inv, "", event);
+			use_menu.add_select_option(dpp::select_option(_("USE", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		} else if (!inv.flags.empty() && (inv.flags[0] == 'A' || inv.flags[0] == 'W')) {
-			equip_menu.add_select_option(dpp::select_option(_("EQUIP", event) + " " + inv.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
+			auto i = _(inv, "", event);
+			equip_menu.add_select_option(dpp::select_option(_("EQUIP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		}
 	}
 
@@ -193,7 +196,8 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 				description += "\033[2;33m🪙 " + std::to_string(value.value) + " " + _("VALUE2", event) + "\033[0m ";
 			}
 			description += "\n```\n";
-			auto f = dpp::embed_field("<:" + emoji + "> " + inv.name, description, true);
+			auto i = _(inv, "", event);
+			auto f = dpp::embed_field("<:" + emoji + "> " + i.name, description, true);
 			fields.push_back(f);
 
 			dpp::message saved = m;
