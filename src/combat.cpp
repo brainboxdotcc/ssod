@@ -919,7 +919,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		}
 	}
 	
-	cb.add_component(help_button());
+	cb.add_component(help_button(event));
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")

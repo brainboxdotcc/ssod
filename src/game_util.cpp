@@ -24,11 +24,11 @@
 #include <ssod/aes.h>
 #include <ssod/ssod.h>
 
-dpp::component help_button() {
+dpp::component help_button(const dpp::interaction_create_t& event) {
 	return dpp::component()
 		.set_type(dpp::cot_button)
 		.set_id(security::encrypt("player_nav_help"))
-		.set_label("Get Help")
+		.set_label(_("GET_HELP", event))
 		.set_url("https://discord.gg/brainbox")
 		.set_style(dpp::cos_link);		
 }
