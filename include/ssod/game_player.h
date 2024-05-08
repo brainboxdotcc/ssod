@@ -23,11 +23,7 @@
 #include <deque>
 #include <dpp/dpp.h>
 #include <ssod/game_enums.h>
-
-struct item {
-	std::string name{};
-	std::string flags{};
-};
+#include <ssod/ssod.h>
 
 struct stacked_item {
 	std::string name{};

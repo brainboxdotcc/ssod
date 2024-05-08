@@ -117,7 +117,7 @@ void death(player& p, component_builder& cb) {
 }
 
 void add_chat(std::string& text, const dpp::interaction_create_t& event, long paragraph_id, uint64_t guild_id) {
-	text += "\n__**Chat**__\n```ansi\n";
+	text += "\n__**" + _("CHAT", event) + "**__\n```ansi\n";
 	auto rs = db::query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND (location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) ORDER BY sent DESC, id DESC LIMIT 5", {paragraph_id, guild_id});
 	for (size_t x = 0; x < 5 - rs.size(); ++x) {
 		text += std::string(80, ' ') + "\n";
@@ -1012,7 +1012,9 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 		if (location.dropped_items.size()) {
 			for (const auto & dropped : location.dropped_items) {
-				list_dropped += dpp::utility::markdown_escape(dropped.name, true);
+				item dropped_single{ .name = dropped.name, .flags = dropped.flags };
+				auto i = _(dropped_single, event);
+				list_dropped += dpp::utility::markdown_escape(i.name, true);
 				if (dropped.qty > 1) {
 					list_dropped += " (x " + std::to_string(dropped.qty) + ")";
 				}

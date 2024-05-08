@@ -55,7 +55,9 @@ std::string ellipsis(const std::string& in, size_t max_len) {
 
 std::string describe_item(const std::string& modifier_flags, const std::string& name, const dpp::interaction_create_t& event, bool ansi, size_t max_desc_len) {
 	auto res = db::query("SELECT idesc FROM game_item_descs WHERE name = ?", {name});
-	std::string rv{ellipsis(res.size() ? res[0].at("idesc") : name, max_desc_len)};
+	auto i = _({ .name = name, .flags = modifier_flags }, res.size() ? res[0].at("idesc") : name, event);
+	std::string rv{ellipsis(i.description, max_desc_len)};
+
 
 	if (modifier_flags.substr(0, 3) == "ST+") {
 		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + _("STAMINA", event) + "\033[0m \033[2;34m+{}\033[0m: {}" :  _("STAMINA", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
