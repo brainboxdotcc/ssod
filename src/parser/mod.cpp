@@ -59,7 +59,7 @@ struct mod_tag : public tag {
 				output << " ***" << _("MODNO", current_player.event, m->first) << "*** ";
 				return;
 			}
-			output << " ***" << _(modifier < 1 ? "MODSUB" : "MODADD", current_player.event, abs(modifier), m->second.name) << "*** ";
+			output << " ***" << _(modifier < 1 ? "MODNEG" : "MODPLUS", current_player.event, abs(modifier), m->second.name) << "*** ";
 			long old_value = current_player.get_level();
 			*(m->second.score) += modifier;
 			*(m->second.score) = std::min(*(m->second.score), m->second.max);
