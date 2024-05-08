@@ -30,7 +30,7 @@ struct sale_info {
 };
 
 std::string describe_item(const std::string& modifier_flags, const std::string& name, const dpp::interaction_create_t& event, bool ansi = false, size_t max_desc_len = 250);
-dpp::component help_button();
+dpp::component help_button(const dpp::interaction_create_t& event);
 void premium_required(const dpp::interaction_create_t& event);
 sale_info get_sale_info(const std::string& name);
 std::string human_readable_spell_name(const std::string& spell, const dpp::interaction_create_t& event);

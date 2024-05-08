@@ -850,7 +850,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
 			.set_disabled(amount == 0)
 		)
-		.add_component(help_button())
+		.add_component(help_button(event))
 	);
 
 
@@ -922,7 +922,7 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::magic05.name, sprite::magic05.id)
 		)
-		.add_component(help_button())
+		.add_component(help_button(event))
 	);
 
 	event.reply(event.command.type == dpp::it_application_command || event.command.type == dpp::it_component_button ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
@@ -937,9 +937,9 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 				       .set_style(dpp::cos_secondary)
 				       .set_emoji(sprite::magic05.name, sprite::magic05.id)
 				)
-				.add_component(help_button())
+				.add_component(help_button(event))
 			)
-			.add_component(help_button()).set_flags(dpp::m_ephemeral));
+			.add_component(help_button(event)).set_flags(dpp::m_ephemeral));
 		}
 	});
 }
@@ -1214,7 +1214,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		}
 	}
 
-	cb.add_component(help_button());
+	cb.add_component(help_button(event));
 	m = cb.get_message();
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {

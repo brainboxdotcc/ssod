@@ -124,7 +124,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 				 .set_emoji("▶")
 				 .set_disabled(p.inventory_page >= pages_max - 2)
 	);
-	cb.add_component(help_button());
+	cb.add_component(help_button(event));
 
 	m = cb.get_message();
 

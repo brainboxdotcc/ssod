@@ -22,7 +22,6 @@
 #include <sys/stat.h>
 #include <fmt/format.h>
 #include <dpp/dpp.h>
-#include <ssod/game_player.h>
 #include <ssod/database.h>
 
 std::shared_mutex lang_mutex;

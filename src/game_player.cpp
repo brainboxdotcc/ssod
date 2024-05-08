@@ -359,7 +359,7 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 				.set_style(dpp::cos_success)
 				.set_emoji("➡️")
 			)
-			.add_component(help_button())
+			.add_component(help_button(event))
 		).set_flags(dpp::m_ephemeral);
 }
 
@@ -645,7 +645,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 				.set_style(dpp::cos_success)
 				.set_emoji("➡️")
 			)
-			.add_component(help_button())
+			.add_component(help_button(event))
 		).set_flags(dpp::m_ephemeral);
 }
 
