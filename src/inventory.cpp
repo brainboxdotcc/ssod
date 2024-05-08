@@ -182,7 +182,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 			std::string emoji = get_emoji(inv.name, inv.flags).format();
 			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, event, true, 80) + "\n"};
 			if (p.armour.name == inv.name && !equip_a) {
-				description += "\033[2;31m🫱🏼 Equipped\033[0m ";
+				description += "\033[2;31m🫱🏼 " + _("EQUIPPED", event) + "\033[0m ";
 				equip_a = true;
 			} else if (p.weapon.name == inv.name && !equip_w) {
 				description += "\033[2;31m🫱🏼 " + _("EQUIPPED", event) + "\033[0m ";
