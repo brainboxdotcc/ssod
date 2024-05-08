@@ -46,17 +46,34 @@ struct combat_tag : public tag {
 			// fragments can only be requested on a paragraph
 			// that contains at least one combat.
 
+
+			if (current_player.event.command.locale != "en") {
+				auto translation = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
+					0, current_player.event.command.locale.substr(0, 2), monster_name
+				});
+				if (!translation.empty()) {
+					monster_name = translation[0].at("translation");
+				}
+			}
+
 			if (!p.sick) {
 				/* Once per paragraph, check for existing illnesses and apply debuffs */
 				auto illnesses = db::query("SELECT * FROM diseases");
 				for (auto& illness : illnesses) {
 					std::string flag = "[gamestate_" + illness.at("flag");
 					if (current_player.gotfrom.find(flag) != std::string::npos) {
+						std::string name{illness.at("name")};
+						if (current_player.event.command.locale != "en") {
+							auto translation = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
+								illness.at("id"), current_player.event.command.locale.substr(0, 2), "diseases/name"
+							});
+							if (!translation.empty()) {
+								name = translation[0].at("translation");
+							}
+
+						}
 						current_player.add_stamina(-atol(illness.at("stamina_debuff").c_str()));
-						current_player.add_toast(
-							illness.at("name") + " its toll on your body, subtracting " +
-							illness.at("stamina_debuff") + " stamina..."
-							"\n\nFind an antidote or healer before this proves fatal!");
+						current_player.add_toast(_("DISEASED", current_player.event, name, illness.at("stamina_debuff")));
 						p.sick = true;
 					}
 				}
@@ -64,7 +81,7 @@ struct combat_tag : public tag {
 
 			output << fmt::format(
 				"\n```ansi\n⚔ \033[2;34m{0:16s}\033[0m \033[2;31mSTM\033[0m:\033[2;33m{1:2d}\033[0m \033[2;31mSKL\033[0m:\033[2;33m{2:2d}\033[0m \033[2;31mARM\033[0m:\033[2;33m{3:2d}\033[0m \033[2;31mWPN\033[0m:\033[2;33m{4:2d}\033[0m {5}\n```\n",
-				monster_name.substr(0, 16),
+				dpp::utility::utf8substr(monster_name, 0, 16),
 				monster_stamina,
 				monster_skill,
 				monster_armour,
