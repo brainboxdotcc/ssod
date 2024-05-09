@@ -22,7 +22,7 @@
 #include <ssod/command.h>
 
 struct vote_command : public command {
-	static constexpr std::string_view name{"loot"};
+	static constexpr std::string_view name{"vote"};
 	static dpp::slashcommand register_command(dpp::cluster& bot);
 	static void route(const dpp::slashcommand_t &event);
 };
