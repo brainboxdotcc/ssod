@@ -97,7 +97,7 @@ bool paragraph::valid_next(long Current, long Next) {
 			break;
 		}
 
-		std::string tag = dpp::lowercase(p_text.substr(0, 20));
+		std::string tag = dpp::utility::utf8substr(dpp::lowercase(p_text), 0, 20);
 		if (tag.find("<paylink=") != std::string::npos) {
 			int i{0};
 			std::string pnum, cost;
@@ -168,7 +168,7 @@ void extract_to_quote(std::string& p_text, std::stringstream& content, char end)
 }
 
 std::string remove_last_char(const std::string& s) {
-	return s.substr(0, s.length() - 1);	
+	return dpp::utility::utf8substr(s, 0, dpp::utility::utf8len(s) - 1);
 }
 
 void paragraph::parse(player& current_player, dpp::snowflake user_id) {
@@ -202,7 +202,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 		}
 
 		if (display.size() ? display[display.size() - 1] : true) {
-			std::string tag = dpp::lowercase(p_text.substr(0, 20));
+			std::string tag = dpp::lowercase(dpp::utility::utf8substr(p_text, 0, 20));
 			if (tag.find("<paylink=") != std::string::npos && !last_was_link) {
 				int i{0};
 				std::string pnum, cost;
@@ -230,7 +230,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 					while (p_text[i] != ',') {
 						pnum += p_text[i++];
 					}
-					p_text = p_text.substr(i + 1, p_text.length());
+					p_text = dpp::utility::utf8substr(p_text, i + 1, dpp::utility::utf8len(p_text));
 					bool bail{false};
 					do {
 						if (p_text.find('>') == std::string::npos) {

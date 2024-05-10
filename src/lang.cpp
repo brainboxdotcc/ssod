@@ -73,13 +73,17 @@ void load_lang(dpp::cluster& bot) {
 std::string _(const std::string &k, const dpp::interaction_create_t& interaction) {
 	std::string lang_name{interaction.command.locale.substr(0, 2)};
 	std::shared_lock lang_lock(lang_mutex);
-	auto o = lang->find(k);
-	if (o != lang->end()) {
-		auto v = o->find(lang_name);
-		if (v != o->end()) {
-			return v->get<std::string>();
+	try {
+		auto o = lang->find(k);
+		if (o != lang->end()) {
+			auto v = o->find(lang_name);
+			if (v != o->end()) {
+				return v->get<std::string>();
+			}
+			return _(k, english);
 		}
-		return _(k, english);
+	}
+	catch (const std::exception&) {
 	}
 	return k;
 }
