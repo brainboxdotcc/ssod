@@ -56,7 +56,7 @@ void bio_command::route(const dpp::slashcommand_t &event)
 
 
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
-	if (rs.empty()) {
+	if (event.command.entitlements.empty() && rs.empty()) {
 		premium_required(event);
 	} else  if (subcommand.name == "text") {
 		auto param = subcommand.options[0].value;
