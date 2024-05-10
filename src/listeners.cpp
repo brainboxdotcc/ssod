@@ -175,8 +175,8 @@ namespace listeners {
 	}
 
 	void on_entitlement_update(const dpp::entitlement_update_t& event) {
-		db::query("UPDATE premium_credits SET active = 1, updated_at = now() WHERE user_id = ? AND subscription_id = ?",
-			  { event.updating_entitlement.owner_id, event.updating_entitlement.id });
+		db::query("UPDATE premium_credits SET active = ?, updated_at = now() WHERE user_id = ? AND subscription_id = ?",
+			  { event.updating_entitlement.is_deleted() ? 0 : 1, event.updating_entitlement.owner_id, event.updating_entitlement.id });
 	}
 
 	void on_ready(const dpp::ready_t& event) {

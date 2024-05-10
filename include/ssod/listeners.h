@@ -46,23 +46,31 @@ namespace listeners {
 	void on_guild_create(const dpp::guild_create_t &event);
 
 	/**
-	 * @brief handle guild join
+	 * @brief handle guild kick
 	 * 
 	 * @param event guild_create_t
 	 */
 	void on_guild_delete(const dpp::guild_delete_t &event);
 
 	/**
-	 * @brief Handle button click (false positive, good match)
-	 * 
-	 * @param event button_click_t
+	 * @brief Handle creation of a premium entitlement
+	 *
+	 * @param event
 	 */
-	void on_button_click(const dpp::button_click_t &event);
-
 	void on_entitlement_create(const dpp::entitlement_create_t& event);
 
+	/**
+	 * @brief Handle deletion of a premium entitlement
+	 *
+	 * @param event
+	 */
 	void on_entitlement_delete(const dpp::entitlement_delete_t& event);
 
+	/**
+	 * @brief Handle update of a premium entitlement
+	 *
+	 * @param event
+	 */
 	void on_entitlement_update(const dpp::entitlement_update_t& event);
 
 };
