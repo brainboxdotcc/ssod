@@ -100,7 +100,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		;
 
 	auto premium = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
-	if (!premium.empty()) {
+	if (!event.command.entitlements.empty() || !premium.empty()) {
 		auto bio = db::query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
 		if (!bio.empty()) {
 			if (!bio[0].at("bio").empty()) {

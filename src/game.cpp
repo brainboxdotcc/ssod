@@ -83,9 +83,13 @@ void death(player& p, component_builder& cb) {
 
 	toast += "# " + _("DED", p.event) + "\n\n";
 
-	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { p.event.command.usr.id });
-	if (!rs.empty()) {
+	if (!p.event.command.entitlements.empty()) {
 		when = RESURRECT_SECS_PREMIUM;
+	} else {
+		auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", {p.event.command.usr.id});
+		if (!rs.empty()) {
+			when = RESURRECT_SECS_PREMIUM;
+		}
 	}
 
 	if (p.last_resurrect == 0 || time(nullptr) > p.last_resurrect + when) {
@@ -99,7 +103,7 @@ void death(player& p, component_builder& cb) {
 		);
 	} else {
 		toast += _("RESURRECT_NOT_AVAILABLE", p.event, dpp::utility::timestamp(p.last_resurrect + when, dpp::utility::tf_relative_time));
-		if (rs.empty()) {
+		if (when == RESURRECT_SECS_PREMIUM) {
 			toast += sprite::diamond.get_mention() + " ";
 			toast += _("PREMIUM_RESURRECT", p.event);
 		}
@@ -585,7 +589,7 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "resurrect") {
 		time_t when = RESURRECT_SECS;
 		auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
-		if (!rs.empty()) {
+		if (!event.command.entitlements.empty() || !rs.empty()) {
 			when = RESURRECT_SECS_PREMIUM;
 		}
 		if (time(nullptr) > p.last_resurrect + when) {

@@ -62,7 +62,7 @@ void rename_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
-	if (rs.empty()) {
+	if (event.command.entitlements.empty() && rs.empty()) {
 		premium_required(event);
 		return;
 	}

@@ -198,7 +198,7 @@ struct if_tag : public tag {
 			// ------------------------------------------------------
 			auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { current_player.event.command.usr.id });
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(!rs.empty());
+				p.display.push_back(!current_player.event.command.entitlements.empty() || !rs.empty());
 			} else {
 				p.display.push_back(false);
 			}
