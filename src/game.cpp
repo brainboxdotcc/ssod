@@ -53,11 +53,11 @@ uint64_t get_guild_id(const player& p);
 void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type, uint64_t guild_id) {
 	if (guild_id) {
 		db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message, guild_id) VALUES(?,?,?,?,?)",
-			  {type, user_id, paragraph, message.substr(0, 140), guild_id});
+			  {type, user_id, paragraph, dpp::utility::utf8substr(message, 0, 140), guild_id});
 
 	} else {
 		db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)",
-			  {type, user_id, paragraph, message.substr(0, 140)});
+			  {type, user_id, paragraph, dpp::utility::utf8substr(message, 0, 140)});
 	}
 }
 
@@ -789,7 +789,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 			dpp::emoji e = get_emoji(inv.name, inv.flags);
 			if (deposit_menu.options.size() < 25) {
 				deposit_menu.add_select_option(
-					dpp::select_option(inv.name, inv.name + ";" + inv.flags, describe_item(inv.flags, inv.name, event).substr(0, 100))
+					dpp::select_option(inv.name, inv.name + ";" + inv.flags, dpp::utility::utf8substr(describe_item(inv.flags, inv.name, event), 0, 100))
 					.set_emoji(e.name, e.id)
 				);
 				ds.insert(inv.name);

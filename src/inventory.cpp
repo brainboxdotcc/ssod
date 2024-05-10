@@ -203,7 +203,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 			dpp::message saved = m;
 			embed.fields = fields;
 			m.embeds = { embed };
-			c += f.name.length() + f.value.length();
+			c += dpp::utility::utf8len(f.name) + dpp::utility::utf8len(f.value);
 			if (c > 6000) {
 				/* Check the inventory is not too big to view */
 				m = saved;

@@ -381,8 +381,8 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			.icon_url = "", 
 			.proxy_url = "",
 		})
-		.add_field(p.name.substr(0, 80),output1.str(), true)
-		.add_field(opponent.name.substr(0, 80),output2.str(), true)
+		.add_field(dpp::utility::utf8substr(p.name, 0, 80),output1.str(), true)
+		.add_field(dpp::utility::utf8substr(opponent.name, 0, 80),output2.str(), true)
 		.set_colour(EMBED_COLOUR)
 		.set_description(output.str());
 	
