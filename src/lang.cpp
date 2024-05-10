@@ -83,7 +83,8 @@ std::string _(const std::string &k, const dpp::interaction_create_t& interaction
 			return _(k, english);
 		}
 	}
-	catch (const std::exception&) {
+	catch (const std::exception& e) {
+		std::cout << "i18n error on " << k << " " << lang_name << ": " << e.what() << "\n";
 	}
 	return k;
 }
