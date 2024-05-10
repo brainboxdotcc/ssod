@@ -757,7 +757,8 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	if (!bank_items.empty()) {
 		content << "\n__**" << bank_items.size() << "/25 " << _("BANK_ITEMS", event) << "**__\n";
 		for (const auto& bank_item : bank_items) {
-			content << sprite::backpack.get_mention() << " " << bank_item.at("item_desc") << " - *" << describe_item(bank_item.at("item_flags"), bank_item.at("item_desc"), event) << "*\n";
+			auto i = _(item{ .name = bank_item.at("item_desc"), .flags = bank_item.at("item_flags") }, "", event);
+			content << sprite::backpack.get_mention() << " " << i.name << "\n";
 		}
 	}
 
@@ -785,6 +786,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	std::set<std::string> ds;
 	for (const auto& inv : p.possessions) {
 		sale_info si = get_sale_info(inv.name);
+		auto i = _(inv, "", event);
 		if (si.quest_item || dpp::lowercase(inv.name) == "scroll") {
 			/* Can't bank a scroll! */
 			continue;
@@ -793,7 +795,7 @@ void bank(const dpp::interaction_create_t& event, player p) {
 			dpp::emoji e = get_emoji(inv.name, inv.flags);
 			if (deposit_menu.options.size() < 25) {
 				deposit_menu.add_select_option(
-					dpp::select_option(inv.name, inv.name + ";" + inv.flags, dpp::utility::utf8substr(describe_item(inv.flags, inv.name, event), 0, 100))
+					dpp::select_option(i.name, inv.name + ";" + inv.flags)
 					.set_emoji(e.name, e.id)
 				);
 				ds.insert(inv.name);
@@ -810,9 +812,10 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	for (const auto& bank_item : bank_items) {
 		if (dup_set.find(bank_item.at("item_desc")) == dup_set.end()) {
 			dpp::emoji e = get_emoji(bank_item.at("item_desc"), bank_item.at("item_flags"));
+			auto i = _(item{ .name = bank_item.at("item_desc"), .flags = bank_item.at("item_flags") }, "", event);
 			if (withdraw_menu.options.size() < 25) {
 				withdraw_menu.add_select_option(
-					dpp::select_option(bank_item.at("item_desc"), bank_item.at("item_desc") + ";" + bank_item.at("item_flags"), describe_item(bank_item.at("item_flags"), bank_item.at("item_desc"), event).substr(0, 100))
+					dpp::select_option(i.name, bank_item.at("item_desc") + ";" + bank_item.at("item_flags"))
 					.set_emoji(e.name, e.id)
 				);
 				dup_set.insert(bank_item.at("item_desc"));

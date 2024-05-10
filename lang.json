@@ -683,7 +683,7 @@
     },
     "INVENTORYFOOTER": {
         "en": "{0}'s Inventory (Page {1})",
-        "fr": "Inventaire de {0} (page {1})",
+        "fr": "Inventaire de {0} (page {1})",
         "pt": "Inventário de {0} (página {1})",
         "tr": "{0}'ın Envanteri (Sayfa {1})",
         "es": "Inventario de {0} (página {1})",
@@ -714,7 +714,7 @@
     },
     "INVENTORYPAGE": {
         "en": "Inventory (page {0} of {1})",
-        "fr": "Inventaire (page {0} sur {1})",
+        "fr": "Inventaire (page {0} sur {1})",
         "pt": "Inventário (página {0} de {1})",
         "tr": "Envanter (sayfa {0} \/ {1})",
         "es": "Inventario (página {0} de {1})",
@@ -900,7 +900,7 @@
     },
     "PREMIUMUPSELL": {
         "en": "## Premium Required\n\nYou need [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) to use this feature! Subscriptions are just £3 a month and give access to additional areas, automatic loot drops, and more!",
-        "fr": "## Premium requis\n\nVous avez besoin de [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) pour utiliser cette fonctionnalité ! Les abonnements ne coûtent que 3 £ par mois et donnent accès à des zones supplémentaires, des butins automatiques et bien plus encore !",
+        "fr": "## Premium requis\n\nVous avez besoin de [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) pour utiliser cette fonctionnalité ! Les abonnements ne coûtent que 3 £ par mois et donnent accès à des zones supplémentaires, des butins automatiques et bien plus encore !",
         "pt": "## Prémio obrigatório\n\nVocê precisa do [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) para usar esse recurso! As assinaturas custam apenas £3 por mês e dão acesso a áreas adicionais, saques automáticos e muito mais!",
         "tr": "## Premium Gerekli\n\nBu özelliği kullanmak için [Seven Spells Premium'a](https:\/\/premium.ssod.org?user={}) ihtiyacınız var! Abonelikler ayda sadece 3 £'dur ve ek alanlara, otomatik ganimet düşüşlerine ve daha fazlasına erişim sağlar!",
         "es": "## Prima requerida\n\n¡Necesitas [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) para usar esta función! ¡Las suscripciones cuestan solo £ 3 al mes y brindan acceso a áreas adicionales, botín automático y más!",
@@ -1520,7 +1520,7 @@
     },
     "WELCOME_MSG": {
         "en": "Welcome to the world of **Utopia**, {}!\n\nYour character is shown below. If you are not happy with your base stats, click **Re-Roll** for new ones.\n### Once you commit to this character, you cannot change these base stats without __restarting__.",
-        "fr": "Bienvenue dans le monde de **Utopia**, {} !\n\nVotre personnage est affiché ci-dessous. Si vous n'êtes pas satisfait de vos statistiques de base, cliquez sur **Re-Roll** pour en obtenir de nouvelles.\n### Une fois que vous vous êtes engagé envers ce personnage, vous ne pouvez pas modifier ces statistiques de base sans __restarting__.",
+        "fr": "Bienvenue dans le monde de **Utopia**, {} !\n\nVotre personnage est affiché ci-dessous. Si vous n'êtes pas satisfait de vos statistiques de base, cliquez sur **Re-Roll** pour en obtenir de nouvelles.\n### Une fois que vous vous êtes engagé envers ce personnage, vous ne pouvez pas modifier ces statistiques de base sans __restarting__.",
         "pt": "Bem-vindo ao mundo da **Utopia**, {}!\n\nSeu personagem é mostrado abaixo. Se você não estiver satisfeito com suas estatísticas básicas, clique em **Re-Roll** para obter novas.\n### Depois de se comprometer com esse personagem, você não poderá alterar essas estatísticas básicas sem __reiniciar__.",
         "tr": "**Ütopya** dünyasına hoş geldiniz, {}!\n\nKarakteriniz aşağıda gösterilmiştir. Temel istatistiklerinizden memnun değilseniz yeni istatistikler için **Yeniden Oynat**'a tıklayın.\n### Bu karakteri bir kez taahhüt ettiğinizde, bu temel istatistikleri __yeniden başlatma__ olmadan değiştiremezsiniz.",
         "es": "¡Bienvenido al mundo de **Utopía**, {}!\n\nTu personaje se muestra a continuación. Si no estás satisfecho con tus estadísticas base, haz clic en **Repetir** para obtener otras nuevas.\n### Una vez que te comprometes con este personaje, no puedes cambiar estas estadísticas base sin __reiniciar__.",
@@ -3969,7 +3969,7 @@
     },
     "THUNDERBOLTD": {
         "en": "Summons lightning from the heavens!",
-        "fr": "Invoque des éclairs du ciel !",
+        "fr": "Invoque des éclairs du ciel !",
         "pt": "Invoca relâmpagos dos céus!",
         "tr": "Göklerden yıldırım çağırıyor!",
         "es": "¡Invoca relámpagos del cielo!",
@@ -5612,7 +5612,7 @@
     },
     "GROWWEAPOND": {
         "en": "Make your weapons bigger. Good luck using them!",
-        "fr": "Agrandissez vos armes. Bonne chance pour les utiliser !",
+        "fr": "Agrandissez vos armes. Bonne chance pour les utiliser !",
         "pt": "Aumente suas armas. Boa sorte em usá-los!",
         "tr": "Silahlarınızı büyütün. Bunları kullanırken iyi şanslar!",
         "es": "Haz tus armas más grandes. ¡Buena suerte usándolos!",
@@ -5984,7 +5984,7 @@
     },
     "GUILD_CREATED": {
         "en": "Guild has been created:",
-        "fr": "La guilde a été créée :",
+        "fr": "La guilde a été créée :",
         "pt": "A guilda foi criada:",
         "tr": "Lonca oluşturuldu:",
         "es": "Se ha creado el gremio:",
@@ -6170,7 +6170,7 @@
     },
     "MEMBER_COUNT": {
         "en": "Member Count:",
-        "fr": "Nombre de membres :",
+        "fr": "Nombre de membres :",
         "pt": "Contagem de membro:",
         "tr": "Üye Sayısı:",
         "es": "Cuenta de miembro:",
@@ -6604,7 +6604,7 @@
     },
     "HELP_TOP": {
         "en": "Welcome to **The Seven Spells Of Destruction**, an open world multi player role playing game played through Discord! There are not many commands for this bot as using it is simple. to get started, use `\/start`. You can find a list of all the commands for the bot below:",
-        "fr": "Bienvenue dans **The Seven Spells Of Destruction**, un jeu de rôle multijoueur en monde ouvert joué via Discord ! Il n’y a pas beaucoup de commandes pour ce bot car son utilisation est simple. pour commencer, utilisez `\/start`. Vous pouvez trouver une liste de toutes les commandes du bot ci-dessous :",
+        "fr": "Bienvenue dans **The Seven Spells Of Destruction**, un jeu de rôle multijoueur en monde ouvert joué via Discord ! Il n’y a pas beaucoup de commandes pour ce bot car son utilisation est simple. pour commencer, utilisez `\/start`. Vous pouvez trouver une liste de toutes les commandes du bot ci-dessous :",
         "pt": "Bem-vindo ao **The Seven Spells Of Destruction**, um RPG multijogador de mundo aberto jogado através do Discord! Não existem muitos comandos para este bot, pois usá-lo é simples. para começar, use `\/start`. Você pode encontrar uma lista de todos os comandos do bot abaixo:",
         "tr": "Discord üzerinden oynanan açık dünya çok oyunculu rol yapma oyunu **The Seven Spells Of Destruction**'a hoş geldiniz! Kullanımı basit olduğundan bu bot için çok fazla komut yoktur. Başlamak için '\/start'ı kullanın. Bot için tüm komutların bir listesini aşağıda bulabilirsiniz:",
         "es": "¡Bienvenido a **Los siete hechizos de destrucción**, un juego de rol multijugador de mundo abierto que se juega a través de Discord! No hay muchos comandos para este bot ya que usarlo es sencillo. Para comenzar, use `\/start`. Puede encontrar una lista de todos los comandos para el bot a continuación:",
@@ -7162,7 +7162,7 @@
     },
     "HELP_GENDER_DESC": {
         "en": "Set your gender on your user profile.\nThis is only used to set the gender of your profile picture (which is selected to match your character's profession and race). Please note only `male` or `female` are supported, due to image creation limitations.",
-        "fr": "Définissez votre sexe sur votre profil utilisateur.\nCeci est uniquement utilisé pour définir le sexe de votre photo de profil (qui est sélectionné en fonction de la profession et de la race de votre personnage). Veuillez noter que seuls « homme » et « femme » sont pris en charge, en raison des limitations de création d'images.",
+        "fr": "Définissez votre sexe sur votre profil utilisateur.\nCeci est uniquement utilisé pour définir le sexe de votre photo de profil (qui est sélectionné en fonction de la profession et de la race de votre personnage). Veuillez noter que seuls « homme » et « femme » sont pris en charge, en raison des limitations de création d'images.",
         "pt": "Defina seu gênero em seu perfil de usuário.\nIsto é usado apenas para definir o gênero da sua foto de perfil (que é selecionada para corresponder à profissão e raça do seu personagem). Observe que apenas `masculino` ou `feminino` são suportados, devido às limitações de criação de imagens.",
         "tr": "Cinsiyetinizi kullanıcı profilinizde ayarlayın.\nBu yalnızca profil resminizin (karakterinizin mesleğine ve ırkına uyacak şekilde seçilen) cinsiyetini ayarlamak için kullanılır. Resim oluşturma sınırlamaları nedeniyle yalnızca \"erkek\" veya \"kadın\"ın desteklendiğini lütfen unutmayın.",
         "es": "Establece tu género en tu perfil de usuario.\nEsto solo se usa para establecer el género de tu foto de perfil (que se selecciona para que coincida con la profesión y raza de tu personaje). Tenga en cuenta que solo se admiten \"masculino\" o \"femenino\", debido a limitaciones en la creación de imágenes.",
@@ -8650,7 +8650,7 @@
     },
     "DEATH_MSG_26": {
         "en": "{} is now an ex-player... has ceased to be... is no more!",
-        "fr": "{} est maintenant un ancien joueur... a cessé de l'être... n'est plus !",
+        "fr": "{} est maintenant un ancien joueur... a cessé de l'être... n'est plus !",
         "pt": "{} agora é um ex-jogador... deixou de ser... não existe mais!",
         "tr": "{} artık eski bir oyuncu... artık yok... artık yok!",
         "es": "{} ahora es un ex-jugador... ha dejado de serlo... ¡ya no existe!",
@@ -8836,7 +8836,7 @@
     },
     "DEATH_MSG_32": {
         "en": "{} has a hole in his stomach!",
-        "fr": "{} a un trou dans le ventre !",
+        "fr": "{} a un trou dans le ventre !",
         "pt": "{} tem um buraco no estômago!",
         "tr": "{}'nin midesinde bir delik var!",
         "es": "{} tiene un agujero en el estómago!",
@@ -9332,7 +9332,7 @@
     },
     "TIMEOUT": {
         "en": "{} timed out, left Discord?",
-        "fr": "{} a expiré, vous avez quitté Discord ?",
+        "fr": "{} a expiré, vous avez quitté Discord ?",
         "pt": "{} expirou, saiu do Discord?",
         "tr": "{} zaman aşımına uğradı, Discord'dan ayrıldınız mı?",
         "es": "{} se agotó el tiempo, ¿dejaste Discord?",
@@ -9363,14 +9363,14 @@
     },
     "TIMEOUT5": {
         "en": "{} timed out after 5 minutes without activity",
-        "fr": "{} a expiré après 5 minutes d'inactivité",
+        "fr": "{} a expiré après 5 minutes d'inactivité",
         "pt": "{} expirou após 5 minutos sem atividade",
         "tr": "{}, 5 dakika boyunca herhangi bir işlem yapılmadığında zaman aşımına uğradı",
         "es": "{} se agotó el tiempo de espera después de 5 minutos sin actividad",
         "de": "{} nach 5 Minuten ohne Aktivität abgelaufen",
         "hi": "{} बिना किसी गतिविधि के 5 मिनट के बाद समय समाप्त हो गया",
         "sv": "{} tog timeout efter 5 minuter utan aktivitet",
-        "ru": "Тайм-аут {} истек через 5 минут бездействия",
+        "ru": "Тайм-аут {} истек через 5 минут бездействия",
         "it": "{} è scaduto dopo 5 minuti senza attività",
         "pl": "Upłynął limit czasu {} po 5 minutach braku aktywności",
         "ko": "활동 없이 5분 후에 {}가 시간 초과되었습니다.",
@@ -9456,14 +9456,14 @@
     },
     "YOUR_TURN": {
         "en": "**Your turn!** - Respond with an action before the time runs out",
-        "fr": "**À votre tour !** - Répondez avec une action avant la fin du temps imparti",
+        "fr": "**À votre tour !** - Répondez avec une action avant la fin du temps imparti",
         "pt": "**Sua vez!** - Responda com uma ação antes que o tempo acabe",
         "tr": "**Sıra sizde!** - Süre dolmadan önce bir eylemle yanıt verin",
         "es": "**¡Tu turno!** - Responde con una acción antes de que se acabe el tiempo.",
         "de": "**Du bist dran!** – Reagiere mit einer Aktion, bevor die Zeit abläuft",
         "hi": "**आपकी बारी!** - समय समाप्त होने से पहले कार्रवाई के साथ जवाब दें",
         "sv": "**Din tur!** - Svara med en åtgärd innan tiden går ut",
-        "ru": "**Ваша очередь!** – Ответьте действием до того, как истечет время.",
+        "ru": "**Ваша очередь!** – Ответьте действием до того, как истечет время.",
         "it": "**È il tuo turno!** - Rispondi con un'azione prima che scada il tempo",
         "pl": "**Twoja kolej!** - Odpowiedz, wykonując akcję, zanim skończy się czas",
         "ko": "**당신 차례입니다!** - 시간이 다 가기 전에 행동으로 응답하세요",
@@ -10417,7 +10417,7 @@
     },
     "THANKS": {
         "en": "Thank you for being a **Seven Spells Premium** subscriber! Click the button below to manage your subscription.",
-        "fr": "Merci d'être abonné **Seven Spells Premium** ! Cliquez sur le bouton ci-dessous pour gérer votre abonnement.",
+        "fr": "Merci d'être abonné **Seven Spells Premium** ! Cliquez sur le bouton ci-dessous pour gérer votre abonnement.",
         "pt": "Obrigado por ser assinante do **Seven Spells Premium**! Clique no botão abaixo para gerenciar sua assinatura.",
         "tr": "**Seven Spells Premium** abonesi olduğunuz için teşekkür ederiz! Aboneliğinizi yönetmek için aşağıdaki düğmeye tıklayın.",
         "es": "¡Gracias por ser suscriptor **Seven Spells Premium**! Haga clic en el botón a continuación para administrar su suscripción.",
@@ -10510,7 +10510,7 @@
     },
     "UPSELL": {
         "en": "You do not yet have [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) Subscriptions are just £3 a month and give access to additional areas, automatic loot drops, and more!\n\nIf you had premium, this command would give you a link to manage your subscription.",
-        "fr": "Vous n'avez pas encore [Seven Spells Premium](https:\/\/premium.ssod.org?user={}). Les abonnements ne coûtent que 3 £ par mois et donnent accès à des zones supplémentaires, à des butins automatiques et bien plus encore !\n\nSi vous aviez premium, cette commande vous donnerait un lien pour gérer votre abonnement.",
+        "fr": "Vous n'avez pas encore [Seven Spells Premium](https:\/\/premium.ssod.org?user={}). Les abonnements ne coûtent que 3 £ par mois et donnent accès à des zones supplémentaires, à des butins automatiques et bien plus encore !\n\nSi vous aviez premium, cette commande vous donnerait un lien pour gérer votre abonnement.",
         "pt": "Você ainda não tem o [Seven Spells Premium](https:\/\/premium.ssod.org?user={}). As assinaturas custam apenas £3 por mês e dão acesso a áreas adicionais, saques automáticos e muito mais!\n\nSe você tivesse premium, este comando forneceria um link para gerenciar sua assinatura.",
         "tr": "Henüz [Seven Spells Premium'a](https:\/\/premium.ssod.org?user={}) sahip değilsiniz. Abonelikler ayda yalnızca 3 £'dur ve ek alanlara, otomatik ganimet düşüşlerine ve daha fazlasına erişim sağlar!\n\nPremium'unuz varsa, bu komut size aboneliğinizi yönetmeniz için bir bağlantı verecektir.",
         "es": "Aún no tienes [Seven Spells Premium](https:\/\/premium.ssod.org?user={}). ¡Las suscripciones cuestan solo £ 3 al mes y brindan acceso a áreas adicionales, botín automático y más!\n\nSi tuviera premium, este comando le brindaría un enlace para administrar su suscripción.",
@@ -10541,7 +10541,7 @@
     },
     "NOPROFILE": {
         "en": "You do not have a profile yet. You must create a character by using the `\/start` command!",
-        "fr": "Vous n'avez pas encore de profil. Vous devez créer un personnage en utilisant la commande `\/start` !",
+        "fr": "Vous n'avez pas encore de profil. Vous devez créer un personnage en utilisant la commande `\/start` !",
         "pt": "Você ainda não tem um perfil. Você deve criar um personagem usando o comando `\/start`!",
         "tr": "Henüz bir profiliniz yok. `\/start` komutunu kullanarak bir karakter oluşturmalısınız!",
         "es": "Aún no tienes un perfil. ¡Debes crear un personaje usando el comando `\/start`!",
@@ -11099,7 +11099,7 @@
     },
     "RENAMED": {
         "en": "Your **{0}** has been renamed to: **{1}**",
-        "fr": "Votre **{0}** a été renommé : **{1}**",
+        "fr": "Votre **{0}** a été renommé : **{1}**",
         "pt": "Seu **{0}** foi renomeado para: **{1}**",
         "tr": "**{0}**'niz şu şekilde yeniden adlandırıldı: **{1}**",
         "es": "Tu **{0}** ha cambiado de nombre a: **{1}**",
@@ -11130,7 +11130,7 @@
     },
     "NUKED": {
         "en": "Your character has been cast into the void! All previous information has been deleted. You may now re-create a new character with `\/start`.\n\nIf you have premium, your premium entitlement will continue on your new character.",
-        "fr": "Votre personnage a été jeté dans le vide ! Toutes les informations précédentes ont été supprimées. Vous pouvez maintenant recréer un nouveau personnage avec `\/start`.\n\nSi vous disposez d'un compte premium, votre droit à la prime continuera sur votre nouveau personnage.",
+        "fr": "Votre personnage a été jeté dans le vide ! Toutes les informations précédentes ont été supprimées. Vous pouvez maintenant recréer un nouveau personnage avec `\/start`.\n\nSi vous disposez d'un compte premium, votre droit à la prime continuera sur votre nouveau personnage.",
         "pt": "Seu personagem foi lançado no vazio! Todas as informações anteriores foram excluídas. Agora você pode recriar um novo personagem com `\/start`.\n\nSe você tiver premium, seu direito ao prêmio continuará em seu novo personagem.",
         "tr": "Karakteriniz boşluğa atıldı! Önceki bilgilerin tümü silindi. Artık `\/start` ile yeni bir karakteri yeniden oluşturabilirsiniz.\n\nPremium'unuz varsa premium hakkınız yeni karakterinizde de devam edecektir.",
         "es": "¡Tu personaje ha sido arrojado al vacío! Toda la información anterior ha sido eliminada. Ahora puedes volver a crear un nuevo personaje con `\/start`.\n\nSi tienes prima, tu derecho a prima continuará con tu nuevo personaje.",
@@ -11161,7 +11161,7 @@
     },
     "RESETCOMPLETE": {
         "en": "Player Reset Complete!",
-        "fr": "Réinitialisation du joueur terminée !",
+        "fr": "Réinitialisation du joueur terminée !",
         "pt": "Reinicialização do jogador concluída!",
         "tr": "Oyuncu Sıfırlama Tamamlandı!",
         "es": "¡Reinicio del jugador completo!",
@@ -11192,7 +11192,7 @@
     },
     "RESETPROMPT": {
         "en": "Are you sure you want to reset? This will **__completely delete your character__** and is __**not reversible**__. You will then be able to `\/start` to re-roll new stats and pick a new race and profession.",
-        "fr": "Êtes-vous sûr de vouloir réinitialiser ? Cela **__supprimera complètement votre personnage__** et n'est __**pas réversible**__. Vous pourrez alors `\/start` pour relancer de nouvelles statistiques et choisir une nouvelle race et une nouvelle profession.",
+        "fr": "Êtes-vous sûr de vouloir réinitialiser ? Cela **__supprimera complètement votre personnage__** et n'est __**pas réversible**__. Vous pourrez alors `\/start` pour relancer de nouvelles statistiques et choisir une nouvelle race et une nouvelle profession.",
         "pt": "Tem certeza de que deseja redefinir? Isso **__excluirá completamente seu personagem__** e não é __**reversível**__. Você poderá então `\/start` para relançar novas estatísticas e escolher uma nova raça e profissão.",
         "tr": "Sıfırlamak istediğinizden emin misiniz? Bu **__karakterinizi tamamen siler__** ve __**geri döndürülemez**__. Daha sonra yeni istatistikleri yeniden görüntülemek ve yeni bir ırk ve meslek seçmek için \"\/start\" komutunu kullanabileceksiniz.",
         "es": "¿Está seguro que quiere reiniciar? Esto **__eliminará completamente tu personaje__** y __**no es reversible**__. Luego podrás `\/start` para volver a obtener nuevas estadísticas y elegir una nueva raza y profesión.",
@@ -11223,7 +11223,7 @@
     },
     "DORESET": {
         "en": "Yes, Reset!",
-        "fr": "Oui, réinitialisez !",
+        "fr": "Oui, réinitialisez !",
         "pt": "Sim, redefinir!",
         "tr": "Evet, Sıfırla!",
         "es": "¡Sí, reiniciar!",
@@ -11285,7 +11285,7 @@
     },
     "VOTEBODY": {
         "en": "[Vote for Seven Spells on top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote) to gain additional loot such as helpful potions every 12 hours!\n\nIf you do not already have a stamina or skill potion, and you vote for the bot, then your supply of that item will be replenished.\n\n**Use the potions repeatedly to max out your stats.**",
-        "fr": "[Votez pour sept sorts sur top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote) pour gagner du butin supplémentaire tel que des potions utiles toutes les 12 heures !\n\nSi vous ne possédez pas déjà de potion d'endurance ou de compétence et que vous votez pour le robot, votre réserve de cet objet sera reconstituée.\n\n**Utilisez les potions à plusieurs reprises pour maximiser vos statistiques.**",
+        "fr": "[Votez pour sept sorts sur top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote) pour gagner du butin supplémentaire tel que des potions utiles toutes les 12 heures !\n\nSi vous ne possédez pas déjà de potion d'endurance ou de compétence et que vous votez pour le robot, votre réserve de cet objet sera reconstituée.\n\n**Utilisez les potions à plusieurs reprises pour maximiser vos statistiques.**",
         "pt": "[Vote em Sete Feitiços em top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote) para ganhar itens adicionais, como poções úteis a cada 12 horas!\n\nSe você ainda não tiver uma poção de resistência ou habilidade e votar no bot, seu suprimento desse item será reabastecido.\n\n**Use as poções repetidamente para maximizar suas estatísticas.**",
         "tr": "Her 12 saatte bir faydalı iksirler gibi ek ganimetler kazanmak için [top.gg'de Yedi Büyüye oy verin](https:\/\/top.gg\/bot\/620654573547159553\/vote)!\n\nHalihazırda bir dayanıklılık veya beceri iksiriniz yoksa ve bota oy verirseniz, o eşyanın stoku yenilenecektir.\n\n**İstatistiklerinizi maksimuma çıkarmak için iksirleri tekrar tekrar kullanın.**",
         "es": "[Vota por siete hechizos en top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote) para obtener botín adicional, como pociones útiles, cada 12 horas.\n\nSi aún no tienes una poción de resistencia o habilidad y votas por el robot, se repondrá tu suministro de ese artículo.\n\n**Usa las pociones repetidamente para maximizar tus estadísticas.**",
@@ -11657,7 +11657,7 @@
     },
     "INCOMBAT": {
         "en": "In PvP combat with {0}, Location: {1}",
-        "fr": "En combat PvP avec {0}, emplacement : {1}",
+        "fr": "En combat PvP avec {0}, emplacement : {1}",
         "pt": "Em combate PvP com {0}, Local: {1}",
         "tr": "{0} ile PvP savaşında, Konum: {1}",
         "es": "En combate PvP con {0}, Ubicación: {1}",
@@ -11688,7 +11688,7 @@
     },
     "INPVP": {
         "en": "In PvP combat with {0}, Location: {1}",
-        "fr": "En combat PvP avec {0}, emplacement : {1}",
+        "fr": "En combat PvP avec {0}, emplacement : {1}",
         "pt": "Em combate PvP com {0}, Local: {1}",
         "tr": "{0} ile PvP savaşında, Konum: {1}",
         "es": "En combate PvP con {0}, Ubicación: {1}",
@@ -11719,7 +11719,7 @@
     },
     "NOMANA": {
         "en": "Unarmed (out of mana!)",
-        "fr": "Désarmé (plus de mana !)",
+        "fr": "Désarmé (plus de mana !)",
         "pt": "Desarmado (sem mana!)",
         "tr": "Silahsız (manası bitti!)",
         "es": "Desarmado (¡sin maná!)",
@@ -12277,7 +12277,7 @@
     },
     "CUTTINGOUTCOME": {
         "en": "Because the attack was a cutting attack, it causes severe damage to this part of the body, and extra stamina points are lost as a result!",
-        "fr": "Parce que l’attaque était une attaque coupante, elle cause de graves dommages à cette partie du corps, et en conséquence des points d’endurance supplémentaires sont perdus !",
+        "fr": "Parce que l’attaque était une attaque coupante, elle cause de graves dommages à cette partie du corps, et en conséquence des points d’endurance supplémentaires sont perdus !",
         "pt": "Como o ataque foi cortante, ele causa graves danos a esta parte do corpo e, como resultado, pontos extras de resistência são perdidos!",
         "tr": "Saldırı kesici bir saldırı olduğu için vücudun bu kısmına ciddi hasar verir ve bunun sonucunda ekstra dayanıklılık puanları kaybedilir!",
         "es": "Debido a que el ataque fue un ataque cortante, causa daño severo a esta parte del cuerpo y, como resultado, ¡se pierden puntos de resistencia adicionales!",
@@ -12711,7 +12711,7 @@
     },
     "ENEMYSTANCE": {
         "en": "Enemy Stance:",
-        "fr": "Position de l'ennemi :",
+        "fr": "Position de l'ennemi :",
         "pt": "Postura do Inimigo:",
         "tr": "Düşman Duruşu:",
         "es": "Postura del enemigo:",
@@ -12742,7 +12742,7 @@
     },
     "YOURSTANCE": {
         "en": "Your Stance:",
-        "fr": "Votre position :",
+        "fr": "Votre position :",
         "pt": "Sua postura:",
         "tr": "Duruşunuz:",
         "es": "Tu postura:",
@@ -12990,7 +12990,7 @@
     },
     "CUTTING_CONSEQUENCE": {
         "en": "Because the attack was a cutting attack, it causes severe damage to this part of the body, and extra stamina points are lost as a result!",
-        "fr": "Parce que l’attaque était une attaque coupante, elle cause de graves dommages à cette partie du corps, et en conséquence des points d’endurance supplémentaires sont perdus !",
+        "fr": "Parce que l’attaque était une attaque coupante, elle cause de graves dommages à cette partie du corps, et en conséquence des points d’endurance supplémentaires sont perdus !",
         "pt": "Como o ataque foi cortante, ele causa graves danos a esta parte do corpo e, como resultado, pontos extras de resistência são perdidos!",
         "tr": "Saldırı kesici bir saldırı olduğu için vücudun bu kısmına ciddi hasar verir ve bunun sonucunda ekstra dayanıklılık puanları kaybedilir!",
         "es": "Debido a que el ataque fue un ataque cortante, causa daño severo a esta parte del cuerpo y, como resultado, ¡se pierden puntos de resistencia adicionales!",
@@ -13052,7 +13052,7 @@
     },
     "DED": {
         "en": "You have met your end, adventurer!",
-        "fr": "Vous avez atteint votre fin, aventurier !",
+        "fr": "Vous avez atteint votre fin, aventurier !",
         "pt": "Você encontrou seu fim, aventureiro!",
         "tr": "Sonuna ulaştın maceracı!",
         "es": "¡Has encontrado tu fin, aventurero!",
@@ -13176,7 +13176,7 @@
     },
     "PREMIUM_RESURRECT": {
         "en": "[Premium users](https:\/\/premium.ssod.org\/) can **__resurrect every 15 minutes__ instead of every hour.** If you had Seven Spells Premium, you could be back in the land of the living right now!",
-        "fr": "[Les utilisateurs Premium](https:\/\/premium.ssod.org\/) peuvent **__ressusciter toutes les 15 minutes__ au lieu de toutes les heures.** Si vous aviez Seven Spells Premium, vous pourriez être de retour au pays des vivants dès maintenant !",
+        "fr": "[Les utilisateurs Premium](https:\/\/premium.ssod.org\/) peuvent **__ressusciter toutes les 15 minutes__ au lieu de toutes les heures.** Si vous aviez Seven Spells Premium, vous pourriez être de retour au pays des vivants dès maintenant !",
         "pt": "[Usuários Premium](https:\/\/premium.ssod.org\/) podem **__ressuscitar a cada 15 minutos__ em vez de a cada hora.** Se você tivesse o Seven Spells Premium, poderia estar de volta à terra dos vivos agora mesmo!",
         "tr": "[Premium kullanıcılar](https:\/\/premium.ssod.org\/) her saat başı yerine **__her 15 dakikada bir__ yeniden dirilebilir.** Seven Spells Premium'a sahip olsaydınız, şu anda yaşayanlar diyarına geri dönebilirdiniz!",
         "es": "[Los usuarios Premium](https:\/\/premium.ssod.org\/) pueden **__resucitar cada 15 minutos__ en lugar de cada hora.** Si tuvieras Seven Spells Premium, ¡podrías estar de regreso en la tierra de los vivos ahora mismo!",
@@ -13455,7 +13455,7 @@
     },
     "INCORRECT_RIDDLE": {
         "en": "The answer you entered is not correct, adventurer! Please try again!",
-        "fr": "La réponse que vous avez saisie n'est pas correcte, aventurier ! Veuillez réessayer!",
+        "fr": "La réponse que vous avez saisie n'est pas correcte, aventurier ! Veuillez réessayer!",
         "pt": "A resposta que você digitou não está correta, aventureiro! Por favor, tente novamente!",
         "tr": "Girdiğin cevap doğru değil maceracı! Lütfen tekrar deneyin!",
         "es": "¡La respuesta que ingresaste no es correcta, aventurero! ¡Inténtalo de nuevo!",
@@ -13641,7 +13641,7 @@
     },
     "CURE_BLOOD": {
         "en": "You feel well again. You have been cured of blood plague!",
-        "fr": "Vous vous sentez à nouveau bien. Vous avez été guéri de la peste du sang !",
+        "fr": "Vous vous sentez à nouveau bien. Vous avez été guéri de la peste du sang !",
         "pt": "Você se sente bem novamente. Você foi curado da praga do sangue!",
         "tr": "Tekrar iyi hissediyorsun. Kan vebasından kurtuldunuz!",
         "es": "Te sientes bien otra vez. ¡Has sido curado de la plaga de sangre!",
@@ -14323,7 +14323,7 @@
     },
     "GONE_AWAY": {
         "en": "The player you have selected has is not active at this location! Perhaps they left the area while you were choosing?",
-        "fr": "Le joueur que vous avez sélectionné n'est pas actif à cet endroit ! Peut-être ont-ils quitté la zone pendant que vous faisiez votre choix ?",
+        "fr": "Le joueur que vous avez sélectionné n'est pas actif à cet endroit ! Peut-être ont-ils quitté la zone pendant que vous faisiez votre choix ?",
         "pt": "O jogador que você selecionou não está ativo neste local! Talvez eles tenham saído da área enquanto você escolhia?",
         "tr": "Seçtiğiniz oyuncu bu lokasyonda aktif değil! Belki siz seçim yaparken bölgeyi terk ettiler?",
         "es": "¡El jugador que has seleccionado no está activo en esta ubicación! ¿Quizás abandonaron la zona mientras usted elegía?",
