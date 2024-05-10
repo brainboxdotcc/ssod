@@ -163,7 +163,23 @@ namespace listeners {
 		}
 	}
 
-	void on_ready(const dpp::ready_t &event) {
+	void on_entitlement_create(const dpp::entitlement_create_t& event) {
+		db::query("INSERT INTO premium_credits (user_id, subscription_id, active, since, plan_id, payment_failed, created_at, updated_at)"
+			  "VALUES(?, ?, 1, now(), 'ssod-monthly', 0, now(), now()) ON DUPLICATE KEY UPDATE subscription_id = ?, active = 1",
+			  { event.created.owner_id, event.created.id, event.created.id });
+	}
+
+	void on_entitlement_delete(const dpp::entitlement_delete_t& event) {
+		db::query("UPDATE premium_credits SET active = 0, updated_at = now() WHERE user_id = ? AND subscription_id = ?",
+			  { event.deleted.owner_id, event.deleted.id });
+	}
+
+	void on_entitlement_update(const dpp::entitlement_update_t& event) {
+		db::query("UPDATE premium_credits SET active = 1, updated_at = now() WHERE user_id = ? AND subscription_id = ?",
+			  { event.updating_entitlement.owner_id, event.updating_entitlement.id });
+	}
+
+	void on_ready(const dpp::ready_t& event) {
 		dpp::cluster& bot = *event.from->creator;
 		if (dpp::run_once<struct register_bot_commands>()) {
 			if (bot.cluster_id == 0) {
@@ -210,11 +226,10 @@ namespace listeners {
 			}, 10);
 			bot.start_timer([&bot](dpp::timer t) {
 				process_potion_drops(bot);
-				//cleanup_idle_live_players();
-				//cleanup_idle_reg_players();
+				cleanup_idle_live_players();
 				check_lang_reload(bot);
 			}, 60);
-			bot.start_timer([&bot](dpp::timer t) {
+			bot.start_timer([](dpp::timer t) {
 				/* Garbage collect free memory by consolidating free malloc() blocks */
 				malloc_trim(0);
 			}, 600);

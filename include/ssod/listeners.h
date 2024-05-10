@@ -58,4 +58,11 @@ namespace listeners {
 	 * @param event button_click_t
 	 */
 	void on_button_click(const dpp::button_click_t &event);
+
+	void on_entitlement_create(const dpp::entitlement_create_t& event);
+
+	void on_entitlement_delete(const dpp::entitlement_delete_t& event);
+
+	void on_entitlement_update(const dpp::entitlement_update_t& event);
+
 };
