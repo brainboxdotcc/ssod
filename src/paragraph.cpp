@@ -114,7 +114,7 @@ bool paragraph::valid_next(long Current, long Next) {
 			int i{0};
 			std::string pnum;
 			while (p_text[i++] != '=');
-			while (p_text[i] != '>') {
+			while (p_text[i] != '>' && p_text[i] != ',') {
 				pnum += p_text[i++];
 			}
 			Paralist.insert(atol(pnum));
