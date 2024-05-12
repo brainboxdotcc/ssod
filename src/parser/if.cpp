@@ -144,7 +144,8 @@ struct if_tag : public tag {
 			// ------------------------------------------------------
 			// <if race x>
 			// ------------------------------------------------------
-			// if false, nothing displayed until an <endif> is reached.
+			// Only covers the 5 races of the basic book version of the game,
+			// for legacy content
 			paragraph_content >> p_text;
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
 				p.display.push_back(
@@ -162,11 +163,40 @@ struct if_tag : public tag {
 				p.display.push_back(false);
 			}
 			return;
+		} else if (dpp::lowercase(p_text) == "raceex") {
+			// ------------------------------------------------------
+			// <if raceex x>
+			// ------------------------------------------------------
+			// Covers all new races, for non-legacy content.
+			paragraph_content >> p_text;
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(
+					(dpp::lowercase(p_text) == "dwarf>" && current_player.race == race_dwarf)
+					||
+					(dpp::lowercase(p_text) == "human>" && current_player.race == race_human)
+					||
+					(dpp::lowercase(p_text) == "orc>" && current_player.race == race_orc)
+					||
+					(dpp::lowercase(p_text) == "elf>" && current_player.race == race_elf)
+					||
+					(dpp::lowercase(p_text) == "barbarian>" && current_player.race == race_barbarian)
+					||
+					(dpp::lowercase(p_text) == "goblin>" && current_player.race == race_goblin)
+					||
+					(dpp::lowercase(p_text) == "darkelf>" && current_player.race == race_dark_elf)
+					||
+					(dpp::lowercase(p_text) == "lesserorc>" && current_player.race == race_lesser_orc)
+				);
+			} else {
+				p.display.push_back(false);
+			}
+			return;
 		} else if (dpp::lowercase(p_text) == "prof") {
 			// ------------------------------------------------------
 			// <if prof x>
 			// ------------------------------------------------------
-			// if false, nothing displayed until an <endif> is reached.
+			// Only covers the 4 professions of the basic book version of the game,
+			// for legacy content
 			paragraph_content >> p_text;
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
 				p.display.push_back(
@@ -176,6 +206,30 @@ struct if_tag : public tag {
 						||
 					(dpp::lowercase(p_text) == "thief>" && (current_player.profession == prof_thief || current_player.profession == prof_assassin))
 						||
+					(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman)
+				);
+			} else {
+				p.display.push_back(false);
+			}
+			return;
+		} else if (dpp::lowercase(p_text) == "profex") {
+			// ------------------------------------------------------
+			// <if profex x>
+			// ------------------------------------------------------
+			// Covers all new professions, for non-legacy content.
+			paragraph_content >> p_text;
+			if (p.display.empty() || p.display[p.display.size() - 1]) {
+				p.display.push_back(
+					(dpp::lowercase(p_text) == "warrior>" && current_player.profession == prof_warrior)
+					||
+					(dpp::lowercase(p_text) == "mercenary>" && current_player.profession == prof_mercenary)
+					||
+					(dpp::lowercase(p_text) == "assassin>" && current_player.profession == prof_assassin)
+					||
+					(dpp::lowercase(p_text) == "wizard>" && current_player.profession == prof_wizard)
+					||
+					(dpp::lowercase(p_text) == "thief>" && current_player.profession == prof_thief)
+					||
 					(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman)
 				);
 			} else {
