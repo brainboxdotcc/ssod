@@ -73,4 +73,11 @@ namespace listeners {
 	 */
 	void on_entitlement_update(const dpp::entitlement_update_t& event);
 
+	/**
+	 * @brief Return json command definitions
+	 * @param bot cluster reference
+	 * @return std::string bot command definitions
+	 */
+	std::string json_commands(dpp::cluster& bot);
+
 };

@@ -33,6 +33,10 @@ struct commandline_config {
 	 * Total number of clusters that are running
 	 */
 	uint32_t max_clusters{0};
+	/**
+	 * If true, display command definitions as json
+	 */
+	bool display_commands{false};
 };
 
 namespace commandline {

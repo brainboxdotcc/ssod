@@ -11,14 +11,15 @@ namespace commandline {
 		struct option long_opts[] = {
 			{ "clusterid", required_argument, nullptr, 'c' },
 			{ "maxclusters", required_argument, nullptr, 'm' },
+			{ "showcommands", optional_argument, nullptr, 's' },
 			{ nullptr, 0, nullptr, 0 }
 		};
 
 		int index{0};
 		int arg;
-		bool clusters_defined{false};
-		uint32_t cluster_id = 0;
-		uint32_t max_clusters = 1;
+		bool clusters_defined{false}, show_commands{false};
+		uint32_t cluster_id{0};
+		uint32_t max_clusters{1};
 
 		/**
 		 * BIG FAT WARNING: https://nullprogram.com/blog/2014/10/12/
@@ -39,12 +40,17 @@ namespace commandline {
 					/* Number of clusters */
 					max_clusters = atoi(optarg);
 					break;
+				case 's':
+					/* Number of clusters */
+					show_commands = true;
+					break;
 				case '?':
 				default:
 					std::cerr << "Unknown parameter '" << argv[optind - 1] << "'\n";
 					std::cerr << "Usage: " << argv[0] << " [-clusterid <n>] [-maxclusters <n>]\n\n";
 					std::cerr << "-clusterid <n>:    The current cluster id to identify for, must be set with -maxclusters\n";
 					std::cerr << "-maxclusters <n>:  The maximum number of clusters the bot is running, must be set with -clusterid\n";
+					std::cerr << "-showcommands:     Output JSON definitions of all application commands\n";
 					exit(1);
 			}
 		}
@@ -54,6 +60,6 @@ namespace commandline {
 			exit(2);
 		}
 
-		return commandline_config{.cluster_id =  cluster_id, .max_clusters = max_clusters};
+		return commandline_config{.cluster_id =  cluster_id, .max_clusters = max_clusters, .display_commands = show_commands};
 	}
 }
