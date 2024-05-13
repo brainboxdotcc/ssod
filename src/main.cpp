@@ -48,7 +48,7 @@ int main(int argc, char const *argv[]) {
 		dpp::cache_policy::cpol_none
 	);
 
-	load_lang(bot);
+	i18n::load_lang(bot);
 
 	if (cli.display_commands) {
 		std::cerr << listeners::json_commands(bot) << "\n";
