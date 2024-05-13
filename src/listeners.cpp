@@ -244,7 +244,7 @@ namespace listeners {
 			bot.start_timer([&bot](dpp::timer t) {
 				process_potion_drops(bot);
 				cleanup_idle_live_players();
-				check_lang_reload(bot);
+				i18n::check_lang_reload(bot);
 			}, 60);
 			bot.start_timer([](dpp::timer t) {
 				/* Garbage collect free memory by consolidating free malloc() blocks */

@@ -23,6 +23,12 @@
 #include <sys/types.h>
 #include <dpp/dpp.h>
 
-time_t get_mtime(const char *path);
-void load_lang(dpp::cluster& bot);
-void check_lang_reload(dpp::cluster& bot);
+namespace i18n {
+
+	time_t get_mtime(const char *path);
+
+	void load_lang(dpp::cluster &bot);
+
+	void check_lang_reload(dpp::cluster &bot);
+
+}
