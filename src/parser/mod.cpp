@@ -54,6 +54,8 @@ struct mod_tag : public tag {
 			{"mana", {_("MANA", current_player.event), &current_player.mana, current_player.max_mana()}},
 			{"rations", {_("RATIONS", current_player.event), &current_player.rations, 9223372036854775807}},
 			{"notoriety", {_("NOTORIETY", current_player.event), &current_player.notoriety, 9223372036854775807}},
+			{"gold", {_("GOLD", current_player.event), &current_player.gold, current_player.max_gold()}},
+			{"silver", {_("SILVER", current_player.event), &current_player.silver, current_player.max_silver()}},
 		};
 		auto m = modifier_list.find(p_text);
 		if (m != modifier_list.end()) {
@@ -76,8 +78,8 @@ struct mod_tag : public tag {
 				current_player.add_toast(_("LEVELUP,", current_player.event, new_value));
 			}
 			p.words++;
-			if (modifier < 0 || p_text == "notoriety") {
-				/* Locations that remove stats are not safe locations */
+			if (modifier < 0 || p_text == "notoriety" || p_text == "gold" || p_text == "silver") {
+				/* Locations that remove stats or give gold/silver are not safe locations */
 				p.safe = false;
 			}
 		}
