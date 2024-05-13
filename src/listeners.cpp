@@ -179,29 +179,46 @@ namespace listeners {
 			  { event.updating_entitlement.is_deleted() ? 0 : 1, event.updating_entitlement.owner_id, event.updating_entitlement.id });
 	}
 
+	std::vector<dpp::slashcommand> get_commands(dpp::cluster& bot) {
+		return {
+			register_command<info_command>(bot),
+			register_command<start_command>(bot),
+			register_command<map_command>(bot),
+			register_command<lore_command>(bot),
+			register_command<help_command>(bot),
+			register_command<profile_command>(bot),
+			register_command<gender_command>(bot),
+			register_command<vote_command>(bot),
+			register_command<bio_command>(bot),
+			register_command<rename_command>(bot),
+			register_command<premium_command>(bot),
+			register_command<reset_command>(bot),
+			register_command<guild_command>(bot),
+		};
+	}
+
+	std::string json_commands(dpp::cluster& bot) {
+		json j = json::array();
+		std::cerr << "Command List\n";
+		auto v = get_commands(bot);
+		std::cerr << "Total defined commands: " << v.size() << "\n\n";
+		for (auto & s : v) {
+			j.push_back(s.to_json(false));
+		}
+		return j.dump(1, '\t', false, json::error_handler_t::replace);
+	}
+
 	void on_ready(const dpp::ready_t& event) {
 		dpp::cluster& bot = *event.from->creator;
 		if (dpp::run_once<struct register_bot_commands>()) {
 			if (bot.cluster_id == 0) {
-				bot.global_bulk_command_create({
-					register_command<info_command>(bot),
-					register_command<start_command>(bot),
-					register_command<map_command>(bot),
-					register_command<lore_command>(bot),
-					register_command<help_command>(bot),
-					register_command<profile_command>(bot),
-					register_command<gender_command>(bot),
-					register_command<vote_command>(bot),
-					register_command<bio_command>(bot),
-					register_command<rename_command>(bot),
-					register_command<premium_command>(bot),
-					register_command<reset_command>(bot),
-					register_command<guild_command>(bot),
-				}, [&bot](const auto& cc) {
-					if (cc.is_error()) {
-						bot.log(dpp::ll_error, cc.http_info.body);
+				bot.global_bulk_command_create(get_commands(bot),
+					[&bot](const auto& cc) {
+						if (cc.is_error()) {
+							bot.log(dpp::ll_error, cc.http_info.body);
+						}
 					}
-				});
+				);
 				bot.guild_bulk_command_create({
 					register_command<admin_command>(bot),
 				}, 537746810471448576);

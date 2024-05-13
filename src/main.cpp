@@ -48,11 +48,17 @@ int main(int argc, char const *argv[]) {
 		dpp::cache_policy::cpol_none
 	);
 
+	load_lang(bot);
+
+	if (cli.display_commands) {
+		std::cerr << listeners::json_commands(bot) << "\n";
+		exit(0);
+	}
+
 	bot.set_websocket_protocol(dpp::ws_etf);
 
 	security::init(bot);
 	js::init(bot);
-	load_lang(bot);
 
 	bot.on_log(&logger::log);
 	bot.on_guild_create(&listeners::on_guild_create);
