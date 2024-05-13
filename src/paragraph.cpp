@@ -159,6 +159,13 @@ bool global_set(const std::string& flag) {
 	return db::query("SELECT flag FROM game_global_flags WHERE flag = ?", {flag}).size() > 0;
 }
 
+bool timed_set(dpp::interaction_create_t& event, const std::string& flag) {
+	bool is_set = db::query("SELECT id FROM timed_flags WHERE user_id = ? AND flag = ? AND UNIX_TIMESTAMP() < expiry", {event.command.usr.id, flag}).size() > 0;
+	db::query("DELETE FROM timed_flags WHERE user_id = ? AND flag = ? AND UNIX_TIMESTAMP() >= expiry", {event.command.usr.id, flag});
+	return is_set;
+}
+
+
 void extract_to_quote(std::string& p_text, std::stringstream& content, char end) {
 	while (!content.eof() && p_text.length() && *p_text.rbegin() != end) {
 		std::string extra;

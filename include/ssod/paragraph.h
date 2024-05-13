@@ -130,6 +130,8 @@ long extract_value_number(const std::string& p_text);
 
 bool global_set(const std::string& flag);
 
+bool timed_set(dpp::interaction_create_t& event, const std::string& flag);
+
 void extract_to_quote(std::string& p_text, std::stringstream& content, char end = '>');
 
 std::string remove_last_char(const std::string& s);
