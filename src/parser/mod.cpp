@@ -38,7 +38,6 @@ struct mod_tag : public tag {
 			repeatable = true;
 		}
 		paragraph_content >> mod;
-		mod = remove_last_char(mod); // remove '>'
 		long modifier = atol(mod);
 		std::string flag = "MOD" + p_text + mod;
 
@@ -82,6 +81,8 @@ struct mod_tag : public tag {
 				/* Locations that remove stats or give gold/silver are not safe locations */
 				p.safe = false;
 			}
+		} else {
+			std::cout << "Error: Invalid MOD " << p_text << " in location " << p.id << "\n";
 		}
 	}
 };
