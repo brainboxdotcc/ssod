@@ -26,6 +26,8 @@
 #include <ssod/aes.h>
 #include <span>
 
+using namespace i18n;
+
 /* List of registering players, creating character profiles. These don't get saved to the database until
  * they name their character at the end of the process. The old version of this used to save them temporarily
  * to a table which would need regular cleaning.
@@ -274,25 +276,25 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 	std::string file = matrix_image(race, profession, gender == "male");
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(_("NEWCHAR", event))
+		.set_title(tr("NEWCHAR", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("NEWPLAY", event, event.command.usr.format_username()), 
+			.text = tr("NEWPLAY", event, event.command.usr.format_username()),
 			.icon_url = cluster.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(_("WELCOME_MSG", event, event.command.usr.get_mention()))
-		.add_field(_("STAMINA", event), std::to_string(stamina) + bonuses(1, race, profession), true)
-		.add_field(_("SKILL", event), std::to_string(skill) + bonuses(2, race, profession), true)
-		.add_field(_("LUCK", event), std::to_string(luck) + bonuses(3, race, profession), true)
-		.add_field(_("SNEAK", event), std::to_string(sneak) + bonuses(4, race, profession), true)
-		.add_field(_("SPEED", event), std::to_string(speed) + bonuses(5, race, profession), true)
-		.add_field(_("GOLD", event), std::to_string(gold), true)
-		.add_field(_("SILVER", event), std::to_string(silver), true)
-		.add_field(_("RATIONS", event), std::to_string(rations), true)
-		.add_field(_("NOTORIETY", event), std::to_string(notoriety), true)
-		.add_field(_("ARMOUR", event), fmt::format("{} ({} {})", armour.name, _("RATING", event), armour.rating), true)
-		.add_field(_("WEAPON", event), fmt::format("{} ({} {})", weapon.name, _("RATING", event), weapon.rating), true)
+		.set_description(tr("WELCOME_MSG", event, event.command.usr.get_mention()))
+		.add_field(tr("STAMINA", event), std::to_string(stamina) + bonuses(1, race, profession), true)
+		.add_field(tr("SKILL", event), std::to_string(skill) + bonuses(2, race, profession), true)
+		.add_field(tr("LUCK", event), std::to_string(luck) + bonuses(3, race, profession), true)
+		.add_field(tr("SNEAK", event), std::to_string(sneak) + bonuses(4, race, profession), true)
+		.add_field(tr("SPEED", event), std::to_string(speed) + bonuses(5, race, profession), true)
+		.add_field(tr("GOLD", event), std::to_string(gold), true)
+		.add_field(tr("SILVER", event), std::to_string(silver), true)
+		.add_field(tr("RATIONS", event), std::to_string(rations), true)
+		.add_field(tr("NOTORIETY", event), std::to_string(notoriety), true)
+		.add_field(tr("ARMOUR", event), fmt::format("{} ({} {})", armour.name, tr("RATING", event), armour.rating), true)
+		.add_field(tr("WEAPON", event), fmt::format("{} ({} {})", weapon.name, tr("RATING", event), weapon.rating), true)
 		.set_image(file);
 
 		dpp::component race_select_menu, profession_select_menu, gender_select_menu;
@@ -300,37 +302,37 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 			.set_min_values(1)
 			.set_max_values(1)
 			.set_required(true)
-			.set_placeholder(_("SELECTRACE", event))
+			.set_placeholder(tr("SELECTRACE", event))
 			.set_id(security::encrypt("select_player_race"))
-			.add_select_option(dpp::select_option(_("HUMAN", event), "1", _("HUMAN_DESC", event)).set_default(race == race_human))
-			.add_select_option(dpp::select_option(_("ELF", event), "2", _("ELF_DESC", event)).set_default(race == race_elf))
-			.add_select_option(dpp::select_option(_("ORC", event), "3", _("ORC_DESC", event)).set_default(race == race_orc))
-			.add_select_option(dpp::select_option(_("DWARF", event), "4", _("DWARF_DESC", event)).set_default(race == race_dwarf))
-			.add_select_option(dpp::select_option(_("LORC", event), "5", _("LORC_DESC", event)).set_default(race == race_lesser_orc))
-			.add_select_option(dpp::select_option(_("BARBARIAN", event), "6", _("BARBARIAN_DESC", event)).set_default(race == race_barbarian))
-			.add_select_option(dpp::select_option(_("GOBLIN", event), "7", _("GOBLIN_DESC", event)).set_default(race == race_goblin))
-			.add_select_option(dpp::select_option(_("DARKELF", event), "8", _("DARKELF_DESC", event)).set_default(race == race_dark_elf));
+			.add_select_option(dpp::select_option(tr("HUMAN", event), "1", tr("HUMAN_DESC", event)).set_default(race == race_human))
+			.add_select_option(dpp::select_option(tr("ELF", event), "2", tr("ELF_DESC", event)).set_default(race == race_elf))
+			.add_select_option(dpp::select_option(tr("ORC", event), "3", tr("ORC_DESC", event)).set_default(race == race_orc))
+			.add_select_option(dpp::select_option(tr("DWARF", event), "4", tr("DWARF_DESC", event)).set_default(race == race_dwarf))
+			.add_select_option(dpp::select_option(tr("LORC", event), "5", tr("LORC_DESC", event)).set_default(race == race_lesser_orc))
+			.add_select_option(dpp::select_option(tr("BARBARIAN", event), "6", tr("BARBARIAN_DESC", event)).set_default(race == race_barbarian))
+			.add_select_option(dpp::select_option(tr("GOBLIN", event), "7", tr("GOBLIN_DESC", event)).set_default(race == race_goblin))
+			.add_select_option(dpp::select_option(tr("DARKELF", event), "8", tr("DARKELF_DESC", event)).set_default(race == race_dark_elf));
 		profession_select_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(1)
 			.set_max_values(1)
-			.set_placeholder(_("SELECTPROFESSION", event))
+			.set_placeholder(tr("SELECTPROFESSION", event))
 			.set_required(true)
 			.set_id(security::encrypt("select_player_profession"))
-			.add_select_option(dpp::select_option(_("WARRIOR", event), "1", _("WARRIOR_DESC", event)).set_default(profession == prof_warrior))
-			.add_select_option(dpp::select_option(_("WIZARD", event), "2", _("WIZARD_DESC", event)).set_default(profession == prof_wizard))
-			.add_select_option(dpp::select_option(_("THIEF", event), "3", _("THIEF_DESC", event)).set_default(profession == prof_thief))
-			.add_select_option(dpp::select_option(_("WOODSMAN", event), "4", _("WOODSMAN_DESC", event)).set_default(profession == prof_woodsman))
-			.add_select_option(dpp::select_option(_("ASSASSIN", event), "5", _("ASSASSIN_DESC", event)).set_default(profession == prof_assassin))
-			.add_select_option(dpp::select_option(_("MERCENARY", event), "6", _("MERCENARY_DESC", event)).set_default(profession == prof_mercenary));
+			.add_select_option(dpp::select_option(tr("WARRIOR", event), "1", tr("WARRIOR_DESC", event)).set_default(profession == prof_warrior))
+			.add_select_option(dpp::select_option(tr("WIZARD", event), "2", tr("WIZARD_DESC", event)).set_default(profession == prof_wizard))
+			.add_select_option(dpp::select_option(tr("THIEF", event), "3", tr("THIEF_DESC", event)).set_default(profession == prof_thief))
+			.add_select_option(dpp::select_option(tr("WOODSMAN", event), "4", tr("WOODSMAN_DESC", event)).set_default(profession == prof_woodsman))
+			.add_select_option(dpp::select_option(tr("ASSASSIN", event), "5", tr("ASSASSIN_DESC", event)).set_default(profession == prof_assassin))
+			.add_select_option(dpp::select_option(tr("MERCENARY", event), "6", tr("MERCENARY_DESC", event)).set_default(profession == prof_mercenary));
 		gender_select_menu.set_type(dpp::cot_selectmenu)
 			.set_min_values(1)
 			.set_max_values(1)
-			.set_placeholder(_("SELGENDER", event))
+			.set_placeholder(tr("SELGENDER", event))
 			.set_required(true)
 			.set_default_value("male")
 			.set_id(security::encrypt("select_player_gender"))
-			.add_select_option(dpp::select_option(_("male", event), "male").set_default(gender == "male"))
-			.add_select_option(dpp::select_option(_("female", event), "female").set_default(gender == "female"));
+			.add_select_option(dpp::select_option(tr("male", event), "male").set_default(gender == "male"))
+			.add_select_option(dpp::select_option(tr("female", event), "female").set_default(gender == "female"));
 
 	return dpp::message()
 		.add_embed(embed)
@@ -348,14 +350,14 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_reroll"))
-				.set_label(_("REROLL", event))
+				.set_label(tr("REROLL", event))
 				.set_style(dpp::cos_danger)
 				.set_emoji("🎲")
 			)
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_herb_spell_selection"))
-				.set_label(_("CONTINUE", event))
+				.set_label(tr("CONTINUE", event))
 				.set_style(dpp::cos_success)
 				.set_emoji("➡️")
 			)
@@ -541,73 +543,73 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 	size_t max_spells = (profession == prof_wizard ? 5 : 2);
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(_("SELMAGIC", event))
+		.set_title(tr("SELMAGIC", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("NEWPLAY", event, event.command.usr.format_username()), 
+			.text = tr("NEWPLAY", event, event.command.usr.format_username()),
 			.icon_url = cluster.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(_("MAGIC_MSG", event, herbs.size(), 3, spells.size(), max_spells));
+		.set_description(tr("MAGIC_MSG", event, herbs.size(), 3, spells.size(), max_spells));
 
 	dpp::component herb_select_menu, spell_select_menu;
 	herb_select_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(3)
-		.set_placeholder(_("SELHERB", event))
+		.set_placeholder(tr("SELHERB", event))
 		.set_id(security::encrypt("select_player_herbs"))
-		.add_select_option(dpp::select_option(_("HARTLEAF", event), "hartleaf", _("HARTLEAFD", event)).set_default(has_herb("hartleaf")))
-		.add_select_option(dpp::select_option(_("ELFBANE", event), "elfbane", _("ELFBANED", event)).set_default(has_herb("elfbane")))
-		.add_select_option(dpp::select_option(_("MONKGRASS", event), "monkgrass", _("MONKGRASSD", event)).set_default(has_herb("monkgrass")))
-		.add_select_option(dpp::select_option(_("FIRESEEDS", event), "fireseeds", _("FIRESEEDSD", event)).set_default(has_herb("fireseeds")))
-		.add_select_option(dpp::select_option(_("WOODWEED", event), "woodweed", _("WOODWEEDD", event)).set_default(has_herb("woodweed")))
-		.add_select_option(dpp::select_option(_("BLIDVINES", event), "blidvines", _("BLIDVINESD", event)).set_default(has_herb("blidvines")))
-		.add_select_option(dpp::select_option(_("STICKWART", event), "stickwart", _("STICKWARTD", event)).set_default(has_herb("stickwart")))
-		.add_select_option(dpp::select_option(_("SPIKEGRASS", event), "spikegrass", _("SPIKEGRASSD", event)).set_default(has_herb("spikegrass")))
-		.add_select_option(dpp::select_option(_("HALLUCINOGEN", event), "hallucinogen", _("HALLUCINOGEND", event)).set_default(has_herb("hallucinogen")))
-		.add_select_option(dpp::select_option(_("WIZARDSIVY", event), "wizardsivy", _("WIZARDSIVYD", event)).set_default(has_herb("wizardsivy")))
-		.add_select_option(dpp::select_option(_("ORCWEED", event), "orcweed", _("ORCWEEDD", event)).set_default(has_herb("orcweed")));
+		.add_select_option(dpp::select_option(tr("HARTLEAF", event), "hartleaf", tr("HARTLEAFD", event)).set_default(has_herb("hartleaf")))
+		.add_select_option(dpp::select_option(tr("ELFBANE", event), "elfbane", tr("ELFBANED", event)).set_default(has_herb("elfbane")))
+		.add_select_option(dpp::select_option(tr("MONKGRASS", event), "monkgrass", tr("MONKGRASSD", event)).set_default(has_herb("monkgrass")))
+		.add_select_option(dpp::select_option(tr("FIRESEEDS", event), "fireseeds", tr("FIRESEEDSD", event)).set_default(has_herb("fireseeds")))
+		.add_select_option(dpp::select_option(tr("WOODWEED", event), "woodweed", tr("WOODWEEDD", event)).set_default(has_herb("woodweed")))
+		.add_select_option(dpp::select_option(tr("BLIDVINES", event), "blidvines", tr("BLIDVINESD", event)).set_default(has_herb("blidvines")))
+		.add_select_option(dpp::select_option(tr("STICKWART", event), "stickwart", tr("STICKWARTD", event)).set_default(has_herb("stickwart")))
+		.add_select_option(dpp::select_option(tr("SPIKEGRASS", event), "spikegrass", tr("SPIKEGRASSD", event)).set_default(has_herb("spikegrass")))
+		.add_select_option(dpp::select_option(tr("HALLUCINOGEN", event), "hallucinogen", tr("HALLUCINOGEND", event)).set_default(has_herb("hallucinogen")))
+		.add_select_option(dpp::select_option(tr("WIZARDSIVY", event), "wizardsivy", tr("WIZARDSIVYD", event)).set_default(has_herb("wizardsivy")))
+		.add_select_option(dpp::select_option(tr("ORCWEED", event), "orcweed", tr("ORCWEEDD", event)).set_default(has_herb("orcweed")));
 	spell_select_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
-		.set_placeholder(_("SELSPELL", event))
+		.set_placeholder(tr("SELSPELL", event))
 		.set_id(security::encrypt("select_player_spells"));
 	/* Fill spell select menu only with spells applicable to the chosen herbs up to a max of 25 choices */
 	const std::vector<dpp::select_option> all_spells{
-		dpp::select_option(_("FIRE", event), "fire", _("FIRED", event)),
-		dpp::select_option(_("WATER", event), "water", _("WATERD", event)),
-		dpp::select_option(_("LIGHT", event), "light", _("LIGHTD", event)),
-		dpp::select_option(_("FLY", event), "fly", _("FLYD", event)),
-		dpp::select_option(_("STRENGTH", event), "strength", _("STRENGTHD", event)),
-		dpp::select_option(_("XRAY", event), "xray", _("XRAYD", event)),
-		dpp::select_option(_("BOLT", event), "bolt", _("BOLTD", event)),
-		dpp::select_option(_("FASTHANDS", event), "fasthands", _("FASTHANDSD", event)),
-		dpp::select_option(_("THUNDERBOLT", event), "thunderbolt", _("THUNDERBOLTD", event)),
-		dpp::select_option(_("STEAL", event), "steal", _("STEALD", event)),
-		dpp::select_option(_("SHIELD", event), "shield", _("SHIELDD", event)),
-		dpp::select_option(_("JUMP", event), "jump", _("JUMPD", event)),
-		dpp::select_option(_("OPEN", event), "open", _("OPEND", event)),
-		dpp::select_option(_("SPOT", event), "spot", _("SPOTD", event)),
-		dpp::select_option(_("SNEAK", event), "sneak", _("SNEAKD", event)),
-		dpp::select_option(_("ESP", event), "esp", _("ESPD", event)),
-		dpp::select_option(_("RUN", event), "run", _("RUND", event)),
-		dpp::select_option(_("INVISIBLE", event), "invisible", _("INVISIBLED", event)),
-		dpp::select_option(_("SHRINK", event), "shrink", _("SHRINKD", event)),
-		dpp::select_option(_("GROW", event), "grow", _("GROWD", event)),
-		dpp::select_option(_("AIR", event), "air", _("AIRD", event)),
-		dpp::select_option(_("ANIMAL", event), "animalcommunication", _("ANIMALD", event)),
-		dpp::select_option(_("WEAPONSKILL", event), "weaponskill", _("WEAPONSKILLD", event)),
-		dpp::select_option(_("HEALING", event), "healing", _("HEALINGD", event)),
-		dpp::select_option(_("WOODSMANSHIP", event), "woodsmanship", _("WOODSMANSHIPD", event)),
-		dpp::select_option(_("NIGHTVISION", event), "nightvision", _("NIGHTVISIOND", event)),
-		dpp::select_option(_("HEATEYES", event), "heateyes", _("HEATEYESD", event)),
-		dpp::select_option(_("DECIPHER", event), "decipher", _("DECIPHERD", event)),
-		dpp::select_option(_("DETECT", event), "detect", _("DETECTD", event)),
-		dpp::select_option(_("TRACKING", event), "tracking", _("TRACKINGD", event)),
-		dpp::select_option(_("ESPSURGE", event), "espsurge", _("ESPSURGED", event)),
-		dpp::select_option(_("AFTERIMAGE", event), "afterimage", _("AFTERIMAGED", event)),
-		dpp::select_option(_("PSYCHISM", event), "psychism", _("PSYCHISMD", event)),
-		dpp::select_option(_("SPIRITWALK", event), "spiritwalk", _("SPIRITWALKD", event)),
-		dpp::select_option(_("GROWWEAPON", event), "growweapon", _("GROWWEAPOND", event)),
+		dpp::select_option(tr("FIRE", event), "fire", tr("FIRED", event)),
+		dpp::select_option(tr("WATER", event), "water", tr("WATERD", event)),
+		dpp::select_option(tr("LIGHT", event), "light", tr("LIGHTD", event)),
+		dpp::select_option(tr("FLY", event), "fly", tr("FLYD", event)),
+		dpp::select_option(tr("STRENGTH", event), "strength", tr("STRENGTHD", event)),
+		dpp::select_option(tr("XRAY", event), "xray", tr("XRAYD", event)),
+		dpp::select_option(tr("BOLT", event), "bolt", tr("BOLTD", event)),
+		dpp::select_option(tr("FASTHANDS", event), "fasthands", tr("FASTHANDSD", event)),
+		dpp::select_option(tr("THUNDERBOLT", event), "thunderbolt", tr("THUNDERBOLTD", event)),
+		dpp::select_option(tr("STEAL", event), "steal", tr("STEALD", event)),
+		dpp::select_option(tr("SHIELD", event), "shield", tr("SHIELDD", event)),
+		dpp::select_option(tr("JUMP", event), "jump", tr("JUMPD", event)),
+		dpp::select_option(tr("OPEN", event), "open", tr("OPEND", event)),
+		dpp::select_option(tr("SPOT", event), "spot", tr("SPOTD", event)),
+		dpp::select_option(tr("SNEAK", event), "sneak", tr("SNEAKD", event)),
+		dpp::select_option(tr("ESP", event), "esp", tr("ESPD", event)),
+		dpp::select_option(tr("RUN", event), "run", tr("RUND", event)),
+		dpp::select_option(tr("INVISIBLE", event), "invisible", tr("INVISIBLED", event)),
+		dpp::select_option(tr("SHRINK", event), "shrink", tr("SHRINKD", event)),
+		dpp::select_option(tr("GROW", event), "grow", tr("GROWD", event)),
+		dpp::select_option(tr("AIR", event), "air", tr("AIRD", event)),
+		dpp::select_option(tr("ANIMAL", event), "animalcommunication", tr("ANIMALD", event)),
+		dpp::select_option(tr("WEAPONSKILL", event), "weaponskill", tr("WEAPONSKILLD", event)),
+		dpp::select_option(tr("HEALING", event), "healing", tr("HEALINGD", event)),
+		dpp::select_option(tr("WOODSMANSHIP", event), "woodsmanship", tr("WOODSMANSHIPD", event)),
+		dpp::select_option(tr("NIGHTVISION", event), "nightvision", tr("NIGHTVISIOND", event)),
+		dpp::select_option(tr("HEATEYES", event), "heateyes", tr("HEATEYESD", event)),
+		dpp::select_option(tr("DECIPHER", event), "decipher", tr("DECIPHERD", event)),
+		dpp::select_option(tr("DETECT", event), "detect", tr("DETECTD", event)),
+		dpp::select_option(tr("TRACKING", event), "tracking", tr("TRACKINGD", event)),
+		dpp::select_option(tr("ESPSURGE", event), "espsurge", tr("ESPSURGED", event)),
+		dpp::select_option(tr("AFTERIMAGE", event), "afterimage", tr("AFTERIMAGED", event)),
+		dpp::select_option(tr("PSYCHISM", event), "psychism", tr("PSYCHISMD", event)),
+		dpp::select_option(tr("SPIRITWALK", event), "spiritwalk", tr("SPIRITWALKD", event)),
+		dpp::select_option(tr("GROWWEAPON", event), "growweapon", tr("GROWWEAPOND", event)),
 	};
 
 	size_t spell_count = 0;
@@ -618,7 +620,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 		}
 	}
 	if (!spell_count) {
-		spell_select_menu.add_select_option(dpp::select_option(_("SELECTONEHERB", event), "0", _("MUSTCHOOSE", event)));
+		spell_select_menu.add_select_option(dpp::select_option(tr("SELECTONEHERB", event), "0", tr("MUSTCHOOSE", event)));
 		spell_select_menu.set_max_values(0);
 	} else {
 		if (spell_count < max_spells) {
@@ -641,7 +643,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 			.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_name"))
-				.set_label(_("CONTINUE", event))
+				.set_label(tr("CONTINUE", event))
 				.set_style(dpp::cos_success)
 				.set_emoji("➡️")
 			)
@@ -966,7 +968,7 @@ void player::add_experience(long modifier) {
 	experience = std::max((long)0, experience + modifier);
 	long new_value = get_level();
 	if (new_value > old_value && new_value > 1) {
-		add_toast(_("LEVELUP", event));
+		add_toast(tr("LEVELUP", event));
 	}
 }
 
@@ -1041,7 +1043,7 @@ bool player::eat_ration() {
 	if (rations-- < 1) {
 		if (stamina > 3) {
 			add_stamina(-2);
-			add_toast(_("HUNGER", event));
+			add_toast(tr("HUNGER", event));
 		}
 		rations = 0;
 		return false;

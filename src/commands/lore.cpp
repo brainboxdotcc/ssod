@@ -27,6 +27,7 @@
 #include <set>
 #include <ssod/wildcard.h>
 
+using namespace i18n;
 namespace fs = std::filesystem;
 
 
@@ -79,7 +80,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 		})
 		.set_colour(EMBED_COLOUR)
 		.set_image("https://images.ssod.org/resource/app_encyclopaedia_c.jpg")
-		.set_description(_("LORECHOICE", event));
+		.set_description(tr("LORECHOICE", event));
 	dpp::message m;
 	component_builder cb(m);
 	if (document) {
@@ -100,7 +101,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 				cb.add_component(dpp::component()
 					.set_type(dpp::cot_button)
 					.set_id(security::encrypt("lore-read;" + remove_lead(replace_string(fullpath.string() + std::to_string(p) + partial_name, "//", "/"))))
-					.set_label(_("PAGE", event) + " " + std::to_string(p) + " of " + std::to_string(pages))
+					.set_label(tr("PAGE", event) + " " + std::to_string(p) + " of " + std::to_string(pages))
 					.set_style(dpp::cos_secondary)
 					.set_emoji(sprite::scroll02.name, sprite::scroll02.id)
 					.set_disabled(current_page == p)
@@ -113,14 +114,14 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("lore;" + remove_lead(replace_string(fullpath.string() + "/", "//", "/"))))
-				.set_label(_("BACK", event))
+				.set_label(tr("BACK", event))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::spear003.name, sprite::spear003.id)
 			);
 		}
 		embed.set_title(title);
 		embed.set_footer(dpp::embed_footer{ 
-			.text = document ? std::to_string(pages) + " " + _("PAGE", event) + (pages > 1 ? "s" : "") + ", " + std::to_string(mins_read_time(whole_doc)) + " " + _("MINSREAD", event) : _("LORE", event), 
+			.text = document ? std::to_string(pages) + " " + tr("PAGE", event) + (pages > 1 ? "s" : "") + ", " + std::to_string(mins_read_time(whole_doc)) + " " + tr("MINSREAD", event) : tr("LORE", event),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		});
@@ -178,7 +179,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("lore;"))
-				.set_label(_("BACK", event))
+				.set_label(tr("BACK", event))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::spear003.name, sprite::spear003.id)
 			);
@@ -208,7 +209,7 @@ dpp::slashcommand lore_command::register_command(dpp::cluster& bot) {
 			page(event, parts[0] == "lore-read", parts.size() >= 2 ? parts[1] : "");
 		}
 	});
-	return _(dpp::slashcommand("cmd_lore", "lore_desc", bot.me.id).set_dm_permission(true));
+	return tr(dpp::slashcommand("cmd_lore", "lore_desc", bot.me.id).set_dm_permission(true));
 }
 
 void lore_command::route(const dpp::slashcommand_t &event) {

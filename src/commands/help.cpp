@@ -21,9 +21,11 @@
 #include <ssod/commands/help.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 dpp::slashcommand help_command::register_command(dpp::cluster& bot)
 {
-	return _(dpp::slashcommand("cmd_help", "help_description", bot.me.id).set_dm_permission(true));
+	return tr(dpp::slashcommand("cmd_help", "help_description", bot.me.id).set_dm_permission(true));
 }
 
 void help_command::route(const dpp::slashcommand_t &event)
@@ -31,26 +33,26 @@ void help_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(_("HELP_TITLE", event))
+		.set_title(tr("HELP_TITLE", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(_("HELP_TOP", event))
-		.add_field(_("cmd_help", event), _("HELP_HELP_DESC", event), false)
-		.add_field(_("cmd_start", event), _("HELP_START_DESC", event), false)
-		.add_field(_("cmd_lore", event), _("HELP_LORE_DESC", event), false)
-		.add_field(_("cmd_map", event), _("HELP_MAP_DESC", event), false)
-		.add_field(_("cmd_vote", event), _("HELP_VOTE_DESC", event), false)
-		.add_field(_("cmd_profile", event), _("HELP_PROFILE_DESC", event), false)
-		.add_field(_("cmd_guild", event), _("HELP_GUILD_DESC", event), false)
-		.add_field(_("cmd_gender", event), _("HELP_GENDER_DESC", event), false)
-		.add_field(_("cmd_premium", event), _("HELP_PREMIUM_DESC", event), false)
-		.add_field(_("cmd_bio", event), _("HELP_BIO_DESC", event), false)
-		.add_field(_("cmd_rename", event), _("HELP_RENAME_DESC", event), false)
-		.add_field(_("cmd_info", event), _("HELP_INFO_DESC", event), false)
+		.set_description(tr("HELP_TOP", event))
+		.add_field(tr("cmd_help", event), tr("HELP_HELP_DESC", event), false)
+		.add_field(tr("cmd_start", event), tr("HELP_START_DESC", event), false)
+		.add_field(tr("cmd_lore", event), tr("HELP_LORE_DESC", event), false)
+		.add_field(tr("cmd_map", event), tr("HELP_MAP_DESC", event), false)
+		.add_field(tr("cmd_vote", event), tr("HELP_VOTE_DESC", event), false)
+		.add_field(tr("cmd_profile", event), tr("HELP_PROFILE_DESC", event), false)
+		.add_field(tr("cmd_guild", event), tr("HELP_GUILD_DESC", event), false)
+		.add_field(tr("cmd_gender", event), tr("HELP_GENDER_DESC", event), false)
+		.add_field(tr("cmd_premium", event), tr("HELP_PREMIUM_DESC", event), false)
+		.add_field(tr("cmd_bio", event), tr("HELP_BIO_DESC", event), false)
+		.add_field(tr("cmd_rename", event), tr("HELP_RENAME_DESC", event), false)
+		.add_field(tr("cmd_info", event), tr("HELP_INFO_DESC", event), false)
 		;
 
 	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));

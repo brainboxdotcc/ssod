@@ -24,6 +24,8 @@
 #include <ssod/game_player.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 {
 	bot.on_button_click([&bot](const dpp::button_click_t& event) {
@@ -42,14 +44,14 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 			dpp::cluster* bot = event.from->creator;
 			dpp::embed embed = dpp::embed()
 				.set_url("https://ssod.org/")
-				.set_title(_("RESETCOMPLETE", event))
+				.set_title(tr("RESETCOMPLETE", event))
 				.set_footer(dpp::embed_footer{ 
-					.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
+					.text = fmt::format(fmt::runtime(tr("REQUESTED_BY", event)), event.command.usr.format_username()),
 					.icon_url = bot->me.get_avatar_url(), 
 					.proxy_url = "",
 				})
 				.set_colour(EMBED_COLOUR)
-				.set_description(_("NUKED", event));
+				.set_description(tr("NUKED", event));
 				
 			event.reply(dpp::message()
 				.add_embed(embed)
@@ -59,7 +61,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 			delete_live_player(event);
 		}
 	});
-	return _(dpp::slashcommand("cmd_reset", "reset_desc", bot.me.id).set_dm_permission(true));
+	return tr(dpp::slashcommand("cmd_reset", "reset_desc", bot.me.id).set_dm_permission(true));
 }
 
 void reset_command::route(const dpp::slashcommand_t &event)
@@ -67,14 +69,14 @@ void reset_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(_("SSOD", event))
+		.set_title(tr("SSOD", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = fmt::format(fmt::runtime(_("REQUESTED_BY", event)), event.command.usr.format_username()),
+			.text = fmt::format(fmt::runtime(tr("REQUESTED_BY", event)), event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(_("RESETPROMPT", event));
+		.set_description(tr("RESETPROMPT", event));
 		
 	event.reply(dpp::message()
 		.add_component(
@@ -82,7 +84,7 @@ void reset_command::route(const dpp::slashcommand_t &event)
 				dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_reset"))
-				.set_label(_("DORESET", event))
+				.set_label(tr("DORESET", event))
 				.set_style(dpp::cos_danger)
 				.set_emoji(sprite::skull.name, sprite::skull.id)
 			)

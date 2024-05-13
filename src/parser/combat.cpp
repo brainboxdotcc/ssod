@@ -22,6 +22,8 @@
 #include <fmt/format.h>
 #include <ssod/database.h>
 
+using namespace i18n;
+
 struct combat_tag : public tag {
 	combat_tag() { register_tag<combat_tag>(); }
 	static constexpr std::string_view tags[]{"<combat"};
@@ -73,7 +75,7 @@ struct combat_tag : public tag {
 
 						}
 						current_player.add_stamina(-atol(illness.at("stamina_debuff").c_str()));
-						current_player.add_toast(_("DISEASED", current_player.event, name, illness.at("stamina_debuff")));
+						current_player.add_toast(tr("DISEASED", current_player.event, name, illness.at("stamina_debuff")));
 						p.sick = true;
 					}
 				}

@@ -22,8 +22,10 @@
 #include <ssod/commands/guild.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
-	return _(dpp::slashcommand("cmd_guild", "HELP_GUILD_DESC", bot.me.id)
+	return tr(dpp::slashcommand("cmd_guild", "HELP_GUILD_DESC", bot.me.id)
 		.set_dm_permission(true)
 		.add_option(
 			dpp::command_option(dpp::co_sub_command, "opt_create", "G_CREATE_DESC")
@@ -51,9 +53,9 @@ void guild_command::route(const dpp::slashcommand_t &event)
 
 	dpp::embed embed;
 	embed.set_url("https://ssod.org/")
-		.set_title(_(subcommand.name == "create" ? "CREATE_GUILD" : "JOIN_GUILD", event))
+		.set_title(tr(subcommand.name == "create" ? "CREATE_GUILD" : "JOIN_GUILD", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
@@ -71,12 +73,12 @@ void guild_command::route(const dpp::slashcommand_t &event)
 				db::query("INSERT INTO guilds (owner_id, name) VALUES(?, ?)", { event.command.usr.id, guild_name });
 				auto rs = db::query("SELECT id FROM guilds WHERE name = ?", { guild_name });
 				db::query("INSERT INTO guild_members (user_id, guild_id) VALUES(?, ?)", { event.command.usr.id, rs[0].at("id") });
-				embed.set_description(_("GUILD_CREATED", event) + "\n\n" + dpp::utility::markdown_escape(guild_name));
+				embed.set_description(tr("GUILD_CREATED", event) + "\n\n" + dpp::utility::markdown_escape(guild_name));
 			} else {
-				embed.set_description(_("GUILD_EXISTS", event));
+				embed.set_description(tr("GUILD_EXISTS", event));
 			}
 		} else {
-			embed.set_description(_("GUILD_ALREADY_MEMBER", event) + "\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
+			embed.set_description(tr("GUILD_ALREADY_MEMBER", event) + "\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
 		}
 		db::commit();
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
@@ -90,37 +92,37 @@ void guild_command::route(const dpp::slashcommand_t &event)
 			if (!rs.empty()) {
 				db::query("INSERT INTO guild_members (user_id, guild_id) VALUES(?, ?)", { event.command.usr.id, rs[0].at("id") });
 			} else {
-				embed.set_description(_("NO_SUCH_GUILD", event));
+				embed.set_description(tr("NO_SUCH_GUILD", event));
 			}
-			embed.set_description(_("JOINED_GUILD", event) + "\n\n" + dpp::utility::markdown_escape(guild_name));
+			embed.set_description(tr("JOINED_GUILD", event) + "\n\n" + dpp::utility::markdown_escape(guild_name));
 		} else {
-			embed.set_description(_("GUILD_ALREADY_MEMBER", event) + "\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
+			embed.set_description(tr("GUILD_ALREADY_MEMBER", event) + "\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
 		}
 		db::commit();
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	} else if (subcommand.name == "info") {
 		auto param = subcommand.options[0].value;
             	std::string guild_name = std::get<std::string>(param);
-		embed.set_title(_("GUILD_INFO", event));
+		embed.set_title(tr("GUILD_INFO", event));
 		auto rs = db::query("SELECT id, guilds.name AS guild_name, owner_id, (SELECT COUNT(*) FROM guild_members WHERE guild_id = guilds.id) AS member_count, game_users.* FROM guilds LEFT JOIN game_users ON guilds.owner_id = game_users.user_id WHERE guilds.name = ?", { guild_name });
 		if (!rs.empty()) {
-			std::string description{"# " + dpp::utility::markdown_escape(rs[0].at("guild_name")) + "\n\n" + _("MEMBER_COUNT", event) + " " + rs[0].at("member_count") + "\n" };
+			std::string description{"# " + dpp::utility::markdown_escape(rs[0].at("guild_name")) + "\n\n" + tr("MEMBER_COUNT", event) + " " + rs[0].at("member_count") + "\n" };
 			if (!rs[0].at("name").empty())
-			description += "\n" + _("OWNER", event) + " **" + dpp::utility::markdown_escape(rs[0].at("name")) + "**";
+			description += "\n" + tr("OWNER", event) + " **" + dpp::utility::markdown_escape(rs[0].at("name")) + "**";
 			embed.set_description(description);
 		} else {
-			embed.set_description(_("NO_SUCH_GUILD", event));
+			embed.set_description(tr("NO_SUCH_GUILD", event));
 		}
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	} else if (subcommand.name == "leave") {
 		db::transaction();
-		embed.set_title(_("LEAVE_GUILD", event));
+		embed.set_title(tr("LEAVE_GUILD", event));
 		auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", { event.command.usr.id });
 		if (g.empty()) {
-			embed.set_description(_("NOT_A_GUILD_MEMBER", event));
+			embed.set_description(tr("NOT_A_GUILD_MEMBER", event));
 		} else {
 			db::query("DELETE FROM guild_members WHERE user_id = ?", { event.command.usr.id });
-			embed.set_description(_("LEFT_GUILD", event) + " " + dpp::utility::markdown_escape(g[0].at("name")));
+			embed.set_description(tr("LEFT_GUILD", event) + " " + dpp::utility::markdown_escape(g[0].at("name")));
 		}
 		db::commit();
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));

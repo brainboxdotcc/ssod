@@ -21,9 +21,11 @@
 #include <ssod/commands/vote.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 dpp::slashcommand vote_command::register_command(dpp::cluster& bot)
 {
-	return _(dpp::slashcommand("cmd_vote", "vote_desc", bot.me.id).set_dm_permission(true));
+	return tr(dpp::slashcommand("cmd_vote", "vote_desc", bot.me.id).set_dm_permission(true));
 }
 
 void vote_command::route(const dpp::slashcommand_t &event)
@@ -31,14 +33,14 @@ void vote_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(_("VOTETITLE", event))
+		.set_title(tr("VOTETITLE", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(_("VOTEBODY", event));
+		.set_description(tr("VOTEBODY", event));
 	event.reply(dpp::message()
 		.add_embed(embed)
 		.set_flags(dpp::m_ephemeral)
