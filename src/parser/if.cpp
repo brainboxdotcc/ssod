@@ -94,7 +94,7 @@ struct if_tag : public tag {
 			p_text = remove_last_char(p_text);
 			std::string flag = "[gamestate_" + p_text;
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(current_player.gotfrom.find(flag) != std::string::npos || global_set(p_text));
+				p.display.push_back(current_player.gotfrom.find(flag) != std::string::npos || global_set(p_text) || timed_set(current_player.event, p_text));
 			} else {
 				p.display.push_back(false);
 			}
@@ -104,7 +104,7 @@ struct if_tag : public tag {
 			p_text = remove_last_char(p_text);
 			std::string flag = "[gamestate_" + p_text;
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(current_player.gotfrom.find(flag) == std::string::npos && !global_set(p_text));
+				p.display.push_back(current_player.gotfrom.find(flag) == std::string::npos && !global_set(p_text) && !timed_set(current_player.event, p_text));
 			} else {
 				p.display.push_back(false);
 			}
