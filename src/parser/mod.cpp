@@ -31,7 +31,12 @@ struct mod_tag : public tag {
 	static constexpr std::string_view tags[]{"<mod"};
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		std::string mod;
+		bool repeatable{false};
 		paragraph_content >> p_text;
+		if (p_text == "repeatable") {
+			paragraph_content >> p_text;
+			repeatable = true;
+		}
 		paragraph_content >> mod;
 		mod = remove_last_char(mod); // remove '>'
 		long modifier = atol(mod);
@@ -53,11 +58,13 @@ struct mod_tag : public tag {
 		auto m = modifier_list.find(p_text);
 		if (m != modifier_list.end()) {
 			// No output if the player's been here before
-			if (!current_player.has_flag(flag, p.id)) {
-				current_player.add_flag(flag, p.id);
-			} else {
-				output << " ***" << _("MODNO", current_player.event, m->first) << "*** ";
-				return;
+			if (!repeatable) {
+				if (!current_player.has_flag(flag, p.id)) {
+					current_player.add_flag(flag, p.id);
+				} else {
+					output << " ***" << _("MODNO", current_player.event, m->first) << "*** ";
+					return;
+				}
 			}
 			output << " ***" << _(modifier < 1 ? "MODNEG" : "MODPLUS", current_player.event, abs(modifier), m->second.name) << "*** ";
 			long old_value = current_player.get_level();
