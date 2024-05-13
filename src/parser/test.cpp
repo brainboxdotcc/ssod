@@ -20,6 +20,8 @@
 #include <ssod/parser.h>
 #include <ssod/ssod.h>
 
+using namespace i18n;
+
 struct test_tag : public tag {
 	test_tag() { register_tag<test_tag>(); }
 	static constexpr std::string_view tags[]{"<test"};
@@ -31,19 +33,19 @@ struct test_tag : public tag {
 		p.safe = false;
 
 		if (p_text.find("luck>") != std::string::npos) {
-			output << " " << _("TESTLUCK", current_player.event) << " ";
+			output << " " << tr("TESTLUCK", current_player.event) << " ";
 			p.auto_test = current_player.test_luck();
 		} else if (p_text.find("stamina>") != std::string::npos) {
-			output << " " << _("TESTSTM", current_player.event) << " ";
+			output << " " << tr("TESTSTM", current_player.event) << " ";
 			p.auto_test = current_player.test_stamina();
 		} else if (p_text.find("skill>") != std::string::npos) {
-			output << " " << _("TESTSKL", current_player.event) << " ";
+			output << " " << tr("TESTSKL", current_player.event) << " ";
 			p.auto_test = current_player.test_skill();
 		} else if (p_text.find("speed>") != std::string::npos) {
-			output << " " << _("TESTSPD", current_player.event) << " ";
+			output << " " << tr("TESTSPD", current_player.event) << " ";
 			p.auto_test = current_player.test_speed();
 		} else if (p_text.find("exp>") != std::string::npos) {
-			output << " " << _("TESTXP", current_player.event) << " ";
+			output << " " << tr("TESTXP", current_player.event) << " ";
 			p.auto_test = current_player.test_experience();
 		}
 	}

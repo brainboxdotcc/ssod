@@ -28,6 +28,8 @@
 #include <ssod/emojis.h>
 #include <ssod/aes.h>
 
+using namespace i18n;
+
 void inventory(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
@@ -40,54 +42,54 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 
 	std::vector<dpp::embed_field> fields;
 
-	content << "__**" << _("Stats", event) << "**__\n";
-	content << "<:" << sprite::health_heart.format() << "> " << _("STAMINA", event) << ": __" << p.stamina << "__";
-	content << " <:" << sprite::book07.format() << "> " << _("SKILL", event) << ": __" << p.skill << "__";
-	content << " <:" << sprite::clover.format() << "> " << _("LUCK", event) << ": __" << p.luck << "__";
-	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__ (" << _("LEVEL", event) << ": __" << p.get_level() << "__)\n";
-	content << " <:" << sprite::shoes03.format() << "> " << _("SPEED", event) << ": __" << p.speed << "__";
+	content << "__**" << tr("Stats", event) << "**__\n";
+	content << "<:" << sprite::health_heart.format() << "> " << tr("STAMINA", event) << ": __" << p.stamina << "__";
+	content << " <:" << sprite::book07.format() << "> " << tr("SKILL", event) << ": __" << p.skill << "__";
+	content << " <:" << sprite::clover.format() << "> " << tr("LUCK", event) << ": __" << p.luck << "__";
+	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__ (" << tr("LEVEL", event) << ": __" << p.get_level() << "__)\n";
+	content << " <:" << sprite::shoes03.format() << "> " << tr("SPEED", event) << ": __" << p.speed << "__";
 	if (p.gold > 0) {
-		content << " <:" << sprite::gold_coin.format() << "> " << _("GOLD", event) << ": __" << p.gold << "__";
+		content << " <:" << sprite::gold_coin.format() << "> " << tr("GOLD", event) << ": __" << p.gold << "__";
 	}
 	if (p.silver > 0) {
-		content << " <:" << sprite::silver_coin.format() << "> " << _("SILVER", event) << ": __" << p.silver << "__";
+		content << " <:" << sprite::silver_coin.format() << "> " << tr("SILVER", event) << ": __" << p.silver << "__";
 	}
 
 	content << "\n";
 	if (p.has_flag("pack") || p.has_flag("horse") || p.has_flag("steamcopter") || p.has_flag("saddlebags")) {
-		content << "\n__**" << _("STORAGE", event) << "**__\n";
+		content << "\n__**" << tr("STORAGE", event) << "**__\n";
 		if (p.has_flag("pack")) {
-			content << sprite::backpack.get_mention() << " " << _("BACKPACK", event) << " (__+1__) ";
+			content << sprite::backpack.get_mention() << " " << tr("BACKPACK", event) << " (__+1__) ";
 		}
 		if (p.has_flag("horse")) {
-			content << "🐴 " << _("HORSE", event) << " (__+1__) ";
+			content << "🐴 " << tr("HORSE", event) << " (__+1__) ";
 		}
 		if (p.has_flag("saddlebags")) {
-			content << sprite::backpack.get_mention() << " " << _("SADDLEBAGS", event) << " (__+1__) ";
+			content << sprite::backpack.get_mention() << " " << tr("SADDLEBAGS", event) << " (__+1__) ";
 		}
 		if (p.has_flag("steamcopter")) {
-			content << "🚁 " << _("STEAMCOPTER", event) << " (__+3__) ";
+			content << "🚁 " << tr("STEAMCOPTER", event) << " (__+3__) ";
 		}
 		content << "\n";
 	}
 
-	content << "\n__**" << _("SPELLS", event) << "**__\n";
+	content << "\n__**" << tr("SPELLS", event) << "**__\n";
 	std::ranges::sort(p.spells, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	for (const auto &inv: p.spells) {
 		content << "🪄 " << human_readable_spell_name(inv.name, event) << "\n";
 	}
-	content << "\n__**" << _("HERBS", event) << "**__\n";
+	content << "\n__**" << tr("HERBS", event) << "**__\n";
 	std::ranges::sort(p.herbs, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	for (const auto &inv: p.herbs) {
 		content << "🌿 " << human_readable_herb_name(inv.name, event) << "\n";
 	}
 
-	content << "\n__**" << _("INVENTORYPAGE", event, p.inventory_page + 1, pages_max++) << "**__\n";
+	content << "\n__**" << tr("INVENTORYPAGE", event, p.inventory_page + 1, pages_max++) << "**__\n";
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{
-			.text = _("INVENTORYFOOTER", event, p.name, p.inventory_page + 1),
+			.text = tr("INVENTORYFOOTER", event, p.name, p.inventory_page + 1),
 			.icon_url = bot.me.get_avatar_url(),
 			.proxy_url = "",
 		})
@@ -105,7 +107,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	cb.add_component(dpp::component()
 				 .set_type(dpp::cot_button)
 				 .set_id(security::encrypt("exit_inventory"))
-				 .set_label(_("BACK", event))
+				 .set_label(tr("BACK", event))
 				 .set_style(dpp::cos_primary)
 				 .set_emoji(sprite::magic05.name, sprite::magic05.id)
 	);
@@ -133,17 +135,17 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	use_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(1)
-		.set_placeholder(_("USEITEM", event))
+		.set_placeholder(tr("USEITEM", event))
 		.set_id(security::encrypt("use_item"));
 	drop_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(1)
-		.set_placeholder(_("DROPITEM", event))
+		.set_placeholder(tr("DROPITEM", event))
 		.set_id(security::encrypt("drop_item"));
 	equip_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)
 		.set_max_values(1)
-		.set_placeholder(_("EQUIPITEM", event))
+		.set_placeholder(tr("EQUIPITEM", event))
 		.set_id(security::encrypt("equip_item"));
 
 	std::set<std::string> dup;
@@ -151,15 +153,15 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
 		if (!value.quest_item && value.sellable) {
-			auto i = _(inv, "", event);
-			drop_menu.add_select_option(dpp::select_option(_("DROP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
+			auto i = tr(inv, "", event);
+			drop_menu.add_select_option(dpp::select_option(tr("DROP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
 		}
 		if (inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
-			auto i = _(inv, "", event);
-			use_menu.add_select_option(dpp::select_option(_("USE", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
+			auto i = tr(inv, "", event);
+			use_menu.add_select_option(dpp::select_option(tr("USE", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		} else if (!inv.flags.empty() && (inv.flags[0] == 'A' || inv.flags[0] == 'W')) {
-			auto i = _(inv, "", event);
-			equip_menu.add_select_option(dpp::select_option(_("EQUIP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
+			auto i = tr(inv, "", event);
+			equip_menu.add_select_option(dpp::select_option(tr("EQUIP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		}
 	}
 
@@ -182,21 +184,21 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 			std::string emoji = get_emoji(inv.name, inv.flags).format();
 			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, event, true, 80) + "\n"};
 			if (p.armour.name == inv.name && !equip_a) {
-				description += "\033[2;31m🫱🏼 " + _("EQUIPPED", event) + "\033[0m ";
+				description += "\033[2;31m🫱🏼 " + tr("EQUIPPED", event) + "\033[0m ";
 				equip_a = true;
 			} else if (p.weapon.name == inv.name && !equip_w) {
-				description += "\033[2;31m🫱🏼 " + _("EQUIPPED", event) + "\033[0m ";
+				description += "\033[2;31m🫱🏼 " + tr("EQUIPPED", event) + "\033[0m ";
 				equip_w = true;
 			}
 			sale_info value = get_sale_info(inv.name);
 			if (value.quest_item) {
-				description += "\033[2;32m❗ " + _("QUESTITEM", event) + "\033[0m ";
+				description += "\033[2;32m❗ " + tr("QUESTITEM", event) + "\033[0m ";
 			}
 			if (value.sellable && !value.quest_item) {
-				description += "\033[2;33m🪙 " + std::to_string(value.value) + " " + _("VALUE2", event) + "\033[0m ";
+				description += "\033[2;33m🪙 " + std::to_string(value.value) + " " + tr("VALUE2", event) + "\033[0m ";
 			}
 			description += "\n```\n";
-			auto i = _(inv, "", event);
+			auto i = tr(inv, "", event);
 			auto f = dpp::embed_field("<:" + emoji + "> " + i.name, description, true);
 			fields.push_back(f);
 

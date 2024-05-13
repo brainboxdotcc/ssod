@@ -21,9 +21,11 @@
 #include <ssod/commands/map.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 dpp::slashcommand map_command::register_command(dpp::cluster& bot)
 {
-	return _(dpp::slashcommand("cmd_map", "map_desc", bot.me.id).set_dm_permission(true));
+	return tr(dpp::slashcommand("cmd_map", "map_desc", bot.me.id).set_dm_permission(true));
 }
 
 void map_command::route(const dpp::slashcommand_t &event)
@@ -31,9 +33,9 @@ void map_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(_("MAP", event))
+		.set_title(tr("MAP", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})

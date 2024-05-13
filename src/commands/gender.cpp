@@ -23,8 +23,10 @@
 #include <ssod/game_player.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 dpp::slashcommand gender_command::register_command(dpp::cluster& bot) {
-	return _(dpp::slashcommand("gender", "Set player's in-game gender for their profile image (male or female)", bot.me.id)
+	return tr(dpp::slashcommand("gender", "Set player's in-game gender for their profile image (male or female)", bot.me.id)
 		.set_dm_permission(true)
 		.add_option(
 			dpp::command_option(dpp::co_string, "gender", "Gender to set", true)
@@ -39,7 +41,7 @@ void gender_command::route(const dpp::slashcommand_t &event)
 	auto param = event.get_parameter("gender");
 	std::string new_gender = std::get<std::string>(param);
 	if (!player_is_live(event)) {
-		event.reply(dpp::message(_("NO_PROFILE", event)).set_flags(dpp::m_ephemeral));
+		event.reply(dpp::message(tr("NO_PROFILE", event)).set_flags(dpp::m_ephemeral));
 		return;
 	}
 	db::query("UPDATE game_users SET gender = ? WHERE user_id = ?", {new_gender, event.command.usr.id});
@@ -47,14 +49,14 @@ void gender_command::route(const dpp::slashcommand_t &event)
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(_("SET_GENDER", event))
+		.set_title(tr("SET_GENDER", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(fmt::format(fmt::runtime(_("GENDER_CHANGED", event)), new_gender) + "\n\n" + _("GENDER_COSMETIC", event));
+		.set_description(fmt::format(fmt::runtime(tr("GENDER_CHANGED", event)), new_gender) + "\n\n" + tr("GENDER_COSMETIC", event));
 		;
 
 	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));

@@ -23,8 +23,10 @@
 #include <ssod/game_util.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 dpp::slashcommand bio_command::register_command(dpp::cluster& bot) {
-	return _(dpp::slashcommand("cmd_bio", "update_bio", bot.me.id)
+	return tr(dpp::slashcommand("cmd_bio", "update_bio", bot.me.id)
 		.set_dm_permission(true)
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "opt_picture", "set_bio_picture")
@@ -46,9 +48,9 @@ void bio_command::route(const dpp::slashcommand_t &event)
 
 	dpp::embed embed;
 	embed.set_url("https://ssod.org/")
-		.set_title(_("CUSTOM_BIO", event))
+		.set_title(tr("CUSTOM_BIO", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
@@ -62,7 +64,7 @@ void bio_command::route(const dpp::slashcommand_t &event)
 		auto param = subcommand.options[0].value;
 		std::string text = std::get<std::string>(param);
 		db::query("INSERT INTO character_bio (user_id, bio) VALUES(?, ?) ON DUPLICATE KEY UPDATE bio = ?", { event.command.usr.id, text, text });
-		embed.set_description(_("CUSTOM_BIO_SET", event) +"\n\n" + text);
+		embed.set_description(tr("CUSTOM_BIO_SET", event) +"\n\n" + text);
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	} else if (subcommand.name == "picture") {
 		auto param = subcommand.options[0].value;
@@ -76,7 +78,7 @@ void bio_command::route(const dpp::slashcommand_t &event)
 			file.write(data.body.data(), data.body.length());
 			file.close();
 			db::query("INSERT INTO character_bio (user_id, image_name) VALUES(?, ?) ON DUPLICATE KEY UPDATE image_name = ?", { event.command.usr.id, filename, filename });
-			e.set_description(_("CUSTOM_PIC_UPLOADED", event));
+			e.set_description(tr("CUSTOM_PIC_UPLOADED", event));
 			e.set_image("attachment://" + filename);
 			event.reply(dpp::message().add_embed(e).add_file(filename, data.body).set_flags(dpp::m_ephemeral));
 		});

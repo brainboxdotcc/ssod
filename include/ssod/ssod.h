@@ -86,17 +86,16 @@ struct item {
 
 namespace i18n {
 
-	std::string _(const std::string &k, const dpp::interaction_create_t &interaction);
+	std::string tr(const std::string &k, const dpp::interaction_create_t &interaction);
 
-	dpp::slashcommand _(dpp::slashcommand cmd);
+	dpp::slashcommand tr(dpp::slashcommand cmd);
 
-	item_desc _(const item &i, const std::string &description, const dpp::interaction_create_t &event);
+	item_desc tr(const item &i, const std::string &description, const dpp::interaction_create_t &event);
 
 	template<typename... T>
-	std::string _(const std::string &key, const dpp::interaction_create_t &interaction, T &&... args) {
-		return fmt::format(fmt::runtime(_(key, interaction)), std::forward<T>(args)...);
+	std::string tr(const std::string &key, const dpp::interaction_create_t &interaction, T &&... args) {
+		return fmt::format(fmt::runtime(tr(key, interaction)), std::forward<T>(args)...);
 	}
 
 };
 
-using namespace i18n;

@@ -25,6 +25,8 @@
 #include <ssod/wildcard.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
 	if (!player_is_live(event)) {
 		return;
@@ -52,7 +54,7 @@ dpp::slashcommand rename_command::register_command(dpp::cluster& bot) {
 		autocomplete(bot, event, partial);
 	});
 
-	return _(dpp::slashcommand("cmd_rename", "rename_desc", bot.me.id)
+	return tr(dpp::slashcommand("cmd_rename", "rename_desc", bot.me.id)
 		.set_dm_permission(true)
 		.add_option(dpp::command_option(dpp::co_string, "opt_item", "rename_item_desc", true).set_auto_complete(true))
 		.add_option(dpp::command_option(dpp::co_string, "opt_name", "rename_name_desc", true).set_max_value(20)));
@@ -67,7 +69,7 @@ void rename_command::route(const dpp::slashcommand_t &event)
 		return;
 	}
 	if (!player_is_live(event)) {
-		event.reply(dpp::message(_("NOPROFILE", event)).set_flags(dpp::m_ephemeral));
+		event.reply(dpp::message(tr("NOPROFILE", event)).set_flags(dpp::m_ephemeral));
 		return;
 	}
 
@@ -78,14 +80,14 @@ void rename_command::route(const dpp::slashcommand_t &event)
 
 	dpp::embed embed;
 	embed.set_url("https://ssod.org/")
-		.set_title(_("RENAME", event))
+		.set_title(tr("RENAME", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(_("RENAMED", event, oldname, newname));
+		.set_description(tr("RENAMED", event, oldname, newname));
 
 	for (item& i : p.possessions) {
 		if (dpp::lowercase(i.name) == dpp::lowercase(oldname) && i.flags.length() >= 2 && (i.flags[0] == 'W' || i.flags[0] == 'A') && isdigit(i.flags[1])) {

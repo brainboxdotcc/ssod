@@ -71,7 +71,7 @@ namespace i18n {
 		bot.log(dpp::ll_info, fmt::format("Language strings count: {}", lang->size()));
 	}
 
-	std::string _(const std::string &k, const dpp::interaction_create_t &interaction) {
+	std::string tr(const std::string &k, const dpp::interaction_create_t &interaction) {
 		std::string lang_name{interaction.command.locale.substr(0, 2)};
 		std::shared_lock lang_lock(lang_mutex);
 		try {
@@ -81,7 +81,7 @@ namespace i18n {
 				if (v != o->end()) {
 					return v->get<std::string>();
 				}
-				return _(k, english);
+				return tr(k, english);
 			}
 		}
 		catch (const std::exception &e) {
@@ -103,7 +103,7 @@ namespace i18n {
 		return l;
 	};
 
-	dpp::command_option_choice _(dpp::command_option_choice choice) {
+	dpp::command_option_choice tr(dpp::command_option_choice choice) {
 		auto o = lang->find(choice.name);
 		if (o != lang->end()) {
 			dpp::interaction_create_t e{};
@@ -113,14 +113,14 @@ namespace i18n {
 				}
 				/* Note: We don't translate the value for choice, this remains constant internally */
 				e.command.locale = discord_lang(v.key());
-				choice.add_localization(e.command.locale, _(choice.name, e));
+				choice.add_localization(e.command.locale, tr(choice.name, e));
 			}
-			choice.name = _(choice.name, english);
+			choice.name = tr(choice.name, english);
 		}
 		return choice;
 	}
 
-	dpp::command_option _(dpp::command_option opt) {
+	dpp::command_option tr(dpp::command_option opt) {
 		auto o = lang->find(opt.name);
 		if (o != lang->end()) {
 			dpp::interaction_create_t e{};
@@ -129,21 +129,21 @@ namespace i18n {
 					continue;
 				}
 				e.command.locale = discord_lang(v.key());
-				opt.add_localization(e.command.locale, _(opt.name, e), _(opt.description, e));
+				opt.add_localization(e.command.locale, tr(opt.name, e), tr(opt.description, e));
 			}
-			opt.name = _(opt.name, english);
-			opt.description = _(opt.description, english);
+			opt.name = tr(opt.name, english);
+			opt.description = tr(opt.description, english);
 		}
 		for (auto &choice: opt.choices) {
-			choice = _(choice);
+			choice = tr(choice);
 		}
 		for (auto &option: opt.options) {
-			option = _(option);
+			option = tr(option);
 		}
 		return opt;
 	}
 
-	item_desc _(const item &i, const std::string &description, const dpp::interaction_create_t &event) {
+	item_desc tr(const item &i, const std::string &description, const dpp::interaction_create_t &event) {
 		if (event.command.locale.substr(0, 2) == "en") {
 			return {.name = i.name, .description = description};
 		}
@@ -161,7 +161,7 @@ namespace i18n {
 		return {.name = translated_text[1].at("translation"), .description = translated_text[0].at("translation")};
 	}
 
-	dpp::slashcommand _(dpp::slashcommand cmd) {
+	dpp::slashcommand tr(dpp::slashcommand cmd) {
 		auto o = lang->find(cmd.name);
 		if (o != lang->end()) {
 			dpp::interaction_create_t e{};
@@ -170,13 +170,13 @@ namespace i18n {
 					continue;
 				}
 				e.command.locale = discord_lang(v.key());
-				cmd.add_localization(e.command.locale, _(cmd.name, e), _(cmd.description, e));
+				cmd.add_localization(e.command.locale, tr(cmd.name, e), tr(cmd.description, e));
 			}
-			cmd.name = _(cmd.name, english);
-			cmd.description = _(cmd.description, english);
+			cmd.name = tr(cmd.name, english);
+			cmd.description = tr(cmd.description, english);
 		}
 		for (auto &option: cmd.options) {
-			option = _(option);
+			option = tr(option);
 		}
 		return cmd;
 	}

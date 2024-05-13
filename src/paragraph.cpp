@@ -25,6 +25,8 @@
 #include <ssod/parser.h>
 #include <ssod/wildcard.h>
 
+using namespace i18n;
+
 paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id) {
 	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});
 	if (location.empty()) {
@@ -253,10 +255,10 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 					while (p_text[i] != '>') {
 						pnum += p_text[i++];
 					}
-					label = _("TRAVEL", current_player.event);
+					label = tr("TRAVEL", current_player.event);
 				}
 				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
-					*output << " " << _("CANTFOLLOW", current_player.event);
+					*output << " " << tr("CANTFOLLOW", current_player.event);
 				} else {
 					links++;
 					LastLink = pnum;

@@ -23,9 +23,11 @@
 #include <ssod/aes.h>
 #include <fmt/format.h>
 
+using namespace i18n;
+
 dpp::slashcommand premium_command::register_command(dpp::cluster& bot)
 {
-	return _(dpp::slashcommand("cmd_premium", "premium_desc", bot.me.id).set_dm_permission(true));
+	return tr(dpp::slashcommand("cmd_premium", "premium_desc", bot.me.id).set_dm_permission(true));
 }
 
 void premium_command::route(const dpp::slashcommand_t &event)
@@ -35,14 +37,14 @@ void premium_command::route(const dpp::slashcommand_t &event)
 	bool has_premium = !rs.empty();
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(_("SSPREMIUM", event))
+		.set_title(tr("SSPREMIUM", event))
 		.set_footer(dpp::embed_footer{ 
-			.text = _("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
 			.icon_url = bot->me.get_avatar_url(), 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(!has_premium ? _("UPSELL", event, event.command.usr.id.str()) : _("THANKS", event));
+		.set_description(!has_premium ? tr("UPSELL", event, event.command.usr.id.str()) : tr("THANKS", event));
 		
 	event.reply(dpp::message()
 		.add_component(
@@ -51,7 +53,7 @@ void premium_command::route(const dpp::slashcommand_t &event)
 				dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_premium_manage"))
-				.set_label(_("MANAGESUB", event))
+				.set_label(tr("MANAGESUB", event))
 				.set_url("https://premium.ssod.org/manage-subscription?user=" + event.command.usr.id.str())
 				.set_style(dpp::cos_link)
 			)
@@ -60,7 +62,7 @@ void premium_command::route(const dpp::slashcommand_t &event)
 				dpp::component()
 				.set_type(dpp::cot_button)
 				.set_id(security::encrypt("player_premium_cta"))
-				.set_label(_("GETPREM", event))
+				.set_label(tr("GETPREM", event))
 				.set_url("https://premium.ssod.org/?user=" + event.command.usr.id.str())
 				.set_style(dpp::cos_link)
 			)	
