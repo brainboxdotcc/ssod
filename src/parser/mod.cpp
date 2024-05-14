@@ -41,7 +41,7 @@ struct mod_tag : public tag {
 		}
 		paragraph_content >> mod;
 		long modifier = atol(mod);
-		std::string flag = "MOD" + p_text + mod;
+		std::string flag = "MOD" + p_text + std::to_string(modifier);
 
 		const std::map<std::string, modifier_t> modifier_list = {
 			{"stm", {tr("STAMINA", current_player.event), &current_player.stamina, current_player.max_stamina()}},
