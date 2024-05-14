@@ -422,7 +422,8 @@ void game_nav(const dpp::button_click_t& event) {
 				dpp::lowercase(name) == "horse" || dpp::lowercase(name) == "pack pony" ||
 				dpp::lowercase(name) == "donkey" || dpp::lowercase(name) == "mule" ||
 				dpp::lowercase(name) == "pack" || dpp::lowercase(name) == "saddle bags" ||
-				dpp::lowercase(name) == "backpack"
+				dpp::lowercase(name) == "backpack" || flags.substr(0, 4) == "CURE" ||
+				flags == "SPELL" || flags == "HERB"
 			)
 		) {
 			if (p.gold >= cost) {
