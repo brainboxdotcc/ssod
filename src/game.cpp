@@ -416,7 +416,15 @@ void game_nav(const dpp::button_click_t& event) {
 		std::string name = parts[5];
 		p.paragraph = atol(parts[1]);
 		size_t max = p.max_inventory_slots();
-		if (p.possessions.size() < max - 1) {
+		if (
+			p.possessions.size() < max - 1 ||
+			(
+				dpp::lowercase(name) == "horse" || dpp::lowercase(name) == "pack pony" ||
+				dpp::lowercase(name) == "donkey" || dpp::lowercase(name) == "mule" ||
+				dpp::lowercase(name) == "pack" || dpp::lowercase(name) == "saddle bags" ||
+				dpp::lowercase(name) == "backpack"
+			)
+		) {
 			if (p.gold >= cost) {
 				if (flags == "SPELL") {
 					p.gold -= cost;
