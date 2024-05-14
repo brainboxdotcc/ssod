@@ -128,6 +128,8 @@ struct if_tag : public tag {
 			{ "level", current_player.get_level() },
 			{ "mana", current_player.mana },
 			{ "notoriety", current_player.notoriety },
+			{ "gold", current_player.gold },
+			{ "silver", current_player.silver },
 			{ "rations", current_player.rations },
 		};
 		auto check = scorename_map.find(scorename);
