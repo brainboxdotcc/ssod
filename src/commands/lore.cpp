@@ -71,7 +71,8 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 		path : path + "." + event.command.locale.substr(0, 2)
 	) : "";
 	std::string whole_doc{file_content};
-	std::string title = replace_string(to_title(replace_string(label, "-", " ")), ".md", "");
+	std::string title = replace_string(to_title(replace_string(label, "-", " ")),
+	   event.command.locale.substr(0, 2) == "en" ? ".md" : ".md." + event.command.locale.substr(0, 2), "");
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title(document ? title : "Encyclopaedia Cryptillius")
