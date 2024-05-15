@@ -53,7 +53,7 @@ struct mod_tag : public tag {
 			{"wpn", {tr("WEAPON", current_player.event), &current_player.weapon.rating, 9223372036854775807}},
 			{"spd", {tr("SPEED", current_player.event), &current_player.speed, current_player.max_speed()}},
 			{"mana", {tr("MANA", current_player.event), &current_player.mana, current_player.max_mana()}},
-			{"rations", {tr("RATIONS", current_player.event), &current_player.rations, 9223372036854775807}},
+			{"rations", {tr("RATIONS", current_player.event), &current_player.rations, current_player.max_rations()}},
 			{"notoriety", {tr("NOTORIETY", current_player.event), &current_player.notoriety, 9223372036854775807}},
 			{"gold", {tr("GOLD", current_player.event), &current_player.gold, current_player.max_gold()}},
 			{"silver", {tr("SILVER", current_player.event), &current_player.silver, current_player.max_silver()}},

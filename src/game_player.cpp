@@ -792,6 +792,10 @@ long player::max_mana() {
 	}
 }
 
+long player::max_rations() {
+	return 16 + (get_level() * 4);
+}
+
 void player::tick_mana() {
 	if (mana_tick < time(nullptr) - 60) {
 		// Wizards regain 2 mana per 1 min. other professions gain 1 mana point per min.
@@ -1053,6 +1057,7 @@ bool player::eat_ration() {
 
 void player::add_rations(long modifier) {
 	rations = std::max((long)0, rations + modifier);
+	rations = std::min(rations, max_rations());
 }
 
 void player::add_mana(long modifier) {
