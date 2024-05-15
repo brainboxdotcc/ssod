@@ -387,7 +387,7 @@ bool player::has_spell(std::string spell_name) {
 
 bool player::has_possession(std::string name) {
 	name = dpp::lowercase(name);
-	for (const item& inv : possessions) {
+	for (const stacked_item& inv : possessions) {
 		if (dpp::lowercase(inv.name) == name) {
 			return true;
 		}
@@ -398,13 +398,39 @@ bool player::has_possession(std::string name) {
 bool player::drop_possession(const item& i) {
 	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
 		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name)) {
-			possessions.erase(inv);
+			if (inv->qty == 1) {
+				possessions.erase(inv);
+			} else {
+				inv->qty--;
+			}
 			inv_change = true;
 			return true;
 		}
 	}
 	return false;
 }
+
+void player::pickup_possession(const item& i) {
+	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
+		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name) && i.flags == inv->flags) {
+			inv->qty++;
+			return;
+		}
+	}
+	possessions.push_back(stacked_item{ .name = i.name, .flags = i.flags, .qty = 1});
+}
+
+void player::pickup_possession(const stacked_item& i) {
+	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
+		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name) && i.flags == inv->flags) {
+			inv->qty += i.qty;
+			return;
+		}
+	}
+	possessions.push_back(i);
+}
+
+
 
 bool player::drop_spell(const item& i) {
 	for (auto inv = spells.begin(); inv != spells.end(); ++inv) {
@@ -651,11 +677,11 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 		).set_flags(dpp::m_ephemeral);
 }
 
-std::vector<item> player::possessions_page(size_t page_number) {
+std::vector<stacked_item> player::possessions_page(size_t page_number) {
 	if (possessions.size() < page_number * 25) {
 		return {};
 	}
-	std::vector<item> nv;
+	std::vector<stacked_item> nv;
 	for (size_t i = page_number * 25; i < (page_number + 1) * 25; ++i) {
 		if (i < possessions.size()) {
 			nv.emplace_back(possessions[i]);
@@ -706,10 +732,10 @@ player::player(bool reroll) :
 
 		weapon = { .name = "Hunting Dagger", .rating = 1 };
 		armour = { .name = "Leather Coat", .rating = 1 };
-		possessions.emplace_back(item{ .name = "Hunting Dagger", .flags = "W1" });
-		possessions.emplace_back(item{ .name = "Leather Coat", .flags = "A1" });
-		possessions.emplace_back(item{ .name = "Stamina Potion", .flags = "ST+4" });
-		possessions.emplace_back(item{ .name = "Skill Potion", .flags = "SK+4" });
+		possessions.emplace_back(stacked_item{ .name = "Hunting Dagger", .flags = "W1", .qty = 1 });
+		possessions.emplace_back(stacked_item{ .name = "Leather Coat", .flags = "A1", .qty = 1 });
+		possessions.emplace_back(stacked_item{ .name = "Stamina Potion", .flags = "ST+4", .qty = 1 });
+		possessions.emplace_back(stacked_item{ .name = "Skill Potion", .flags = "SK+4", .qty = 1 });
 		breadcrumb_trail = {};
 		inv_change = true;
 		reset_to_spawn_point();
@@ -770,16 +796,17 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		}
 	}
 
-	auto res = db::query("SELECT item_desc, item_flags FROM game_owned_items WHERE user_id = ?", {user_id});
-	for (const auto& a_row : res) {
-		const std::string& item_desc = a_row.at("item_desc");
-		const std::string& item_flags = a_row.at("item_flags");
+	auto res = db::query("SELECT item_desc, item_flags, COUNT(item_desc) AS qty FROM game_owned_items WHERE user_id = ? GROUP BY item_desc, item_flags", {user_id});
+	for (const auto& item_row : res) {
+		const std::string& item_desc = item_row.at("item_desc");
+		const std::string& item_flags = item_row.at("item_flags");
+		const long qty = atol(item_row.at("qty"));
 		if (item_flags == "SPELL" && !item_desc.empty()) {
 			spells.emplace_back(item{ .name = item_desc, .flags = item_flags });
 		} else if (item_flags == "HERB" && !item_desc.empty()) {
 			herbs.emplace_back(item{ .name = item_desc, .flags = item_flags });
 		} else if (!item_desc.empty()) {
-			possessions.emplace_back(item{ .name = item_desc, .flags = item_flags });
+			possessions.emplace_back(stacked_item{ .name = item_desc, .flags = item_flags, .qty = qty });
 		}
 	}
 }
@@ -811,14 +838,16 @@ void player::drop_everything() {
 		/* We don't drop quest items */
 		sale_info value = get_sale_info(i.name);
 		if (!value.quest_item && dpp::lowercase(i.name) != "scroll") {
-			db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {paragraph, i.name, i.flags});
+			for (long qty = 0; qty < i.qty; ++qty) {
+				db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {paragraph, i.name, i.flags});
+			}
 		}
 	}
 	possessions.clear();
-	possessions.emplace_back(item{ .name = "Hunting Dagger", .flags = "W1" });
-	possessions.emplace_back(item{ .name = "Leather Coat", .flags = "A1" });
-	possessions.emplace_back(item{ .name = "Stamina Potion", .flags = "ST+4" });
-	possessions.emplace_back(item{ .name = "Skill Potion", .flags = "SK+4" });
+	possessions.emplace_back(stacked_item{ .name = "Hunting Dagger", .flags = "W1", .qty = 1 });
+	possessions.emplace_back(stacked_item{ .name = "Leather Coat", .flags = "A1", .qty = 1 });
+	possessions.emplace_back(stacked_item{ .name = "Stamina Potion", .flags = "ST+4", .qty = 1 });
+	possessions.emplace_back(stacked_item{ .name = "Skill Potion", .flags = "SK+4", .qty = 1 });
 	herbs.clear();
 	spells.clear();
 	auto rs = db::query("SELECT * FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
@@ -840,9 +869,11 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 	if (inv_change) {
 		db::query("DELETE FROM game_owned_items WHERE user_id = ?", {user_id});
 		
-		for (const item& posession : possessions) {
-			if (posession.name != "[none]") {
-				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, posession.name, posession.flags});
+		for (const stacked_item& possession : possessions) {
+			if (possession.name != "[none]") {
+				for (long amount = 0; amount < possession.qty; ++amount) {
+					db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, possession.name, possession.flags});
+				}
 			}
 		}
 		for (const item& herb : herbs) {

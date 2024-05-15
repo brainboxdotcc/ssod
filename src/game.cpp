@@ -256,7 +256,7 @@ void game_select(const dpp::select_click_t &event) {
 		auto rs = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {event.command.usr.id, parts[0], parts[1]});
 		if (!rs.empty()) {
 			db::query("DELETE FROM game_bank WHERE id = ?", { rs[0].at("id") });
-			p.possessions.push_back(item{.name = parts[0], .flags = parts[1]});
+			p.pickup_possession(stacked_item{.name = parts[0], .flags = parts[1], .qty = 1 });
 			p.inv_change = true;
 		}
 		db::commit();
@@ -474,8 +474,8 @@ void game_nav(const dpp::button_click_t& event) {
 							p.add_flag("SCROLL", p.paragraph);
 						}
 					} else {
-						item i{ .name = name, .flags = flags };
-						if (!p.convert_rations(i)) {
+						stacked_item i{ .name = name, .flags = flags, .qty = 1 };
+						if (!p.convert_rations(item{ .name = name, .flags = flags })) {
 							bool special{false};
 							if (dpp::lowercase(name) == "horse" || dpp::lowercase(name) == "pack pony" || dpp::lowercase(name) == "donkey" || dpp::lowercase(name) == "mule") {
 								if (!p.has_flag("horse")) {
@@ -497,7 +497,7 @@ void game_nav(const dpp::button_click_t& event) {
 								}
 							}
 							if (!special) {
-								p.possessions.push_back(i);
+								p.pickup_possession(i);
 							}
 						}
 					}
@@ -566,9 +566,9 @@ void game_nav(const dpp::button_click_t& event) {
 		size_t max = p.max_inventory_slots();
 		if (p.possessions.size() < max - 1) {
 			if (!p.has_flag("PICKED", p.paragraph)) {
-				item i{.name = parts[3], .flags = parts[4]};
-				if (!p.convert_rations(i)) {
-					p.possessions.push_back(i);
+				stacked_item i{.name = parts[3], .flags = parts[4], .qty = 1};
+				if (!p.convert_rations(item{ .name = i.name, .flags = i.flags })) {
+					p.pickup_possession(i);
 				}
 				p.inv_change = true;
 				p.add_flag("PICKED", p.paragraph);
@@ -644,9 +644,9 @@ void game_nav(const dpp::button_click_t& event) {
 				db::query(
 					"DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
 					{paragraph, name, flags});
-				item i{.name = name, .flags = flags};
-				if (!p.convert_rations(i)) {
-					p.possessions.push_back(i);
+				stacked_item i{.name = name, .flags = flags, .qty = 1 };
+				if (!p.convert_rations({.name = name, .flags = flags})) {
+					p.pickup_possession(i);
 				}
 				p.inv_change = true;
 				send_chat(event.command.usr.id, p.paragraph, name, "pickup");
@@ -763,13 +763,18 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	content << tr("BANK_MAX", event, p.max_gold()) << "\n";
 	content << tr("SILVER_UPSELL", event) << "\n";
 
-	std::ranges::sort(p.possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
-	auto bank_items = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc != ? ORDER BY item_desc LIMIT 25",{event.command.usr.id, "__GOLD__"});
+	std::ranges::sort(p.possessions, [](const stacked_item &a, const stacked_item& b) -> bool { return a.name < b.name; });
+	auto bank_items = db::query("SELECT owner_id, item_desc, item_flags, COUNT(item_desc) AS qty FROM `game_bank` where owner_id = ? and item_desc != ? GROUP BY owner_id, item_desc, item_flags ORDER BY item_desc LIMIT 25",{event.command.usr.id, "__GOLD__"});
 	if (!bank_items.empty()) {
 		content << "\n__**" << bank_items.size() << "/25 " << tr("BANK_ITEMS", event) << "**__\n";
 		for (const auto& bank_item : bank_items) {
 			auto i = tr(item{ .name = bank_item.at("item_desc"), .flags = bank_item.at("item_flags") }, "", event);
-			content << sprite::backpack.get_mention() << " " << i.name << "\n";
+			long item_qty = atol(bank_item.at("qty"));
+			content << sprite::backpack.get_mention() << " " << i.name;
+			if (item_qty > 1) {
+				content << " (x" << item_qty << ")";
+			}
+			content << "\n";
 		}
 	}
 

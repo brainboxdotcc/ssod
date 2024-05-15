@@ -57,7 +57,7 @@ std::string ellipsis(const std::string& in, size_t max_len) {
 
 std::string describe_item(const std::string& modifier_flags, const std::string& name, const dpp::interaction_create_t& event, bool ansi, size_t max_desc_len) {
 	auto res = db::query("SELECT idesc FROM game_item_descs WHERE name = ?", {name});
-	auto i = tr({ .name = name, .flags = modifier_flags }, res.size() ? res[0].at("idesc") : name, event);
+	auto i = tr(item{ .name = name, .flags = modifier_flags }, res.size() ? res[0].at("idesc") : name, event);
 	std::string rv{ellipsis(i.description, max_desc_len)};
 
 

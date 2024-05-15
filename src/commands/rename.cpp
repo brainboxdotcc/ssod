@@ -34,7 +34,7 @@ static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, co
 	player p = get_live_player(event, false);
 	dpp::interaction_response ir(dpp::ir_autocomplete_reply);
 	int count = 0;
-	for (const item& i : p.possessions) {
+	for (const stacked_item& i : p.possessions) {
 		if (i.name.starts_with(uservalue) && i.flags.length() >= 2 && (i.flags[0] == 'W' || i.flags[0] == 'A') && isdigit(i.flags[1])) {
 			ir.add_autocomplete_choice(dpp::command_option_choice(i.name, i.name));
 			if (count++ > 24) {
@@ -89,7 +89,7 @@ void rename_command::route(const dpp::slashcommand_t &event)
 		.set_colour(EMBED_COLOUR)
 		.set_description(tr("RENAMED", event, oldname, newname));
 
-	for (item& i : p.possessions) {
+	for (stacked_item& i : p.possessions) {
 		if (dpp::lowercase(i.name) == dpp::lowercase(oldname) && i.flags.length() >= 2 && (i.flags[0] == 'W' || i.flags[0] == 'A') && isdigit(i.flags[1])) {
 			i.name = newname;
 			if (dpp::lowercase(p.weapon.name) == dpp::lowercase(oldname)) {

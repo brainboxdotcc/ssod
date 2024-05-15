@@ -81,7 +81,9 @@ struct if_tag : public tag {
 				size_t n{};
 				if (current_player.has_possession(p_text)) {
 					for (const auto& item : current_player.possessions) {
-						n += (dpp::lowercase(item.name) == dpp::lowercase(p_text));
+						if (dpp::lowercase(item.name) == dpp::lowercase(p_text)) {
+							n += item.qty;
+						}
 					}
 				}
 				p.display.push_back(n >= number);

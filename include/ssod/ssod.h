@@ -84,16 +84,24 @@ struct item {
 	std::string flags{};
 };
 
+
+struct stacked_item {
+	std::string name{};
+	std::string flags{};
+	long qty{1};
+};
+
 namespace i18n {
 
-	std::string tr(const std::string &k, const dpp::interaction_create_t &interaction);
+	std::string tr(const std::string& k, const dpp::interaction_create_t& interaction);
 
 	dpp::slashcommand tr(dpp::slashcommand cmd);
 
-	item_desc tr(const item &i, const std::string &description, const dpp::interaction_create_t &event);
+	item_desc tr(const item& i, const std::string &description, const dpp::interaction_create_t& event);
+	item_desc tr(const stacked_item& i, const std::string &description, const dpp::interaction_create_t& event);
 
 	template<typename... T>
-	std::string tr(const std::string &key, const dpp::interaction_create_t &interaction, T &&... args) {
+	std::string tr(const std::string& key, const dpp::interaction_create_t& interaction, T &&... args) {
 		return fmt::format(fmt::runtime(tr(key, interaction)), std::forward<T>(args)...);
 	}
 
