@@ -161,6 +161,10 @@ namespace i18n {
 		return {.name = translated_text[1].at("translation"), .description = translated_text[0].at("translation")};
 	}
 
+	item_desc tr(const stacked_item &i, const std::string &description, const dpp::interaction_create_t &event) {
+		return tr(item{ .name = i.name, .flags = i.flags}, description, event);
+	}
+
 	dpp::slashcommand tr(dpp::slashcommand cmd) {
 		auto o = lang->find(cmd.name);
 		if (o != lang->end()) {

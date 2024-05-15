@@ -84,14 +84,9 @@ namespace listeners {
 			e.command.usr.id = user_id;
 			if (player_is_live(e)) {
 				player p = get_live_player(e, false);
-				if (!p.has_possession("skill potion")) {
-					p.possessions.push_back(item{ .name = "skill potion", .flags = "SK+5"});
-					p.inv_change = true;
-				}
-				if (!p.has_possession("stamina potion")) {
-					p.possessions.push_back(item{ .name = "stamina potion", .flags = "ST+5"});
-					p.inv_change = true;
-				}
+				p.pickup_possession(stacked_item{ .name = "skill potion", .flags = "SK+5", .qty = 1});
+				p.pickup_possession(stacked_item{ .name = "stamina potion", .flags = "ST+5", .qty = 1});
+				p.inv_change = true;
 				p.add_toast("## A loot drop has arrived!\n\nYou have received a stamina potion and a skill potion!");
 				update_live_player(p.event, p);
 				p.save(user_id);

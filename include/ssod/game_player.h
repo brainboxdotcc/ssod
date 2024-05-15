@@ -25,12 +25,6 @@
 #include <ssod/game_enums.h>
 #include <ssod/ssod.h>
 
-struct stacked_item {
-	std::string name{};
-	std::string flags{};
-	long qty{1};
-};
-
 struct rated_item {
 	std::string name{};
 	long rating{1};
@@ -194,7 +188,7 @@ struct player {
 	/**
 	 * @brief Player inventory
 	 */
-	std::vector<item> possessions;
+	std::vector<stacked_item> possessions;
 	/**
 	 * @brief Player notes
 	 */
@@ -318,10 +312,12 @@ struct player {
 	bool has_component_herb(const std::string& spell);
 	bool has_spell(std::string spell_name);
 	bool has_possession(std::string name);
-	std::vector<item> possessions_page(size_t page_number);
+	std::vector<stacked_item> possessions_page(size_t page_number);
 	size_t max_inventory_slots();
 
 	bool drop_possession(const item& i);
+	void pickup_possession(const item& i);
+	void pickup_possession(const stacked_item& i);
 	void drop_everything();
 	bool drop_spell(const item& i);
 	bool drop_herb(const item& i);

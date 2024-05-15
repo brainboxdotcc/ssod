@@ -98,8 +98,8 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 
 	dpp::message m;
 
-	std::vector<item> possessions = p.possessions_page(p.inventory_page);
-	std::ranges::sort(possessions, [](const item &a, const item& b) -> bool { return a.name < b.name; });
+	std::vector<stacked_item> possessions = p.possessions_page(p.inventory_page);
+	std::ranges::sort(possessions, [](const stacked_item &a, const stacked_item& b) -> bool { return a.name < b.name; });
 
 	component_builder cb(m);
 	size_t index{0};
@@ -199,7 +199,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 			}
 			description += "\n```\n";
 			auto i = tr(inv, "", event);
-			auto f = dpp::embed_field("<:" + emoji + "> " + i.name, description, true);
+			auto f = dpp::embed_field("<:" + emoji + "> " + i.name + (inv.qty > 1 ? fmt::format(" (x{})", inv.qty) : ""), description, true);
 			fields.push_back(f);
 
 			dpp::message saved = m;

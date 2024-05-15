@@ -89,7 +89,7 @@ struct pickup_tag : public tag {
 			// crafty player trying to get the same item twice! Not good if it's unique!
 			return;
 		}
-		if (current_player.possessions.size() >= max - 1) {
+		if (current_player.possessions.size() >= max - 1 && dpp::lowercase(item_name) != "scroll" && flags != "SPELL" && flags != "HERB") {
 			// Inventory full
 			return;
 		}
@@ -106,9 +106,9 @@ struct pickup_tag : public tag {
 				current_player.herbs.push_back(item{.name = dpp::lowercase(item_name), .flags = flags});
 			}
 		} else {
-			item i{ .name = item_name, .flags = flags };
-			if (!current_player.convert_rations(i)) {
-				current_player.possessions.push_back(i);
+			stacked_item i{ .name = item_name, .flags = flags, .qty = 1 };
+			if (!current_player.convert_rations(item{ .name = item_name, .flags = flags })) {
+				current_player.pickup_possession(i);
 			}
 		}
 		current_player.inv_change = true;
