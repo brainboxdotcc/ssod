@@ -97,7 +97,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field(tr("Armour", event), sprite::helm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
 		.add_field(tr("Weapon", event), sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
 		.add_field(tr("Notoriety", event), sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
-		.add_field(tr("Rations", event), sprite::cheese.get_mention() + " " + rs[0].at("rations"), true)
+		.add_field(tr("Rations", event), sprite::cheese.get_mention() + " " + rs[0].at("rations") + "/" + std::to_string(p2.max_rations()), true)
 		.add_field(tr("Scrolls", event), sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
 		;
 
