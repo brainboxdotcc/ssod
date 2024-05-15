@@ -66,7 +66,10 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 	fs::path fullpath(path);
 	size_t pages = 1;
 	std::string label = fullpath.filename();
-	std::string file_content = document ? dpp::utility::read_file(path) : "";
+	std::string file_content = document ? dpp::utility::read_file(
+		event.command.locale.substr(0, 2) == "en" ?
+		path : path + "." + event.command.locale.substr(0, 2)
+	) : "";
 	std::string whole_doc{file_content};
 	std::string title = replace_string(to_title(replace_string(label, "-", " ")), ".md", "");
 	dpp::embed embed = dpp::embed()
