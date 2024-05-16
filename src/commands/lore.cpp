@@ -75,7 +75,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 	   event.command.locale.substr(0, 2) == "en" ? ".md" : ".md." + event.command.locale.substr(0, 2), "");
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
-		.set_title(document ? title : "Encyclopaedia Cryptillius")
+		.set_title(document ? replace_string(title, ".md", "") : "Encyclopaedia Cryptillius")
 		.set_author(dpp::embed_author{ 
 			.name = "Encyclopaedia Cryptillius", 
 			.url = "", 
@@ -123,7 +123,7 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 				.set_emoji(sprite::spear003.name, sprite::spear003.id)
 			);
 		}
-		embed.set_title(title);
+		embed.set_title(replace_string(title, ".md", ""));
 		embed.set_footer(dpp::embed_footer{ 
 			.text = document ? std::to_string(pages) + " " + tr("PAGE", event) + (pages > 1 ? "s" : "") + ", " + std::to_string(mins_read_time(whole_doc)) + " " + tr("MINSREAD", event) : tr("LORE", event),
 			.icon_url = bot->me.get_avatar_url(), 
