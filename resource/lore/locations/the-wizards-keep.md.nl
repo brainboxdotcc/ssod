@@ -1,0 +1,11 @@
+De Tovenaarstoren staat als een imposant bouwwerk, genesteld op het continent Utopia, met torenhoge torenspitsen die naar de hemel reiken. Dit oude gebouw fungeert als het epicentrum van magisch leren, een gerespecteerde plek waar jonge tovenaars hun reizen van geheimzinnig meesterschap beginnen.
+
+The Keep wordt omgeven door uitgestrekte terreinen, weelderig met betoverde tuinen en oefenvelden waar aspirant-tovenaars hun vaardigheden aanscherpen. Wanneer ze worden toegelaten tot de Wizard's Guild, worden beginnende spellcasters vanaf jonge leeftijd verwelkomd in dit mystieke toevluchtsoord, waarbij ze door ervaren mentoren worden begeleid door de fijne kneepjes van de magische kunsten.
+
+In de kern herbergt de Keep enorme bibliotheken met boeken van oude wijsheid, spreukenboeken en archieven van magische kennis die door de eeuwen heen zijn verzameld. Een belangrijk historisch artefact dat zich ooit in deze heilige hallen bevond, was de oorspronkelijke opslagplaats voor de Seven Scrolls of Destruction, krachtige en gevaarlijke relikwieën die al lang begeerd werden door mensen met sinistere ambities.
+
+Deze rollen, opslagplaatsen van immense magische kracht, werden gecreëerd tijdens het Eerste Tijdperk van de Magie om een ​​nieuw tijdperk van welvaart in te luiden. Corruptie tastte echter het oorspronkelijke doel aan en veranderde de boekrollen in instrumenten van vernietiging. De tovenaars van weleer erkenden het gevaar dat ze vormden en verborgen de boekrollen zorgvuldig in de Burcht, om ze te beschermen tegen degenen die probeerden hun duistere potentieel te benutten.
+
+De centrale autoriteit van het Tovenaarsgilde bevindt zich in de Burcht, waar de Grote Tovenaar de magische gemeenschap regeert en begeleidt. De invloed van het gilde strekt zich uit over heel Utopia, terwijl tovenaars uit verschillende regio's binnen deze muren bijeenkomen om kennis te delen, onderzoek te doen en samen te werken aan zaken van magische betekenis.
+
+The Keep dient als oefenterrein, een toevluchtsoord voor leren en een bastion tegen de krachten van de duisternis. Tovenaars die afstuderen uit de eerbiedwaardige zalen dragen de kennis en verantwoordelijkheden die ze in zich hebben, en worden verdedigers van het geheimzinnige en kampioenen tegen magische bedreigingen die de landen van Cryptillia in gevaar kunnen brengen.

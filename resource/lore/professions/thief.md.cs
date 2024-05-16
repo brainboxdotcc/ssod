@@ -1,0 +1,9 @@
+V temném podsvětí Cryptillia, říši, kde přežití často balancuje na hranici nutnosti, se mnoho obyvatel ocitne přitahováno životem zločinu. Mezi různými odstíny přestupků se nejčastěji objevují zloději, jejichž hbité prsty a tajné dovednosti z nich dělají typické postavy kriminální krajiny.
+
+Odbornost v získávání přístupu k zabezpečeným doménám definuje umění zlodějů. Tyto hbité infiltrátory, vyzbrojené důvěrným porozuměním zámkových mechanismů, proplouvají složitým tancem sklenic s jemností ostřílených řemeslníků. Jejich mistrovství přesahuje všednost, ponoří se do říše magie, zatímco se učí kouzla jako „otevřeno“, odhalují tajemství, která se skrývají za zamčenými dveřmi.
+
+Stealth se stává pro zloděje druhou přirozeností, jejich pohyby jsou zahaleny závojem ticha a klamu. Mimo říši vyzvedávání zámků mnozí zdokonalili své dovednosti v tajném umění vyzvedávání z kapes, procházeli přeplněnými ulicemi s téměř záhadnou schopností osvobodit cennosti, aniž by vzbudili podezření.
+
+Zloději však nejsou uvězněni ve stínech pouze pro hanebné účely. Jejich hbitost a mazanost z nich dělá výjimečné zvědy, schopné proklouznout kolem přísně střežených předsunutých stanovišť s jemností fantomů. V chaosu bitev je jejich schopnost infiltrovat, shromažďovat informace a rychle útočit z nečekaných úhlů proměňuje v cenný majetek.
+
+Pod dýhou zdánlivého nedostatku zloději často shromažďují značné bohatství. Jejich mazanost a vynalézavost jim umožňuje odhalit skryté poklady a obrátit šance ve svůj prospěch. To, co se může zdát jako skromná existence, tedy skrývá jemné bohatství těch, kdo jsou zběhlí v manévrování spletitou tapisérií kriminální krajiny Cryptillie.

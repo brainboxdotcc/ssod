@@ -1,0 +1,3 @@
+## Spreuk: blikseminslag
+
+Gerangschikt onder de meest verwoestende aanvallende bezweringen, omhult de bliksemschichtspreuk de armen van de caster in een knetterende waas van elektrische energie binnen slechts een hartslag nadat hij is uitgebracht. Deze elektrificerende kracht kan naar elk doel worden geslingerd, levend of levenloos. De nasleep van de impact is ernstig, waardoor het slachtoffer vaak ernstig gewond raakt of tot smeulende as verwordt, wat getuigt van zijn formidabele bekwaamheid binnen het arsenaal van een spellcaster.

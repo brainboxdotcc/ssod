@@ -1,0 +1,3 @@
+## Hechizo: Comunicación Animal
+
+El hechizo Comunicación Animal, una comunión mística con el mundo natural, abre un canal telepático entre el hechicero y las criaturas salvajes. Este hechizo trasciende las limitaciones de la comunicación convencional, permitiendo al lanzador transmitir pensamientos y emociones directamente a los animales. Las complejidades de la mente animal, distintas de los procesos cognitivos de los humanos y otros seres sintientes, hacen que el P.E.S. hechizo ineficaz en tales escenarios. El hechicero, en sintonía con los matices del reino natural, se convierte en una presencia armoniosa, fomentando una conexión única con los habitantes de la naturaleza.

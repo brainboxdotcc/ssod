@@ -1,0 +1,3 @@
+## Spreuk: schild
+
+De Shield-spreuk, een bastion van magische verdediging, roept een beschermende bubbel op die de caster en potentiële bondgenoten omhult. Deze etherische barrière heeft een pantserscore van 6 en duurt tien spelparagrafen. De toepassing ervan is echter afhankelijk van de beschikbaarheid van een aanzienlijke periode vrije tijd voor casting. Het is onverstandig om te proberen deze spreuk in te roepen in de greep van een dreigend gevecht, waarbij tegenstanders dichterbij komen. Een voorzichtige caster reserveert het gebruik ervan voor momenten van strategisch voordeel tijdens perioden van rust.

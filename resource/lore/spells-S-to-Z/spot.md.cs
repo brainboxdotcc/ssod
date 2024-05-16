@@ -1,0 +1,3 @@
+## Kouzlo: Spot
+
+Kouzlo Spot, osvětlující maják odhalení, odhalí skryté poklady a skryté východy v mžiku oka. Sesílá rychlým zaříkáváním, rychle rozezná skryté cennosti a skryté cesty v prostoru. Jeho aplikace v bojových scénářích je však výrazně omezená a více se shoduje s instinkty průzkumníků, lovců pokladů a navigátorů. Toto kouzlo, požehnání pro ty, kteří procházejí tajemnými kobkami nebo hledají skryté poklady, nachází své hlavní využití v rukou dobrodruhů, kteří hledají nevýslovné bohatství a skryté průchody.

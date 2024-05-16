@@ -1,0 +1,3 @@
+## Spell: Night Vision
+
+I väven av nattliga förtrollningar väver Night Vision-förtrollningen en eterisk luminiscens, vilket gör att castern kan navigera i mörkret med skicklig klarhet. Dess utstrålning står i paritet med briljansen hos en "lätt" besvärjelse, vilket möjliggör en sömlös substitution när skuggorna lyser upp. Till skillnad från sin lysande motsvarighet, fungerar Night Vision-besvärjelsen, med sin dämpade utstrålning, diskret och ger castern en subtilare närvaro i mörkret.

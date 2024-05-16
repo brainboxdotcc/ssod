@@ -1,0 +1,3 @@
+## Kouzlo: Thunderbolt
+
+Kouzlo blesku, které se řadí mezi nejničivější útočná zaklínadla, zahalí sesilatelovy paže do praskajícího oparu elektrické energie během pouhého úderu srdce od seslání. Tato elektrizující síla může být vržena na jakýkoli cíl, živý nebo neživý. Následky jeho dopadu jsou vážné, často zanechávají oběť kriticky zraněnou nebo proměněnou v doutnající popel, což svědčí o její impozantní zdatnosti v arzenálu kouzelníka.

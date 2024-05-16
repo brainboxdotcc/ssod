@@ -1,0 +1,9 @@
+I Cryptillius mördares hemliga rike frodas ett skrå, dess rötter förankrade i den norra staden Cryptillius Centralius. De gåtfulla figurerna som sysslar med detta skumma yrke är besläktade med verkliga feodala japanska ninjor, deras konstnärskap när det gäller att göra sig av med oönskade element är oöverträffad.
+
+Dessa skickliga lönnmördare är inte bara utövare av brute force utan besitter en finess som skiljer dem åt. Dessa proffs har i uppgift att diskret eliminera mål och kräver ett högt pris för sina tjänster. Kunder lämnar villigt avsevärda summor för att bevittna den snabba och effektiva borttagningen av individer som anses vara besvärliga.
+
+Inom arsenalen av en lönnmördare står gift och armborst i centrum. Men det är användningen av märkliga, hemliga vapen, som påminner om ninjastjärnor, som verkligen definierar deras hantverk. Kantade med bly eller belagda med arsenik, förblir dessa verktyg exklusiva för lönnmördarens guild, och lämnar inga spår efter sig utan ett svårfångat och dödligt märke.
+
+Tvärtemot den vanliga missuppfattningen, begränsar inte lönnmördare sina aktiviteter enbart till nattens täcke, draperade i svarta dräkter. Istället antar de ett pragmatiskt tillvägagångssätt och bär klädsel som gör det möjligt för dem att smälta in i vilken miljö som helst. Deras rörelser är beräknade, deras närvaro obemärkt, vilket möjliggör snabba och oansenliga tillflyktsorter. Plagg med dolda fickor för utrustning förbättrar deras effektivitet, vilket säkerställer att de förblir förberedda för alla eventualiteter.
+
+Guildens centrala nav i Cryptillius Centralius blir epicentrum för denna hemliga värld, där skickliga individer bemästrar konsten att tysta, skuggor och det snabba, osedda tillslaget. I Cryptillias ständigt föränderliga dynamik står lönnmördare som tysta vaktposter, och deras svårfångade närvaro etsar in en mystisk tråd i tyget av detta fantastiska rike.

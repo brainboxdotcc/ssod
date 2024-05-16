@@ -1,0 +1,13 @@
+## The Chronicles of Desolation: getuige van de biobreker
+
+In deze kronieken ben ik getuige van een terreur gehuld in schaduwen – de monsterlijke entiteit die bekend staat als de Bio Crusher. De oorsprong ervan blijft onduidelijk, maar de kolossale vorm laat niets dan verlatenheid achter, een stille kracht die de wereld hervormt zonder rijm of reden.
+
+Op de bodem van Cryptillia spreken de oudsten op gedempte toon en vertellen verhalen over een eeuwenoude gruwel: een ontembare koepel die uit de diepten van de tijd tevoorschijn komt. *Ik heb het gezien*, een kolossale stilte die het land doorkruist, sporen van vernietiging achtergelaten. Een stille verwoester die de rede tart en zich voortbeweegt met een onzichtbare boosaardigheid.
+
+Herinneringen aan levendige landschappen gereduceerd tot dorre woestenijen achtervolgen mij: de stille passage van de Bio Crusher die in zijn kielzog steden uitwist en echo's van ruïnes achterlaat. Het houdt zich aan geen enkel plan dat gewone stervelingen begrijpen, een onstuitbare kracht wiens acties worden aangedreven door een ondoorgrondelijk ontwerp. Beschermende tekens die in de grond zijn geëtst, dienen als nutteloze verdediging, zwakke pogingen om een ​​onontkoombare dreiging af te weren.
+
+Wanhoop maakt zich meester van ons hart nu hele regio’s verlaten worden en gemeenschappen zich verspreiden als bladeren in de wind. De hemelse voortekenen kondigen zijn komst aan: onaardse lichten en angstaanjagende geluiden die naderend onheil voorspellen. De Bio Crusher beweegt met een onstuitbare vastberadenheid, waardoor alle weerstand zinloos wordt. De aarde beeft onder haar kolossale vorm.
+
+Deze gebeurtenissen zorgen voor een massale uittocht terwijl Cryptillians hun toevlucht zoeken tegen de onvoorspelbare aanvallen van de Bio Crusher. Het staat als een onzichtbare poppenspeler, die zich door het weefsel van onze geschiedenis weeft en verwoesting achterlaat in zijn stille kielzog. Sommigen zien het als een wapen dat door vergeten handen is gesmeed, terwijl anderen het zien als een manifestatie van eeuwenoude krachten in onze wereld.
+
+Ik schrijf deze woorden met een huivering in mijn ziel, want de Bio Crusher is een onzichtbare vernietiger, een kracht die ons begrip te boven gaat. Mijn ervaringen voeden een angst die blijft hangen, een wanhopig verlangen om die nooit meer tegen te komen. Deze kronieken getuigen van een stille gruwel die ons lot bepaalt, ver buiten ons begrip.

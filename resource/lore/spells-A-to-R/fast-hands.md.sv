@@ -1,0 +1,3 @@
+## Spell: Snabba händer
+
+Fast Hands-besvärjelsen, en manifestation av temporär acceleration, ger castaren möjlighet att röra sina händer och armar i övermänsklig hastighet under korta intervaller. Denna förtrollning finner praktisk tillämpning både i stridens kaos och den hemliga spelvärlden, där dess skickliga utövare kan använda den för att få en orättvis fördel. Detektering förblir svårfångad, eftersom en kastares snabba rörelser under denna besvärjelse vanligtvis undviker uppmärksamhet såvida de inte observeras av en annan vaksam trollkastare.

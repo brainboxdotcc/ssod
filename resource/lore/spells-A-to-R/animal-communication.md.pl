@@ -1,0 +1,3 @@
+## Zaklęcie: Komunikacja ze zwierzętami
+
+Zaklęcie Komunikacji ze Zwierzętami, mistyczna komunia ze światem przyrody, otwiera kanał telepatyczny pomiędzy czarnoksiężnikiem a stworzeniami dzikiej przyrody. Zaklęcie to przekracza ograniczenia konwencjonalnej komunikacji, pozwalając rzucającemu przekazywać myśli i emocje bezpośrednio zwierzętom. Zawiłości umysłu zwierzęcego, odmiennego od procesów poznawczych ludzi i innych czujących istot, sprawiają, że E.S.P. zaklęcie nieskuteczne w takich scenariuszach. Czarownik, dostrojony do niuansów królestwa natury, staje się harmonijną obecnością, wspierając wyjątkową więź z mieszkańcami dziczy.

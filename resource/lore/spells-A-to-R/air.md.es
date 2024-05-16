@@ -1,0 +1,3 @@
+## Hechizo: Aire
+
+El hechizo Aire, un salvavidas etéreo en el repertorio del hechicero, genera una burbuja de aire resistente en lugar del escudo protector convencional. Esta mística bolsa de aire se convierte en un conducto vital que facilita una supervivencia prolongada bajo la superficie del agua o en el implacable vacío del vacío. Una invocación estratégica de este hechizo transforma al lanzador en una maravilla anfibia, navegando en profundidades acuáticas o extensiones extraterrestres con una resistencia incomparable.

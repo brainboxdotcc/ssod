@@ -1,0 +1,3 @@
+## Kouzlo: Rychlé ruce
+
+Kouzlo Rychlé ruce, projev dočasného zrychlení, zmocňuje sesilatele pohybovat rukama a pažemi nadlidskou rychlostí během krátkých intervalů. Toto kouzlo najde praktické uplatnění jak v chaosu bojů, tak i v tajném světě hazardu, kde jej jeho zkušení vládci mohou využít k získání nespravedlivé výhody. Detekce zůstává nepolapitelná, protože rychlé pohyby sesilatele pod tímto kouzlem obvykle uniknou pozornosti, pokud je nepozoruje jiný bdělý kouzelník.

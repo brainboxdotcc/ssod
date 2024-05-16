@@ -1,0 +1,3 @@
+## Hechizo: Furtivo
+
+El hechizo Furtivo, un manto transitorio de sombras, triplica la puntuación furtiva del lanzador durante diez párrafos, haciéndolos prácticamente imperceptibles. Sin embargo, el residuo arcano persiste, y durante tres ubicaciones posteriores después de que el hechizo se disipa, la puntuación furtiva del lanzador se reduce a la mitad de su valor original. Los practicantes astutos del sigilo deben navegar esta dualidad con cautela, ya que las consecuencias se acumulan con cada lanzamiento. Estos hechizos resultan indispensables para los pícaros e infiltrados que buscan las sombras, esquivando el peligro con cada paso que se perfila.

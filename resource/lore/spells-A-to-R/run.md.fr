@@ -1,0 +1,3 @@
+## Sort : Courir
+
+Le sort Courir, une poussée passagère de célérité, double la vitesse d'un lanceur pendant dix paragraphes, les transformant en un flou éphémère sur le champ de bataille. Pourtant, semblable au sort Sneak, une réaction temporelle se produit. Après la fin du sort, la vitesse du lanceur chute à la moitié de sa valeur initiale pendant trois paragraphes. Les répercussions s’aggravent à chaque casting successif. Au combat, cette incantation devient à la fois une évasion rapide et une arme agile, permettant aux lanceurs de sorts de confondre les ennemis et de manipuler le flux et le reflux de la bataille avec leur grâce insaisissable.

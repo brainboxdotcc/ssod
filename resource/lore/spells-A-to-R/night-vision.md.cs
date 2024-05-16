@@ -1,0 +1,3 @@
+## Kouzlo: Noční vidění
+
+V tapisérii nočních kouzel utká kouzlo Night Vision éterickou luminiscenci, která umožňuje sesilateli proplouvat temnotou s obratnou jasností. Jeho záře je srovnatelná s brilancí „světelného“ kouzla a umožňuje plynulou substituci při osvětlování stínů. Na rozdíl od svého světelného protějšku působí kouzlo Night Vision se svým tlumeným zářením diskrétně a umožňuje sesilateli jemnější přítomnost v temnotě.

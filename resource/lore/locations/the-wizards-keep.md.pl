@@ -1,0 +1,11 @@
+Twierdza Czarodzieja to imponująca budowla położona na kontynencie Utopia, której wysokie iglice sięgają nieba. Ta starożytna budowla służy jako epicentrum magicznej nauki i szanowane miejsce, w którym młodzi czarodzieje wyruszają w podróż w kierunku mistrzostwa tajemnego.
+
+Twierdza otoczona jest rozległymi terenami, porośniętymi zaczarowanymi ogrodami i polami do ćwiczeń, na których początkujący czarodzieje doskonalą swoje umiejętności. Po przyjęciu do Gildii Czarodziejów nowicjusze rzucający zaklęcia są witani w tym mistycznym raju od najmłodszych lat, prowadzeni przez doświadczonych mentorów przez zawiłości sztuk magicznych.
+
+Twierdza mieści w sobie ogromne biblioteki zawierające tomy starożytnej mądrości, księgi zaklęć i zapisy wiedzy magicznej gromadzone przez stulecia. Jednym ze znaczących artefaktów historycznych, który kiedyś znajdował się w tych uświęconych salach, było pierwotne miejsce przechowywania Siedmiu Zwojów Zniszczenia, potężnych i niebezpiecznych reliktów, których od dawna pożądali ci, którzy mieli złowrogie ambicje.
+
+Te zwoje, skarbnice ogromnej magicznej mocy, zostały stworzone podczas Pierwszej Ery Magii, aby zapoczątkować nową erę dobrobytu. Jednakże zepsucie zepsuło pierwotny cel, zamieniając zwoje w narzędzia zniszczenia. Zdając sobie sprawę z niebezpieczeństwa, jakie stanowili, starożytni czarodzieje starannie ukryli zwoje w Twierdzy, chroniąc je przed tymi, którzy chcieli wykorzystać ich mroczny potencjał.
+
+Centralna władza Gildii Czarodziejów znajduje się w Twierdzy, gdzie Wielki Czarodziej rządzi i przewodzi magicznej społeczności. Wpływy gildii rozciągają się na całą Utopię, gdyż czarodzieje z różnych regionów zbierają się w tych murach, aby dzielić się wiedzą, prowadzić badania i współpracować w sprawach o magicznym znaczeniu.
+
+Twierdza służy jako poligon, sanktuarium nauki i bastion przeciwko siłom ciemności. Czarodzieje kończący studia w jej czcigodnych salach niosą ze sobą wpojoną wiedzę i obowiązki, stając się obrońcami magii i mistrzami przed magicznymi zagrożeniami, które mogą zagrozić krainie Cryptillii.

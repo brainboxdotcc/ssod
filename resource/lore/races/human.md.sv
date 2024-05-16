@@ -1,0 +1,7 @@
+Människor, den rikligaste och mest mångsidiga rasen över de vidsträckta länderna i Cryptillia, frodas mitt i ett samhälle rotat i medeltida teknologier. Även om deras tekniska skicklighet kanske inte matchar uppfinningsrikedomen hos vissa andra raser, kompenserar människor med en medfödd påhittighet och anpassningsförmåga som överskrider begränsningarna för deras verktyg.
+
+Passivitet och en djupt rotad respekt för materiella ägodelars helighet utgör ryggraden i mänskligt etos. Deras hemländer är heliga, och människor försvarar dem bestämt mot alla hot och står beslutsamma tills de blir övervunna. En gobeläng vävd med trådar av heder och stolthet definierar deras kollektiva anda, ett engagemang som resonerar genom generationerna.
+
+I den invecklade sociala mosaiken Cryptillia finner människor tröst och styrka i små, sammansvetsade grupper. Oavsett om det är inom den varma omfamningen av familjeband, samhällenas strukturerade ramar eller skråens samarbetsanda, knyter människor band som överskrider den individuella existensens begränsningar. Dessa sociala enheter blir deglar av delade upplevelser, som ger en känsla av tillhörighet och ett delat syfte.
+
+Mitt i de medeltida landskapen består den mänskliga anden, motståndskraftig och orubblig inför motgångar. Det är inom den invecklade dansen av familjeband, samhälleliga kopplingar och guildtillhörigheter som mänsklighetens sanna väsen utspelar sig och lämnar en outplånlig prägel på den ständigt föränderliga gobelängen av Cryptillias livliga och mångfaldiga kulturer.

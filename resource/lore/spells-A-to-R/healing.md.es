@@ -1,0 +1,3 @@
+## Hechizo: Curación
+
+El hechizo de curación, una invocación benévola en el arsenal del hechicero, otorga un don de vitalidad a las entidades vivientes, reponiendo diez puntos de resistencia. Una faceta esencial de la benevolencia del lanzador es que esta reparación mística no puede extenderse a los no-muertos o criaturas demoníacas, reconociendo los límites inherentes de las fuerzas vitales. Sin embargo, el altruismo del hechicero tiene limitaciones; no pueden autoaplicarse y la formidable eficacia del hechizo requiere una considerable inversión de tiempo, limitando su frecuencia a una vez al día.

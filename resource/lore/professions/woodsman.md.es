@@ -1,0 +1,9 @@
+En la vasta extensión de la naturaleza salvaje de Cryptillia, los leñadores emergen como los maestros consumados del mundo natural. Entrenados en las intrincadas artes de la infiltración, la exploración y la exploración, navegan por los densos bosques con una destreza que trasciende lo ordinario. Los leñadores no sólo son expertos en atravesar reinos boscosos, sino que también poseen una comprensión holística de la supervivencia en la naturaleza salvaje.
+
+Su conocimiento se extiende más allá de la mera navegación; Los leñadores son hábiles recolectores de alimentos y distinguen qué plantas son sustento y cuáles ocultan peligros. Con un agudo sentido de qué consumir y qué evitar, navegan por los verdes paisajes con un ojo atento a la generosidad que ofrece la naturaleza.
+
+La eficiencia define la manera en que un leñador viaja. Un racionamiento experto de suministros y una comprensión innata de los momentos óptimos para viajar a través de diferentes entornos caracterizan su mentalidad pragmática. Conservan sus fuerzas con prudencia, anticipándose a las pruebas que se avecinan y preparándose para los desafíos que les aguardan.
+
+Si bien poseen habilidades limitadas para lanzar hechizos, los leñadores valoran sus habilidades naturales, confiando en su sigilo inherente y una comprensión táctil de las tácticas. Prefiriendo lo tangible y lo físico a las teorías mágicas abstractas, navegan por el mundo a través de una combinación de instintos innatos y experiencia aprendida.
+
+En las extensiones salvajes de Cryptillia, los leñadores encarnan una combinación armoniosa de naturaleza y habilidad. Su afinidad por la naturaleza, junto con su conocimiento práctico, los convierte en exploradores y exploradores invaluables. Mientras avanzan entre la maleza enredada y los vastos paisajes, los leñadores tejen una narrativa de resiliencia y adaptabilidad, un testimonio de su dominio sobre los dominios indómitos de Cryptillia.

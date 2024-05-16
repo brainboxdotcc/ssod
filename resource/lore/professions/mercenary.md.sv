@@ -1,0 +1,9 @@
+I Cryptillias turbulenta landskap uppstår legosoldater som en distinkt ras, ofta smidd i degeln av utstött status. Dessa pragmatiska krigare drivs främst av myntets lockelse och är bara tacksamma för glimten av guld. Deras lojalitet är flytande, och de lånar villigt ut sina tjänster till vilken sak som helst, vare sig den är dygdig eller skänd, så länge kassan klirrar lockande.
+
+Legosoldatens kod är skriven på valutans språk, och löftet om en rejäl handväska kan se dem slåss för det goda, det onda eller en förbryllande blandning av båda. Lojalitet är ett formbart koncept, som böjar sig efter högstbjudandes nycker. Klinket av guldmynt fungerar ofta som den harmoniserande melodi som överbryggar till synes motsägelsefulla orsaker.
+
+Företrädesvis samlas legosoldater i grupper och bildar lösa allianser som kan vara lika flyktiga som löftet om betalning. Trots sin till synes övergående natur är dessa krigare bundna av ett gemensamt mål – vanligtvis förvärv av rikedom. I jakten på delad vinst slår de samman sina kunskaper och resurser och arbetar tillsammans tills skattkammaren är säkrad.
+
+Kamratskapet mellan legosoldater dämpas dock av verkligheten att deras enhet bara är lika stark som löftet om betalning. När myntet byter ägare upplöses allianser och legosoldaterna skingras, var och en ger sig ut för att söka nya möjligheter som glittrar av rikedomens lockelse.
+
+I Cryptillias ständigt föränderliga dynamik skapar legosoldater en nisch som definieras av pragmatism och en vilja att omfamna moralens otaliga nyanser. Deras resa genom rikena är en gobeläng vävd med trådar av övergående allianser, guldladdade strävanden och den odödliga jakten på lycka i en värld fylld av faror och möjligheter.

@@ -1,0 +1,3 @@
+## Hechizo: Visión nocturna
+
+En el tapiz de los encantamientos nocturnos, el hechizo Visión Nocturna teje una luminiscencia etérea, permitiendo al lanzador navegar en la oscuridad con una claridad experta. Su resplandor está a la par con el brillo de un hechizo de "luz", lo que permite una sustitución perfecta al iluminar las sombras. A diferencia de su contraparte luminosa, el hechizo Visión Nocturna, con su brillo tenue, opera discretamente, brindando al lanzador una presencia más sutil en la oscuridad.

@@ -1,0 +1,3 @@
+## Hechizo: E.S.P.
+
+P.E.S., un conducto a los rincones de la mente, permite al lanzador profundizar en los pensamientos, implantando ilusiones que guían a los enemigos hacia daños autoinfligidos o beneficios no deseados. Su potencia, similar al hipnotismo, encuentra su ámbito fuera del caos del combate. Explotando las vulnerabilidades de una mente débil y desenfocada, E.S.P. manifiesta ventajas estratégicas en enfrentamientos más sutiles, manipulaciones estratégicas y la sutil danza del ingenio. En manos de un sagaz hechicero, E.S.P. revela el intrincado tapiz de intenciones, transformando el campo de batalla en un escenario de ajedrez mental.

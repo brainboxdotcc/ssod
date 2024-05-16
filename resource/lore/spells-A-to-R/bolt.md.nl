@@ -1,0 +1,3 @@
+Spelling: Bout
+
+De grendelspreuk is een uiting van destructieve macht en stuwt een verschroeiende, oververhitte plasmastraal uit de vingertoppen van de caster. Hoewel de effecten verschillend zijn, verdient deze mysterieuze ontlading de bijnaam als het 'kleine broertje' van de bliksemschichtspreuk, met een formidabele kracht en formidabele details die hem onderscheiden op het gebied van magische projectielen.

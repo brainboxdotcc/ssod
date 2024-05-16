@@ -1,0 +1,3 @@
+## Zaklęcie: Skradanie się
+
+Zaklęcie Skradania się, przejściowa osłona cieni, potraja wynik podstępu rzucającego za dziesięć akapitów, czyniąc je praktycznie niezauważalnymi. Jednakże tajemna pozostałość pozostaje i przez trzy kolejne lokalizacje po rozproszeniu zaklęcia, wynik podstępu rzucającego spada do połowy pierwotnej wartości. Sprytni praktykujący ukrywanie się muszą ostrożnie poruszać się po tej dualności, ponieważ konsekwencje kumulują się z każdym rzuceniem. Takie zaklęcia okazują się niezbędne dla łotrzyków i infiltratorów poszukujących cieni, unikających niebezpieczeństw z każdym widocznym krokiem.

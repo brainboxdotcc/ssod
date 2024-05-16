@@ -1,0 +1,9 @@
+Dragonbone City, situada en el extremo noroeste de Utopía con el siniestro Bosque de la Noche al este, presenta una atmósfera única e inquietante. La arquitectura de la ciudad, construida con una misteriosa combinación de piedras antiguas y materiales aparentemente tallados a partir de huesos de dragón, añade un toque de otro mundo al paisaje.
+
+Sin embargo, el verdadero carácter de Dragonbone City reside en las oscuras corrientes subterráneas que fluyen bajo su fachada mística. La milicia de la ciudad, a la que se le ha dado rienda suelta y ha cruzado la línea para convertirse en una fuerza policial secreta violenta, gobierna con mano de hierro. Aunque oficialmente actuaban para mantener el orden, se han acercado peligrosamente a un golpe de estado, transformando de hecho a la ciudad en un lugar de miedo y opresión.
+
+Los métodos de la milicia son brutales e implacables. Los presuntos delincuentes son rápidamente detenidos, a menudo sin una investigación o juicio adecuados. En las calles de la ciudad resuenan los siniestros pasos de los ejecutores, y sus ciudadanos viven en un estado constante de aprensión. El otrora próspero mercado ahora es una sombra de lo que era antes, con muchos mercaderes y comerciantes expulsados ​​por la atmósfera opresiva de la ciudad.
+
+Sorprendentemente, el señor local, que debería ser el guardián de la justicia, ha hecho la vista gorda ante los excesos de la milicia. Abundan los rumores de que el señor acepta sobornos voluntariamente, permitiendo que la milicia opere sin restricciones. Esta impía alianza entre la milicia corrupta y el señor indiferente ha sumido a Dragonbone City en un estado de anarquía, donde el miedo y la intimidación reinan.
+
+Se recomienda a los visitantes de Dragonbone City que anden con cuidado, ya que el aire está cargado de tensión y los secretos de la ciudad están enterrados en lo profundo de sus calles cargadas de huesos de dragón.

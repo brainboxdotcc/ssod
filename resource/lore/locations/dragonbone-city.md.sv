@@ -1,0 +1,9 @@
+Dragonbone City, belägen längst nordväst om Utopia med den olycksbådande nattskogen i öster, presenterar en unik och oroande atmosfär. Stadens arkitektur, byggd med en kuslig kombination av uråldriga stenar och material som till synes huggna av drakben, ger landskapet en överjordisk touch.
+
+Dock ligger Dragonbone Citys sanna karaktär i de mörka underströmmarna som flödar under dess mystiska fasad. Stadens milis, som får fria händer och har gått över gränsen till att bli en våldsam hemlig polisstyrka, styr med ett järngrepp. Medan de officiellt agerat för att upprätthålla ordningen, har de vridit sig farligt nära en kupp, vilket effektivt format staden till en plats av rädsla och förtryck.
+
+Milisens metoder är brutala och oförlåtande. Misstänkta brottslingar hanteras snabbt, ofta utan ordentlig utredning eller rättegång. Stadens gator ekar med de olycksbådande fotspåren från verkställarna, och dess medborgare lever i ett konstant tillstånd av oro. Den en gång så blomstrande marknadsplatsen står nu som en skugga av sitt forna jag, med många köpmän och handlare som drivs bort av stadens tryckande atmosfär.
+
+Överraskande nog har den lokala herren, som borde vara rättvisans väktare, blundat för milisens överdrifter. Det florerar rykten om att herren villigt tar emot mutor, vilket tillåter milisen att verka utan begränsningar. Denna oheliga allians mellan den korrupta milisen och den likgiltiga herren har kastat Dragonbone City in i ett tillstånd av laglöshet, där rädsla och skrämsel råder.
+
+Besökare i Dragonbone City rekommenderas att trampa försiktigt, för luften är tjock av spänning, och stadens hemligheter är begravda djupt inne i dess drakbensfyllda gator.

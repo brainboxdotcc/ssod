@@ -1,0 +1,3 @@
+## Stava: Luft
+
+Luftbesvärjelsen, en eterisk livboj i trollkarlens repertoar, genererar en fjädrande luftbubbla snarare än den konventionella skyddsskölden. Denna mystiska luftficka blir en viktig kanal som underlättar förlängd överlevnad under vattenytan eller i det oförlåtliga tomrummet av ett vakuum. En strategisk åberopande av denna besvärjelse förvandlar kastaren till ett amfibieunderverk, som navigerar i vattendjup eller utomjordiska vidder med oöverträffad motståndskraft.

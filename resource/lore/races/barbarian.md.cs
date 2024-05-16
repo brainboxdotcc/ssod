@@ -1,0 +1,7 @@
+V rozsáhlých análech historie se Barbaři objevují jako prastará odlišnost od lidské rasy, která se během tisíciletí izolace vyvíjela do samostatné společnosti s vlastní vírou, technologiemi a zvyky. Teprve v posledních letech odhalili trpasličí průzkumníci odlehlou existenci barbarského druhu v mrazivých končinách dalekých severních pustin Cryptillia.
+
+Setkání s trpaslíky znamenalo pro Barbary klíčový okamžik, protože pracovití průzkumníci poskytli neocenitelné znalosti a nástroje pro navigaci v drsném severském prostředí. Po tomto objevu se vlna barbarských průzkumníků vydala na jih, dychtiví vidět z první ruky zázraky a útočiště, které charakterizují velkou lidskou říši.
+
+Barbaři se díky své dlouhodobé izolaci ocitnou nezatíženi složitými spojenectvími a nepřátelstvími. Obecně ztělesňují neutralitu, důvěru a vstřícnou povahu, takže se snadno zapojují do vyjednávání. Obrovské úseky času stráveného v ústraní podnítily mezi barbary skutečnou zvídavost a otevřenost, když proplouvali složitostí „nových“ zemí na jih, hledajíce porozumění a spojení s rozpínavou lidskou civilizací.
+
+Jak se hranice mezi kulturami stírají a ozvěny starověké izolace slábnou, Barbaři stojí na prahu nové éry, připraveni navazovat spojení a budovat spojenectví s různými společnostmi, které obývají Cryptillia. Neutralita, která je definuje, se stává mostem, základem, na kterém lze budovat nové vztahy, a nevyužitý potenciál barbarského druhu se rozvíjí v rozvíjející se tapisérii rozmanitého a dynamického světa, který nyní zkoumají.

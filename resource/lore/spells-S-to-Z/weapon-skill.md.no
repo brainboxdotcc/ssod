@@ -1,0 +1,3 @@
+## Spell: Våpenferdighet
+
+The Weapon Skill-trollformelen, i likhet med den unnvikende dansen til "snik"-besvergelsen, påvirker trollmannens kampfinesser. Ved påkallelse gjennomgår casterens ferdighetsscore en spektakulær firedobling, noe som gjør dem til en formidabel styrke på slagmarken i en varighet på fem avsnitt. Imidlertid er etterspillet en forbigående nedgang, ettersom ferdighetsskåren synker til halvparten av den opprinnelige verdien i tilsvarende varighet. Disse effektene akkumuleres med påfølgende spellcasting, og krever en strategisk tilnærming for å frigjøre det fulle potensialet til denne kampsentriske fortryllelsen.

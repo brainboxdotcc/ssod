@@ -1,0 +1,9 @@
+První věk magie je období rané kryptilské historie, která se rýsuje jako temná epocha, éra zahalená v mlhách času, kdy byl celý svět uvězněn v agónii vleklého magického konfliktu trvajícího po staletí. Bylo to období předcházející osvícení mnoha ras o nebezpečné povaze sesílání kouzel, doba, kdy skutečná velikost démonické hrozby, číhající v neviditelných energiích obklopujících Cryptillii, zůstávala zahalena.
+
+Konflikt trval až do klíčového okamžiku, kdy několik vizionářských kouzelníků vytvořilo bezprecedentní spojenectví, překračující hranice, které kdysi proti sobě stavěly elfy, lidi a trpaslíky. Sjednoceni svým záměrem zorganizovali historickou mírovou smlouvu, pakt vyleptaný mocnými vlákny magie ve snaze utkat trvalý mír po staletí, ne-li na věčnost.
+
+Éterický inkoust na tomto kouzelném pergamenu však nebyl suchý, než se projevily jeho nedostatky. Zlověstné síly, o kterých se věřilo, že jde o machinace démonů, zasáhly s nekalým úmyslem, zmařily jednotu ras a některým zabránily zúčastnit se mírového summitu. Pozoruhodně chyběla říše skřetů a určité elfské kmeny, kterým bylo souzeno odchýlit se do zlověstné linie známé jako temní elfové.
+
+Absence těchto ras v mírovém paktu způsobila nenapravitelnou trhlinu ve struktuře předpokládaného věčného míru. Zlověstná agenda těchto vyloučených ras se snažila nejen vymazat ideály zapouzdřené v mírovém paktu, ale také rozložit samotné zastánce smlouvy. Přízrak věčného konfliktu přetrvával a vrhal dlouhý stín na utopické touhy říše toužící po trvalém míru, který se zdál být navždy nepolapitelný.
+
+V tapisérii kryptilské historie stojí První věk magie jako varovný příběh, kronika s ozvěnou důsledků nekontrolované magické síly, podvodu démonického vlivu a křehké povahy paktů, které mají svázat rozbitý svět.

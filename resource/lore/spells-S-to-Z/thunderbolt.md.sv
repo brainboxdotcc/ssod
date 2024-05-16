@@ -1,0 +1,3 @@
+## Spell: Thunderbolt
+
+Besvärjelsen är rankad bland de mest förödande offensiva besvärjelserna och omsluter kastarens armar i ett sprakande töcken av elektrisk energi inom ett pulsslag efter att ha kastats. Denna elektrifierande kraft kan slungas mot vilket mål som helst, levande eller livlöst. Efterdyningarna av dess påverkan är allvarliga, ofta lämnar offret allvarligt skadat eller reducerat till pyrande aska, vilket vittnar om dess formidabla skicklighet inom en trollkastares arsenal.

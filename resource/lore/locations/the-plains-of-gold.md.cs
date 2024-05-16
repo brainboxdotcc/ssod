@@ -1,0 +1,5 @@
+Zlaté pláně, které se rozprostírají kam až oko dohlédne v jižním cípu Cryptillia, představují strašidelné a pusté výjevy. Kdysi krajina, která mohla vzkvétat rozmanitým životem, nyní region nese jizvy po dávné katastrofě. Zdá se, jako by samotná země byla „zasklená“, jako by nějaká zlovolná síla přepsala přirozený řád.
+
+V této obrovské rozloze pustiny, kde se život snaží zakořenit, stojí skromná existence Port Krellis. Toto pobřežní město, uhnízděné na nejzazším jižním pobřeží, lpí na tom, aby přežilo díky čerpání bohatství moře. Jeho odolní obyvatelé závislí na štědrosti oceánu se přizpůsobili drsnému prostředí a dosáhli skromného života uprostřed nelítostných plání zlata.
+
+Nedaleko Port Krellis leží ponurá připomínka nebezpečné přírody regionu – vrak Noční sovy. Plavidlo, kdysi majestátní galeona, podlehlo před mnoha lety během prudké bouře divokým živlům. Kosterní pozůstatky lodi nyní leží roztroušeny podél pobřeží a slouží jako dojemný symbol nepředvídatelného moře a zároveň svědectví o výzvách, kterým čelí ti, kteří vzdorují vodám Cryptillie. Zbytky Noční sovy stojí jako němý svědek impozantních sil, které utvářejí osud této pusté a zničené země.

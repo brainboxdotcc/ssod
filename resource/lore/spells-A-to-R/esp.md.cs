@@ -1,0 +1,3 @@
+## Kouzlo: E.S.P.
+
+E.S.P., kanál do zákoutí mysli, umožňuje sesilateli ponořit se do myšlenek a implantovat iluze, které nasměrují nepřátele k ublížení nebo nezamýšleným výhodám. Jeho síla, podobná hypnóze, nachází svou říši mimo chaos boje. E.S.P. využívá zranitelnosti nesoustředěné a slabé mysli. projevuje strategické výhody v jemnějších střetnutích, strategických manipulacích a jemném tanci důvtipu. V rukou prozíravého kouzelníka E.S.P. odhaluje spletitou tapisérii záměrů a mění bojiště ve fázi duševního šachu.

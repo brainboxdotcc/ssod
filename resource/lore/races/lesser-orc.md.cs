@@ -1,0 +1,7 @@
+V temné linii Cryptillia se Malí Orkové objevují jako příbuzní svých větších protějšků, Orků, a sdílejí záhadné genetické spojení, jehož kořeny se noří do temných análů historie. Malí skřeti, spojení s charakteristickými rysy, jako je modrozelená krev tekoucí mědí, tříkloubové nohy a robustní hrudní koše schopné odolat značnému poškození, nesou nesmazatelné známky společného původu.
+
+Navzdory těmto společným rysům se Malí skřeti odlišují od svých větších příbuzných, pokud jde o velikost a temperament. Jejich zmenšený vzrůst propůjčuje znatelnou plachost a pasivitu, vlastnosti, které, pokud by je projevil dospělý ork, by měly vážné následky. Tato vrozená zranitelnost je činí náchylnými k zotročení jejich dominantnějšími orkskými protějšky, což je osud, kterému se jen zřídka brání.
+
+V zajetí se některým menším skřetům, proti proudu jejich pasivní povahy, podaří sebrat základní úroveň odvahy. Tito odlehlí lidé vzdorují svým okovům, bouří se proti svým věznitelům a unikají z pout otroctví. Ti, kteří mezi Malými skřety dosahují takové odvahy, jsou často předurčeni pro role vojáků, dobrodruhů a najatých ochránců. Nebezpečná cesta před nimi však prověří nejen jejich nově nalezenou odvahu, ale také jejich schopnost orientovat se ve světě plném nebezpečí a nejistoty.
+
+Zatímco Malí Orkové překračují nejistou linii mezi podrobením a vzpourou, jejich příběhy splétají příběh o přirozené zranitelnosti, nečekané odvaze a neúnavné honbě za svobodou ve fantastické tapisérii Cryptillia.

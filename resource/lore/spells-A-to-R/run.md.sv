@@ -1,0 +1,3 @@
+## Stava: Kör
+
+Run-besvärjelsen, en övergående ökning av snabbhet, fördubblar en kastares hastighetspoäng i tio stycken och förvandlar dem till en flyktig suddighet på slagfältet. Ändå, i likhet med Sneak-förtrollningen, utspelar sig en tidsmässig motreaktion. Efter att besvärjelsen har upphört, sjunker kastarens hastighetsresultat till hälften av sitt ursprungliga värde i tre stycken. Konsekvenserna förvärras med varje efterföljande gjutning. I strid blir den här besvärjelsen både en snabb flykt och ett smidigt vapen, vilket gör det möjligt för trolldomare att förvirra fiender och manipulera stridens ebb och flöde med sin svårfångade nåd.

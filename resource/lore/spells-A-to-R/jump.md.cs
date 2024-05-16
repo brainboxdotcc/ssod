@@ -1,0 +1,3 @@
+## Kouzlo: Skok
+
+Funkce Jump funguje jako zmenšený protějšek kouzla „mouška“ a pohání sesilatele ladným obloukem nahoru a vpřed, čímž usnadňuje vyhýbat se pozemním nebezpečím a protivníkům. Toto kouzlo je přizpůsobeno pro krátké vzdušné manévry a nabízí bezpečnou alternativu k prodlouženým letům, které poskytuje pokročilejší kouzlo mouchy. Jump, zvláště vhodný pro začínající kouzelníky, zvyšuje mobilitu, aniž by s sebou přinášel složitosti spojené s delším cestováním vzduchem.

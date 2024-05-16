@@ -1,0 +1,3 @@
+## Hechizo: Agua
+
+Con un simple gesto, el hechizo de agua evoca un torrente desde cualquier parte de la forma del lanzador, a menudo favoreciendo las palmas o incluso los ojos para darle un toque dramático. Esta fuerza acuática se convierte en una herramienta versátil, que obliga a los enemigos a posiciones desventajosas o garantiza la supervivencia en circunstancias extremas, como atravesar un desierto.

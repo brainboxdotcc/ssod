@@ -1,0 +1,3 @@
+## Kouzlo: Ukrást
+
+Kouzlo Steal, letmé vyvolání krádeže, opravňuje sesilatele na krátkou dobu zdvojnásobit své skóre v plížení. Účinky kouzla přetrvávají po dobu jednoho herního odstavce, po kterém následuje povinné vychladnutí deseti odstavců kvůli jeho složité a časově náročné povaze. I když je zběhlý v usnadňování plížení, jeho použití v boji je nepraktické, vzhledem k dlouhému trvání sesílání kouzla.

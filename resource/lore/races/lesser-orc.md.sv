@@ -1,0 +1,7 @@
+I den skuggiga härstamningen av Cryptillia dyker mindre orcher upp som släkt med sina större motsvarigheter, orcherna, som delar en gåtfull genetisk koppling vars rötter gräver ner i historiens dunkla annaler. Länkade av särdrag som blågrönt blod som flödar med koppar, treledade ben och robusta bröstkorg som kan motstå betydande skador, bär mindre orcher outplånliga märken av deras gemensamma härkomst.
+
+Trots dessa gemensamma egenskaper skiljer sig mindre orcher från sina större släktingar när det gäller storlek och temperament. Deras minskade kroppsbyggnad ger en märkbar skygghet och passivitet, egenskaper som, om de uppvisas av en fullvuxen Orc, skulle få allvarliga konsekvenser. Denna inneboende sårbarhet gör dem mottagliga för förslavning av sina mer dominerande Orc-motsvarigheter, ett öde som de sällan motsätter sig.
+
+I fångenskap lyckas några mindre orcher, mot strömmen av sin passiva natur, uppbåda ett basnivå av mod. Dessa utstickare trotsar sina bojor, gör uppror mot sina fångare och undkommer träldomens band. De som uppnår sådana bragder av mod bland mindre orcher finner sig ofta avsedda för roller som soldater, äventyrare och hyrda beskyddare. Men den farliga vägen framför testar inte bara deras nyfunna mod utan också deras förmåga att navigera i en värld som är fylld av faror och osäkerhet.
+
+När mindre orcher trampar på den osäkra gränsen mellan underkuvande och uppror, väver deras berättelser en berättelse om inneboende sårbarhet, oväntat mod och den obevekliga jakten på frihet inom den fantastiska gobelängen av Cryptillia.

@@ -1,0 +1,3 @@
+## Zaklęcie: umiejętność posługiwania się bronią
+
+Zaklęcie Umiejętności Broni, podobne do nieuchwytnego tańca zaklęcia „skradanie się”, wpływa na finezję bojową czarownika. Po wezwaniu, poziom umiejętności rzucającego ulega spektakularnemu czterokrotnemu wzrostowi, czyniąc go potężną siłą na polu bitwy przez pięć akapitów. Jednak następstwem jest przejściowy spadek, ponieważ wynik umiejętności spada do połowy pierwotnej wartości przez taki sam czas. Efekty te kumulują się wraz z kolejnym rzucaniem zaklęć, co wymaga strategicznego podejścia, aby uwolnić pełny potencjał tego zaklęcia skupiającego się na walce.

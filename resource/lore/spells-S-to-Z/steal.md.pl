@@ -1,0 +1,3 @@
+## Zaklęcie: Kradnij
+
+Zaklęcie Kradzieży, przelotne przywołanie kradzieży, umożliwia rzucającemu podwojenie wyniku skradania się na krótki czas. Efekty zaklęcia utrzymują się przez jeden akapit gry, po czym następuje obowiązkowy okres odnowienia wynoszący dziesięć akapitów ze względu na jego skomplikowaną i czasochłonną naturę. Choć doskonale ułatwia ukrywanie się, jego zastosowanie w walce jest niepraktyczne, biorąc pod uwagę długi czas rzucania zaklęcia.

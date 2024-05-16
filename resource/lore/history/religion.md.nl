@@ -1,0 +1,13 @@
+In de diverse landen van Cryptillia zijn verschillende religies geëvolueerd als een weerspiegeling van hun tumultueuze ervaringen en interacties met de magische krachten die hun wereld vormgeven. De heersende geloofssystemen worden gevormd door historische gebeurtenissen, ontmoetingen met mystieke entiteiten en de voortdurende strijd tussen licht en duisternis.
+
+## De Kerk van het Arcane Licht
+De Kerk van het Arcane Licht, opgericht in de nasleep van het Eerste Tijdperk van de Magie, vereert de welwillende aspecten van magie. Volgelingen geloven in een goddelijke kracht die de harmonieuze balans van magische energieën belichaamt. Ze zien magie als een geschenk uit hogere sferen, dat aan stervelingen wordt geschonken om voorspoed en verlichting te bewerkstelligen. De geestelijken, bekend als Illuminators, streven ernaar magische energieën te benutten voor de verbetering van de samenleving en om de krachten van de duisternis te bestrijden.
+
+## De Orde van Eeuwige Waakzaamheid
+Geboren uit de meedogenloze conflicten met demonische entiteiten, is de Orde van Eeuwige Waakzaamheid een krijgshaftige religieuze orde. De aanhangers ervan, bekend als Sentinels, wijden zich aan het beschermen van de mensheid tegen demonische invallen. Ze geloven dat de strijd tegen duistere krachten een voortdurende inspanning is en dat eeuwige waakzaamheid vereist is om de rijken te beschermen. Ritualistische ceremonies omvatten het zuiveren van wapens en het zingen van oude bezweringen om de barrières tussen werelden te versterken.
+
+## De zoekers van het verborgen pad
+De Seekers of the Hidden Path, een mystieke en esoterische sekte, duiken in de mysteries van oude boekrollen en vergeten kennis. Ze vereren de magische artefacten die verspreid zijn over Cryptillia en beschouwen ze als sleutels tot het ontsluiten van diepere waarheden. De gelovigen, gezanten genoemd, gaan op zoektochten om verborgen kennis bloot te leggen en de raadselachtige profetieën te ontcijferen die hun lot bepalen. De Seekers geloven dat verlichting ligt in het begrijpen van de mysterieuze mysteries die verweven zijn met de werkelijkheid.
+
+## De Wayfarers' Fellowship
+Voor degenen die de nomadische levensstijl omarmen en door de gevaren van de diverse landschappen van Cryptillia navigeren, biedt de Wayfarers' Fellowship troost. Deze religie is opgedragen aan de beschermgod van reizigers en legt de nadruk op aanpassingsvermogen en vindingrijkheid. Bedevaarten omvatten het doorkruisen van verraderlijke terreinen en het betuigen van hulde aan heilige monumenten waarvan wordt aangenomen dat ze de essentie van de godheid bevatten. De Wayfarers geloven dat hun godheid hen door de steeds veranderende levenspaden leidt.

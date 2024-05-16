@@ -1,0 +1,3 @@
+## Spreuk: onzichtbaar
+
+De Onzichtbare spreuk, een lijkwade geweven uit het weefsel van het onzichtbare, versluiert de caster en hun directe omgeving in onmerkbaarheid. Onzichtbare vijanden verdwijnen uit het zichtbare spectrum en worden ongrijpbare doelwitten, die conventionele aanvallen met ongrijpbare finesse ontwijken. In gevechten dient deze spreuk als een krachtige katalysator voor het toebrengen van aanzienlijke schade, waardoor de caster een tactisch voordeel krijgt dat tegenstanders in het ongewisse laat en kwetsbaar is voor onzichtbare aanvallen. De mysterieuze beheersing van onzichtbaarheid vereist echter strategische finesse, aangezien zelfs het verborgene verstrikt kan raken in de verwarde draden van magie.

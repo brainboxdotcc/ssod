@@ -1,0 +1,3 @@
+## Spreuk: rennen
+
+De Run-spreuk, een voorbijgaande snelheidsgolf, verdubbelt de snelheidsscore van een caster gedurende tien alinea's, waardoor deze in een vluchtige waas op het slagveld verandert. Toch ontvouwt zich, net als bij de Sneak-spreuk, een tijdelijke terugslag. Nadat de spreuk is beëindigd, daalt de snelheidsscore van de caster gedurende drie alinea's tot de helft van de oorspronkelijke waarde. De gevolgen worden groter bij elke volgende casting. In gevechten wordt deze bezwering zowel een snelle ontsnapping als een behendig wapen, waardoor spellcasters vijanden in verwarring kunnen brengen en de eb en vloed van de strijd kunnen manipuleren met hun ongrijpbare gratie.

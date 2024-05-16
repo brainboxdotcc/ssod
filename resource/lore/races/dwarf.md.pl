@@ -1,0 +1,7 @@
+Krasnoludy, choć mniej zaludnione niż ludzie, posiadają nienasyconą żądzę podróżowania, która popycha je do najdalszych zakątków planety. Słynące ze swoich zaawansowanych osiągnięć technologicznych, krasnoludy wyróżniają się spośród ras, a ich wiedza jest widoczna w takich dziedzinach, jak górnictwo, a nawet ograniczone loty. Ich talent do poszukiwań i innowacji podniósł ich społeczeństwo do godnego pochwały poziomu rozwoju.
+
+W krasnoludzkim etosie bogactwo materialne ma ogromne znaczenie. Gdy przedkładają ochronę złota nad więzi rodzinne, wyłania się wyraźna cecha, co prowadzi do przypadków, w których obrona bogactw rodzinnych staje się siłą niezłomną. Jeśli pojawi się wezwanie do ochrony skarbów przodków, krasnoludy przekształcają się w groźnych przeciwników, wykazując nieustępliwość budzącą szacunek.
+
+Kiedy krasnoludy wyruszą poza granice swoich rodzinnych siedzib, preferują samotne przedsięwzięcia. Ciesząc się autonomią odkrywania i rozumienia świata we własnym tempie, cieszą się swobodą niezależnych podróży. To indywidualistyczne podejście, charakterystyczne dla ich życia pozarodzinnego, wyróżnia Krasnoludy jako istoty odporne i samodzielne.
+
+Pośród rozległego gobelinu Cryptillii krasnoludy tworzą charakterystyczną niszę, łącząc sprawność technologiczną z nieustępliwym zaangażowaniem w pogoń za bogactwami i eksploracją. Ich zdecydowana natura w połączeniu z zamiłowaniem do torowania sobie ścieżki przez świat dodaje elementu dynamicznego do zawiłego splotu kultur i cywilizacji w tej fantastycznej krainie.

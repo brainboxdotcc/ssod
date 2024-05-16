@@ -1,0 +1,3 @@
+## Spreuk: lucht
+
+De Air-spreuk, een etherische reddingsboei in het tovenaarsrepertoire, genereert een veerkrachtige luchtbel in plaats van het conventionele beschermende schild. Deze mystieke luchtzak wordt een essentieel kanaal, waardoor langdurig overleven onder het wateroppervlak of in de meedogenloze leegte van een vacuüm mogelijk wordt. Een strategische aanroep van deze spreuk verandert de caster in een amfibisch wonder, dat met ongeëvenaarde veerkracht door waterdiepten of buitenaardse uitgestrektheden navigeert.

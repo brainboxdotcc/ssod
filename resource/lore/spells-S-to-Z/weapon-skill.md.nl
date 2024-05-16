@@ -1,0 +1,3 @@
+## Spreuk: wapenvaardigheid
+
+De Weapon Skill-spreuk, vergelijkbaar met de ongrijpbare dans van de 'sneak'-bezwering, beïnvloedt de gevechtsfinesse van de tovenaar. Bij het aanroepen ondergaat de vaardigheidsscore van de caster een spectaculaire verviervoudiging, waardoor hij gedurende vijf paragrafen een formidabele kracht op het slagveld wordt. De nasleep is echter een voorbijgaande inzinking, aangezien de vaardigheidsscore gedurende een gelijkwaardige duur daalt tot de helft van de oorspronkelijke waarde. Deze effecten stapelen zich op bij opeenvolgende spreuken en vereisen een strategische aanpak om het volledige potentieel van deze gevechtsgerichte betovering te ontketenen.

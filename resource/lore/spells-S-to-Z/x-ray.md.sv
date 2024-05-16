@@ -1,0 +1,3 @@
+## Stava: Röntgen
+
+Med den mystiska penetrationen av barriärer ger röntgenförtrollningen castern visionen att uppfatta genom nästan alla hinder. Till skillnad från sin vardagliga namne, överskrider denna mystiska förmåga begränsningarna för tungmetaller som bly. Men dess användbarhet sträcker sig bortom det omedelbara visuella och gräver in i osynliga världar. Även om den är formidabel, kräver castingen tid och gör den opraktisk att använda i stridens hetta.

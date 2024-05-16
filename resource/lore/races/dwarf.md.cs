@@ -1,0 +1,7 @@
+Trpaslíci, i když jsou méně zalidnění než lidé, mají neukojitelnou touhu, která je žene do nejvzdálenějších koutů planety. Trpaslíci, známí svou pokročilou technologickou zdatností, vynikají mezi rasami, jejich odbornost je evidentní v oblastech, jako je těžba a dokonce i omezené lety. Jejich talent pro průzkum a inovace povýšil jejich společnost na chvályhodnou úroveň pokroku.
+
+V trpasličím étosu má materiální bohatství prvořadý význam. Objevuje se zřetelná vlastnost, když upřednostňují ochranu zlata před rodinnými vazbami, což vede k případům, kdy se obrana rodinného bohatství stává nezdolnou silou. Pokud se objeví výzva k ochraně pokladů předků, trpaslíci se promění v impozantní protivníky, projevující houževnatost, která budí respekt.
+
+Jakmile se trpaslíci odváží za hranice svých rodinných příbytků, upřednostňují osamělé snahy. Přijímají autonomii, aby mohli prozkoumávat a chápat svět svým vlastním tempem, a vychutnávají si svobodu nezávislých cest. Tento individualistický přístup, charakteristický pro jejich život po rodině, odlišuje trpaslíky jako odolné a soběstačné bytosti.
+
+Uprostřed obrovské tapisérie Cryptillia si trpaslíci vyřezávají charakteristický výklenek, který spojuje technologickou zdatnost s neústupným odhodláním honby za bohatstvím a průzkumem. Jejich rozhodná povaha, spojená se zálibou prorazit si cestu světem, přidává dynamický prvek do složitého propletení kultur a civilizací v této fantastické říši.

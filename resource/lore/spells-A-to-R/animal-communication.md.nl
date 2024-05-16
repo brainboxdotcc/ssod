@@ -1,0 +1,3 @@
+## Spreuk: Dierencommunicatie
+
+De Animal Communication-spreuk, een mystieke gemeenschap met de natuurlijke wereld, opent een telepathisch kanaal tussen de tovenaar en wezens uit het wild. Deze spreuk overstijgt de beperkingen van conventionele communicatie, waardoor de caster gedachten en emoties rechtstreeks op dieren kan overbrengen. De ingewikkeldheden van de dierlijke geest, verschillend van de cognitieve processen van mensen en andere bewuste wezens, maken de E.S.P. in dergelijke scenario's is de spelling niet effectief. De tovenaar, afgestemd op de nuances van de natuurlijke wereld, wordt een harmonieuze aanwezigheid en bevordert een unieke verbinding met de bewoners van de wildernis.

@@ -1,0 +1,3 @@
+## Spreuk: Spot
+
+De Spot-spreuk, een verlichtend baken van openbaring, onthult verborgen schatten en verborgen uitgangen in een oogwenk. Uitgesproken met een snelle bezwering, onderscheidt het snel verduisterde kostbaarheden en verborgen paden in een ruimte. De toepassing ervan in gevechtsscenario's is echter opmerkelijk beperkt en sluit meer aan bij de instincten van ontdekkingsreizigers, schatzoekers en navigators. Deze spreuk, een zegen voor degenen die cryptische kerkers doorkruisen of op zoek zijn naar verborgen schatten, vindt zijn voornaamste nut in de handen van avonturiers die op zoek zijn naar ongekende fortuinen en geheime passages.

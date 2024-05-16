@@ -1,0 +1,9 @@
+Démoni se v Cryptillii projevují jako hmatatelná a prokázaná hrozba, existující jako entity čisté energie s jedinečnou schopností se zhmotňovat dle libosti. Tyto starověké bytosti předcházely příchodu lidí a orků, datují se více než tři tisíciletí a jejich éterická říše je bytostně spjata s původem magie a existencí magických artefaktů v Cryptillia.
+
+Démoni chovají hluboké opovržení a nenávist k tvorům svázaným fyzickou hmotou a považují je za méněcenné. Jejich inteligence, která daleko převyšuje inteligenci smrtelných bytostí, je vedla k tomu, aby prošli nejen rozlohu Cryptillia, ale také okolní hvězdné systémy, nezatížené omezeními křehkého prostředí, které omezuje lidi.
+
+Aby démoni podstatně ovlivnili fyzický svět, podstupují složitý proces. Musí vlastnit fyzického tvora mapováním jeho energie do stejného neurálního vzoru jako humanoidní tvor, čímž účinně přepisují existující vědomí. Tento složitý postup vyžaduje čas, úsilí a přesnost, často vyžaduje rozptýlení, jako je obřad nebo dlouhé sesílání kouzel. Synchronizace s tělem hostitele, zásadní pro udržení základních funkcí, jako je srdeční tep, činí spánek vhodným okamžikem pro tuto kosmickou invazi.
+
+Když se to podaří, démon převezme kontrolu nad fyzickým tělem hostitele a vyhladí všechny stopy předchozí bytosti. Zmanipulované stvoření se pak stane nástrojem k rozpoutání zmatku ve fyzickém světě a uvolní cestu démonům, aby znovu získali Cryptillii, jak to dělali miliony let před příchodem lidstva.
+
+Jen ti nejmocnější čarodějové chápou závažnost tohoto existenčního ohrožení veškerého fyzického života. Jejich vědomí je nutí vydávat varování těm, kteří mají dostatek inteligence, aby pochopili nebezpečí, a tajně shromáždili tajnou armádu v přípravě na nevyhnutelný den, kdy nad Cryptillií sestoupí rozsudek. Hrozící hrozba posedlosti démony, ukrytá ve stínech, podtrhuje křehkou rovnováhu mezi magickou a fyzickou říší v tomto fantastickém světě.

@@ -1,0 +1,3 @@
+## Zaklęcie: Niewidzialny
+
+Zaklęcie Niewidzialności, całun utkany z tkaniny tego, co niewidzialne, zakrywa rzucającego i jego najbliższe otoczenie w sposób niezauważalny. Znikając z widzialnego spektrum, niewidzialni wrogowie stają się nieuchwytnymi celami, unikając konwencjonalnych ataków z nieuchwytną finezją. W walce zaklęcie to służy jako potężny katalizator zadawania znacznych obrażeń, zapewniając rzucającemu przewagę taktyczną, która pozostawia przeciwników zgadujących i podatnych na niewidoczne ataki. Tajemne mistrzostwo niewidzialności wymaga jednak strategicznej finezji, ponieważ nawet to, co ukryte, może zostać usidlone w splątane nici magii.
