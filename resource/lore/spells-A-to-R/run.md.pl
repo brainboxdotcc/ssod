@@ -1,0 +1,3 @@
+## Zaklęcie: Biegnij
+
+Zaklęcie Biegu, chwilowy przypływ szybkości, podwaja prędkość rzucającego na dziesięć akapitów, zamieniając je w ulotną plamę na polu bitwy. Jednakże, podobnie jak w przypadku zaklęcia Skradania, następuje chwilowa reakcja. Po ustaniu czaru, szybkość rzucającego spada do połowy pierwotnej wartości przez trzy akapity. Konsekwencje pogłębiają się z każdym kolejnym castingiem. W walce to zaklęcie staje się zarówno szybką ucieczką, jak i zwinną bronią, umożliwiając rzucającym zaklęcia zmylanie wrogów i manipulowanie przebiegiem bitwy za pomocą ich nieuchwytnego wdzięku.

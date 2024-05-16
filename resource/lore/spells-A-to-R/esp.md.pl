@@ -1,0 +1,3 @@
+## Zaklęcie: E.S.P.
+
+ESP, kanał prowadzący do zakamarków umysłu, pozwala rzucającemu zagłębić się w myśli, wszczepiając iluzje, które kierują wrogów w kierunku wyrządzonych sobie krzywd lub niezamierzonych korzyści. Jego moc, podobna do hipnozy, znajduje swoje królestwo poza chaosem walki. Wykorzystując słabości nieskoncentrowanego i słabego umysłu, E.S.P. przejawia przewagę strategiczną w subtelniejszych starciach, strategicznych manipulacjach i subtelnym tańcu sprytu. W rękach sprytnego czarodzieja, E.S.P. odsłania misterny gobelin intencji, przekształcając pole bitwy w scenę mentalnych szachów.

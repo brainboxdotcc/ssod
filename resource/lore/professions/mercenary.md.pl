@@ -1,0 +1,9 @@
+W burzliwych krajobrazach Cryptillii najemnicy wyłaniają się jako odrębna rasa, często wykuwana w tyglu statusu wyrzutka. Kierowani głównie urokiem monet, ci pragmatyczni wojownicy nie są zobowiązani do niczego innego jak tylko do błysku złota. Ich lojalność jest płynna i chętnie pożyczają swoje usługi jakiejkolwiek sprawie, czy to cnotliwej, czy niegodziwej, pod warunkiem, że skrzynie będą kusząco dzwonić.
+
+Kod najemnika jest napisany w języku waluty, a obietnica potężnej sakiewki może zobaczyć, jak walczą po stronie sił dobra i zła lub kłopotliwej mieszanki obu. Lojalność jest koncepcją plastyczną, uginającą się pod zachciankami oferenta, który zaoferuje najwyższą cenę. Brzęk złotych monet często służy jako harmonijna melodia, która łączy pozornie sprzeczne przyczyny.
+
+Preferowane jest, aby najemnicy gromadzili się w grupy, tworząc luźne sojusze, które mogą być tak ulotne, jak obietnica zapłaty. Pomimo pozornie przemijającej natury, te grupy wojowników łączy wspólny cel — zazwyczaj zdobycie bogactwa. W pogoni za wspólnymi zyskami łączą swoje umiejętności i zasoby, współpracując, aż do zdobycia skarbu.
+
+Koleżeństwo pomiędzy najemnikami jest jednak hamowane przez rzeczywistość, w której ich jedność jest tak silna, jak obietnica zapłaty. Gdy moneta przechodzi z rąk do rąk, sojusze się rozwiązują, a najemnicy rozpraszają się, a każdy z nich wyrusza w poszukiwaniu nowych możliwości, które lśnią urokiem bogactw.
+
+W stale zmieniającej się dynamice Cryptillii najemnicy zajmują niszę wyznaczoną przez pragmatyzm i chęć przyjęcia niezliczonych odcieni moralności. Ich podróż przez krainy to gobelin utkany z nici przejściowych sojuszy, wypełnionych złotem aspiracji i nieśmiertelnej pogoni za fortuną w świecie pełnym niebezpieczeństw i możliwości.

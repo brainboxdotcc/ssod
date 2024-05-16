@@ -1,0 +1,3 @@
+## Hechizo: Robar
+
+El hechizo Robar, una invocación fugaz de hurto, permite al lanzador duplicar su puntuación furtiva durante un breve período. Los efectos del hechizo persisten durante un solo párrafo del juego, seguido de un tiempo de reutilización obligatorio de diez párrafos debido a su naturaleza intrincada y que requiere mucho tiempo. Si bien es experto en facilitar el sigilo, su aplicación en combate no es práctica, dada la prolongada duración del lanzamiento del hechizo.

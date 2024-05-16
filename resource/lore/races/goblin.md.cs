@@ -1,0 +1,7 @@
+Goblini jsou odolná a přitom zotročená rasa, spoutaná nadvládou orků. Goblini se vyznačují omezenou inteligencí a mají vtipnou povahu, díky níž jsou zběhlí ve vykonávání jednoduchých úkolů, což z nich dělá preferovanou volbu před Malými skřety pro podřadné povinnosti, jako je ošetřování kanců a odesílání ukořistěných koní na příšerné bitevní bankety, které označují jejich existenci.
+
+Goblini mají kalkulativní a přitom přímočaré myšlení. Když se jejich vynalézavost spojí dohromady, stane se jiskrou, která může zažehnout vzpouru. Když několik goblinů spolupracuje, jejich kolektivní vynalézavost překračuje jejich individuální omezení a umožňuje jim hromadně svrhnout své skřetí dozorce. V odvážné vzpouře se mohou vyrojit z mezí svého zajetí a hledat svobodu a vlastní život uprostřed nespoutané divočiny.
+
+Navzdory jejich malému vzrůstu, ekvivalentnímu trpaslíkům, skřítci vládnou omezeným množstvím zbraní. Jejich velikost však popírá jejich odolnost v boji. Nepolapitelní a mrštní skřítci se ukazují jako pozoruhodně náročné cíle a vyhýbají se útokům svých protivníků s neskutečnou obratností. V boji zblízka se jejich hbitost stává účinnou obranou, kompenzující jejich skromné ​​zbraně úhybnou schopností, která frustruje ty, kdo se je snaží podrobit.
+
+Když goblini proplouvají zrádným terénem otroctví, vzpoury a nespoutané divočiny, ztělesňují nezdolného ducha, který přetrvává tváří v tvář útlaku. Jejich příběhy spřádají příběh o mazaném přežití, kolaborativním povstání a odolnosti, která popírá jejich zotročený status ve fantastické tapisérii Cryptillia.

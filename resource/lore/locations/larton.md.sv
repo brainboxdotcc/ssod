@@ -1,0 +1,11 @@
+Swamps of Larton, inbäddat i hjärtat av Utopias centrala vidd, bildar en stor och trasslig labyrint av grumligt vatten, vridna vinrankor och tjock, fuktig luft. Dessa träsk ligger norr om de imponerande Deathdrop-bergen, söder om den gåtfulla nattskogen och väster om den förrädiska öknen av dödskallar, och dessa träsk är ett bevis på de mångsidiga och utmanande landskap som kännetecknar kontinenten.
+
+Regionen är en gobeläng av mossbeklädda träd, deras grenar sammanflätade som skelettfingrar som når mot himlen. Murren från osynliga varelser ekar genom den stillastående luften, och den vattensjuka marken genomkorsas av slingrande vattendrag och förrädiska träsk. The Swamps of Larton är ett rike av skuggor och viskningar, där gränsen mellan det levande och det osedda suddas ut i det fläckiga ljuset som kämpar för att tränga igenom det täta taket.
+
+Bortom den nordvästra delen av träskarna ligger Nomad Camp, en enklav av vandrare som bedriver en tillvaro i utkanten av denna kusliga vildmark. Nomaderna bildar med sina motståndskraftiga och anpassningsbara sätt en unik gemenskap som frodas inför landsbygdens utmaningar.
+
+Djupt inne i det grumliga vattnet i hjärtat av de centrala träskmarkerna ligger dock staden Larton, en anmärkningsvärd civilisationsbastion mitt i den fientliga miljön. Omgiven av höga murar har denna stad blivit ett nav för handel, kultur och makt. Larton är hem för många skrån och ordnar, som alla tävlar om inflytande inom stadens formidabla murar. Den folkrika stadens liv och rörelse ekar inom dess gränser, en skarp kontrast till den kusliga tystnaden i det omgivande träsklandet.
+
+Stadens murar, som står höga och beslutsamma, fungerar inte bara som en barriär mot det inträngande träsket djurliv utan också som ett bevis på invånarnas motståndskraft. Invånarna i Larton har skapat ett invecklat nätverk av stigar och broar som korsar träskets vatten, förbinder stadens distrikt och möjliggör handel och kommunikation.
+
+Ändå, mitt i Lartons relativa lugn, cirkulerar viskningar om en hotande och tidlös skräck som bor djupt i träskets västra delar. Rykten anspelar på en kraft som föregår själva staden, en lurande skugga som kan betyda undergång för de oförsiktiga. Folket i Larton förblir vaksamma, på vakt mot mysterierna som kvarstår i träskens hjärta och de uråldriga, osynliga hoten som kan vakna ur deras dvala.

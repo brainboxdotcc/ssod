@@ -1,0 +1,3 @@
+## Stava: Krympa
+
+Shrink-besvärjelsen, ett mystiskt kontrakt med dimensioner, kondenserar hjulet till en vald storlek under deras ursprungliga kroppsbyggnad. Denna metamorfa mystiska bedrift kräver försiktighet, eftersom den förminskade trollkarlen navigerar världen i en miniatyrform. Det krympta tillståndet kräver försiktighet och uppmanar kastaren att trampa lätt och vara vaksam för att undvika farliga situationer. Handlingen att återställa sin ursprungliga storlek genom att skingra besvärjelsen kräver strategisk timing, ett beslut fyllt av konsekvenser inför potentiella motståndare.

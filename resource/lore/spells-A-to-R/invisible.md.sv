@@ -1,0 +1,3 @@
+## Stava: Osynlig
+
+Den osynliga besvärjelsen, ett hölje vävt av det osynliga tyget, döljer kastaren och deras omedelbara omgivning i omärklighet. Osynliga fiender försvinner från det synliga spektrumet och blir svårfångade mål som undviker konventionella attacker med svårfångad finess. I strid fungerar den här besvärjelsen som en kraftfull katalysator för att tillfoga betydande skada, vilket ger kastaren en taktisk fördel som gör motståndarna att gissa och sårbara för osynliga angrepp. Osynlighetens mystiska behärskning kräver dock strategisk finess, eftersom även det dolda kan bli snärjd i magins trassliga trådar.

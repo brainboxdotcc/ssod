@@ -1,0 +1,7 @@
+Ludzie, najliczniejsza i najbardziej zróżnicowana rasa na rozległych terenach Cryptillii, prosperują w społeczeństwie zakorzenionym w średniowiecznych technologiach. Chociaż ich zdolności technologiczne mogą nie dorównywać pomysłowości niektórych innych ras, ludzie nadrabiają to wrodzoną zaradnością i zdolnościami adaptacyjnymi, które wykraczają poza ograniczenia ich narzędzi.
+
+Bierność i głęboko zakorzeniony szacunek dla świętości dóbr materialnych stanowią kręgosłup ludzkiego etosu. Ich ojczyzny są święte, a ludzie zaciekle ich bronią przed wszelkim zagrożeniem, pozostając niezłomni aż do momentu, w którym zostaną pokonani. Gobelin utkany z nici honoru i dumy określa ich zbiorowego ducha, a zaangażowanie, które odbija się echem przez pokolenia.
+
+W zawiłej mozaice społecznej Cryptillii ludzie znajdują pocieszenie i siłę w małych, zwartych grupach. Niezależnie od tego, czy w ramach ciepłych więzi rodzinnych, ustrukturyzowanych ram społeczeństw, czy ducha współpracy gildii, ludzie tworzą więzi, które wykraczają poza ograniczenia indywidualnej egzystencji. Te jednostki społeczne stają się tyglem wspólnych doświadczeń, pielęgnując poczucie przynależności i wspólnego celu.
+
+Wśród średniowiecznych krajobrazów ludzki duch trwa, odporny i niezachwiany w obliczu przeciwności losu. To właśnie w zawiłym tańcu więzi rodzinnych, społecznych i przynależności do gildii ujawnia się prawdziwa istota człowieczeństwa, pozostawiając niezatarty ślad na stale rozwijającym się gobelinie tętniących życiem i różnorodnych kultur Cryptillii.

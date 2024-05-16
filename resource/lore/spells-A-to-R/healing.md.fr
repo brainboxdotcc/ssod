@@ -1,0 +1,3 @@
+## Sort : Guérison
+
+Le sort de Guérison, une invocation bienveillante dans l'arsenal du sorcier, confère une bénédiction de vitalité aux entités vivantes, reconstituant dix points d'endurance. Une facette essentielle de la bienveillance du lanceur de sorts est que cette réparation mystique ne peut pas s'étendre aux morts-vivants ou aux créatures démoniaques, reconnaissant les limites inhérentes aux forces vitales. Cependant, l'altruisme du sorcier s'accompagne de contraintes ; ils ne peuvent pas s'appliquer eux-mêmes, et la formidable efficacité du sort nécessite un investissement de temps considérable, limitant sa fréquence à une fois par jour.

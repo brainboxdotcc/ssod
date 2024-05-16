@@ -1,0 +1,3 @@
+## Spreuk: Sluip
+
+De Sneak-spreuk, een tijdelijke mantel van schaduwen, verdrievoudigt de sneak-score van de caster voor tien alinea's, waardoor ze vrijwel onmerkbaar worden. Het geheimzinnige residu blijft echter hangen, en voor drie opeenvolgende locaties nadat de spreuk is verdwenen, daalt de sneak score van de caster tot de helft van de oorspronkelijke waarde. Scherpzinnige beoefenaars van stealth moeten voorzichtig door deze dualiteit navigeren, want de gevolgen stapelen zich op bij elke casting. Dergelijke spreuken blijken onmisbaar voor schurken en infiltranten die de schaduwen opzoeken en bij elke stap het gevaar omzeilen.

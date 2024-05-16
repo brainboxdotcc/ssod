@@ -1,0 +1,3 @@
+## Zaklęcie: Woda
+
+Za pomocą zwykłego gestu zaklęcie wody wywołuje wzburzony potok z dowolnej części postaci rzucającego, często faworyzując dłonie, a nawet oczy, nadając im dramatyczny talent. Ta wodna siła staje się wszechstronnym narzędziem, zmuszającym wrogów do zajmowania niekorzystnych pozycji lub zapewniającym przetrwanie w tragicznych okolicznościach, takich jak przemierzanie pustynnych pustkowi.

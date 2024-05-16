@@ -1,0 +1,3 @@
+## Kouzlo: Vzduch
+
+Kouzlo Vzduch, éterický záchranný kruh v repertoáru čarodějů, vytváří odolnou vzduchovou bublinu spíše než konvenční ochranný štít. Tato mystická vzduchová kapsa se stává životně důležitým potrubím, které usnadňuje dlouhodobé přežití pod vodní hladinou nebo v nemilosrdné prázdnotě vakua. Strategické vyvolání tohoto kouzla promění sesílatele v obojživelný zázrak, který proplouvá vodními hlubinami nebo mimozemskými rozlohami s nesrovnatelnou odolností.

@@ -1,0 +1,3 @@
+## Spreuk: genezing
+
+De Healing spell, een welwillende aanroep in het arsenaal van de tovenaar, schenkt een zegen van vitaliteit aan levende wezens, waardoor tien uithoudingsvermogenpunten worden aangevuld. Een essentieel facet van de welwillendheid van de caster is dat dit mystieke herstel zich niet kan uitstrekken tot de ondode of demonische wezens, waarbij de inherente grenzen van levenskrachten worden erkend. Het altruïsme van de tovenaar brengt echter beperkingen met zich mee; ze kunnen niet op zichzelf worden toegepast, en de formidabele doeltreffendheid van de spreuk vereist een aanzienlijke tijdsinvestering, waarbij de frequentie ervan wordt beperkt tot eenmaal per dag.

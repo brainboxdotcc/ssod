@@ -1,0 +1,3 @@
+## Kouzlo: Neviditelné
+
+Kouzlo Neviditelné, rubáš utkaný z látky neviditelného, ​​zahalí sesilatele a jeho bezprostřední okolí do nepostřehnutelnosti. Neviditelní nepřátelé mizí z viditelného spektra a stávají se nepolapitelnými cíli a vyhýbají se konvenčním útokům s nepolapitelnou jemností. V boji toto kouzlo slouží jako silný katalyzátor pro způsobení značného poškození a poskytuje sesilateli taktickou výhodu, která nechá protivníky hádat a zranit je vůči neviditelným útokům. Tajemné ovládnutí neviditelnosti však vyžaduje strategickou jemnost, protože i to skryté může uvíznout ve spletitých vláknech magie.

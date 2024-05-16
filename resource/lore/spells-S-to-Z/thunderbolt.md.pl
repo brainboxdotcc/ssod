@@ -1,0 +1,3 @@
+## Zaklęcie: Piorun
+
+Zaklęcie pioruna, zaliczane do najbardziej niszczycielskich zaklęć ofensywnych, otacza ramiona rzucającego trzaskającą mgłą energii elektrycznej w ciągu zaledwie jednego uderzenia serca od rzucenia. Ta elektryzująca siła może zostać rzucona w stronę dowolnego celu, żywego lub martwego. Następstwa jego uderzenia są poważne, często pozostawiając ofiarę krytycznie ranną lub zamienioną w tlący się popiół, co świadczy o jego ogromnej sprawności w arsenale czarodzieja.

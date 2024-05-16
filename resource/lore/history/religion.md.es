@@ -1,0 +1,13 @@
+En las diversas tierras de Cryptillia, varias religiones han evolucionado como reflejo de sus tumultuosas experiencias e interacciones con las fuerzas mágicas que dan forma a su mundo. Los sistemas de creencias predominantes están moldeados por acontecimientos históricos, encuentros con entidades místicas y la lucha continua entre la luz y la oscuridad.
+
+## La Iglesia de la Luz Arcana
+Fundada a raíz de la Primera Era de la Magia, la Iglesia de la Luz Arcana venera los aspectos benévolos de la magia. Los seguidores creen en una fuerza divina que encarna el equilibrio armonioso de las energías mágicas. Ven la magia como un regalo de reinos superiores, otorgado a los mortales para generar prosperidad e iluminación. El clero, conocido como Iluminadores, se esfuerza por aprovechar las energías mágicas para el mejoramiento de la sociedad y combatir las fuerzas de la oscuridad.
+
+## La Orden de la Vigilancia Eterna
+Nacida de los implacables conflictos con entidades demoníacas, la Orden de la Vigilancia Eterna es una orden religiosa marcial. Sus seguidores, conocidos como Centinelas, se dedican a proteger a la humanidad de las incursiones demoníacas. Creen que la lucha contra las fuerzas oscuras es un esfuerzo perpetuo y que se requiere una vigilancia eterna para salvaguardar los reinos. Las ceremonias rituales implican la purificación de armas y el canto de antiguos encantamientos para fortalecer las barreras entre mundos.
+
+## Los Buscadores del Camino Oculto
+Una secta mística y esotérica, los Buscadores del Camino Oculto profundizan en los misterios de pergaminos antiguos y tradiciones olvidadas. Veneran los artefactos mágicos esparcidos por Cryptillia y los consideran claves para descubrir verdades más profundas. Los fieles, llamados Enviados, se embarcan en misiones para descubrir conocimientos ocultos y descifrar las enigmáticas profecías que dan forma a su destino. Los Buscadores creen que la iluminación radica en la comprensión de los misterios arcanos entretejidos en el tejido de la realidad.
+
+## La comunidad de los caminantes
+Para aquellos que adoptan el estilo de vida nómada y navegan por los peligros de los diversos paisajes de Cryptillia, la Wayfarers' Fellowship ofrece consuelo. Dedicada a la deidad patrona de los viajeros, esta religión enfatiza la adaptabilidad y el ingenio. Las peregrinaciones implican atravesar terrenos traicioneros y rendir homenaje a lugares sagrados que se cree que contienen la esencia de la deidad. Los Caminantes creen que su deidad los guía a través de los caminos siempre cambiantes de la vida.

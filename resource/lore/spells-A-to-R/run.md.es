@@ -1,0 +1,3 @@
+## Hechizo: Correr
+
+El hechizo Correr, una oleada transitoria de celeridad, duplica la puntuación de velocidad del lanzador durante diez párrafos, transformándolos en una mancha fugaz en el campo de batalla. Sin embargo, similar al hechizo Furtivo, se desarrolla una reacción temporal. Después del cese del hechizo, la puntuación de velocidad del lanzador cae a la mitad de su valor original durante tres párrafos. Las repercusiones se agravan con cada casting sucesivo. En combate, este encantamiento se convierte a la vez en un escape rápido y en un arma ágil, que permite a los lanzadores de hechizos confundir a los enemigos y manipular el flujo y reflujo de la batalla con su gracia esquiva.

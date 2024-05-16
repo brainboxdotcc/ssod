@@ -1,0 +1,3 @@
+## Hechizo: Abrir
+
+El hechizo Abrir, una llave maestra conjurada mediante destreza arcana, permite al lanzador romper cerraduras y puertas selladas de forma explosiva. Al desencadenar una explosión controlada en los mecanismos de bloqueo y los sellos, este encantamiento impulsa las puertas desde sus bisagras y divide las cajas en pedazos. Si bien es una utilidad versátil en manos de cualquier lanzador de conjuros experto, su potencial alcanza su cenit en los ágiles dedos de un ladrón experto. Los ladrones, expertos en el arte del subterfugio, aprovechan el hechizo Abrir para desentrañar secretos, robar tesoros y navegar a través de pasajes seguros con una delicadeza incomparable.

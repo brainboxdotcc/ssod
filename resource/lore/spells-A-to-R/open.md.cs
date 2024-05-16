@@ -1,0 +1,3 @@
+## Kouzlo: Otevři
+
+Kouzlo Otevřít, hlavní klíč vykouzlený pomocí tajemných schopností, umožňuje sesilateli výbušně prolomit zámky a zapečetěné dveře. Spuštěním řízené exploze v zamykacích mechanismech a pečetích toto kouzlo vyrazí dveře z jejich pantů a rozštípne krabice na kusy. I když je to všestranná pomůcka v rukou každého zkušeného kouzelníka, jeho potenciál dosahuje svého zenitu v hbitých prstech zkušeného zloděje. Zloději, zběhlí v umění lsti, využívají kouzlo Otevřít k odhalování tajemství, kradení pokladů a procházení zabezpečenými průchody s nebývalou jemností.

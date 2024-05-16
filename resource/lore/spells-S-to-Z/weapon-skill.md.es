@@ -1,0 +1,3 @@
+## Hechizo: Habilidad con armas
+
+El hechizo de habilidad con armas, similar a la elusiva danza del encantamiento "furtivo", influye en la delicadeza de combate del hechicero. Tras la invocación, la puntuación de habilidad del lanzador se cuadruplica espectacularmente, convirtiéndolo en una fuerza formidable en el campo de batalla durante una duración de cinco párrafos. Sin embargo, la consecuencia es una caída transitoria, ya que la puntuación de habilidad cae a la mitad de su valor original durante un período equivalente. Estos efectos se acumulan con el lanzamiento de hechizos sucesivos, lo que exige un enfoque estratégico para liberar todo el potencial de este encantamiento centrado en el combate.

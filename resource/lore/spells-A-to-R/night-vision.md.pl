@@ -1,0 +1,3 @@
+## Zaklęcie: Widzenie w nocy
+
+W gobelinie nocnych zaklęć zaklęcie Noktowizji wplata eteryczną luminescencję, pozwalając rzucającemu poruszać się w ciemności z doskonałą przejrzystością. Jego blask dorównuje blaskowi zaklęcia „świetlnego”, umożliwiając płynną substytucję podczas oświetlania cieni. W przeciwieństwie do swojego świetlistego odpowiednika, zaklęcie Nocnego Widzenia, ze swoim stonowanym blaskiem, działa dyskretnie, zapewniając rzucającemu subtelniejszą obecność w ciemności.

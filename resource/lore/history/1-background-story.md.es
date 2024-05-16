@@ -1,0 +1,23 @@
+No es frecuente que un aventurero como tú sea convocado a la Fortaleza del Mago, especialmente con tan poca antelación. Has recibido noticias urgentes de un amigo cercano en la fortaleza, informándote que necesitan personas como tú para proteger el lugar. Es obvio que se ha producido algún tipo de entrega, obviamente los artículos que se trasladan tienen un valor significativo.
+
+Estamos en pleno verano, pero toda la zona está envuelta en una tormenta de nieve. La nieve y el hielo se azotan en capas que ruedan por la vista desde la ventana, descendiendo desde las Montañas Deathdrop a cierta distancia, serpenteando sobre los contrafuertes del torreón como la fría mano de la muerte misma. Algo no está del todo bien aquí. La fortaleza está a diez millas del Desierto de las Calaveras, no debería haber nieve aquí, y ciertamente tampoco tormenta de nieve. Dejando que tu imaginación hiperactiva descanse por un tiempo y culpando a los magos del clima, te metes en la cama e intentas calmarte, cayendo en un sueño perturbado, cansado por tu viaje a la torre del homenaje.
+
+Un único repique de la campana del torreón señala el comienzo de un nuevo y triste día... Es medianoche. Las capas de nieve continúan atacando el antiguo edificio, rebotando en sus costados como diminutas astillas de vidrio. A lo lejos, un hombre solitario cojea hacia ese lugar. Inclinado sobre su bastón de roble, aguza la vista en la oscuridad; su linterna es inútil con este tiempo. Unos minutos más tarde llega a la puerta.
+
+Una voz fuerte suena desde la luz de la linterna de la garita, apenas audible por encima de la furiosa tormenta.
+
+"¡Detener! En nombre del protectorado mágico, ¿quién va allí?
+
+El anciano mira hacia la luz de la linterna y, con una voz que suena tensa y perdida, responde:
+
+“Necesito desesperadamente refugio… ¿podrían ayudarme por favor? Lo único que pido es una cama para pasar la noche…”
+
+Hay una respuesta desde el interior de la puerta de entrada, murmullos, quejas ahogadas que preguntan si el visitante sabe cuál es la hora, mientras las cerraduras se abren con un ruido sordo y fuerte y el hombre es conducido al interior. Varios minutos de silencio después, todo lo que queda del guardián es un pequeño charco de sangre y huesos en polvo, flotando por el suelo de la garita con el viento.
+
+Algo silencioso se mueve por el pasillo que conecta la puerta de entrada con el interior del castillo. Busca sistemáticamente en todas las habitaciones, una por una. Pasa a tu lado mientras duermes, aparentemente a través de ti... provocando pesadillas oscuras y terribles a medida que pasa, y tu sueño cada vez más inquieto.
+Mucho más tarde, Algo encontró su camino hacia las profundidades de la torre del homenaje. Muchos pisos bajo la superficie, a lo largo de un largo corredor cubierto de runas, se encuentra ante una enorme puerta de roble y oro, custodiada por dos guardias, altamente entrenados en las artes mágicas, alertas y listos para repeler el ataque.
+La cosa pasa rozando al primer guardia, todavía no visible, pero dejando una sensación de pavor y desesperación donde quiera que vaya.
+“¿Deran? ¿Eres tu?"
+El primer guardia mira de reojo y escucha una voz, aparentemente salida de la nada, que susurra y murmura en la oscuridad. Antes de que se dé cuenta de lo que está sucediendo, la Cosa ha absorbido su alma hacia el reino de la magia. Los dos segundos de distracción son todo lo que se necesita para lograr la tarea.
+“¡Oye, presta atención! Se supone que debemos estar mirando…”
+El segundo centinela baja la guardia durante una fracción de segundo para mirar al primer guardia. Lo que ve en el lugar del guardia lo llena de pavor y terror. Frente a él hay una cosa, compuesta de sombras y oscuridad, de forma casi humanoide, pero translúcida como agua negra y turbia. Miles de dientes increíblemente blancos sobresalen de una boca como el ébano, colocados debajo de dos ojos, brillando de color rojo como los propios pozos del infierno, arremolinándose torbellinos de odio y sufrimiento listos y hambrientos de devorar. El guardia tiene la oportunidad de emitir la primera fracción de segundo de un único y aterrorizado grito mientras cien tentáculos centelleantes emergen de las voraces fauces, arrastrándolo de cara a la boca de la Criatura, drenando su esencia misma, y consumiendo de la forma más dolorosa, terrible y espantosa para que cualquier criatura mortal acabe con su vida…

@@ -1,0 +1,11 @@
+Swamps of Larton, uhnízděné v srdci centrální rozlohy Utopie, tvoří obrovský a spletitý labyrint kalných vod, pokroucených lián a hustého vlhkého vzduchu. Tyto bažiny, které se nacházejí severně od impozantních hor Deathdrop Mountains, jižně od tajemného Lesa noci a západně od zrádné Desert of Skulls, jsou svědectvím rozmanité a náročné krajiny, která tento kontinent charakterizuje.
+
+Oblast je tvořena gobelínem stromů porostlých mechem, jejichž větve se proplétají jako kostlivé prsty sahající k nebi. Mumlání neviditelných tvorů se ozývá stojatým vzduchem a podmáčená půda je křižována klikatými vodními toky a zrádnými bažinami. Swamps of Larton jsou říší stínů a šepotu, kde se hranice mezi živým a neviditelným stírá v kropenatém světle, které se snaží prorazit hustý baldachýn.
+
+Za severozápadním výběžkem bažin leží Nomad Camp, enkláva tuláků, kteří žijí na okraji této děsivé divočiny. Nomádi se svými odolnými a přizpůsobivými způsoby tvoří jedinečnou komunitu, která vzkvétá tváří v tvář výzvám venkova.
+
+Hluboko v kalných vodách v srdci centrálních bažin však leží město Larton, pozoruhodná bašta civilizace uprostřed nepřátelského prostředí. Toto město obklopené vysokými hradbami se stalo centrem obchodu, kultury a moci. Larton je domovem mnoha cechů a řádů, z nichž každý soupeří o vliv v impozantních zdech města. Ruch a ruch lidnatého města se ozývá v jeho hranicích, což je v příkrém kontrastu s děsivým tichem okolních bažin.
+
+Vysoké a pevné městské hradby slouží nejen jako bariéra proti pronikající bažinaté zvěři, ale také jako důkaz odolnosti jejích obyvatel. Lidé z Lartonu vytvořili spletitou síť cest a mostů, které procházejí vodami bažiny, spojují městské části a umožňují obchod a komunikaci.
+
+Přesto, uprostřed relativního klidu Lartonu, kolují šepty o hrozícím a nadčasovém děsu přebývajícím hluboko v západních končinách bažiny. Pověsti se zmiňují o síle, která předchází samotné město, číhajícím stínu, který by mohl znamenat zkázu pro neopatrné. Lidé z Lartonu zůstávají ostražití, ostražití před tajemstvími, která přetrvávají v srdci bažin, a prastarými, neviditelnými hrozbami, které se mohou probudit z jejich spánku.

@@ -1,0 +1,3 @@
+## Hechizo: Carpintería
+
+El hechizo Woodsmanship, una mezcla armoniosa de la esencia de la naturaleza y el dominio arcano, imparte momentáneamente al lanzador las habilidades integrales de un leñador. Esta encantadora infusión se extiende no sólo al intrincado conocimiento de los bosques, sino que se integra perfectamente con la competencia existente del lanzador. La influencia del hechizo se extiende precisamente durante un día y ofrece una conexión transitoria pero inmersiva con las artes selváticas. Sin embargo, sintonizarse con semejante destreza en el bosque exige un ciclo paciente, lo que permite lanzar el hechizo solo una vez por semana de juego.

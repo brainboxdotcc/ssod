@@ -1,0 +1,3 @@
+## Stava: Spot
+
+Spot-besvärjelsen, en upplysande ledstjärna för uppenbarelse, avslöjar dolda skatter och dolda utgångar på ett ögonblick. Gjuten med en snabb besvärjelse, upptäcker den snabbt dolda värdesaker och dolda vägar i ett utrymme. Dess tillämpning i stridsscenarier är dock avsevärt begränsad, och överensstämmer mer med instinkterna hos upptäcktsresande, skattjägare och navigatörer. Denna besvärjelse, en välsignelse för dem som genomsöker kryptiska fängelsehålor eller söker dolda troves, finner sin främsta användbarhet i händerna på äventyrare som söker otaliga förmögenheter och hemliga passager.

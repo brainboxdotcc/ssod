@@ -1,0 +1,3 @@
+## Zaklęcie: Szybkie Ręce
+
+Zaklęcie Szybkie Dłonie, manifestacja tymczasowego przyspieszenia, umożliwia rzucającemu poruszanie rękami i ramionami z nadludzką szybkością w krótkich odstępach czasu. Zaklęcie to znajduje praktyczne zastosowanie zarówno w chaosie walki, jak i w tajnym świecie hazardu, gdzie jego adepci mogą go wykorzystać w celu uzyskania nieuczciwej przewagi. Wykrycie pozostaje nieuchwytne, ponieważ szybkie ruchy rzucającego pod wpływem tego zaklęcia zazwyczaj umykają uwadze, chyba że zostaną zauważone przez innego czujnego rzucającego czar.

@@ -1,0 +1,9 @@
+W rozległym królestwie Utopii osławiony Demon Garneth jest najgroźniejszym przeciwnikiem, cieniem, który unosi się nie tylko nad południową przestrzenią, ale rzuca ciemną zasłonę na całą Cryptillię. Niegdyś potężny władca, który sprawował władzę nad rozległą częścią południowej Utopii, upadek Garnetha w wrogość stał się nawiedzającym rozdziałem w historii tej krainy.
+
+W annałach czasu wspomina się, że Lord Garneth, napędzany nienasyconym pragnieniem władzy i pożądliwym pragnieniem rozszerzenia swego terytorium, uległ podstępnym siłom zła. Dokładny katalizator jego zepsucia pozostaje owiany tajemnicą i zagubiony w szeptach wieków. Jego niegdyś wspaniały zamek, obecnie złowroga twierdza, stał się bastionem ciemności, a jego mury kryły złowrogiego pana, który zabarykadował się w jego wnętrzu.
+
+Przez pół wieku demoniczny wpływ Garnetha rósł, rozprzestrzeniając się niczym złośliwa sieć, oplatając krainę strachem. Żadna żywa dusza nie widziała lorda Garnetha od czasu jego opętania, a jego fizyczna obecność ograniczała się do przeklętych głębin zamku. Niegdyś kwitnący region pod jego rządami stał się strefą zakazaną, miejscem, po którym nikt nie odważy się kroczyć.
+
+Chociaż sam Garneth pozostaje nieuchwytny, jego słudzy, ucieleśnienia terroru, wędrują swobodnie, szerząc swoją wrogość po całej krainie. Od mostu Larret na północy po tętniące życiem miasto portowe Port Obligan na południu, pasma jego wpływów rozciągają się daleko i szeroko, pozostawiając po sobie ślad rozpaczy.
+
+Przez lata opowieść o terrorze Garnetha zakorzeniła się w zbiorowej świadomości Utopii. Jednak pomimo niezliczonych opowieści grozy i powszechnej wiedzy o jego wrogości, nikt nie odważył się stawić czoła Garnethowi i położyć kres jego tyrańskiej władzy. Złowieszcze cienie zamku wciąż stoją, a wyzwanie, by stawić czoła Garnethowi w ostatecznej konfrontacji, czeka na bohatera na tyle odważnego, aby wystąpić w epickiej walce z ciemnością spowijającą królestwo.

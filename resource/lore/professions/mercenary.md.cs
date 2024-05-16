@@ -1,0 +1,9 @@
+V turbulentní krajině Cryptillia se žoldáci objevují jako zvláštní plemeno, které je často vytvořeno v kelímku postavení vyvrženců. Tito pragmatičtí válečníci, pohánění především půvabem mincí, nejsou odkázáni na nic jiného než na lesk zlata. Jejich oddanost je proměnlivá a ochotně propůjčují své služby jakékoli věci, ať už ctnostné nebo hanebné, dokud pokladna lákavě cinká.
+
+Kód žoldáka je napsán jazykem měny a příslib tučné peněženky je může vidět, jak bojují za síly dobra, zla nebo za matoucí směs obojího. Věrnost je poddajný koncept, který se přizpůsobuje rozmarům toho, kdo nabídne nejvyšší nabídku. Cinkání zlatých mincí často slouží jako harmonizující melodie, která přemosťuje zdánlivě protichůdné příčiny.
+
+Žoldáci se přednostně shromažďují ve skupinách a vytvářejí volná aliance, která mohou být pomíjivá jako příslib platby. Navzdory své zdánlivě pomíjivé povaze jsou tyto skupiny válečníků spojeny společným cílem – obvykle získáním bohatství. V honbě za sdílenými zisky spojují své dovednosti a zdroje a spolupracují, dokud není poklad zajištěn.
+
+Kamarádství mezi žoldáky je však zmírněno skutečností, že jejich jednota je jen tak silná jako příslib platby. Jakmile mince změní majitele, aliance se rozplynou a žoldáci se rozejdou, každý se odváží hledat nové příležitosti, které se třpytí lákadlem bohatství.
+
+V neustále se měnící dynamice Cryptillia si žoldáci vyřezávají výklenek definovaný pragmatismem a ochotou přijmout nesčetné odstíny morálky. Jejich cesta po říších je gobelínem protkaným vlákny pomíjivých spojenectví, zlatem nabitých tužeb a nehynoucí honby za štěstím ve světě plném nebezpečí a příležitostí.

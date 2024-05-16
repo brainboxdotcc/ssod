@@ -1,0 +1,3 @@
+## Zaklęcie: Otwarte
+
+Zaklęcie Otwarte, główny klucz wyczarowany dzięki tajemnym umiejętnościom, umożliwia rzucającemu wybuchowe niszczenie zamków i zapieczętowanych drzwi. Wywołując kontrolowaną eksplozję mechanizmów zamykających i uszczelek, zaklęcie to wypycha drzwi z zawiasów i rozrywa pudełka. Choć jest to wszechstronne narzędzie w rękach każdego biegłego w rzucaniu zaklęć, jego potencjał osiąga swój szczyt w zwinnych palcach utalentowanego złodzieja. Złodzieje, biegli w sztuce podstępu, wykorzystują zaklęcie Otwarte, aby odkrywać tajemnice, kraść skarby i poruszać się po zabezpieczonych przejściach z niezrównaną finezją.

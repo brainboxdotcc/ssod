@@ -1,0 +1,3 @@
+## Kouzlo: Léčení
+
+Léčebné kouzlo, shovívavé vzývání v čarodějově arzenálu, uděluje živým bytostem dar vitality a doplňuje deset bodů výdrže. Základním aspektem sesilatelovy shovívavosti je to, že tato mystická náprava se nemůže rozšířit na nemrtvé nebo démonické stvoření a uznává přirozené hranice životních sil. Čarodějův altruismus však přichází s omezeními; je vyloučeno z vlastního použití a impozantní účinnost kouzla vyžaduje značnou časovou investici, která omezuje jeho frekvenci na jednou denně.

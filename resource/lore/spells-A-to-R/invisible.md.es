@@ -1,0 +1,3 @@
+## Hechizo: Invisible
+
+El hechizo Invisible, un sudario tejido con la tela de lo invisible, cubre al lanzador y su entorno inmediato en imperceptibilidad. Al desaparecer del espectro visible, los enemigos invisibles se convierten en objetivos esquivos, evadiendo los ataques convencionales con esquiva delicadeza. En combate, este hechizo sirve como un potente catalizador para infligir un daño significativo, proporcionando al lanzador una ventaja táctica que deja a los adversarios adivinando y vulnerables a ataques invisibles. El arcano dominio de la invisibilidad, sin embargo, exige delicadeza estratégica, ya que incluso lo oculto puede quedar atrapado en los enredados hilos de la magia.

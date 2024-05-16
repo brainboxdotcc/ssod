@@ -1,0 +1,3 @@
+## Spreuk: vlieg
+
+Door een voorbijgaande vlucht toe te staan, verheft de vliegspreuk de caster naar de lucht, waarbij de hoogte evenredig is aan hun beheersing van spreuken. Toch zijn er waarschuwende verhalen in overvloed, waarin gevallen worden verhaald waarin gedurfde toverspreuken halverwege de vlucht hun luchtvaardigheid verloren en in tragische, vroegtijdige afdalingen naar hun ondergang stortten.

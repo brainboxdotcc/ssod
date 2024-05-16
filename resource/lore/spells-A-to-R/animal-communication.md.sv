@@ -1,0 +1,3 @@
+## Spell: Djurkommunikation
+
+Djurkommunikationsbesvärjelsen, en mystisk gemenskap med naturen, öppnar en telepatisk kanal mellan trollkarlen och naturens varelser. Denna besvärjelse överskrider begränsningarna för konventionell kommunikation, vilket gör det möjligt för castern att förmedla tankar och känslor direkt till djur. Djursinnets förvecklingar, skilda från de kognitiva processerna hos människor och andra kännande varelser, gör E.S.P. besvärjelse ineffektiv i sådana scenarier. Trollkarlen, anpassad till nyanserna i det naturliga riket, blir en harmonisk närvaro, som främjar en unik förbindelse med invånarna i vildmarken.

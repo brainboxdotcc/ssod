@@ -1,0 +1,3 @@
+## Zaklęcie: Miejsce
+
+Zaklęcie Spot, oświecająca latarnia objawienia, w mgnieniu oka odkrywa ukryte skarby i ukryte wyjścia. Rzucony szybkim zaklęciem, szybko rozpoznaje ukryte kosztowności i ukryte ścieżki w przestrzeni. Jednak jego zastosowanie w scenariuszach bojowych jest szczególnie ograniczone, ponieważ bardziej odpowiada instynktom odkrywców, poszukiwaczy skarbów i nawigatorów. Zaklęcie to, dobrodziejstwo dla przemierzających tajemnicze lochy lub poszukujących ukrytych skarbów, znajduje swoje główne zastosowanie w rękach poszukiwaczy przygód poszukujących niewypowiedzianych fortun i tajnych przejść.

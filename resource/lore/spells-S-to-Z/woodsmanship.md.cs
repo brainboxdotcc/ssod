@@ -1,0 +1,3 @@
+## Kouzlo: Zálesáctví
+
+Kouzlo Woodsmanship, harmonická směs esence přírody a tajemného mistrovství, na okamžik propůjčí sesilateli komplexní dovednosti zálesáka. Tato okouzlující infuze se rozšiřuje nejen na složité znalosti lesů, ale hladce se integruje se stávajícími dovednostmi sesilatele. Vliv kouzla trvá přesně jeden den a nabízí přechodné, ale pohlcující spojení se lesním uměním. Vyladění na takovou lesní zdatnost však vyžaduje trpělivý cyklus, který dovoluje seslat kouzlo pouze jednou za herní týden.

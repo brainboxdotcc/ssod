@@ -1,0 +1,3 @@
+## Stava: Läkning
+
+Den helande besvärjelsen, en välvillig åkallan i trollkarlens arsenal, skänker en välsignelse av vitalitet åt levande varelser och fyller på tio uthållighetspoäng. En viktig aspekt av kastarens välvilja är att denna mystiska förbättring inte kan sträcka sig till de odöda eller demoniska varelserna och erkänner livskrafternas inneboende gränser. Men trollkarlens altruism kommer med begränsningar; de är uteslutna från självanvändning, och besvärjelsens enorma effekt kräver en avsevärd investering av tid, vilket begränsar dess frekvens till en gång per dag.

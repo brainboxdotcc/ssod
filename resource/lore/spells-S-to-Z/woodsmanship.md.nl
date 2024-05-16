@@ -1,0 +1,3 @@
+## Spreuk: Bosmanschap
+
+De Woodsmanship-spreuk, een harmonieuze mix van de essentie van de natuur en geheimzinnig meesterschap, geeft de caster tijdelijk de uitgebreide vaardigheden van een bosman. Deze betoverende infusie strekt zich niet alleen uit tot de ingewikkelde kennis van bossen, maar integreert naadloos met de bestaande vaardigheid van de caster. De invloed van de spreuk bestrijkt precies één dag en biedt een voorbijgaande maar meeslepende verbinding met de boskunst. Het afstemmen op zulke bekwaamheid in het bos vereist echter een geduldige cyclus, waardoor de spreuk slechts één keer per spelweek kan worden uitgesproken.

@@ -1,0 +1,3 @@
+## Zaklęcie: Uzdrowienie
+
+Zaklęcie Uzdrawiające, życzliwa inwokacja w arsenale czarownika, obdarza żywymi istotami dobrodziejstwem witalności, odnawiając dziesięć punktów wytrzymałości. Istotnym aspektem życzliwości rzucającego jest to, że to mistyczne uzdrowienie nie może rozciągać się na nieumarłych lub demoniczne stworzenia, uznając wrodzone granice sił życiowych. Jednakże altruizm czarownika wiąże się z ograniczeniami; nie można ich samodzielnie zastosować, a potężna skuteczność zaklęcia wymaga znacznej inwestycji czasu, ograniczając jego częstotliwość do jednego razu dziennie.

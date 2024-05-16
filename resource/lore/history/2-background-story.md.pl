@@ -1,0 +1,19 @@
+Mijają sekundy. Stwór wychodzi z pokoju przez drzwi, przy których kiedyś stała para strażników. Pod czymś, co można określić jako ramię, schowana jest paczka pergaminu, składająca się z siedmiu kawałków postrzępionego welinu, pokrytych tajemnymi pismami. Zatrzymując się na krótką chwilę, Stwór wykonuje ostry zwrot o dziewięćdziesiąt stopni, wychodząc przez sufit, w tajemniczy sposób zabierając ze sobą paczkę przez solidną konstrukcję…
+Mijają minuty. Rozlega się niewiarygodny krzyk gniewu i wściekłości, gdy Stwór zostaje wessany przez magiczną pustkę do odległego miejsca. Jego skradzione dobra zostają rozproszone, ponieważ stworzenie jest zmuszone pozwolić im odpłynąć przez ciemność. Jeden po drugim siedem przedmiotów wypada z eteru, lądując setki mil od siebie, w nieznanych lokalizacjach. Psychiczny podmuch wywołany tym wydarzeniem budzi ciebie i wszystkich innych mieszkańców Twierdzy Czarodziejów. Niemal natychmiast zaczynasz pakować walizki. Stało się coś strasznego. Musisz opuścić to miejsce…
+Poranek w końcu zawitał do Twierdzy Czarodziejów. Topniejący śnieg maskuje noc grozy i bólu, zmywając plamy krwi tam, gdzie niegdyś stali wyszkoleni strażnicy.
+Samotny czarodziej puka do drzwi pokoju wielkiego czarodzieja…
+"Co to jest? Chyba mówiłem ci, żebyś nigdy mnie nie budził o tej porze rano?
+Wielki czarodziej otwiera swoje drzwi przed uczniem czarodzieja, który nie wygląda, jakby przynosił dobre wieści. Wielki czarodziej natychmiast wyczuwa niepokój w oczach młodzieńca i prowadzi go na miejsce obok biurka.
+„Przepraszam, że zakłócam pański sen, ale wygląda na to, że mamy poważny problem…”
+„No cóż, jaki to problem? Przestań zwlekać, stary… jesteś czarodziejem, a nie orkiem…”
+Młody czarodziej zaczyna wyjaśniać wydarzenia poprzedniej nocy. Rano udało im się zdobyć znacznie więcej informacji.
+
+„Wielki demoniczny lord Garneth wysłał tu demonicznego zabójcę, sir. Próbował usunąć siedem zaklęć zniszczenia ze świętego sanktuarium, ale został wygnany przez nieznaną siłę i podczas procesu wygnania rozproszył zwoje po Utopii.
+
+Wyraz przerażenia wypełnia wielkiego czarodzieja i staje się prawie tak blady, jak siedzący przed nim młody uczeń. Siedem zwojów, które Stwór próbował ukraść, to Siedem Zaklęć Zniszczenia, elementy zła zamknięte na zawsze. Zwoje powstały dawno temu i miały zapoczątkować nową erę dobrobytu znaną jako pakt pokojowy. Zło zepsuło to spotkanie i zwoje, obracając je w ciemność i powodując, że zostały zamknięte i ukryte na zawsze. Mówiono, że każdy, kto czyta zwoje, zyskuje ogromną moc w zamian za część swojej duszy, której nigdy nie będzie można odzyskać. Czytanie wszystkich siedmiu zwojów nie byłoby wskazane dla nikogo, kto chciałby zachować jakikolwiek wątek człowieczeństwa. Niedawno przeniesiono je tutaj z centralnego magicznego repozytorium daleko na północ i było oczywiste, że demoniczny lord Garneth chciał ich w jakimś nieziemskim celu… Biorąc pod uwagę wcześniejsze próby podejmowane przez to zagrożenie oraz fakt, że demon nie miał duszy do stracenia czytając zwoje, prawdopodobnie chciał przejąć Utopię dla siebie i opanować ją swoimi plugawymi sługami. Czarodziej wie również, że czas jest najważniejszy. Jeśli nie znajdą zwojów, zanim Garneth będzie mógł wysłać więcej potworów, aby je zdobyć, wszystko będzie stracone. Utopia zostanie zniszczona, począwszy od Twierdzy Czarodziejów, po ostateczne starcie magicznych mocy.
+
+„Te zwoje muszą zostać znalezione!!! Garneth znajdzie ich pierwszy, chyba że się pospieszymy! Roześlij ogłoszenie do wszystkich poszukiwaczy przygód i odkrywców... Dziesięć tysięcy sztuk złota dla tego, który przywróci zwoje i zniszczy demona!
+
+Asystent czarodzieja spieszy do twojego pokoju, żeby cię obudzić, ale kiedy otwiera drzwi, pokój jest pusty. Już poszedłeś… Czy już szukasz siedmiu zwojów, czy może udałeś się gdzie indziej?
+
+Stąd przejmujesz kontrolę. Zdecyduj o przyszłości Utopii…

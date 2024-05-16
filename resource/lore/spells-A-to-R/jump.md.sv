@@ -1,0 +1,3 @@
+## Stava: Hoppa
+
+Fungerar som en förminskad motsvarighet till "flugan" och driver kastaren uppåt och framåt i en graciös båge, vilket underlättar undvikande av markbaserade faror och motståndare. Denna förtrollning är skräddarsydd för korta flygmanövrar och erbjuder ett säkert alternativ till de långvariga flygningarna som erbjuds av den mer avancerade flugan. Jump är särskilt lämplig för nystartade trollkastare och förbättrar rörligheten utan att medföra komplexiteten som är förknippad med långvarig flygning.

@@ -1,0 +1,3 @@
+## Spreuk: stelen
+
+De Steal-spreuk, een vluchtige aanroep van diefstal, stelt de caster in staat zijn sneak score voor een korte periode te verdubbelen. De effecten van de spreuk blijven gedurende één spelparagraaf bestaan, gevolgd door een verplichte cooldown van tien paragrafen vanwege het ingewikkelde en tijdrovende karakter ervan. Hoewel bedreven in het faciliteren van stealth, is de toepassing ervan in gevechten onpraktisch, gezien de langdurige duur van de spreuk.

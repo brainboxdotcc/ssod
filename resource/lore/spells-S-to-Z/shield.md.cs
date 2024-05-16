@@ -1,0 +1,3 @@
+## Kouzlo: Štít
+
+Kouzlo Štít, bašta magické obrany, vykouzlí ochrannou bublinu obklopující sesilatele a potenciální spojence. Tato éterická bariéra se může pochlubit skóre brnění 6 a vydrží deset herních odstavců. Jeho použití je však podmíněno dostupností značného volného času pro odlévání. Pokoušet se vyvolat toto kouzlo v agónii hrozícího boje, když se k němu přibližují protivníci, je nemoudré. Rozumný sesilatel si vyhrazuje jeho použití pro okamžiky strategické výhody během období oddechu.

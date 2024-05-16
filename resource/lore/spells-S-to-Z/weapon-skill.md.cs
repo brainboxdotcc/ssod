@@ -1,0 +1,3 @@
+## Kouzlo: Zbraň
+
+Kouzlo Weapon Skill, podobné nepolapitelnému tanci zaklínadla „sneak“, ovlivňuje čarodějovu bojovou zdatnost. Po vyvolání se skóre dovedností sesilatele působivě zčtyřnásobí, což z něj udělá impozantní sílu na bojišti po dobu pěti odstavců. Následkem je však přechodný propad, protože skóre dovednosti klesne na polovinu své původní hodnoty po stejnou dobu. Tyto efekty se hromadí s postupným sesíláním kouzel, což vyžaduje strategický přístup k uvolnění plného potenciálu tohoto očarování zaměřeného na boj.

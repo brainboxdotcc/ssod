@@ -1,0 +1,3 @@
+## Sort : Compétence d'arme
+
+Le sort de Compétence d'Arme, semblable à la danse insaisissable de l'incantation « furtive », influence la finesse de combat du sorcier. Lors de son invocation, le score de compétence du lanceur subit un quadruplement spectaculaire, ce qui en fait une force redoutable sur le champ de bataille pendant une durée de cinq paragraphes. Cependant, la conséquence est une baisse passagère, car le score de compétence chute à la moitié de sa valeur d'origine pour une durée équivalente. Ces effets s'accumulent au fil des lancements de sorts successifs, exigeant une approche stratégique pour libérer tout le potentiel de cet enchantement centré sur le combat.

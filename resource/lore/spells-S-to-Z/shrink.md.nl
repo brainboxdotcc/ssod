@@ -1,0 +1,3 @@
+## Spreuk: krimpen
+
+De Shrink-spreuk, een mystiek contract met dimensies, condenseert de caster tot een gekozen maat onder hun oorspronkelijke gestalte. Deze metamorfe mysterieuze prestatie vereist voorzichtigheid, aangezien de verminderde tovenaar in miniatuurvorm door de wereld navigeert. De gekrompen staat vereist omzichtigheid en dringt er bij de caster op aan lichtzinnig te werk te gaan en waakzaam te zijn bij het vermijden van gevaarlijke situaties. De handeling van het herstellen van iemands oorspronkelijke omvang door het verdrijven van de betovering vereist strategische timing, een beslissing vol consequenties in het licht van potentiële tegenstanders.

@@ -1,0 +1,3 @@
+## Kouzlo: Zmenšit se
+
+Kouzlo Shrink, mystická smlouva s rozměry, zhušťuje sesilatele na zvolenou velikost pod jejich původní postavu. Tento metamorfní tajemný počin vyžaduje opatrnost, protože zmenšený čaroděj proplouvá světem v miniaturní podobě. Scvrklý stav vyžaduje obezřetnost a nabádá sesilatele, aby našlapoval zlehka a byl ostražitý a vyhýbal se nebezpečným situacím. Akt obnovení původní velikosti pomocí rozptýlení kouzla vyžaduje strategické načasování, což je rozhodnutí plné důsledků tváří v tvář potenciálním protivníkům.

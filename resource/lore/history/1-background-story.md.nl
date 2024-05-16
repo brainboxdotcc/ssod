@@ -1,0 +1,23 @@
+Het komt niet vaak voor dat een avonturier zoals jij naar de Tovenaarsburcht wordt geroepen, vooral niet op zo'n korte termijn. Je hebt dringend nieuws ontvangen van een goede vriend in de donjon, die je informeert dat ze mensen zoals jij nodig hebben om de plek te beschermen. Het is duidelijk dat er een levering heeft plaatsgevonden; de items die worden verplaatst, hebben uiteraard een aanzienlijke waarde.
+
+Het is midden in de zomer, maar het hele gebied is verwikkeld in een sneeuwstorm. Sneeuw en ijs worden opgeklopt tot lakens die over het uitzicht buiten je raam rollen, neerdalend uit de Deathdrop Mountains op enige afstand, kronkelend rond de steunberen van de donjon als de koude hand van de dood zelf. Hier klopt iets niet helemaal. De donjon ligt binnen vijftien kilometer van de Schedelwoestijn. Er mag hier geen sneeuw liggen, en zeker geen sneeuwstorm. Terwijl je je overactieve verbeelding een tijdje laat rusten en de tovenaars de schuld geeft van het weer, stap je in bed en probeer je tot rust te komen, terwijl je in een verstoorde slaap valt, moe van je reis naar de donjon.
+
+Een enkel geluid uit de bel van de donjon luidt het begin in van een nieuwe, verlaten dag... Het is middernacht. De sneeuwlagen blijven het oude gebouw aanvallen en ketsen als kleine stukjes glas van de zijkanten af. Heel in de verte strompelt een eenzame man naar die plek. Voorovergebogen over zijn eikenhouten wandelstok spant hij zijn ogen in het donker, zijn lantaarn onbruikbaar bij dit weer. Een paar minuten later bereikt hij de poort.
+
+Uit het lantaarnlicht van het poortgebouw klinkt een luide stem, nauwelijks hoorbaar boven de woedende storm.
+
+"Stop! Wie gaat daarheen in naam van het magische protectoraat?’
+
+De oude man kijkt naar het lantaarnlicht en antwoordt met een stem die gespannen en verloren klinkt:
+
+“Ik heb wanhopig behoefte aan onderdak… wil je me alsjeblieft helpen? Het enige wat ik vraag is een bed voor de nacht...’
+
+Er komt een reactie vanuit het poortgebouw, mompelt, onderdrukte klachten waarin wordt gevraagd of de bezoeker weet hoe laat het is, terwijl de sloten met een luide, doffe klap open klikken en de man naar binnen wordt geleid. Enkele stille minuten later is het enige dat overblijft van de poortwachter een kleine plas bloed en gepoederd bot, dat in de wind over de vloer van het poortgebouw waait.
+
+Er beweegt iets stil door de gang die het poortgebouw met het kasteelinterieur verbindt. Systematisch doorzoekt het elke kamer, één voor één. Het raast langs je heen in je slaap, schijnbaar door je heen... en veroorzaakt donkere en vreselijke nachtmerries terwijl het voorbijgaat, en je slaap wordt steeds onrustiger.
+Veel later heeft het Iets zijn weg gevonden naar de diepten van de donjon. Vele verdiepingen onder het oppervlak, in een lange gang bedekt met runen, staat het voor een enorme deur van eikenhout en goud, bewaakt door twee bewakers, hoog opgeleid in de magische kunsten, alert en klaar om aanvallen af ​​te weren.
+Het ding scheert langs de eerste bewaker, nog steeds niet zichtbaar, maar laat overal een gevoel van angst en wanhoop achter.
+“Deran? Ben jij dat?"
+De eerste bewaker kijkt opzij en hoort een stem, schijnbaar uit het niets, fluisterend en mompelend in de duisternis. Voordat hij weet wat er gebeurt, heeft The Thing zijn ziel naar het rijk van de magie gezogen. De twee seconden afleiding zijn alles wat nodig is om de taak te volbrengen.
+“Hé, let op! Wij moeten toekijken...'
+De tweede wachter laat zijn bewaker een fractie van een seconde vallen om naar de eerste bewaker te kijken. Wat hij ziet in de plaats van de bewaker vervult hem met angst en angst. Voor hem staat een Ding, samengesteld uit schaduwen en duisternis, bijna mensachtig van vorm, maar doorschijnend als zwart, troebel water. Duizenden onmogelijk witte tanden steken uit een mond als ebbenhout, geplaatst onder twee ogen, rood gloeiend als de putten van de hel zelf, wervelende maalstromen van haat en lijden, klaar en hongerig om te verslinden. De bewaker heeft de kans om de eerste fractie van een seconde van een enkele, doodsbange, gruwelijke schreeuw te uiten, terwijl honderd sprankelende tentakels uit de vraatzuchtige muil tevoorschijn komen, hem met zijn gezicht naar voren in de mond van het schepsel trekken en hem zijn essentie ontnemen, en het consumeren op de meest pijnlijke, verschrikkelijke en gruwelijke manier voor elk sterfelijk wezen om zijn leven te beëindigen...

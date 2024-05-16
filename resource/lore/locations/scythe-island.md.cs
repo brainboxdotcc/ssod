@@ -1,0 +1,7 @@
+Ostrov Scythe, usazený v bouřlivých vodách Rushwaterského průlivu, stojí jako osamělá bašta v mořích jižních oblastí Utopie. V srdci tohoto tajemného ostrova leží zchátralá Castle Scythe, stavba s předtuchou zahalenou pověstmi o temné a strašidelné minulosti. Po věky opuštěný hrad vyzařuje atmosféru zloby, která z něj činí znepokojující destinaci pro nejstatečnější dobrodruhy.
+
+Samotná zmínka o Castle Scythe evokuje příběhy o děsivých zjeveních, strašidelném šepotu a znepokojivé ozvěně z hlubin jeho strašidelných síní. Hrad, kdysi sídlo moci a autority, nyní stojí jako spektrální strážce, střežící tajemství minulé éry.
+
+Legendy hovoří o vládci, jehož touha po nadvládě vedla k nevýslovným krutostem uvnitř hradních zdí. Někteří tvrdí, že duchové ukřivděných stále přetrvávají a nemohou najít odpočinek. Jiní si šeptají o rituálech černého starověku, které se konají ve skrytých komnatách hradu a zanechávají za sebou zbytky z jiného světa, které prostupují vzduchem.
+
+Blížící se ostrov Kosy se setkává s obavami, protože na obzoru se rýsuje zlověstná silueta Castle Scythe. Mnozí se odvážili prozkoumat jeho ruiny a hledali odpovědi na záhady, které obklopují pustý hrad. Přesto se jen málokdo vrací s příběhy o svých nálezech a ti, kteří ano, mluví tichým tónem o znepokojivých setkáních, která čekají ve strašidelných síních Castle Scythe. Ostrov je mrazivým svědectvím přetrvávajících stínů své minulosti a láká pouze ty nejodvážnější duše, aby odhalily pravdu v jeho spektrálním objetí.

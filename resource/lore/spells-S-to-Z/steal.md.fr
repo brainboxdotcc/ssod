@@ -1,0 +1,3 @@
+## Sort : Voler
+
+Le sort Voler, une invocation éphémère de vol, permet au lanceur de doubler son score furtif pendant une brève période. Les effets du sort persistent pendant un seul paragraphe de jeu, suivi d'un temps de recharge obligatoire de dix paragraphes en raison de sa nature complexe et longue. Bien qu'habile à faciliter la furtivité, son application au combat est peu pratique, étant donné la durée d'incantation prolongée du sort.

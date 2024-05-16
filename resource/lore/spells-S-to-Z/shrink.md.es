@@ -1,0 +1,3 @@
+## Hechizo: Reducir
+
+El hechizo Reducir, un contrato místico con dimensiones, condensa al lanzador a un tamaño elegido por debajo de su estatura original. Esta hazaña arcana metamórfica requiere precaución, ya que el hechicero disminuido navega por el mundo en forma de miniatura. El estado encogido exige circunspección, instando al taumaturgo a actuar con cuidado y estar atento para evitar situaciones peligrosas. El acto de restaurar el tamaño original mediante la disipación del hechizo exige una sincronización estratégica, una decisión cargada de consecuencias frente a adversarios potenciales.

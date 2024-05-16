@@ -1,0 +1,3 @@
+## Hechizo: Manos rápidas
+
+El hechizo Fast Hands, una manifestación de aceleración temporal, permite al lanzador mover sus manos y brazos a velocidades sobrehumanas durante breves intervalos. Este encantamiento encuentra aplicación práctica tanto en el caos del combate como en el mundo clandestino del juego, donde sus adeptos portadores pueden emplearlo para obtener una ventaja injusta. La detección sigue siendo difícil de alcanzar, ya que los rápidos movimientos de un lanzador bajo este hechizo normalmente pasan desapercibidos a menos que sean observados por otro lanzador de hechizos vigilante.

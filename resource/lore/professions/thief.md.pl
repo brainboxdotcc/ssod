@@ -1,0 +1,9 @@
+W mrocznych podziemiach Cryptillii, krainy, w której przetrwanie często balansuje na krawędzi konieczności, wielu mieszkańców zostaje wciągniętych w życie przestępcze. Wśród różnych odcieni przestępstwa najpowszechniej występują złodzieje, a ich zwinne palce i tajne umiejętności czynią z nich kwintesencję postaci przestępczego krajobrazu.
+
+Specjalizacja w uzyskiwaniu dostępu do zabezpieczonych domen definiuje rzemiosło złodziei. Uzbrojeni w dogłębną wiedzę na temat mechanizmów zamków, ci zwinni infiltratorzy poruszają się po zawiłym tańcu kubków z finezją doświadczonych rzemieślników. Ich mistrzostwo wykracza poza przyziemność, zagłębiając się w krainę magii, ucząc się zaklęć takich jak „otwieranie”, odkrywając tajemnice kryjące się za zamkniętymi drzwiami.
+
+Ukrycie staje się drugą naturą złodziei, a ich ruchy spowijają zasłony ciszy i oszustwa. Poza otwieraniem zamków wielu doskonaliło swoje umiejętności w tajnej sztuce otwierania kieszeni, poruszaniu się po zatłoczonych ulicach z niemal niesamowitą umiejętnością uwalniania kosztowności bez wzbudzania podejrzeń.
+
+Jednakże złodzieje nie schodzą do cienia wyłącznie w nikczemnych celach. Ich zwinność i przebiegłość czynią z nich wyjątkowych zwiadowców, potrafiących prześlizgiwać się przez silnie strzeżone posterunki z finezją widm. W chaosie bitwy ich zdolność do infiltracji, gromadzenia informacji i szybkiego ataku z nieoczekiwanych kątów przekształca ich w cenne aktywa.
+
+Pod fasadą pozornego niedoboru złodzieje często gromadzą znaczne bogactwa. Ich przebiegłość i zaradność pozwalają im odkrywać ukryte skarby, co odwraca szalę zwycięstwa na ich korzyść. Zatem to, co może wydawać się skromną egzystencją, kryje w sobie subtelne bogactwo osób biegłych w manewrowaniu przez zawiły gobelin kryminalnego krajobrazu Cryptillii.

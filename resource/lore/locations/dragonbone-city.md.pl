@@ -1,0 +1,9 @@
+Miasto Dragonbone, położone na dalekim północnym zachodzie Utopii, ze złowieszczym Lasem Nocy leżącym na wschodzie, charakteryzuje się wyjątkową i niepokojącą atmosferą. Architektura miasta, zbudowana z niesamowitej kombinacji starożytnych kamieni i materiałów pozornie wyciosanych ze smoczych kości, dodaje krajobrazowi nieziemskiego akcentu.
+
+Jednak prawdziwy charakter Dragonbone City kryje się w mrocznych prądach płynących pod jego mistyczną fasadą. Miejska milicja, której dano swobodę i która przekroczyła granicę, stając się brutalną tajną policją, rządzi żelaznym uściskiem. Oficjalnie działając na rzecz utrzymania porządku, niebezpiecznie zbliżyli się do zamachu stanu, skutecznie przekształcając miasto w miejsce strachu i ucisku.
+
+Metody milicji są brutalne i bezlitosne. Podejrzani przestępcy są szybko rozpatrywani, często bez odpowiedniego dochodzenia lub procesu. Ulice miasta rozbrzmiewają złowieszczymi krokami stróżów prawa, a jego mieszkańcy żyją w ciągłym stanie lęku. Niegdyś tętniący życiem rynek jest teraz cieniem dawnego siebie, a wielu kupców i handlarzy zostało wypędzonych przez przytłaczającą atmosferę miasta.
+
+Co zaskakujące, miejscowy władca, który powinien stać na straży sprawiedliwości, przymyka oko na ekscesy milicji. Krążą pogłoski, że władca chętnie przyjmuje łapówki, pozwalając milicji działać bez ograniczeń. Ten bezbożny sojusz pomiędzy skorumpowaną milicją a obojętnym władcą pogrążył Miasto Dragonbone w stanie bezprawia, w którym królują strach i zastraszenie.
+
+Odwiedzającym Miasto Dragonbone zaleca się ostrożność, gdyż powietrze jest gęste od napięcia, a tajemnice miasta skrywają się głęboko w ulicach pełnych smoczych kości.

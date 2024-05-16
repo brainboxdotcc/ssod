@@ -1,0 +1,3 @@
+## Zaklęcie: Skok
+
+Działając jako pomniejszony odpowiednik zaklęcia „latanie”, Skok wyrzuca rzucającego w górę i do przodu po wdzięcznym łuku, ułatwiając uniknięcie naziemnych zagrożeń i przeciwników. Zaklęcie to jest przeznaczone do krótkich manewrów w powietrzu i stanowi bezpieczną alternatywę dla długich lotów, jakie zapewnia bardziej zaawansowane zaklęcie latania. Szczególnie odpowiedni dla początkujących czarodziejów, Jump zwiększa mobilność bez pociągania za sobą komplikacji związanych z dłuższymi podróżami w powietrzu.

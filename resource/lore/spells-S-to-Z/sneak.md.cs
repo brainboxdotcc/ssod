@@ -1,0 +1,3 @@
+## Kouzlo: Proplížit se
+
+Kouzlo Sneak, přechodný plášť stínů, ztrojnásobí skóre sesilatele za deset odstavců a činí je prakticky nepostřehnutelnými. Tajemný zbytek však přetrvává a na třech následujících místech poté, co se kouzlo rozptýlí, se sesilatelovo plížení skóre zmenší na polovinu původní hodnoty. Vychytralí praktikující stealth musí tuto dualitu procházet opatrně, protože následky se hromadí s každým sesíláním. Taková kouzla se ukáží jako nepostradatelná pro tuláky a infiltrátory hledající stíny a vyhýbají se nebezpečí s každým krokem.

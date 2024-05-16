@@ -1,0 +1,3 @@
+## Spreuk: snelle handen
+
+De Fast Hands-spreuk, een manifestatie van temporele versnelling, stelt de caster in staat zijn handen en armen tijdens korte tussenpozen met bovenmenselijke snelheden te bewegen. Deze betovering vindt praktische toepassing zowel in de chaos van de strijd als in de clandestiene wereld van het gokken, waar de bedreven gebruikers deze kunnen gebruiken om een ​​oneerlijk voordeel te behalen. Detectie blijft ongrijpbaar, omdat de snelle bewegingen van een caster onder deze spreuk doorgaans aan de aandacht ontsnappen, tenzij ze worden waargenomen door een andere waakzame spellcaster.

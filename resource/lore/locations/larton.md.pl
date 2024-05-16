@@ -1,0 +1,11 @@
+Bagna Larton, położone w sercu centralnej przestrzeni Utopii, tworzą rozległy i splątany labirynt mętnych wód, poskręcanych pnączy i gęstego, wilgotnego powietrza. Położone na północ od imponujących Gór Deathdrop, na południe od tajemniczego Lasu Nocy i na zachód od zdradzieckiej Pustyni Czaszek, bagna te są świadectwem różnorodnych i trudnych krajobrazów charakteryzujących ten kontynent.
+
+Region ten to gobelin pokrytych mchem drzew, których gałęzie splecione niczym szkieletowe palce sięgają nieba. W nieruchomym powietrzu rozbrzmiewają szmery niewidzialnych stworzeń, a podmokłą ziemię przecinają kręte drogi wodne i zdradzieckie grzęzawiska. Bagna Larton to kraina cieni i szeptów, gdzie granica między żywym a niewidzialnym zaciera się w cętkowanym świetle usiłującym przebić się przez gęsty baldachim.
+
+Za północno-zachodnimi krańcami bagien leży Obóz Nomadów, enklawa wędrowców starających się przetrwać na obrzeżach tej niesamowitej dziczy. Nomadzi, dzięki swoim odpornościom i możliwościom adaptacji, tworzą wyjątkową społeczność, która prosperuje w obliczu wyzwań stojących przed wsią.
+
+Jednak głęboko w mętnych wodach, w sercu centralnych bagien, leży miasto Larton, niezwykły bastion cywilizacji pośród wrogiego środowiska. Otoczone wysokimi murami miasto stało się centrum handlu, kultury i władzy. Larton jest domem dla wielu gildii i zakonów, z których każdy walczy o wpływy w potężnych murach miasta. Zgiełk i gwar ludnego miasta odbijają się echem w jego granicach, co stanowi wyraźny kontrast z niesamowitą ciszą otaczających bagien.
+
+Mury miasta, wysokie i zdecydowane, służą nie tylko jako bariera przed wkraczającą bagienną fauną, ale także jako świadectwo odporności jego mieszkańców. Mieszkańcy Larton stworzyli skomplikowaną sieć ścieżek i mostów, które przecinają wody bagien, łącząc dzielnice miasta i umożliwiając handel i komunikację.
+
+Jednak wśród względnego spokoju Larton krążą szepty o nadchodzącym i ponadczasowym terrorze zamieszkującym głęboko w zachodnich krańcach bagien. Plotki nawiązują do siły, która istniała wcześniej niż samo miasto, czyhającego cienia, który może oznaczać zagładę dla nieostrożnych. Mieszkańcy Larton pozostają czujni, wystrzegając się tajemnic kryjących się w sercu bagien i starożytnych, niewidzialnych zagrożeń, które mogą obudzić się z ich snu.

@@ -1,0 +1,11 @@
+The Wizard's Keep står som en imponerande struktur, inbäddad på kontinenten Utopia, med dess höga spiror som sträcker sig mot himlen. Denna uråldriga byggnad fungerar som epicentrum för magisk inlärning, en vördad plats där unga trollkarlar ger sig ut på sina resor av mystisk mästerskap.
+
+The Keep är omgivet av vidsträckta marker, frodiga med förtrollade trädgårdar och övningsfält där blivande trollkarlar finslipar sina färdigheter. Efter att ha accepterats i Wizard's Guild välkomnas nybörjare till denna mystiska tillflyktsort från en ung ålder, guidade av erfarna mentorer genom magiska konsters krångligheter.
+
+Kärnan rymmer Keep stora bibliotek som innehåller urgamla visdomar, trollböcker och uppteckningar av magisk historia som samlats under århundraden. En betydande historisk artefakt som en gång fanns i dessa heliga hallar var den ursprungliga förvaringsplatsen för de sju rullarna av förstörelse, kraftfulla och farliga reliker som länge har varit eftertraktade av dem med olycksbådande ambitioner.
+
+Dessa rullar, förråd med enorm magisk kraft, skapades under magins första tidsålder för att inleda en ny era av välstånd. Men korruptionen befläckade det ursprungliga syftet och vred rullarna till förstörelseinstrument. De gamla trollkarlarna insåg den fara de utgjorde och gömde försiktigt rullarna i Keep, och skyddade dem från dem som försökte utnyttja sin mörka potential.
+
+Den centrala auktoriteten för Wizard's Guild finns i Keep, där den stora trollkarlen styr och vägleder den magiska gemenskapen. Guildens inflytande sträcker sig över hela Utopia, när trollkarlar från olika regioner samlas inom dessa väggar för att dela kunskap, bedriva forskning och samarbeta i frågor av magisk betydelse.
+
+The Keep fungerar som en träningsplats, en lärostad och en bastion mot mörkrets krafter. Trollkarlar som tar examen från dess ärevördiga hallar bär kunskapen och ansvaret som ingjutits inom dem, och blir försvarare av det mystiska och mästare mot magiska hot som kan äventyra Cryptillias länder.

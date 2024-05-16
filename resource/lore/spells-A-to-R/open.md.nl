@@ -1,0 +1,3 @@
+## Spel: Open
+
+De Open-spreuk, een hoofdsleutel die door mysterieuze bekwaamheid wordt opgeroepen, stelt de caster in staat om explosief sloten en verzegelde deuren te doorbreken. Door een gecontroleerde explosie van vergrendelingsmechanismen en afdichtingen teweeg te brengen, stuwt deze betovering deuren uit hun scharnieren en splijt dozen in stukken. Hoewel het een veelzijdig hulpmiddel is in de handen van elke ervaren spellcaster, bereikt het potentieel ervan zijn hoogtepunt in de behendige vingers van een ervaren dief. Dieven, bedreven in de kunst van het uitvluchten, maken gebruik van de Open-spreuk om geheimen te ontrafelen, schatten te stelen en met ongeëvenaarde finesse door beveiligde doorgangen te navigeren.

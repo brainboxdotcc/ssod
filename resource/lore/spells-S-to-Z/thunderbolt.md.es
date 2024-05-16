@@ -1,0 +1,3 @@
+## Hechizo: Rayo
+
+Clasificado entre los encantamientos ofensivos más devastadores, el hechizo del rayo envuelve los brazos del lanzador en una neblina crepitante de energía eléctrica a un simple latido de ser lanzado. Esta fuerza electrizante puede lanzarse hacia cualquier objetivo, vivo o sin vida. Las consecuencias de su impacto son graves y a menudo dejan a la víctima gravemente herida o reducida a cenizas humeantes, lo que demuestra su formidable destreza dentro del arsenal de un lanzador de conjuros.

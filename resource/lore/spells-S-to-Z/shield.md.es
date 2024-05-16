@@ -1,0 +1,3 @@
+## Hechizo: Escudo
+
+El hechizo Escudo, un bastión de defensa mágica, conjura una burbuja protectora que envuelve al lanzador y a sus aliados potenciales. Esta barrera etérea cuenta con una puntuación de armadura de 6 y dura diez párrafos del juego. Sin embargo, su aplicación está supeditada a la disponibilidad de un período sustancial de tiempo libre para realizar el casting. Intentar invocar este hechizo en medio de un combate inminente, con los adversarios acercándose, no es prudente. Un lanzador prudente reserva su uso para momentos de ventaja estratégica durante períodos de respiro.

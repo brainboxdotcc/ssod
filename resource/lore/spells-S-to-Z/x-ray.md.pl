@@ -1,0 +1,3 @@
+## Zaklęcie: Rentgen
+
+Rozpoczynając mistyczną penetrację barier, zaklęcie promieni rentgenowskich zapewnia rzucającemu wizję pozwalającą dostrzec niemal każdą przeszkodę. W przeciwieństwie do swojego przyziemnego imiennika, ta tajemnicza zdolność przekracza ograniczenia metali ciężkich, takich jak ołów. Jednak jego użyteczność wykracza poza bezpośrednią oprawę wizualną, zagłębiając się w niewidzialne sfery. Choć jest potężny, rzucanie go wymaga czasu i czyni go niepraktycznym do użycia w ogniu walki.

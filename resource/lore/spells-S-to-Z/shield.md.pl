@@ -1,0 +1,3 @@
+## Zaklęcie: Tarcza
+
+Zaklęcie Tarcza, bastion magicznej obrony, przywołuje ochronną bańkę otaczającą rzucającego i potencjalnych sojuszników. Ta eteryczna bariera może poszczycić się współczynnikiem pancerza wynoszącym 6 i wytrzymuje dziesięć akapitów gry. Jednakże jego stosowanie jest uzależnione od dostępności znacznej ilości wolnego czasu na castingi. Próba przywołania tego zaklęcia w ferworze nieuchronnej walki, gdy przeciwnicy się zbliżają, jest nierozsądna. Rozważny rzucający rezerwuje jego użycie na momenty strategicznej przewagi w okresach wytchnienia.

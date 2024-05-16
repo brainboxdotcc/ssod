@@ -1,0 +1,3 @@
+## Hechizo: Punto
+
+El hechizo Spot, un faro iluminador de revelación, revela tesoros ocultos y salidas ocultas en un abrir y cerrar de ojos. Lanzado con un rápido encantamiento, discierne rápidamente objetos de valor oscurecidos y caminos ocultos dentro de un espacio. Sin embargo, su aplicación en escenarios de combate está notablemente limitada, alineándose más con los instintos de exploradores, cazadores de tesoros y navegantes. Este hechizo, una bendición para aquellos que atraviesan mazmorras crípticas o buscan tesoros ocultos, encuentra su principal utilidad en manos de aventureros que buscan fortunas incalculables y pasajes encubiertos.

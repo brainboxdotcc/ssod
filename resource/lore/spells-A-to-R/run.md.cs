@@ -1,0 +1,3 @@
+## Kouzlo: Utíkej
+
+Kouzlo Run, přechodný nárůst rychlosti, zdvojnásobí rychlost sesilatele na deset odstavců a promění je v prchavé rozmazání na bojišti. Přesto, podobně jako u kouzla Sneak, se rozvine dočasná reakce. Po ukončení kouzla rychlost sesilatele klesne na polovinu původní hodnoty za tři odstavce. Důsledky se sčítají s každým dalším odlitkem. V boji se toto zaklínadlo stává rychlým útěkem i obratnou zbraní, která umožňuje sesilatelům kouzel zmást nepřátele a manipulovat s odlivem a proudem bitvy svou nepolapitelnou grácií.

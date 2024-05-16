@@ -1,0 +1,9 @@
+Pierwsza Era Magii to okres wczesnej historii Kryptylli, który jawi się jako mroczna epoka, era spowita mgłą czasu, kiedy cały świat był uwikłany w wicher przedłużającego się magicznego konfliktu trwającego stulecia. Był to okres poprzedzający uświadomienie wielu ras o niebezpiecznej naturze rzucania zaklęć, czas, kiedy prawdziwa wielkość demonicznego zagrożenia, czającego się w niewidzialnych energiach otaczających Cryptillię, pozostawała zakryta.
+
+Konflikt trwał aż do kluczowego momentu, kiedy kilku wizjonerskich czarodziejów zawarło bezprecedensowy sojusz, przekraczając granice, które niegdyś stawiały przeciwko sobie elfy, ludzi i krasnoludy. Zjednoczeni w celu zaaranżowali historyczny traktat pokojowy, pakt wyryty potężnymi nićmi magii, próbując utkać trwały pokój na stulecia, jeśli nie na wieczność.
+
+Jednak eteryczny atrament na tym magicznym pergaminie nie wysechł, zanim ujawniły się jego wady. Złowrogie siły, uważane za machinacje demonów, interweniowały w nikczemnych zamiarach, udaremniając jedność ras i uniemożliwiając niektórym udział w szczycie pokojowym. Szczególnie nieobecne było imperium orków i niektóre plemiona elfów, których przeznaczeniem było zejście w stronę złowrogiego rodu znanego jako Mroczne Elfy.
+
+Nieobecność tych ras w pakcie pokojowym spowodowała nieodwracalne pęknięcie w strukturze przewidywanego wiecznego pokoju. Złowieszczy program niesiony przez te wykluczone rasy miał na celu nie tylko unicestwienie ideałów zawartych w Paktu Pokojowym, ale także demontaż samych zwolenników traktatu. Widmo nieustannego konfliktu utrzymywało się, rzucając długi cień na utopijne aspiracje królestwa tęskniącego za trwałym pokojem, który wydawał się na zawsze nieuchwytny.
+
+Na gobelinie historii Kryptylii Pierwsza Wiek Magii jawi się jako przestroga, kronika, w której odbijają się echem konsekwencje niekontrolowanej mocy magicznej, oszustwo pod wpływem demonicznych wpływów i krucha natura paktów mających związać podzielony świat.

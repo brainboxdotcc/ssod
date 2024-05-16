@@ -1,0 +1,11 @@
+Littletown, urocza i spokojna wioska, położona jest na przeciwległym brzegu rzeki od imponującej twierdzy Czarodziejów. Praktyczny rzut kamieniem, który ich dzieli, przypomina o współistnieniu magicznej krainy i prostego spokoju wiejskiego życia. Littletown, ze skromnymi domkami i dachami krytymi strzechą, emanuje atmosferą spokoju.
+
+Wąski most, wygładzony przez przejście niezliczonych stóp, łączy Littletown z Twierdzą Czarodziejów. Wieśniacy często przemierzają ten most, udając się do twierdzy w różnych celach lub po prostu, aby rzucić okiem na mistyczne wydarzenia w jej wnętrzu. Rytmiczny szum rzeki stanowi stałe tło, tworząc kojącą atmosferę otaczającą wioskę.
+
+Południowa trasa Littletown wije się przez malownicze krajobrazy, oferując w oddali przebłyski zamku Garneth. Złowieszcza sylwetka zamku, wznosząca się na horyzoncie, stale przypomina o zbliżającym się zagrożeniu ze strony władcy demonów. Podróżni przejeżdżający przez Littletown w drodze do Port Obligan lub Valley City często dzielą się opowieściami o groźnej aurze otaczającej zamek Garneth.
+
+Na zachodzie kusi rozległa przestrzeń Valley City, której wysokie, sklepione drogi są widoczne na tle gór. Littletown, choć małe, służy jako ważne skrzyżowanie dróg łączących różne części Utopii, pozwalając jego mieszkańcom być świadkami przypływów i odpływów podróżników z różnych środowisk.
+
+Pomimo bliskości Twierdzy Czarodziejów i złych przeczuć obecności Zamku Garnetha, Littletown żyje spokojnie. Mieszkańcy wioski zajmują się swoimi codziennymi zajęciami, zajmując się uprawami, handlując towarami i gromadząc się na wiejskim placu, aby dzielić się historiami. Dym unoszący się z kominów sygnalizuje ciepło palenisk i poczucie wspólnoty, które definiuje Littletown.
+
+Gdy słońce zachodzi i maluje niebo odcieniami pomarańczy i fioletu, spokojna wioska Littletown cieszy się spokojem, jaki towarzyszy życiu na skraju magicznej krainy. Odległe echa rzeki, okazjonalne migotanie tajemnych świateł z Twierdzy Czarodziejów i czujne spojrzenie Zamku Garneth wspólnie kształtują wyjątkowy charakter tej idyllicznej wioski.

@@ -1,0 +1,19 @@
+Bara sekunder passerar. The Thing passerar ut ur rummet genom dörren där paret vakter en gång stod. Nedstoppat under vad som skulle kunna beskrivas som en arm finns ett paket pergament, sju bitar trasigt veläng, täckta med mystiska skrifter. Med en kort paus tar The Thing en skarp nittio graders sväng, går ut genom taket och tar på mystiskt sätt paketet genom den solida strukturen med sig...
+Minuterna går. Det är ett otroligt skrik av ilska och ilska när tinget sugs genom det magiska tomrummet till en plats långt borta. Dess stöldgods skingras, eftersom varelsen tvingas låta dem driva iväg genom mörkret. En efter en faller de sju föremålen ur etern och landar hundratals mil från varandra, på okända platser. Den psykiska explosionen som skapas av händelsen väcker dig och alla andra i Wizards Keep. Nästan direkt börjar du packa dina väskor. Något hemskt har hänt. Du måste lämna denna plats...
+Morgonen kommer äntligen till Wizard's Keep. Smältande snö döljer en natt av skräck och smärta, och tvättar bort blodfläckar där en gång utbildade vakter stod.
+En ensam trollkarl knackar på dörren till den stora trollkarlens rum...
+"Vad är det? Jag trodde att jag sa åt dig att aldrig väcka mig vid den här tiden på en morgon?”
+Den stora trollkarlen öppnar sin dörr för en lärling trollkarl som inte ser ut som om han kommer med goda nyheter. Den stora trollkarlen känner omedelbart oron i den unges ögon och leder honom till en plats nära hans skrivbord.
+"Jag är ledsen att jag stör din sömn, sir, men det verkar som om vi har ett stort problem..."
+"Ja, vad är det för problem? Sluta skjuta upp, man... du är en trollkarl inte en Orc..."
+Den unga trollkarlen börjar förklara händelserna från föregående natt. Under förmiddagen hade de lyckats få fram mycket mer information.
+
+"Den store demonen Lord Garneth har skickat hit en demonisk lönnmördare, sir. Han försökte ta bort de sju förstörelsebesvärjelserna från den heliga helgedomen, men förvisades av en okänd styrka och skingrade rullarna genom Utopia under förvisningsprocessen.
+
+En blick av skräck fyller den stora trollkarlen, och han blir nästan lika blek som den unge lärlingen som sitter framför honom. De sju rullarna som Thing försökte stjäla var Seven Spells Of Destruction, element av ondska inlåsta för alltid. Rullarna skapades för länge sedan, menade att inleda en ny era av välstånd känd som fredspakten. Ondskan hade korrumperat det mötet och rullarna, förvandlat dem till mörkret och gjort att de låstes in och gömdes för all framtid. Den som läser rullarna sades få enorm makt, i utbyte mot en del av sin själ, som aldrig kunde återvinnas. Att läsa alla sju rullarna skulle inte vara tillrådligt för alla som ville bevara någon mänsklighetens tråd. De hade nyligen flyttats hit från det centrala magiska förvaret långt norrut, och det var uppenbart att demonen Lord Garneth ville ha dem för något utomjordiskt syfte... Med tanke på tidigare försök som inletts av detta hot och det faktum att demonen inte hade någon själ att förlora genom att läsa rullarna ville den förmodligen ta Utopia för sig själv och överskölja den med sina fula undersåtar. Trollkarlen vet också att tiden är avgörande. Om de inte hittar rullarna innan Garneth kan skicka ut fler monster för att få dem, kommer alla att gå förlorade. Utopia kommer att förstöras, med start från Wizard's Keep i en sista uppgörelse av magisk kraft.
+
+"De där rullarna måste hittas!!! Garneth hittar dem först om vi inte skyndar oss! Lägg ut ett meddelande till alla äventyrare och upptäcktsresande... Tiotusen guldpjäser till den som tar tillbaka rullarna och förstör demonen!”
+
+Assisterande trollkarlen rusar till ditt rum för att väcka dig, men när han öppnar dörren är rummet öde. Du har redan åkt... Letar du redan efter de sju rullarna, eller har du rest någon annanstans?
+
+Härifrån tar du kontroll. Bestäm framtiden för Utopia...

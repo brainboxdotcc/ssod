@@ -1,0 +1,3 @@
+## Sort : Sauter
+
+Fonctionnant comme une contrepartie réduite du sort « voler », Jump propulse le lanceur de sorts vers le haut et vers l'avant dans un arc gracieux, facilitant l'évasion des dangers et des adversaires au sol. Cet enchantement est conçu pour de brèves manœuvres aériennes, offrant une alternative sûre aux vols prolongés permis par le sort de vol plus avancé. Particulièrement adapté aux lanceurs de sorts débutants, Jump améliore la mobilité sans entraîner les complexités associées à un voyage aérien prolongé.

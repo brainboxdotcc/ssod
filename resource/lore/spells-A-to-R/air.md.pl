@@ -1,0 +1,3 @@
+## Zaklęcie: Powietrze
+
+Zaklęcie Powietrza, eteryczne koło ratunkowe w repertuarze czarownika, generuje sprężysty bańkę powietrza zamiast konwencjonalnej tarczy ochronnej. Ta mistyczna kieszeń powietrzna staje się istotnym kanałem, ułatwiającym długotrwałe przetrwanie pod powierzchnią wody lub w bezlitosnej pustce próżni. Strategiczne przywołanie tego zaklęcia przekształca rzucającego w amfibię, poruszającą się po wodnych głębinach i pozaziemskich przestrzeniach z niezrównaną odpornością.
