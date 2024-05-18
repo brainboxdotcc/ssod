@@ -492,7 +492,7 @@
         "vi": "Vật phẩm trang bị",
         "cs": "Vybavit položku",
         "el": "Εξοπλισμός αντικειμένου",
-        "uk": "Обладнати предмет",
+        "uk": "Екіпірувати предмет",
         "th": "สวมใส่ไอเทม"
     },
     "USE": {
@@ -585,7 +585,7 @@
         "vi": "trang bị",
         "cs": "Vybavit",
         "el": "Εξοπλίζω",
-        "uk": "Обладнати",
+        "uk": "Екіпірувати",
         "th": "อุปกรณ์"
     },
     "EQUIPPED": {
@@ -926,7 +926,7 @@
         "vi": "## Yêu cầu phí bảo hiểm\n\nBạn cần [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) để sử dụng tính năng này! Đăng ký chỉ có giá £3 một tháng và cung cấp quyền truy cập vào các khu vực bổ sung, giảm chiến lợi phẩm tự động và hơn thế nữa!",
         "cs": "## Vyžaduje se prémie\n\nK použití této funkce potřebujete [Seven Spells Premium](https:\/\/premium.ssod.org?user={})! Předplatné stojí pouhé 3 £ měsíčně a poskytuje přístup k dalším oblastem, automatickému shazování kořisti a dalším!",
         "el": "## Απαιτείται Premium\n\nΧρειάζεστε [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) για να χρησιμοποιήσετε αυτήν τη δυνατότητα! Οι συνδρομές είναι μόλις 3 £ το μήνα και παρέχουν πρόσβαση σε πρόσθετες περιοχές, αυτόματες εκπτώσεις ληστειών και πολλά άλλα!",
-        "uk": "## Потрібен преміум\n\nВам потрібен [Seven Spells Premium](https:\/\/premium.ssod.org?user={}), щоб використовувати цю функцію! Підписка коштує лише 3 фунти стерлінгів на місяць і дає доступ до додаткових областей, автоматичне отримання здобичі тощо!",
+        "uk": "## Потрібен преміум\n\nВам потрібен [Seven Spells Premium](https:\/\/premium.ssod.org?user={}), щоб використовувати цю функцію! Підписка коштує лише 3 фунти стерлінгів на місяць і дає доступ до додаткових областей, автоматичне отримання предметів тощо!",
         "th": "## ต้องใช้พรีเมี่ยม\n\nคุณต้องมี [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) จึงจะใช้ฟีเจอร์นี้ได้! การสมัครสมาชิกเพียง 3 ปอนด์ต่อเดือนและให้สิทธิ์เข้าถึงพื้นที่เพิ่มเติม ดรอปไอเทมอัตโนมัติ และอื่นๆ อีกมากมาย!"
     },
     "GETPREMIUM": {
@@ -5699,7 +5699,7 @@
         "vi": "Được yêu cầu bởi {}",
         "cs": "Vyžádáno uživatelem {}",
         "el": "Ζητήθηκε από {}",
-        "uk": "Попрошений гравцем {}",
+        "uk": "Команда попрошена гравцем {}",
         "th": "การร้องขอจาก {}",
         "pl": "Na wniosek {}"
     },
@@ -5792,7 +5792,7 @@
         "vi": "Bạn chưa có hồ sơ. Bạn phải tạo một ký tự bằng cách sử dụng lệnh `\/start`!",
         "cs": "Ještě nemáte profil. Musíte vytvořit znak pomocí příkazu `\/start`!",
         "el": "Δεν έχετε ακόμα προφίλ. Πρέπει να δημιουργήσετε έναν χαρακτήρα χρησιμοποιώντας την εντολή «\/start»!",
-        "uk": "У вас іще немає профілю. Ви повинні створити персонажа за допомогою команди `\/start`!",
+        "uk": "У Вас іще немає профілю. Ви повинні створити персонажа за допомогою команди `\/start`!",
         "th": "คุณยังไม่มีโปรไฟล์ คุณต้องสร้างตัวละครโดยใช้คำสั่ง `\/start`!",
         "pl": "Nie masz jeszcze profilu. Musisz utworzyć postać za pomocą polecenia `\/start`!"
     },
@@ -6660,7 +6660,7 @@
         "vi": "giúpđỡ",
         "cs": "pomoc",
         "el": "βοήθεια",
-        "uk": "допомогти",
+        "uk": "довідка",
         "th": "ช่วย",
         "pl": "pomoc"
     },
@@ -6970,7 +6970,7 @@
         "vi": "Mang lại hòa bình thế giới, hoặc chỉ thể hiện mệnh lệnh này\nHiển thị thông tin về các lệnh của bot",
         "cs": "Přineste světový mír, nebo jen ukažte tento příkaz\nZobrazuje informace o příkazech robota",
         "el": "Φέρτε την παγκόσμια ειρήνη ή απλώς δείξτε αυτή την εντολή\nΕμφανίζει πληροφορίες σχετικά με τις εντολές του bot",
-        "uk": "Принесіть мир у всьому світі або просто покажіть цю команду\nПоказує інформацію про команди бота",
+        "uk": "Принести мир у всьому світі або просто показати цю команду\nПоказує інформацію про команди бота",
         "th": "นำมาซึ่งสันติภาพโลกหรือเพียงแสดงคำสั่งนี้\nแสดงข้อมูลเกี่ยวกับคำสั่งของบอท",
         "pl": "Zaprowadź pokój na świecie lub po prostu pokaż to polecenie\nPokazuje informacje o poleceniach bota"
     },
@@ -7001,7 +7001,7 @@
         "vi": "Bắt đầu một nhân vật mới hoặc tiếp tục trò chơi của bạn\nTrò chơi được chơi thông qua các lần nhấp vào nút và tương tác với tin nhắn của bot.",
         "cs": "Začněte novou postavu nebo pokračujte ve hře\nHra se hraje kliknutím na tlačítka a interakcí se zprávami robotů.",
         "el": "Ξεκινήστε έναν νέο χαρακτήρα ή συνεχίστε το παιχνίδι σας\nΤο παιχνίδι παίζεται μέσω κλικ κουμπιών και αλληλεπίδρασης με μηνύματα bot.",
-        "uk": "Створіть нового персонажа або продовжуйте гру\nГра відбувається за допомогою натискань кнопок і взаємодії з повідомленнями ботів.",
+        "uk": "Створити нового персонажа або продовжити гру\nГра відбувається за допомогою натискань кнопок і взаємодії з повідомленнями бота.",
         "th": "เริ่มตัวละครใหม่หรือเล่นเกมต่อ\nเกมนี้เล่นผ่านการคลิกปุ่มและโต้ตอบกับข้อความบอท",
         "pl": "Rozpocznij nową postać lub kontynuuj grę\nGra odbywa się poprzez klikanie przycisków i interakcję z wiadomościami botów."
     },
@@ -7063,7 +7063,7 @@
         "vi": "Hiển thị bản đồ của thế giới trò chơi.\nBot sẽ không cho bạn thấy bạn đang ở đâu. Việc theo dõi vòng bi của bạn là tùy thuộc vào bạn!",
         "cs": "Ukažte mapu herního světa.\nRobot vám neukáže, kde jste. Je jen na vás, jak budete sledovat svá ložiska!",
         "el": "Δείξτε έναν χάρτη του κόσμου του παιχνιδιού.\nΤο bot δεν θα σας δείξει πού βρίσκεστε. Εναπόκειται σε εσάς να παρακολουθείτε τον προσανατολισμό σας!",
-        "uk": "Покажіть мапу ігрового світу.\nБот не покаже вам, де ви знаходитесь. Ви повинні стежити за своїми підшипниками!",
+        "uk": "Показати мапу ігрового світу.\nБот не покаже вам, де ви знаходитесь. Стежте за своїми підшипниками самостійно!",
         "th": "แสดงแผนที่โลกของเกม\nบอทจะไม่แสดงให้คุณเห็นว่าคุณอยู่ที่ไหน มันขึ้นอยู่กับคุณแล้วที่จะติดตามทิศทางของคุณ!",
         "pl": "Pokaż mapę świata gry.\nBot nie pokaże Ci, gdzie jesteś. To od Ciebie zależy, czy będziesz śledzić swoje położenie!"
     },
@@ -7095,7 +7095,7 @@
         "vi": "Chỉ ra cách nhận được chiến lợi phẩm miễn phí",
         "cs": "Ukažte, jak získat zdarma kapky lootu",
         "el": "Δείξτε πώς να λαμβάνετε δωρεάν κλοπιμαία",
-        "uk": "Покажіть, як отримати безкоштовну здобич",
+        "uk": "Показати, як отримати безкоштовні предмети",
         "th": "แสดงวิธีรับไอเทมดรอปฟรี"
     },
     "HELP_PROFILE_DESC": {
@@ -7218,7 +7218,7 @@
         "vi": "Hiển thị liên kết để quản lý phí bảo hiểm của bạn, nếu bạn là thành viên cao cấp.",
         "cs": "Zobrazit odkaz pro správu prémie, pokud jste prémiovým členem.",
         "el": "Δείξτε έναν σύνδεσμο για τη διαχείριση του premium σας, εάν είστε premium μέλος.",
-        "uk": "Якщо ви є преміум-учасником, покажіть посилання для керування своїм преміум-учасником.",
+        "uk": "Якщо ви є преміум-учасником, показує покликання для керування своїм преміум-учасником.",
         "th": "แสดงลิงก์เพื่อจัดการพรีเมี่ยมของคุณ หากคุณเป็นสมาชิกพรีเมี่ยม",
         "pl": "Pokaż link do zarządzania swoją premią, jeśli jesteś członkiem premium."
     },
@@ -7311,7 +7311,7 @@
         "vi": "Hiển thị thông tin kỹ thuật về bot.\nTrừ khi bạn gặp vấn đề, có thể bạn không cần sử dụng lệnh này.",
         "cs": "Zobrazit technické informace o robotovi.\nPokud nemáte problémy, pravděpodobně tento příkaz nemusíte používat.",
         "el": "Εμφάνιση τεχνικών πληροφοριών για το bot.\nΕκτός και αν αντιμετωπίζετε προβλήματα, πιθανότατα δεν χρειάζεται να χρησιμοποιήσετε αυτήν την εντολή.",
-        "uk": "Показати технічну інформацію про бота.\nЯкщо у вас немає проблем, можливо, вам не потрібно використовувати цю команду.",
+        "uk": "Показати технічну інформацію про бота.\nЯкщо у Вас немає проблем, можливо, Вам не потрібно використовувати цю команду.",
         "th": "แสดงข้อมูลทางเทคนิคเกี่ยวกับบอท\nคุณอาจไม่จำเป็นต้องใช้คำสั่งนี้ ยกเว้นกรณีที่คุณประสบปัญหา",
         "pl": "Pokaż informacje techniczne o bocie.\nJeśli nie masz problemów, prawdopodobnie nie musisz używać tego polecenia.\nAQXVM{T]RZLP\n[*{1}_*]\ntworzyć\nAQXVM{T]RZLP\n[*{2}_*]\ndołączyć\nAQXVM{T]RZLP\n[*{3}_*]\nZostawić\nAQXVM{T]RZLP\n[*{4}_*]\nPokaż informacje o bocie\nAQXVM{T]RZLP\n[*{5}_*]\nPokaż strony wiedzy o świecie gry\nAQXVM{T]RZLP\n[*{6}_*]\nPokaż mapę świata gry\nAQXVM{T]RZLP\n[*{7}_*]\nPodaj link do zarządzania subskrypcją premium lub do subskrypcji\nAQXVM{T]RZLP\n[*{8}_*]\nWyświetl profil użytkownika\nAQXVM{T]RZLP\n[*{9}_*]\nużytkownik\nAQXVM{T]RZLP\n[*{1}_{0}_*]\nUżytkownik, którego profil chcesz wyświetlić\nAQXVM{T]RZLP\n[*{1}_{1}_*]\nZmień nazwę jednej ze swoich broni lub elementów zbroi\nAQXVM{T]RZLP\n[*{1}_{2}_*]\nprzedmiot\nAQXVM{T]RZLP\n[*{1}_{3}_*]\nnazwa\nAQXVM{T]RZLP\n[*{1}_{4}_*]\nElement do zmiany nazwy\nAQXVM{T]RZLP\n[*{1}_{5}_*]\nNowe imie\nAQXVM{T]RZLP\n[*{1}_{6}_*]\nMężczyzna\nAQXVM{T]RZLP\n[*{1}_{7}_*]\nKobieta\nAQXVM{T]RZLP\n[*{1}_{8}_*]\nCałkowicie zresetuj postać, umożliwiając jej ponowne utworzenie i przerzucenie\nAQXVM{T]RZLP\n[*{1}_{9}_*]\nRozpocznij nową postać lub wznów grę\nAQXVM{T]RZLP\n[*{2}_{0}_*]\nPokaż, jak głosować na bota, aby zdobyć łupy\nAQXVM{T]RZLP"
     },
@@ -7404,7 +7404,7 @@
         "vi": "Hiển thị bản đồ thế giới trò chơi",
         "cs": "Ukažte mapu herního světa",
         "el": "Δείξτε έναν χάρτη του κόσμου του παιχνιδιού",
-        "uk": "Покажіть мапу ігрового світу",
+        "uk": "Показати мапу ігрового світу",
         "th": "แสดงแผนที่โลกของเกม",
         "pl": "Pokaż mapę świata gry"
     },
@@ -7435,7 +7435,7 @@
         "vi": "Cung cấp liên kết để quản lý đăng ký trả phí của bạn hoặc để đăng ký",
         "cs": "Poskytněte odkaz ke správě prémiového předplatného nebo k předplatnému",
         "el": "Δώστε έναν σύνδεσμο για τη διαχείριση της premium συνδρομής σας ή για να εγγραφείτε",
-        "uk": "Надайте посилання для керування преміум-підпискою або для підписки",
+        "uk": "Надайте покликання для керування преміум-підпискою або для підписки",
         "th": "ระบุลิงก์เพื่อจัดการการสมัครสมาชิกแบบพรีเมียมของคุณหรือเพื่อสมัครสมาชิก",
         "pl": "Podaj link do zarządzania subskrypcją premium lub do subskrypcji"
     },
@@ -8707,7 +8707,7 @@
         "vi": "{} bước ra ánh sáng với sự giúp đỡ của {}",
         "cs": "{} putuje do světla s pomocnou rukou od {}",
         "el": "Ο {} περιπλανιέται στο φως με ένα χέρι βοήθειας από το {}",
-        "uk": "{} виходить на світло з рукою допомоги від {}",
+        "uk": "{} виходить на світло з рукою допомоги від гравця {}",
         "th": "{} เดินเข้าไปในแสงสว่างพร้อมความช่วยเหลือจาก {}"
     },
     "DEATH_MSG_28": {
@@ -9265,7 +9265,7 @@
         "vi": "<@{0}>, Bạn đã được thách đấu bởi {1}",
         "cs": "<@{0}>, {1} vás vyzval k boji",
         "el": "<@{0}>, έχετε προκληθεί να πολεμήσετε από τον {1}",
-        "uk": "<@{0}>, вас викликав до бою {1}",
+        "uk": "<@{0}>, Вас викликав до бою {1}",
         "th": "<@{0}> คุณถูกท้าทายให้ต่อสู้โดย {1}"
     },
     "ACCEPT": {
@@ -9513,7 +9513,7 @@
         "vi": "Tấn công bằng cách sử dụng {}",
         "cs": "Útok pomocí {}",
         "el": "Επίθεση χρησιμοποιώντας {}",
-        "uk": "Атака за допомогою зброї: {}",
+        "uk": "Атака за зброєю: {}",
         "th": "โจมตีโดยใช้ {}"
     },
     "CAST": {
@@ -10536,7 +10536,7 @@
         "vi": "Bạn chưa có [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) Đăng ký chỉ có giá £3 một tháng và cấp quyền truy cập vào các khu vực bổ sung, nhận chiến lợi phẩm tự động và hơn thế nữa!\n\nNếu bạn có gói trả phí, lệnh này sẽ cung cấp cho bạn liên kết để quản lý đăng ký của bạn.",
         "cs": "Ještě nemáte [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) Předplatné stojí pouhé 3 £ měsíčně a poskytuje přístup k dalším oblastem, automatickému shazování kořisti a dalším!\n\nPokud jste měli prémii, tento příkaz vám poskytne odkaz pro správu vašeho předplatného.",
         "el": "Δεν έχετε ακόμη το [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) Οι συνδρομές είναι μόλις 3 £ το μήνα και παρέχουν πρόσβαση σε επιπλέον περιοχές, αυτόματες εκπτώσεις loot και πολλά άλλα!\n\nΕάν είχατε premium, αυτή η εντολή θα σας έδινε έναν σύνδεσμο για να διαχειριστείτε τη συνδρομή σας.",
-        "uk": "Ви ще не маєте [Seven Spells Premium](https:\/\/premium.ssod.org?user={}). Підписка коштує лише 3 фунти стерлінгів на місяць і дає доступ до додаткових областей, автоматичне отримання предметів тощо!\n\nЯкщо у вас був преміум, ця команда дасть вам посилання для керування вашою підпискою.",
+        "uk": "Ви ще не маєте [Seven Spells Premium](https:\/\/premium.ssod.org?user={}). Підписка коштує лише 3 фунти стерлінгів на місяць і дає доступ до додаткових областей, автоматичне отримання предметів тощо!\n\nЯкби у Вас був преміум, ця команда дала би Вам покликання для керування вашою підпискою.",
         "th": "คุณยังไม่มีการสมัครสมาชิก [Seven Spells Premium](https:\/\/premium.ssod.org?user={}) เพียง 3 ปอนด์ต่อเดือนและให้สิทธิ์เข้าถึงพื้นที่เพิ่มเติม ดรอปไอเทมอัตโนมัติ และอื่นๆ อีกมากมาย!\n\nหากคุณมีระดับพรีเมียม คำสั่งนี้จะให้ลิงก์เพื่อจัดการการสมัครของคุณ"
     },
     "NOPROFILE": {
@@ -10567,7 +10567,7 @@
         "vi": "Bạn chưa có hồ sơ. Bạn phải tạo một ký tự bằng cách sử dụng lệnh `\/start`!",
         "cs": "Ještě nemáte profil. Musíte vytvořit znak pomocí příkazu `\/start`!",
         "el": "Δεν έχετε ακόμα προφίλ. Πρέπει να δημιουργήσετε έναν χαρακτήρα χρησιμοποιώντας την εντολή `\/start`!",
-        "uk": "У Вас ще немає профілю. Ви повинні створити персонажа за допомогою команди `\/start`!",
+        "uk": "У Вас іще немає профілю. Ви повинні створити персонажа за допомогою команди `\/start`!",
         "th": "คุณยังไม่มีโปรไฟล์ คุณต้องสร้างตัวละครโดยใช้คำสั่ง `\/start`!"
     },
     "NOSUCHUSER": {
@@ -11156,7 +11156,7 @@
         "vi": "Nhân vật của bạn đã bị ném vào khoảng trống! Tất cả thông tin trước đó đã bị xóa. Bây giờ bạn có thể tạo lại một ký tự mới bằng `\/start`.\n\nNếu bạn có phí bảo hiểm, quyền lợi cao cấp của bạn sẽ tiếp tục đối với nhân vật mới của bạn.",
         "cs": "Vaše postava byla uvržena do prázdna! Všechny předchozí informace byly smazány. Nyní můžete znovu vytvořit nový znak pomocí `\/start`.\n\nPokud máte prémii, vaše prémiové oprávnění bude pokračovat i na vaší nové postavě.",
         "el": "Ο χαρακτήρας σας έχει πεταχτεί στο κενό! Όλες οι προηγούμενες πληροφορίες έχουν διαγραφεί. Τώρα μπορείτε να δημιουργήσετε ξανά έναν νέο χαρακτήρα με το '\/start'.\n\nΕάν έχετε premium, το δικαίωμα πριμοδότησης θα συνεχιστεί στον νέο σας χαρακτήρα.",
-        "uk": "Ваш персонаж був кинутий у порожнечу! Вся попередня інформація була видалена. Тепер ви можете створити нового за допомогою `\/start`.\n\nЯкщо у вас є преміум, ваші преміум-права збережуться для вашого нового персонажа.",
+        "uk": "Ваш персонаж був кинутий у порожнечу! Вся попередня інформація була видалена. Тепер ви можете створити нового за допомогою `\/start`.\n\nЯкщо у Вас є преміум, ваші преміум-права збережуться для вашого нового персонажа.",
         "th": "ตัวละครของคุณถูกโยนลงไปในความว่างเปล่า! ข้อมูลก่อนหน้านี้ทั้งหมดถูกลบไปแล้ว ตอนนี้คุณสามารถสร้างตัวละครใหม่ด้วย `\/start` ได้แล้ว\n\nหากคุณมีพรีเมี่ยม สิทธิ์พรีเมี่ยมของคุณจะดำเนินต่อไปกับตัวละครใหม่ของคุณ"
     },
     "RESETCOMPLETE": {
@@ -11311,7 +11311,7 @@
         "vi": "[Bình chọn cho Bảy Phép thuật trên top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote) để nhận thêm chiến lợi phẩm như bình thuốc hữu ích cứ sau 12 giờ!\n\nNếu bạn chưa có thuốc sức chịu đựng hoặc kỹ năng và bạn bỏ phiếu cho bot thì nguồn cung cấp vật phẩm đó của bạn sẽ được bổ sung.\n\n**Sử dụng thuốc nhiều lần để tối đa hóa chỉ số của bạn.**",
         "cs": "[Hlasujte pro sedm kouzel na top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote), abyste každých 12 hodin získali další kořist, jako jsou užitečné lektvary!\n\nPokud ještě nemáte výdrž nebo lektvar dovedností a budete hlasovat pro robota, vaše zásoba tohoto předmětu bude doplněna.\n\n**Používejte lektvary opakovaně, abyste maximalizovali své statistiky.**",
         "el": "[Ψηφίστε για Επτά Ξόρκια στο top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote) για να κερδίσετε επιπλέον λάφυρα, όπως χρήσιμα φίλτρα κάθε 12 ώρες!\n\nΕάν δεν διαθέτετε ήδη ένα φίλτρο αντοχής ή ικανότητας και ψηφίσετε για το bot, τότε η προμήθεια αυτού του αντικειμένου θα αναπληρωθεί.\n\n**Χρησιμοποιήστε τα φίλτρα επανειλημμένα για να μεγιστοποιήσετε τα στατιστικά σας.**",
-        "uk": "[Проголосуйте за Сім Заклинань на top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote), щоб отримати додаткові предмети, наприклад корисні зілля кожні 12 годин!\n\nЯкщо у вас ще немає зілля витривалості або навичок і ви проголосували за бота, ваш запас цього предмета буде поповнено.\n\n**Використовуйте зілля неодноразово, щоб збільшити свою статистику.**",
+        "uk": "[Голосуйте за Сім Заклинань на top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote), щоб отримати додаткові предмети такі як корисні зілля кожні 12 годин!\n\nЯкщо у Вас іще немає зілля витривалості чи навичок і Ви проголосували за бота, Ваш запас цього предмета буде поповнено.\n\n**Використовуйте зілля неодноразово, щоб збільшити свою статистику.**",
         "th": "[โหวตให้กับ Seven Spells บน top.gg](https:\/\/top.gg\/bot\/620654573547159553\/vote) เพื่อรับของรางวัลเพิ่มเติม เช่น ยาเสริมที่มีประโยชน์ทุกๆ 12 ชั่วโมง!\n\nหากคุณยังไม่มี Stamina หรือ Skill Potion และคุณโหวตให้บอท ไอเท็มนั้นที่คุณมีอยู่ก็จะถูกเติมเต็ม\n\n**ใช้ยาซ้ำ ๆ เพื่อเพิ่มสถิติของคุณ**"
     },
     "ENTERNAME": {
