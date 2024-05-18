@@ -6569,7 +6569,7 @@
         "el": "Ορισμός προσαρμοσμένης βιογραφίας",
         "uk": "Встановіть особисту біографію",
         "th": "ตั้งค่าประวัติที่กำหนดเอง",
-        "pl": "Ustaw niestandardową biografię\nAQXVM{T]RZLP"
+        "pl": "Ustaw niestandardową biografię"
     },
     "bio_to_set": {
         "en": "Biography to set",
@@ -7282,7 +7282,7 @@
         "el": "Μετονομάστε ένα όπλο ή ένα κομμάτι πανοπλίας. εντολή premium.",
         "uk": "Перейменувати зброю чи обладунок; преміальна команда.",
         "th": "เปลี่ยนชื่ออาวุธหรือชิ้นส่วนชุดเกราะ คำสั่งพรีเมี่ยม",
-        "pl": "Zmień nazwę broni lub elementu zbroi; polecenie premium.\nAQXVM{T]RZLP"
+        "pl": "Zmień nazwę broni lub elementu zbroi; polecenie premium."
     },
     "HELP_INFO_DESC": {
         "en": "Show technical information about the bot.\nUnless you are having problems, you probably don't need to use this command.",
@@ -7313,7 +7313,7 @@
         "el": "Εμφάνιση τεχνικών πληροφοριών για το bot.\nΕκτός και αν αντιμετωπίζετε προβλήματα, πιθανότατα δεν χρειάζεται να χρησιμοποιήσετε αυτήν την εντολή.",
         "uk": "Показати технічну інформацію про бота.\nЯкщо у вас немає проблем, можливо, вам не потрібно використовувати цю команду.",
         "th": "แสดงข้อมูลทางเทคนิคเกี่ยวกับบอท\nคุณอาจไม่จำเป็นต้องใช้คำสั่งนี้ ยกเว้นกรณีที่คุณประสบปัญหา",
-        "pl": "Pokaż informacje techniczne o bocie.\nJeśli nie masz problemów, prawdopodobnie nie musisz używać tego polecenia.\nAQXVM{T]RZLP\n[*{1}_*]\ntworzyć\nAQXVM{T]RZLP\n[*{2}_*]\ndołączyć\nAQXVM{T]RZLP\n[*{3}_*]\nZostawić\nAQXVM{T]RZLP\n[*{4}_*]\nPokaż informacje o bocie\nAQXVM{T]RZLP\n[*{5}_*]\nPokaż strony wiedzy o świecie gry\nAQXVM{T]RZLP\n[*{6}_*]\nPokaż mapę świata gry\nAQXVM{T]RZLP\n[*{7}_*]\nPodaj link do zarządzania subskrypcją premium lub do subskrypcji\nAQXVM{T]RZLP\n[*{8}_*]\nWyświetl profil użytkownika\nAQXVM{T]RZLP\n[*{9}_*]\nużytkownik\nAQXVM{T]RZLP\n[*{1}_{0}_*]\nUżytkownik, którego profil chcesz wyświetlić\nAQXVM{T]RZLP\n[*{1}_{1}_*]\nZmień nazwę jednej ze swoich broni lub elementów zbroi\nAQXVM{T]RZLP\n[*{1}_{2}_*]\nprzedmiot\nAQXVM{T]RZLP\n[*{1}_{3}_*]\nnazwa\nAQXVM{T]RZLP\n[*{1}_{4}_*]\nElement do zmiany nazwy\nAQXVM{T]RZLP\n[*{1}_{5}_*]\nNowe imie\nAQXVM{T]RZLP\n[*{1}_{6}_*]\nMężczyzna\nAQXVM{T]RZLP\n[*{1}_{7}_*]\nKobieta\nAQXVM{T]RZLP\n[*{1}_{8}_*]\nCałkowicie zresetuj postać, umożliwiając jej ponowne utworzenie i przerzucenie\nAQXVM{T]RZLP\n[*{1}_{9}_*]\nRozpocznij nową postać lub wznów grę\nAQXVM{T]RZLP\n[*{2}_{0}_*]\nPokaż, jak głosować na bota, aby zdobyć łupy\nAQXVM{T]RZLP"
+        "pl": "Pokaż informacje techniczne o bocie.\nJeśli nie masz problemów, prawdopodobnie nie musisz używać tego polecenia."
     },
     "info_desc": {
         "en": "Show bot information",
