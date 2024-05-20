@@ -499,6 +499,8 @@ void game_nav(const dpp::button_click_t& event) {
 							if (!special) {
 								p.pickup_possession(i);
 							}
+						} else {
+							p.gold -= cost;
 						}
 					}
 				}
