@@ -38,4 +38,11 @@ namespace config {
 	 */
 	json& get(const std::string& key = "");
 
+	/**
+	 * Returns true if the specified key exists
+	 * @param key
+	 * @return true if key exists
+	 */
+	bool exists(const std::string& key);
+
 };

@@ -26,6 +26,7 @@
 #include <ssod/game.h>
 #include <ssod/aes.h>
 #include <ssod/emojis.h>
+#include <ssod/config.h>
 
 using namespace i18n;
 
@@ -162,6 +163,14 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 void start_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
+
+	if (config::exists("dev") && config::get("dev") == true) {
+		auto admin_rs = db::query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
+		if (admin_rs.empty()) {
+			event.reply("This is the development copy of Seven Spells Of Destruction. Only developers of the game may play on this instance.");
+			return;
+		}
+	}
 
 	if (player_is_live(event)) {
 		player p = get_live_player(event);
