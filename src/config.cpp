@@ -32,6 +32,10 @@ namespace config {
 		configfile >> configdocument;
 	}
 
+	bool exists(const std::string& key) {
+		return configdocument.contains(key);
+	}
+
 	json& get(const std::string& key) {
 		if (key.empty()) {
 			return configdocument;
