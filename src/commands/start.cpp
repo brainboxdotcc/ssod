@@ -167,7 +167,7 @@ void start_command::route(const dpp::slashcommand_t &event)
 	if (config::exists("dev") && config::get("dev") == true) {
 		auto admin_rs = db::query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
 		if (admin_rs.empty()) {
-			event.reply("This is the development copy of Seven Spells Of Destruction. Only developers of the game may play on this instance.");
+			event.reply(dpp::message("This is the development copy of Seven Spells Of Destruction. Only developers of the game may play on this instance.").set_flags(dpp::m_ephemeral));
 			return;
 		}
 	}
