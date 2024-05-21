@@ -34,6 +34,7 @@ struct combat_tag : public tag {
 		paragraph_content >> p_text;
 		extract_to_quote(p_text, paragraph_content, '"');
 		std::string monster_name = extract_value(p_text);
+		std::string english_monster_name{monster_name};
 		paragraph_content >> p_text;
 		long monster_skill = extract_value_number(p_text);
 		paragraph_content >> p_text;
@@ -96,7 +97,7 @@ struct combat_tag : public tag {
 				.type = nav_type_combat,
 				.cost = 0,
 				.monster = { 
-					.name = monster_name,
+					.name = english_monster_name.substr(0,40),
 					.stamina = monster_stamina,
 					.skill = monster_skill,
 					.armour = monster_armour,

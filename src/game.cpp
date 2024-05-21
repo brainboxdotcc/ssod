@@ -175,7 +175,7 @@ void game_input(const dpp::form_submit_t & event) {
 	if (custom_id.empty()) {
 		return;
 	}
-	bot.log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
+	bot.log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (custom_id == "deposit_gold_amount_modal" && p.in_bank) {
 		auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
@@ -207,10 +207,10 @@ void game_input(const dpp::form_submit_t & event) {
 		std::string message = std::get<std::string>(event.components[0].components[0].value);
 		uint64_t guild_id = get_guild_id(p);
 		if (guild_id) {
-			bot.log(dpp::ll_info, "Chat: [G(" + std::to_string(p.paragraph) + "," + std::to_string(guild_id) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
+			bot.log(dpp::ll_info, p.event.command.locale + " " + " Chat: [G(" + std::to_string(p.paragraph) + "," + std::to_string(guild_id) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
 			send_chat(event.command.usr.id, p.paragraph, message, "chat", guild_id);
 		} else {
-			bot.log(dpp::ll_info, "Chat: [L(" + std::to_string(p.paragraph) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
+			bot.log(dpp::ll_info, p.event.command.locale + " " + " Chat: [L(" + std::to_string(p.paragraph) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
 			send_chat(event.command.usr.id, p.paragraph, message);
 		}
 		claimed = true;
@@ -249,7 +249,7 @@ void game_select(const dpp::select_click_t &event) {
 	if (custom_id.empty()) {
 		return;
 	}
-	bot.log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
+	bot.log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	if (custom_id == "withdraw" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		db::transaction();
@@ -383,7 +383,7 @@ void game_nav(const dpp::button_click_t& event) {
 	if (custom_id.empty()) {
 		return;
 	}
-	event.from->log(dpp::ll_debug, std::to_string(event.command.usr.id) + ": " + custom_id);
+	event.from->log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (p.in_combat) {
 		if (combat_nav(event, p, parts)) {
@@ -509,10 +509,19 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		claimed = true;
 	} else if (parts[0] == "combat" && parts.size() >= 7) {
+		std::string monster_name{parts[2]};
+		if (p.event.command.locale != "en") {
+			auto translation = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
+				0, p.event.command.locale.substr(0, 2), monster_name
+			});
+			if (!translation.empty()) {
+				monster_name = translation[0].at("translation");
+			}
+		}
 		// paragraph name stamina skill armour weapon
 		p.in_combat = true;
 		p.combatant = enemy{
-			.name = parts[2],
+			.name = monster_name,
 			.stamina = atol(parts[3]),
 			.skill = atol(parts[4]),
 			.armour = atol(parts[6]),

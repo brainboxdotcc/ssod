@@ -42,7 +42,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			return;
 		}
 		dpp::cluster& bot = *(event.from->creator);
-		bot.log(dpp::ll_debug, event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
+		bot.log(dpp::ll_debug, event.command.locale + " " + event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
 		if (custom_id == "player_reroll" && p_old.state == state_roll_stats) {
 			event.reply();
 			player p_new(true);
