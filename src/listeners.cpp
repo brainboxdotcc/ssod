@@ -276,16 +276,19 @@ namespace listeners {
 	}
 
 	void on_slashcommand(const dpp::slashcommand_t &event) {
+		double start = dpp::utility::time_f();
+		route_command(event);
 		event.from->creator->log(
 			dpp::ll_info,
 			fmt::format(
-				"COMMAND: {} by {} ({} Guild: {})",
+				"COMMAND: {} by {} ({} Guild: {}) Locale: {}, msecs: {:.02f}",
 				event.command.get_command_name(),
 				event.command.usr.format_username(),
 				event.command.usr.id,
-				event.command.guild_id
+				event.command.guild_id,
+				event.command.locale,
+				(dpp::utility::time_f() - start) * 1000
 			)
 		);
-		route_command(event);
 	}
 }
