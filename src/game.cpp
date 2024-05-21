@@ -416,7 +416,10 @@ void game_nav(const dpp::button_click_t& event) {
 		std::string flags = parts[3];
 		long cost = atol(parts[4]);
 		std::string name = parts[5];
-		p.paragraph = atol(parts[1]);
+		if (p.paragraph != atol(parts[1])) {
+			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID SHOP FROM " + std::to_string(p.paragraph));
+			return;
+		}
 		size_t max = p.max_inventory_slots();
 		if (
 			p.possessions.size() < max - 1 ||
@@ -512,6 +515,10 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		claimed = true;
 	} else if (parts[0] == "combat" && parts.size() >= 7) {
+		if (p.paragraph != atol(parts[1])) {
+			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID COMBAT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
+			return;
+		}
 		std::string monster_name{parts[2]};
 		if (p.event.command.locale != "en") {
 			auto translation = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
@@ -532,6 +539,10 @@ void game_nav(const dpp::button_click_t& event) {
 		};
 		claimed = true;
 	} else if (parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
+		if (p.paragraph != atol(parts[1])) {
+			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID BANK FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
+			return;
+		}
 		p.in_bank = true;
 		claimed = true;
 	} else if (parts[0] == "answer" && !p.in_combat && !p.in_inventory) {
@@ -576,6 +587,10 @@ void game_nav(const dpp::button_click_t& event) {
 		event.dialog(modal);
 		return;
 	} else if (parts[0] == "pick_one" && parts.size() >= 5) {
+		if (p.paragraph != atol(parts[1])) {
+			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID PICK_ONE FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
+			return;
+		}
 		p.paragraph = atol(parts[1]);
 		size_t max = p.max_inventory_slots();
 		if (p.possessions.size() < max - 1) {
@@ -646,6 +661,10 @@ void game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
 		/* Pick up frm floor */
+		if (p.paragraph != atol(parts[1])) {
+			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID PICKUP FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
+			return;
+		}
 		long paragraph = atol(parts[1]);
 		std::string name = parts[2];
 		std::string flags = parts[3];
