@@ -408,6 +408,8 @@ void game_nav(const dpp::button_click_t& event) {
 		long dest = atol(parts[1]);
 		if (paragraph::valid_next(p.paragraph, dest)) {
 			p.paragraph = dest;
+		} else {
+			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID NAV FROM " + std::to_string(p.paragraph) + " TO " + std::to_string(dest));
 		}
 		claimed = true;
 	} else if (parts[0] == "shop" && parts.size() >= 6) {
@@ -423,7 +425,7 @@ void game_nav(const dpp::button_click_t& event) {
 				dpp::lowercase(name) == "donkey" || dpp::lowercase(name) == "mule" ||
 				dpp::lowercase(name) == "pack" || dpp::lowercase(name) == "saddle bags" ||
 				dpp::lowercase(name) == "backpack" || flags.substr(0, 4) == "CURE" ||
-				flags == "SPELL" || flags == "HERB" || dpp::lowercase(name) == "ssroll"
+				flags == "SPELL" || flags == "HERB" || dpp::lowercase(name) == "scroll"
 			)
 		) {
 			if (p.gold >= cost) {
