@@ -827,6 +827,7 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 				spells.emplace_back(item{ .name = row.at("name"), .flags = row.at("flags") });
 			}
 		}
+		inv_change = true;
 	}
 }
 
