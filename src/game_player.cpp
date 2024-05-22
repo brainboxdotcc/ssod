@@ -811,6 +811,23 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 			possessions.emplace_back(stacked_item{ .name = item_desc, .flags = item_flags, .qty = qty });
 		}
 	}
+	if (get_backup) {
+		possessions.clear();
+		possessions.emplace_back(stacked_item{ .name = "Hunting Dagger", .flags = "W1", .qty = 1 });
+		possessions.emplace_back(stacked_item{ .name = "Leather Coat", .flags = "A1", .qty = 1 });
+		possessions.emplace_back(stacked_item{ .name = "Stamina Potion", .flags = "ST+4", .qty = 1 });
+		possessions.emplace_back(stacked_item{ .name = "Skill Potion", .flags = "SK+4", .qty = 1 });
+		herbs.clear();
+		spells.clear();
+		auto rs = db::query("SELECT * FROM game_default_spells WHERE user_id = ?", {user_id});
+		for (const auto & row : rs) {
+			if (row.at("flags") == "HERB") {
+				herbs.emplace_back(item{ .name = row.at("name"), .flags = row.at("flags") });
+			} else {
+				spells.emplace_back(item{ .name = row.at("name"), .flags = row.at("flags") });
+			}
+		}
+	}
 }
 
 long player::max_mana() {
@@ -846,20 +863,6 @@ void player::drop_everything() {
 		}
 	}
 	possessions.clear();
-	possessions.emplace_back(stacked_item{ .name = "Hunting Dagger", .flags = "W1", .qty = 1 });
-	possessions.emplace_back(stacked_item{ .name = "Leather Coat", .flags = "A1", .qty = 1 });
-	possessions.emplace_back(stacked_item{ .name = "Stamina Potion", .flags = "ST+4", .qty = 1 });
-	possessions.emplace_back(stacked_item{ .name = "Skill Potion", .flags = "SK+4", .qty = 1 });
-	herbs.clear();
-	spells.clear();
-	auto rs = db::query("SELECT * FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
-	for (const auto & row : rs) {
-		if (row.at("flags") == "HERB") {
-			herbs.emplace_back(item{ .name = row.at("name"), .flags = row.at("flags") });
-		} else {
-			spells.emplace_back(item{ .name = row.at("name"), .flags = row.at("flags") });
-		}
-	}
 	inv_change = true;
 }
 
