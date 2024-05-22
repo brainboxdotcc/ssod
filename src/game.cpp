@@ -613,7 +613,6 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.in_combat = false;
 		new_p.after_fragment = 0;
 		new_p.combatant = {};
-		new_p.possessions = {};
 		new_p.breadcrumb_trail = {};
 		new_p.state = state_play;
 		new_p.gold = p.gold;
