@@ -620,6 +620,7 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.silver = p.silver;
 		new_p.notoriety = p.notoriety;
 		new_p.last_resurrect = p.last_resurrect;
+		new_p.inv_change = true;
 		new_p.death_xp_loss();
 		new_p.reset_to_spawn_point();
 		db::query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
