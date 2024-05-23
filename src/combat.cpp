@@ -313,7 +313,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			}
 			for (const auto & spell :  p.spells) {
 				long rating = get_spell_rating(spell.name);
-				if (rating) {
+				if (rating && p.has_component_herb(spell.name)) {
 					dpp::emoji e = sprite::hat02;
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
@@ -892,7 +892,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			}
 			for (const auto & spell :  p.spells) {
 				long rating = get_spell_rating(spell.name);
-				if (rating) {
+				if (rating && p.has_component_herb(spell.name)) {
 					dpp::emoji e = sprite::hat02;
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
