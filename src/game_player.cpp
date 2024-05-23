@@ -494,6 +494,9 @@ bool player::has_component_herb(const std::string& spell) {
 	if (s == "jump" && has_herb("hartleaf")) {
 		return true;
 	}
+	if (s == "vortex" && has_herb("windherb")) {
+		return true;
+	}
 	if (s == "open") {
 		return true;
 	}
