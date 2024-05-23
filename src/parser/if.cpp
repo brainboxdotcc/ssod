@@ -263,7 +263,9 @@ struct if_tag : public tag {
 			return;
 		} else if (dpp::lowercase(p_text) == "water>") {
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(current_player.has_spell("water") || current_player.has_possession("water canister") || current_player.has_possession("water cannister"));
+				p.display.push_back(
+					(current_player.has_spell("water") && current_player.has_component_herb("water")) ||
+					current_player.has_possession("water canister") || current_player.has_possession("water cannister"));
 			} else {
 				p.display.push_back(false);
 			}
