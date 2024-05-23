@@ -92,22 +92,24 @@ struct combat_tag : public tag {
 				directions[p.links]
 				);
 			p.words++;
-			p.navigation_links.push_back(nav_link{
-				.paragraph = p.id,
-				.type = nav_type_combat,
-				.cost = 0,
-				.monster = { 
-					.name = english_monster_name.substr(0,40),
-					.stamina = monster_stamina,
-					.skill = monster_skill,
-					.armour = monster_armour,
-					.weapon = monster_weapon,
-				},
-				.buyable = {},
-				.prompt = "",
-				.answer = "",
-				.label = ""
-			});
+			if (current_player.stamina > 0) {
+				p.navigation_links.push_back(nav_link{
+					.paragraph = p.id,
+					.type = nav_type_combat,
+					.cost = 0,
+					.monster = {
+						.name = english_monster_name.substr(0, 40),
+						.stamina = monster_stamina,
+						.skill = monster_skill,
+						.armour = monster_armour,
+						.weapon = monster_weapon,
+					},
+					.buyable = {},
+					.prompt = "",
+					.answer = "",
+					.label = ""
+				});
+			}
 			throw parse_end_exception();
 		}
 		p.current_fragment++;
