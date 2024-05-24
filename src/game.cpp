@@ -120,6 +120,23 @@ void death(player& p, component_builder& cb) {
 		.set_style(dpp::cos_danger)
 		.set_emoji(sprite::skull.name, sprite::skull.id)
 	);
+
+	cb.add_component(dpp::component()
+		 .set_type(dpp::cot_button)
+		 .set_id(security::encrypt("vote-topgg"))
+		 .set_label(tr("TOPGG_VOTE", p.event))
+		 .set_url("https://top.gg/bot/620654573547159553/vote")
+		 .set_style(dpp::cos_link)
+	);
+
+	cb.add_component(dpp::component()
+		 .set_type(dpp::cot_button)
+		 .set_id(security::encrypt("vote-dbl"))
+		 .set_label(tr("DBL_VOTE", p.event))
+		 .set_url("https://discordbotlist.com/bots/the-seven-spells-of-destruction/upvote")
+		 .set_style(dpp::cos_link)
+	);
+
 }
 
 void add_chat(std::string& text, const dpp::interaction_create_t& event, long paragraph_id, uint64_t guild_id) {
