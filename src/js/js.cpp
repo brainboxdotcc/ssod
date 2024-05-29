@@ -22,9 +22,10 @@
 #include <dpp/json.h>
 #include <ssod/js.h>
 #include <streambuf>
-#include <stdio.h>
+#include <cstdio>
 #include "duktape.h"
 #include <ssod/paragraph.h>
+#include <ssod/database.h>
 
 namespace js {
 
@@ -126,6 +127,923 @@ void init(dpp::cluster& _bot) {
 	bot = &_bot;
 }
 
+static duk_ret_t js_get_name(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_name: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_string(cx, p.cur_player->name.c_str());
+	return 1;
+}
+
+static duk_ret_t js_get_race(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_race: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx, (duk_double_t)p.cur_player->race);
+	return 1;
+}
+
+static duk_ret_t js_get_profession(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_profession: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->profession);
+	return 1;
+}
+
+static duk_ret_t js_get_gender(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_gender: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_string(cx, p.cur_player->gender.c_str());
+	return 1;
+}
+
+static duk_ret_t js_get_stamina(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_stamina: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx, (duk_double_t)p.cur_player->stamina);
+	return 1;
+}
+
+static duk_ret_t js_get_skill(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_skill: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx, (duk_double_t)p.cur_player->skill);
+	return 1;
+}
+
+static duk_ret_t js_get_luck(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_luck: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx, (duk_double_t)p.cur_player->luck);
+	return 1;
+}
+
+static duk_ret_t js_get_sneak(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_sneak: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->sneak);
+	return 1;
+}
+
+static duk_ret_t js_get_speed(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_speed: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->speed);
+	return 1;
+}
+
+static duk_ret_t js_get_silver(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_silver: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->silver);
+	return 1;
+}
+
+static duk_ret_t js_get_gold(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_gold: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->gold);
+	return 1;
+}
+
+static duk_ret_t js_get_rations(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_rations: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->rations);
+	return 1;
+}
+
+static duk_ret_t js_get_experience(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_experience: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->experience);
+	return 1;
+}
+
+static duk_ret_t js_get_level(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_experience: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->get_level());
+	return 1;
+}
+
+static duk_ret_t js_get_notoriety(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_notoriety: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->notoriety);
+	return 1;
+}
+
+static duk_ret_t js_get_days(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_days: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->days);
+	return 1;
+}
+
+static duk_ret_t js_get_scrolls(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_scrolls: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->scrolls);
+	return 1;
+}
+
+static duk_ret_t js_get_paragraph(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_paragraph: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->paragraph);
+	return 1;
+}
+
+static duk_ret_t js_get_armour(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_armour: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->armour.rating);
+	return 1;
+}
+
+static duk_ret_t js_get_weapon(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_weapon: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->weapon.rating);
+	return 1;
+}
+
+static duk_ret_t js_get_last_use(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_last_use: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->last_use);
+	return 1;
+}
+
+static duk_ret_t js_get_last_strike(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_last_strike: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->last_strike);
+	return 1;
+}
+
+static duk_ret_t js_get_pinned(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_pinned: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->pinned);
+	return 1;
+}
+
+static duk_ret_t js_get_muted(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_muted: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->muted);
+	return 1;
+}
+
+static duk_ret_t js_get_mana(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_mana: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->mana);
+	return 1;
+}
+
+static duk_ret_t js_get_mana_tick(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_mana_tick: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.cur_player->mana_tick);
+	return 1;
+}
+
+static duk_ret_t js_get_key(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS get_key: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	const char* key = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	auto rs = db::query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key = ?", { p.cur_player->event.command.usr.id, key });
+	if (rs.empty()) {
+		duk_push_string(cx, "");
+	} else {
+		duk_push_string(cx, rs[0].at("kv_value").c_str());
+	}
+	return 1;
+}
+
+static duk_ret_t js_delete_key(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS delete_key: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	const char* key = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	db::query("DELETE FROM kv_store WHERE user_id = ? AND kv_key = ?", { p.cur_player->event.command.usr.id, key });
+	return 0;
+}
+
+
+static duk_ret_t js_set_key(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 2) {
+		bot->log(dpp::ll_warning, "JS set_key: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_string(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_key: parameter 1 is not a string");
+		return 0;
+	}
+	std::string v;
+	if (duk_is_string(cx, -1)) {
+		const char* value = duk_get_string(cx, -1);
+		v = value ? value : "";
+	} else {
+		auto value = (double)duk_get_number(cx, -1);
+		v = fmt::format("{0:f}", value);
+	}
+	const char* key = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	db::query("INSERT INTO kv_store (user_id, kv_key, kv_value) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE kv_value = ?", { p.cur_player->event.command.usr.id, key, v, v });
+	return 0;
+}
+
+
+static duk_ret_t js_set_name(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_name: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_string(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_name: parameter 1 is not a number");
+		return 0;
+	}
+	const char* new_value = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->name = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_race(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_race: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_race: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->race = (player_race)new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_profession(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_profession: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_profession: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->profession = (player_profession)new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_gender(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_gender: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_string(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_gender: parameter 1 is not a number");
+		return 0;
+	}
+	const char* new_value = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->gender = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_stamina(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_stamina: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_stamina: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->stamina = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_skill(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_skill: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_skill: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->skill = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_luck(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_luck: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_luck: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->luck = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_sneak(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_sneak: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_sneak: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->sneak = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_speed(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_speed: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_speed: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->speed = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_silver(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_silver: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_silver: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->silver = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_gold(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_gold: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_gold: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->gold = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_rations(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_rations: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_rations: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->rations = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_experience(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_experience: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_experience: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->experience = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_notoriety(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_notoriety: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_notoriety: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->notoriety = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_days(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_days: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_days: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->days = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_scrolls(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_scrolls: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_scrolls: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->scrolls = std::min(7L, std::max(0L, new_value));
+	return 0;
+}
+
+static duk_ret_t js_set_paragraph(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_paragraph: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_paragraph: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->paragraph = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_armour(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_armour: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_armour: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->armour.rating = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_weapon(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_weapon: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_weapon: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->weapon.rating = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_last_use(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_last_use: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_last_use: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->last_use = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_last_strike(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_last_strike: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_last_strike: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->last_strike = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_pinned(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_pinned: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_pinned: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->pinned = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_muted(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_muted: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_muted: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->muted = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_mana(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_mana: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_mana: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->mana = new_value;
+	return 0;
+}
+
+static duk_ret_t js_set_mana_tick(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS set_mana_tick: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_mana_tick: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->mana_tick = new_value;
+	return 0;
+}
+
+static duk_ret_t js_add_stamina(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_stamina: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_stamina: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_stamina(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_skill(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_skill: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_skill: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_skill(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_luck(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_luck: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_luck: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_luck(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_sneak(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_sneak: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_sneak: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_sneak(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_speed(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_speed: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_speed: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_speed(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_silver(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_silver: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_silver: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_silver(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_gold(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_gold: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_gold: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_gold(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_rations(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_rations: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_rations: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_rations(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_experience(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_experience: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_experience: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_experience(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_notoriety(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_notoriety: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_notoriety: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_notoriety(new_value);
+	return 0;
+}
+
+static duk_ret_t js_add_mana(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS add_mana: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_number(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS add_mana: parameter 1 is not a number");
+		return 0;
+	}
+	long new_value = (long)duk_get_number(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_mana(new_value);
+	return 0;
+}
+
 bool run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars) {
 	duk_int_t ret;
 
@@ -136,6 +1054,72 @@ bool run(const std::string& script, paragraph& p, player& current_player, const 
 	define_func(ctx, "print", js_print, DUK_VARARGS);
 	define_func(ctx, "tag", js_tag, DUK_VARARGS);
 	define_func(ctx, "exit", js_exit, 1);
+	define_func(ctx, "get_name", js_get_name, 0);
+	define_func(ctx, "get_race", js_get_race, 0);
+	define_func(ctx, "get_profession", js_get_profession, 0);
+	define_func(ctx, "get_gender", js_get_gender, 0);
+	define_func(ctx, "get_stamina", js_get_stamina, 0);
+	define_func(ctx, "get_skill", js_get_skill, 0);
+	define_func(ctx, "get_luck", js_get_luck, 0);
+	define_func(ctx, "get_sneak", js_get_sneak, 0);
+	define_func(ctx, "get_speed", js_get_speed, 0);
+	define_func(ctx, "get_silver", js_get_silver, 0);
+	define_func(ctx, "get_gold", js_get_gold, 0);
+	define_func(ctx, "get_rations", js_get_rations, 0);
+	define_func(ctx, "get_experience", js_get_experience, 0);
+	define_func(ctx, "get_level", js_get_level, 0);
+	define_func(ctx, "get_notoriety", js_get_notoriety, 0);
+	define_func(ctx, "get_days", js_get_days, 0);
+	define_func(ctx, "get_scrolls", js_get_scrolls, 0);
+	define_func(ctx, "get_paragraph", js_get_paragraph, 0);
+	define_func(ctx, "get_armour", js_get_armour, 0);
+	define_func(ctx, "get_weapon", js_get_weapon, 0);
+	define_func(ctx, "get_last_use", js_get_last_use, 0);
+	define_func(ctx, "get_last_strike", js_get_last_strike, 0);
+	define_func(ctx, "get_pinned", js_get_pinned, 0);
+	define_func(ctx, "get_muted", js_get_muted, 0);
+	define_func(ctx, "get_mana", js_get_mana, 0);
+	define_func(ctx, "get_mana_tick", js_get_mana_tick, 0);
+	define_func(ctx, "set_name", js_set_name, 1);
+	define_func(ctx, "set_race", js_set_race, 1);
+	define_func(ctx, "set_profession", js_set_profession, 1);
+	define_func(ctx, "set_gender", js_set_gender, 1);
+	define_func(ctx, "set_stamina", js_set_stamina, 1);
+	define_func(ctx, "set_skill", js_set_skill, 1);
+	define_func(ctx, "set_luck", js_set_luck, 1);
+	define_func(ctx, "set_sneak", js_set_sneak, 1);
+	define_func(ctx, "set_speed", js_set_speed, 1);
+	define_func(ctx, "set_silver", js_set_silver, 1);
+	define_func(ctx, "set_gold", js_set_gold, 1);
+	define_func(ctx, "set_rations", js_set_rations, 1);
+	define_func(ctx, "set_experience", js_set_experience, 1);
+	define_func(ctx, "set_notoriety", js_set_notoriety, 1);
+	define_func(ctx, "set_days", js_set_days, 1);
+	define_func(ctx, "set_scrolls", js_set_scrolls, 1);
+	define_func(ctx, "set_paragraph", js_set_paragraph, 1);
+	define_func(ctx, "set_armour", js_set_armour, 1);
+	define_func(ctx, "set_weapon", js_set_weapon, 1);
+	define_func(ctx, "set_last_use", js_set_last_use, 1);
+	define_func(ctx, "set_last_strike", js_set_last_strike, 1);
+	define_func(ctx, "set_pinned", js_set_pinned, 1);
+	define_func(ctx, "set_muted", js_set_muted, 1);
+	define_func(ctx, "set_mana", js_set_mana, 1);
+	define_func(ctx, "set_mana_tick", js_set_mana_tick, 1);
+	define_func(ctx, "add_stamina", js_add_stamina, 1);
+	define_func(ctx, "add_skill", js_add_skill, 1);
+	define_func(ctx, "add_luck", js_add_luck, 1);
+	define_func(ctx, "add_sneak", js_add_sneak, 1);
+	define_func(ctx, "add_speed", js_add_speed, 1);
+	define_func(ctx, "add_silver", js_add_silver, 1);
+	define_func(ctx, "add_gold", js_add_gold, 1);
+	define_func(ctx, "add_rations", js_add_rations, 1);
+	define_func(ctx, "add_experience", js_add_experience, 1);
+	define_func(ctx, "add_notoriety", js_add_notoriety, 1);
+	define_func(ctx, "add_mana", js_add_mana, 1);
+	define_func(ctx, "set_key", js_set_key, 2);
+	define_func(ctx, "get_key", js_get_key, 1);
+	define_func(ctx, "delete_key", js_delete_key, 1);
+
 	duk_pop(ctx);
 
 	duk_push_string(ctx, "paragraph.js");
