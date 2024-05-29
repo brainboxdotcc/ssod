@@ -1012,7 +1012,7 @@ void player::add_experience(long modifier) {
 	experience = std::max((long)0, experience + modifier);
 	long new_value = get_level();
 	if (new_value > old_value && new_value > 1) {
-		add_toast(tr("LEVELUP", event));
+		add_toast(tr("LEVELUP", event, new_value));
 	}
 }
 
