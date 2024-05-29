@@ -62,7 +62,6 @@ struct script_tag : public tag {
 				{"weapon_item", current_player.weapon.name},
 				{"armour", current_player.armour.rating},
 				{"weapon", current_player.weapon.rating},
-				{"toasts", current_player.toasts},
 				{"gotfrom", current_player.gotfrom},
 				{"last_use", current_player.last_use},
 				{"last_strike", current_player.last_strike},

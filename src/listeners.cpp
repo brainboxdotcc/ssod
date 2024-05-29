@@ -87,7 +87,7 @@ namespace listeners {
 				p.pickup_possession(stacked_item{ .name = "skill potion", .flags = "SK+5", .qty = 1});
 				p.pickup_possession(stacked_item{ .name = "stamina potion", .flags = "ST+5", .qty = 1});
 				p.inv_change = true;
-				p.add_toast("## A loot drop has arrived!\n\nYou have received a stamina potion and a skill potion!");
+				p.add_toast({ .message = "## A loot drop has arrived!\n\nYou have received a stamina potion and a skill potion!", .image = "potions.jpg" });
 				p.last_resurrect = time(nullptr) - 3600;
 				update_live_player(p.event, p);
 				p.save(user_id);

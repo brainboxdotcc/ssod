@@ -76,7 +76,7 @@ struct combat_tag : public tag {
 
 						}
 						current_player.add_stamina(-atol(illness.at("stamina_debuff").c_str()));
-						current_player.add_toast(tr("DISEASED", current_player.event, name, illness.at("stamina_debuff")));
+						current_player.add_toast({ .message = tr("DISEASED", current_player.event, name, illness.at("stamina_debuff")), .image = "diseased.png" });
 						p.sick = true;
 					}
 				}

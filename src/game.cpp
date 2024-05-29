@@ -65,13 +65,17 @@ void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& me
 
 void do_toasts(player &p, component_builder& cb) {
 	/* Display and clear toasts */
-	std::vector<std::string> toasts = p.get_toasts();
+	std::vector<toast> toasts = p.get_toasts();
 	for (const auto& toast : toasts) {
 		dpp::embed e = dpp::embed()
 			.set_colour(EMBED_COLOUR)
-			.set_description(toast);
-		if (toast.find("# " +tr("DED", p.event)) != std::string::npos) {
-			e.set_image("https://images.ssod.org/resource/death.png");
+			.set_description(toast.message);
+		if (!toast.image.empty()) {
+			if (toast.image == "death.png") {
+				e.set_image("https://images.ssod.org/resource/" + toast.image);
+			} else {
+				e.set_thumbnail("https://images.ssod.org/resource/" + toast.image);
+			}
 		}
 		cb.add_embed(e);
 	}
@@ -111,7 +115,7 @@ void death(player& p, component_builder& cb) {
 		}
 	}
 
-	p.add_toast(toast);
+	p.add_toast({ .message = toast, .image = "death.png" });
 
 	cb.add_component(dpp::component()
 		.set_type(dpp::cot_button)
@@ -216,7 +220,7 @@ void game_input(const dpp::form_submit_t & event) {
 			send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
 			p.paragraph = atol(parts[1]);
 		} else {
-			p.add_toast("### " + sprite::inv_drop.get_mention() + " " + tr("INCORRECT_RIDDLE", event));
+			p.add_toast({ .message = "### " + sprite::inv_drop.get_mention() + " " + tr("INCORRECT_RIDDLE", event), .image = "confused.png" });
 		}
 		bot.log(dpp::ll_debug, "Answered: " + entered_answer);
 		claimed = true;
@@ -465,19 +469,19 @@ void game_nav(const dpp::button_click_t& event) {
 							p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
 							p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
 							p.gotfrom = green_rot.replace_all(p.gotfrom, "");
-							p.add_toast(tr("CURE_ALL", event));
+							p.add_toast({ .message = tr("CURE_ALL", event), .image = "cure.png" });
 						} else if (flags == "CURERASP") {
 							p.gotfrom = lung_rasp.replace_all(p.gotfrom, "");
-							p.add_toast(tr("CURE_RASP", event));
+							p.add_toast({ .message = tr("CURE_RASP", event), .image = "cure.png" });
 						} else if (flags == "CUREROT") {
 							p.gotfrom = green_rot.replace_all(p.gotfrom, "");
-							p.add_toast(tr("CURE_ROT", event));
+							p.add_toast({ .message = tr("CURE_ROT", event), .image = "cure.png" });
 						} else if (flags == "CUREBLOOD") {
 							p.gotfrom = blood_plague.replace_all(p.gotfrom, "");
-							p.add_toast(tr("CURE_BLOOD", event));
+							p.add_toast({ .message = tr("CURE_BLOOD", event), .image = "cure.png" });
 						} else if (flags == "CUREPLAGUE") {
 							p.gotfrom = bubonic_plague.replace_all(p.gotfrom, "");
-							p.add_toast(tr("CURE_PLAGUE", event));
+							p.add_toast({ .message = tr("CURE_PLAGUE", event), .image = "cure.png" });
 						}
 					}
 					catch (const regex_exception& e) {
