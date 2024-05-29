@@ -55,6 +55,11 @@ enum combat_strike {
 	PIERCING = 2,
 };
 
+struct toast {
+	std::string message;
+	std::string image;
+};
+
 /**
  * @brief Represents a player. These are loaded from the database, cached to RAM
  * and frequently saved back to the database.
@@ -196,7 +201,7 @@ struct player {
 	/**
 	 * @brief Toast messages
 	 */
-	std::vector<std::string> toasts;
+	std::vector<toast> toasts;
 	/**
 	 * @brief Player spells
 	 */
@@ -302,8 +307,8 @@ struct player {
 
 	void tick_mana();
 
-	void add_toast(const std::string& message);
-	std::vector<std::string> get_toasts();
+	void add_toast(const toast& message);
+	std::vector<toast> get_toasts();
 
 	void add_flag(const std::string flag, long paragraph = -1);
 	bool has_flag(const std::string flag, long paragraph = -1);

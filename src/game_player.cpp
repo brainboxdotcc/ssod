@@ -1012,7 +1012,7 @@ void player::add_experience(long modifier) {
 	experience = std::max((long)0, experience + modifier);
 	long new_value = get_level();
 	if (new_value > old_value && new_value > 1) {
-		add_toast(tr("LEVELUP", event, new_value));
+		add_toast({ .message = tr("LEVELUP", event, new_value), .image = "level-up.png" });
 	}
 }
 
@@ -1087,7 +1087,7 @@ bool player::eat_ration() {
 	if (rations-- < 1) {
 		if (stamina > 3) {
 			add_stamina(-2);
-			add_toast(tr("HUNGER", event));
+			add_toast({ .message = tr("HUNGER", event), .image = "food.png" });
 		}
 		rations = 0;
 		return false;
@@ -1254,14 +1254,14 @@ long player::max_silver() {
 	return 100 + (level * 10);
 }
 
-void player::add_toast(const std::string& message) {
+void player::add_toast(const toast& message) {
 	if (toasts.size() < 8) {
 		toasts.push_back(message);
 	}
 }
 
-std::vector<std::string> player::get_toasts() {
-	std::vector<std::string> return_toast = toasts;
+std::vector<toast> player::get_toasts() {
+	std::vector<toast> return_toast = toasts;
 	toasts.clear();
 	return return_toast;
 }
