@@ -19,6 +19,7 @@
  ************************************************************************************/
 #include <ssod/parser.h>
 #include <ssod/regex.h>
+#include <ssod/database.h>
 
 struct unset_tag : public tag {
 	unset_tag() { register_tag<unset_tag>(); }
@@ -27,8 +28,7 @@ struct unset_tag : public tag {
 		// set a state-flag
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
-		pcre_regex flag_to_remove("\\s*\\[gamestate_" + p_text + "[0-9]+\\]");
-		current_player.gotfrom = flag_to_remove.replace_all(current_player.gotfrom, "");
+		db::query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, "gamestate_" + p_text + "%"});
 	}
 };
 

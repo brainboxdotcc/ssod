@@ -63,8 +63,8 @@ struct combat_tag : public tag {
 				/* Once per paragraph, check for existing illnesses and apply debuffs */
 				auto illnesses = db::query("SELECT * FROM diseases");
 				for (auto& illness : illnesses) {
-					std::string flag = "[gamestate_" + illness.at("flag");
-					if (current_player.gotfrom.find(flag) != std::string::npos) {
+					std::string flag = "gamestate_" + illness.at("flag") + "%";
+					if (!db::query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag}).empty()) {
 						std::string name{illness.at("name")};
 						if (current_player.event.command.locale != "en") {
 							auto translation = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {

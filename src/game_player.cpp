@@ -214,6 +214,7 @@ void delete_live_player(const dpp::interaction_create_t& event) {
 	db::query("DELETE FROM game_owned_items WHERE user_id = ?", { event.command.usr.id });
 	db::query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
 	db::query("DELETE FROM potion_drops WHERE user_id = ?", { event.command.usr.id });
+	db::query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
 }
 
 player get_live_player(const dpp::interaction_create_t& event, bool update_event) {
@@ -744,7 +745,6 @@ player::player(bool reroll) :
 		breadcrumb_trail = {};
 		inv_change = true;
 		reset_to_spawn_point();
-		gotfrom = "__ITEMS_FROM__";
 
 		if (profession == prof_warrior) {
 			add_stamina(5);
@@ -774,7 +774,6 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		days = atol(a_row[0].at("days"));
 		scrolls = atol(a_row[0].at("scrolls"));
 		paragraph = atol(a_row[0].at("paragraph"));
-		gotfrom = a_row[0].at("gotfrom");
 		armour.name = a_row[0].at("armour");
 		weapon.name = a_row[0].at("weapon");
 		armour.rating = atol(a_row[0].at("armour_rating"));
@@ -908,14 +907,14 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 	}
 
 	db::query(fmt::format("INSERT INTO {} (user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph, \
-	 armour, weapon, gotfrom, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick, gender, breadcrumb_trail, last_resurrect) \
-	 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
+	 armour, weapon, armour_rating, weapon_rating, lastuse, laststrike, pinned, muted, mana, manatick, gender, breadcrumb_trail, last_resurrect) \
+	 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
 	 ON DUPLICATE KEY UPDATE name = ?, race = ?, profession = ?, stamina = ?, skill = ?, luck = ?, sneak = ?, speed = ?, silver = ?, gold = ?, rations = ?, experience = ?, notoriety = ?, days = ?, scrolls = ?, paragraph = ?, \
-	 armour = ?, weapon = ?, gotfrom = ?, armour_rating = ?, weapon_rating = ?, lastuse = ?, laststrike = ?, pinned = ?, muted = ?, mana = ?, manatick = ?, gender = ?, breadcrumb_trail = ?, last_resurrect = ?", put_backup ? "game_default_users" : "game_users"),
+	 armour = ?, weapon = ?, armour_rating = ?, weapon_rating = ?, lastuse = ?, laststrike = ?, pinned = ?, muted = ?, mana = ?, manatick = ?, gender = ?, breadcrumb_trail = ?, last_resurrect = ?", put_backup ? "game_default_users" : "game_users"),
 		{user_id, name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
-		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender, crumbs.dump(), last_resurrect,
+		armour.name, weapon.name, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender, crumbs.dump(), last_resurrect,
 		name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
-		armour.name, weapon.name, gotfrom, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender, crumbs.dump(), last_resurrect}
+		armour.name, weapon.name, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender, crumbs.dump(), last_resurrect}
 	);
 
 	db::commit();
@@ -928,12 +927,13 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 }
 
 void player::add_flag(const std::string flag, long paragraph) {
-	gotfrom += " [" + flag + std::to_string(paragraph) + "]";
+	std::string store_flag = flag + std::to_string(paragraph);
+	db::query("INSERT INTO kv_store (user_id, kv_key, kv_value) VALUES(?,?,1) ON DUPLICATE KEY UPDATE kv_value = 1", {event.command.usr.id, store_flag});
 }
 
 bool player::has_flag(const std::string flag, long paragraph) {
-	std::string f{" [" + flag + std::to_string(paragraph) + "]"};
-	return gotfrom.find(f) != std::string::npos;
+	std::string store_flag = flag + std::to_string(paragraph);
+	return !db::query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key = ?", {event.command.usr.id, store_flag}).empty();
 }
 
 void player::strike() {
@@ -984,10 +984,6 @@ bool player::convert_rations(const item& i) {
 		return true;
 	}
 	return false;
-}
-
-std::string player::get_flags() {
-	return gotfrom;
 }
 
 bool player::sneak_test(long monster_sneak) {

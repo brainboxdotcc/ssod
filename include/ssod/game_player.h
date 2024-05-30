@@ -212,11 +212,6 @@ struct player {
 	 */
 	std::vector<item> herbs;
 	/**
-	 * @brief Player flag list
-	 * State set by paragraph
-	 */
-	std::string gotfrom;
-	/**
 	 * @brief Time player last accessed
 	 */
 	time_t last_use;
@@ -270,7 +265,6 @@ struct player {
 	dpp::snowflake get_user();
 	void strike();
 	void reset_to_spawn_point();
-	std::string get_flags();
 	bool sneak_test(long monster_sneak);
 	void add_stamina(long modifier);
 	void add_experience(long modifier);
