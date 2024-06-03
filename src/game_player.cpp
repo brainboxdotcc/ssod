@@ -499,7 +499,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 		.set_id(security::encrypt("select_player_spells"));
 	/* Fill spell select menu only with spells applicable to the chosen herbs up to a max of 25 choices */
 	std::vector<dpp::select_option> all_spells;
-	auto rs = db::query("SELECT * FROM spells ORDER BY name");
+	auto rs = db::query("SELECT * FROM spells WHERE in_grimoire = 1 ORDER BY name");
 	for (const auto& row : rs) {
 		all_spells.emplace_back(tr(dpp::uppercase(row.at("name")), event), row.at("name"), tr(dpp::uppercase(row.at("name")) + "D", event));
 	}
@@ -513,6 +513,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 	}
 	if (!spell_count) {
 		spell_select_menu.add_select_option(dpp::select_option(tr("SELECTONEHERB", event), "0", tr("MUSTCHOOSE", event)));
+		spell_select_menu.set_disabled(true);
 	} else {
 		if (spell_count < max_spells) {
 			spell_select_menu.set_max_values(spell_count);
