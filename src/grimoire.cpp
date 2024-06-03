@@ -80,11 +80,16 @@ void grimoire(const dpp::interaction_create_t& event, player p) {
 			}
 			fields.emplace_back(
 				"🪄 " + sn,
-				"```ansi\n\033[2;36mDuration\033[0m \033[2;34m" + duration +
-				"\n\033[2;36mCooldown\033[0m \033[2;34m" + cooldown +
-				"\n\033[2;36mMana Cost\033[0m \033[2;34m" + std::to_string(si.mana_cost) +
-				"\n```",
-			true);
+				fmt::format(
+					fmt::runtime("```ansi\n\033[2;36m{}\033[0m \033[2;34m{}\n\033[2;36m{}\033[0m \033[2;34m{}\n\033[2;36m{}\033[0m \033[2;34m{}\n```"),
+					tr("DURATION", event),
+					duration,
+					tr("COOLDOWN", event),
+					cooldown,
+					tr("MANA_COST", event),
+					si.mana_cost
+				)
+			);
 		}
 
 	}
