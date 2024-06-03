@@ -55,6 +55,17 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	}
 	p.experience = atol(rs[0].at("experience"));
 	auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", {rs[0].at("user_id")});
+	auto status = db::query("SELECT passive_effect_status.*, on_end, on_after, type, requirements, duration, withdrawl FROM passive_effect_status join passive_effect_types on passive_effect_id = passive_effect_types.id where user_id = ?", {rs[0].at("user_id")});
+	std::stringstream effects;
+	for (const auto& s : status) {
+		effects << tr(dpp::uppercase(s.at("type")), event) << ": *" << s.at("requirements") << "* ";
+		if (s.at("current_state") == "active") {
+			effects << tr("ACTIVE_EFF", event) << dpp::utility::timestamp(atoll(s.at("duration")) + atoll(s.at("last_transition_time")), dpp::utility::tf_relative_time);
+		} else {
+			effects << tr("COOLDOWN_EFF", event) << dpp::utility::timestamp(atoll(s.at("withdrawl")) + atoll(s.at("last_transition_time")), dpp::utility::tf_relative_time);
+		}
+		effects << "\n";
+	}
 
 	std::string content{"### " + tr("LEVEL", event) + " " + std::to_string(p.get_level()) + " " + std::string(race((player_race)atoi(rs[0].at("race")))) + " " + std::string(profession((player_profession)atoi(rs[0].at("profession")))) +  "\n"};
 	int percent = p.get_percent_of_current_level();
@@ -86,20 +97,21 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.set_colour(EMBED_COLOUR)
 		.set_description(content)
 		.set_image(file)
-		.add_field(tr("Stamina", event), sprite::health_heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)
-		.add_field(tr("Skill", event), sprite::book07.get_mention() + " " + rs[0].at("skill") + "/" + std::to_string(p2.max_skill()), true)
-		.add_field(tr("Luck", event), sprite::clover.get_mention() + " " + rs[0].at("luck") + "/" + std::to_string(p2.max_luck()), true)
+		.add_field(tr("STAMINA", event), sprite::health_heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)
+		.add_field(tr("SKILL", event), sprite::book07.get_mention() + " " + rs[0].at("skill") + "/" + std::to_string(p2.max_skill()), true)
+		.add_field(tr("LUCK", event), sprite::clover.get_mention() + " " + rs[0].at("luck") + "/" + std::to_string(p2.max_luck()), true)
 		.add_field("XP", sprite::medal01.get_mention() + " " + rs[0].at("experience"), true)
-		.add_field(tr("Speed", event), sprite::shoes03.get_mention() + " " + rs[0].at("speed") + "/" + std::to_string(p2.max_speed()), true)
-		.add_field(tr("Sneak", event), sprite::throw05.get_mention() + " " + rs[0].at("sneak") + "/" + std::to_string(p2.max_sneak()), true)
-		.add_field(tr("Gold", event), sprite::gold_coin.get_mention() + " " + rs[0].at("gold") + "/" + std::to_string(p2.max_gold()), true)
-		.add_field(tr("Mana", event), sprite::hat02.get_mention() + " " + rs[0].at("mana") + "/" + std::to_string(p2.max_mana()), true)
-		.add_field(tr("Armour", event), sprite::helm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
-		.add_field(tr("Weapon", event), sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
-		.add_field(tr("Notoriety", event), sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
-		.add_field(tr("Rations", event), sprite::cheese.get_mention() + " " + rs[0].at("rations") + "/" + std::to_string(p2.max_rations()), true)
-		.add_field(tr("Scrolls", event), sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
-		;
+		.add_field(tr("SPEED", event), sprite::shoes03.get_mention() + " " + rs[0].at("speed") + "/" + std::to_string(p2.max_speed()), true)
+		.add_field(tr("SNEAK", event), sprite::throw05.get_mention() + " " + rs[0].at("sneak") + "/" + std::to_string(p2.max_sneak()), true)
+		.add_field(tr("GOLD", event), sprite::gold_coin.get_mention() + " " + rs[0].at("gold") + "/" + std::to_string(p2.max_gold()), true)
+		.add_field(tr("MANA", event), sprite::hat02.get_mention() + " " + rs[0].at("mana") + "/" + std::to_string(p2.max_mana()), true)
+		.add_field(tr("ARMOUR", event), sprite::helm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
+		.add_field(tr("WEAPON", event), sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
+		.add_field(tr("NOTORIETY", event), sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
+		.add_field(tr("RATIONS", event), sprite::cheese.get_mention() + " " + rs[0].at("rations") + "/" + std::to_string(p2.max_rations()), true)
+		.add_field(tr("SCROLLS", event), sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
+		.add_field(tr("EFFECTS", event), effects.str(), false)
+	;
 
 	auto premium = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
 	if (!event.command.entitlements.empty() || !premium.empty()) {
