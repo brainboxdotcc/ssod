@@ -26,6 +26,7 @@
 #include <ssod/command.h>
 #include <ssod/game_player.h>
 #include <ssod/lang.h>
+#include <ssod/game_util.h>
 
 #include <ssod/commands/info.h>
 #include <ssod/commands/start.h>
@@ -246,6 +247,9 @@ namespace listeners {
 				/* Garbage collect free memory by consolidating free malloc() blocks */
 				malloc_trim(0);
 			}, 600);
+			bot.start_timer([&bot](dpp::timer t) {
+				check_effects(bot);
+			}, 1);
 
 			set_presence();
 			welcome_new_guilds(bot);

@@ -318,6 +318,10 @@ void game_select(const dpp::select_click_t &event) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() >= 2 && p.has_possession(parts[0])) {
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
+			auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {parts[0]});
+			if (!effect.empty()) {
+				trigger_effect(bot, event, p, "Consumable", parts[0]);
+			}
 			std::string flags = parts[1];
 			if (flags.substr(0, 2) == "ST") {
 				long modifier = atol(flags.substr(2, flags.length() - 2));
