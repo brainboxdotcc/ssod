@@ -467,6 +467,27 @@ static duk_ret_t js_set_key(duk_context *cx) {
 	return 0;
 }
 
+static duk_ret_t js_toast(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 2) {
+		bot->log(dpp::ll_warning, "JS toast: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_string(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS toast: parameter 1 is not a string");
+		return 0;
+	}
+	if (!duk_is_string(cx, -1)) {
+		bot->log(dpp::ll_warning, "JS toast: parameter 2 is not a string");
+		return 0;
+	}
+	const char* text = duk_get_string(cx, 0);
+	const char* image = duk_get_string(cx, -1);
+	paragraph& p = duk_get_udata(cx);
+	p.cur_player->add_toast(toast{ .message = text, .image = image });
+	return 0;
+}
+
 
 static duk_ret_t js_set_name(duk_context *cx) {
 	int argc = duk_get_top(cx);
@@ -1119,6 +1140,7 @@ bool run(const std::string& script, paragraph& p, player& current_player, const 
 	define_func(ctx, "set_key", js_set_key, 2);
 	define_func(ctx, "get_key", js_get_key, 1);
 	define_func(ctx, "delete_key", js_delete_key, 1);
+	define_func(ctx, "toast", js_toast, 2);
 
 	duk_pop(ctx);
 
