@@ -262,26 +262,9 @@ void end_abandoned_pvp() {
 	}
 }
 
-long get_spell_rating(const std::string& name)
-{
-	static const std::map<std::string, long> ratings = {
-		{"fire", 2},
-		{"water", 4},
-		{"strength", 2},
-		{"bolt", 4},
-		{"fasthands", 2},
-		{"thunderbolt", 6},
-		{"heateyes", 4},
-		{"espsurge", 5},
-		{"afterimage", 4},
-		{"growweapon", 4},
-		{"vortex", 10},
-	};
-	auto r = ratings.find(dpp::lowercase(name));
-	if (r != ratings.end()) {
-		return r->second;
-	}
-	return 0;
+long get_spell_rating(const std::string& name) {
+	spell_info si = get_spell_info(name);
+	return si.combat_rating;
 }
 
 
