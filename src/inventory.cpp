@@ -27,6 +27,7 @@
 #include <ssod/component_builder.h>
 #include <ssod/emojis.h>
 #include <ssod/aes.h>
+#include <ssod/database.h>
 
 using namespace i18n;
 
@@ -152,11 +153,12 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	for (const auto& inv : possessions) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
+		auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {inv.name});
 		if (!value.quest_item && value.sellable) {
 			auto i = tr(inv, "", event);
 			drop_menu.add_select_option(dpp::select_option(tr("DROP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
 		}
-		if (inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
+		if (!effect.empty() || inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
 			auto i = tr(inv, "", event);
 			use_menu.add_select_option(dpp::select_option(tr("USE", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		} else if (!inv.flags.empty() && (inv.flags[0] == 'A' || inv.flags[0] == 'W')) {
