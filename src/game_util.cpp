@@ -83,7 +83,7 @@ std::string describe_item(const std::string& modifier_flags, const std::string& 
 	} else {
 		auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {name});
 		if (!effect.empty()) {
-			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("CONSUMABLE", event) + "\033[0m \033[2;34m{}\033[0m: {}" : tr("CONSUMABLE", event) + ": {}"), rv);
+			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("CONSUMABLE", event) + "\033[0m: {}" : tr("CONSUMABLE", event) + ": {}"), rv);
 		}
 	}
 	return rv;
@@ -129,7 +129,7 @@ void trigger_effect(dpp::cluster& bot, const dpp::interaction_create_t& event, p
 }
 
 void check_effects(dpp::cluster& bot) {
-	auto rs = db::query("SELECT * FROM `passive_effect_status` join passive_effect_types on passive_effect_id = passive_effect_types.id where UNIX_TIMESTAMP() > last_transition_time + IF(current_state = 'active', duration, withdrawl)");
+	auto rs = db::query("SELECT passive_effect_status.*, on_end, on_after, type, requirements, duration, withdrawl FROM `passive_effect_status` join passive_effect_types on passive_effect_id = passive_effect_types.id where UNIX_TIMESTAMP() > last_transition_time + IF(current_state = 'active', duration, withdrawl)");
 	for (const auto& row : rs) {
 		dpp::interaction_create_t event;
 		event.command.usr.id = atoll(row.at("user_id"));
@@ -139,7 +139,7 @@ void check_effects(dpp::cluster& bot) {
 		p.cur_player = &player;
 		p.id = player.paragraph;
 		if (row.at("current_state") == "active") {
-			db::query("UPDATE passive_effect_status SET current_state = 'withdrawl' WHERE id = ?", {row.at("id")});
+			db::query("UPDATE passive_effect_status SET current_state = 'withdrawl', last_transition_time = UNIX_TIMESTAMP() WHERE id = ?", {row.at("id")});
 			bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on player " + event.command.usr.id.str() + " moved to state 'withdrawl'");
 			js::run(row.at("on_end"), p, player, {});
 		} else if (row.at("current_state") == "withdrawl") {
