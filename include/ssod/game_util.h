@@ -29,9 +29,17 @@ struct sale_info {
 	bool quest_item{false};
 };
 
+struct spell_info {
+	std::string name;
+	std::string component_herb;
+	long combat_rating{0};
+	long mana_cost{0};
+};
+
 std::string describe_item(const std::string& modifier_flags, const std::string& name, const dpp::interaction_create_t& event, bool ansi = false, size_t max_desc_len = 250);
 dpp::component help_button(const dpp::interaction_create_t& event);
 void premium_required(const dpp::interaction_create_t& event);
 sale_info get_sale_info(const std::string& name);
 std::string human_readable_spell_name(const std::string& spell, const dpp::interaction_create_t& event);
 std::string human_readable_herb_name(const std::string& herb, const dpp::interaction_create_t& event);
+spell_info get_spell_info(const std::string& name);

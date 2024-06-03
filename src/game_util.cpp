@@ -105,3 +105,11 @@ std::string human_readable_spell_name(const std::string& spell, const dpp::inter
 std::string human_readable_herb_name(const std::string& herb, const dpp::interaction_create_t& event) {
 	return tr(dpp::uppercase(herb), event);
 }
+
+spell_info get_spell_info(const std::string& name) {
+	auto rs = db::query("SELECT * FROM spells WHERE name = ?", {name});
+	if (rs.empty()) {
+		return {};
+	}
+	return { .name = rs[0].at("name"), .component_herb = rs[0].at("herb"), .combat_rating = atol(rs[0].at("combat_rating")), .mana_cost = atol(rs[0].at("mana_cost")) };
+}

@@ -103,14 +103,14 @@ static duk_ret_t js_tag(duk_context *cx) {
 [[maybe_unused]]
 static void duk_build_object(duk_context* cx, const std::map<std::string, std::string> &strings, const std::map<std::string, bool> &bools) {
 	duk_idx_t obj_idx = duk_push_bare_object(cx);
-	for (auto i = strings.begin(); i != strings.end(); ++i) {
-		duk_push_string(cx, i->first.c_str());
-		duk_push_string(cx, i->second.c_str());
+	for (const auto & string : strings) {
+		duk_push_string(cx, string.first.c_str());
+		duk_push_string(cx, string.second.c_str());
 		duk_put_prop(cx, obj_idx);
 	}
-	for (auto i = bools.begin(); i != bools.end(); ++i) {
-		duk_push_string(cx, i->first.c_str());
-		duk_push_boolean(cx, i->second);
+	for (const auto & i : bools) {
+		duk_push_string(cx, i.first.c_str());
+		duk_push_boolean(cx, i.second);
 		duk_put_prop(cx, obj_idx);
 	}
 }
