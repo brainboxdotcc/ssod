@@ -56,8 +56,8 @@ void grimoire(const dpp::interaction_create_t& event, player p) {
 
 	std::vector<dpp::embed_field> fields;
 
-	content << "__**" << tr("SPELLS", event) << "**__ - " + tr("MANA_CHARGE", event, p.profession == prof_wizard ? 2 : 1) + "\n";
-	content << sprite::hat02.get_mention() << " " << tr("MANA", event) << ": __" << p.mana << "/" << p.max_mana() << "__\n";
+	content << "__**" << tr("SPELLS", event) << "**__\n";
+	content << sprite::hat02.get_mention() << " " << tr("MANA", event) << ": __" << p.mana << "/" << p.max_mana() << "__ - " << tr("MANA_CHARGE", event, p.profession == prof_wizard ? 2 : 1) << "\n";
 
 	dpp::component cast_menu;
 	cast_menu.set_type(dpp::cot_selectmenu)
@@ -96,6 +96,7 @@ void grimoire(const dpp::interaction_create_t& event, player p) {
 			.icon_url = bot.me.get_avatar_url(),
 			.proxy_url = "",
 		})
+		.set_thumbnail("https://images.ssod.org/resource/app_encyclopaedia_c.jpg")
 		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
 
