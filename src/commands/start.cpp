@@ -135,7 +135,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		}
 		if (custom_id == "name_character" && p_old.state == state_name_player) {
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
-			auto check = db::query("SELECT * FROM game_users WHERE name = ?", {name});
+			auto check = db::query("SELECT * FROM game_default_users WHERE name = ?", {name});
 			if (!check.empty()) {
 				event.reply();
 				dpp::message m = p_old.get_magic_selection_message(bot, event);
