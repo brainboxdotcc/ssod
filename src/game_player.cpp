@@ -459,7 +459,7 @@ bool player::drop_herb(const item& i) {
 
 bool player::has_component_herb(const std::string& spell) {
 	spell_info si = get_spell_info(spell);
-	return has_herb(si.component_herb);
+	return si.component_herb.empty() || has_herb(si.component_herb);
 }
 
 
@@ -498,43 +498,11 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 		.set_placeholder(tr("SELSPELL", event))
 		.set_id(security::encrypt("select_player_spells"));
 	/* Fill spell select menu only with spells applicable to the chosen herbs up to a max of 25 choices */
-	const std::vector<dpp::select_option> all_spells{
-		dpp::select_option(tr("FIRE", event), "fire", tr("FIRED", event)),
-		dpp::select_option(tr("WATER", event), "water", tr("WATERD", event)),
-		dpp::select_option(tr("LIGHT", event), "light", tr("LIGHTD", event)),
-		dpp::select_option(tr("FLY", event), "fly", tr("FLYD", event)),
-		dpp::select_option(tr("STRENGTH", event), "strength", tr("STRENGTHD", event)),
-		dpp::select_option(tr("XRAY", event), "xray", tr("XRAYD", event)),
-		dpp::select_option(tr("BOLT", event), "bolt", tr("BOLTD", event)),
-		dpp::select_option(tr("FASTHANDS", event), "fasthands", tr("FASTHANDSD", event)),
-		dpp::select_option(tr("THUNDERBOLT", event), "thunderbolt", tr("THUNDERBOLTD", event)),
-		dpp::select_option(tr("STEAL", event), "steal", tr("STEALD", event)),
-		dpp::select_option(tr("SHIELD", event), "shield", tr("SHIELDD", event)),
-		dpp::select_option(tr("JUMP", event), "jump", tr("JUMPD", event)),
-		dpp::select_option(tr("OPEN", event), "open", tr("OPEND", event)),
-		dpp::select_option(tr("SPOT", event), "spot", tr("SPOTD", event)),
-		dpp::select_option(tr("SNEAK", event), "sneak", tr("SNEAKD", event)),
-		dpp::select_option(tr("ESP", event), "esp", tr("ESPD", event)),
-		dpp::select_option(tr("RUN", event), "run", tr("RUND", event)),
-		dpp::select_option(tr("INVISIBLE", event), "invisible", tr("INVISIBLED", event)),
-		dpp::select_option(tr("SHRINK", event), "shrink", tr("SHRINKD", event)),
-		dpp::select_option(tr("GROW", event), "grow", tr("GROWD", event)),
-		dpp::select_option(tr("AIR", event), "air", tr("AIRD", event)),
-		dpp::select_option(tr("ANIMAL", event), "animalcommunication", tr("ANIMALD", event)),
-		dpp::select_option(tr("WEAPONSKILL", event), "weaponskill", tr("WEAPONSKILLD", event)),
-		dpp::select_option(tr("HEALING", event), "healing", tr("HEALINGD", event)),
-		dpp::select_option(tr("WOODSMANSHIP", event), "woodsmanship", tr("WOODSMANSHIPD", event)),
-		dpp::select_option(tr("NIGHTVISION", event), "nightvision", tr("NIGHTVISIOND", event)),
-		dpp::select_option(tr("HEATEYES", event), "heateyes", tr("HEATEYESD", event)),
-		dpp::select_option(tr("DECIPHER", event), "decipher", tr("DECIPHERD", event)),
-		dpp::select_option(tr("DETECT", event), "detect", tr("DETECTD", event)),
-		dpp::select_option(tr("TRACKING", event), "tracking", tr("TRACKINGD", event)),
-		dpp::select_option(tr("ESPSURGE", event), "espsurge", tr("ESPSURGED", event)),
-		dpp::select_option(tr("AFTERIMAGE", event), "afterimage", tr("AFTERIMAGED", event)),
-		dpp::select_option(tr("PSYCHISM", event), "psychism", tr("PSYCHISMD", event)),
-		dpp::select_option(tr("SPIRITWALK", event), "spiritwalk", tr("SPIRITWALKD", event)),
-		dpp::select_option(tr("GROWWEAPON", event), "growweapon", tr("GROWWEAPOND", event)),
-	};
+	std::vector<dpp::select_option> all_spells;
+	auto rs = db::query("SELECT * FROM spells ORDER BY name");
+	for (const auto& row : rs) {
+		all_spells.emplace_back(tr(dpp::uppercase(row.at("name")), event), row.at("name"), tr(dpp::uppercase(row.at("name")) + "D", event));
+	}
 
 	size_t spell_count = 0;
 	for (auto spell : all_spells) {
@@ -545,7 +513,6 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 	}
 	if (!spell_count) {
 		spell_select_menu.add_select_option(dpp::select_option(tr("SELECTONEHERB", event), "0", tr("MUSTCHOOSE", event)));
-		spell_select_menu.set_max_values(0);
 	} else {
 		if (spell_count < max_spells) {
 			spell_select_menu.set_max_values(spell_count);
