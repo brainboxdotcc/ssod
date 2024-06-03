@@ -94,6 +94,10 @@ struct player {
 	 */
 	bool in_bank{};
 	/**
+	 * @brief True if in the grimoire
+	 */
+	bool in_grimoire{};
+	/**
 	 * @brief True if in PVP picker
 	 */
 	bool in_pvp_picker{};

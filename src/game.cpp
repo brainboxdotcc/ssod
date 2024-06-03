@@ -34,21 +34,12 @@
 #include <ssod/wildcard.h>
 #include <ssod/inventory.h>
 #include <ssod/regex.h>
+#include <ssod/grimoire.h>
 
 using namespace i18n;
 
 #define RESURRECT_SECS 3600
 #define RESURRECT_SECS_PREMIUM 900
-
-/**
- * These are compiled at program startup before the rest of the bot is initialised.
- * As such they are compiled and ready to use before we try to use them. A failure to
- * compile the regular expression will manifest as a fatal error during startup.
- */
-pcre_regex lung_rasp(R"(\s*\[gamestate_lungrasp[0-9]+\])");
-pcre_regex blood_plague(R"(\s*\[gamestate_blood_plague[0-9]+\])");
-pcre_regex bubonic_plague(R"(\s*\[gamestate_bubonic_plague[0-9]+\])");
-pcre_regex green_rot(R"(\s*\[gamestate_green_rot[0-9]+\])");
 
 uint64_t get_guild_id(const player& p);
 
@@ -313,6 +304,18 @@ void game_select(const dpp::select_click_t &event) {
 				send_chat(event.command.usr.id, p.paragraph, parts[0], "drop");
 			}
 		}
+		claimed = true;
+	} else if (custom_id == "cast" && !event.values.empty() && p.in_grimoire && p.stamina > 0) {
+		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		spell_info si = get_spell_info(parts[0]);
+		if (parts.size() >= 1 && p.has_spell(parts[0]) && p.has_component_herb(parts[0]) && p.mana >= si.mana_cost) {
+			p.add_mana(-si.mana_cost);
+			auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Spell' AND requirements = ?", {parts[0]});
+			if (!effect.empty()) {
+				trigger_effect(bot, event, p, "Spell", parts[0]);
+			}
+		}
+		p.in_grimoire = false;
 		claimed = true;
 	} else if (custom_id == "use_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
@@ -684,6 +687,9 @@ void game_nav(const dpp::button_click_t& event) {
 		p.in_inventory = true;
 		p.inventory_page = atoi(parts[1].c_str());
 		claimed = true;
+	} else if (parts[0] == "grimoire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
+		p.in_grimoire = true;
+		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
 		/* Pick up frm floor */
 		if (p.paragraph != atol(parts[1])) {
@@ -715,6 +721,9 @@ void game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat) {
 		p.in_inventory = false;
+		claimed = true;
+	} else if (parts[0] == "exit_grimoire" && parts.size() == 1 && !p.in_combat) {
+		p.in_grimoire = false;
 		claimed = true;
 	} else if (parts[0] == "exit_bank" && parts.size() == 1 && !p.in_combat) {
 		p.in_bank = false;
@@ -1048,6 +1057,9 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	} else if (p.in_inventory) {
 		inventory(event, p);
 		return;
+	} else if (p.in_grimoire) {
+		grimoire(event, p);
+		return;
 	} else if (p.in_bank) {
 		bank(event, p);
 		return;
@@ -1254,6 +1266,16 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_label(tr("INVENTORY", event))
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::backpack.name, sprite::backpack.id)
+		);
+	}
+
+	if (enabled_links > 0 && p.stamina > 0) {
+		cb.add_component(dpp::component()
+			 .set_type(dpp::cot_button)
+			 .set_id(security::encrypt("grimoire"))
+			 .set_label(tr("SPELLS", event))
+			 .set_style(dpp::cos_secondary)
+			 .set_emoji(sprite::book07.name, sprite::book07.id)
 		);
 	}
 

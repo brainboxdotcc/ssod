@@ -133,21 +133,33 @@ void check_effects(dpp::cluster& bot) {
 	for (const auto& row : rs) {
 		dpp::interaction_create_t event;
 		event.command.usr.id = atoll(row.at("user_id"));
-		player player = get_live_player(event);
-		/* Initialise this paragraph 'empty' as we don't want to parse it and trigger any changes within */
-		paragraph p;
-		p.cur_player = &player;
-		p.id = player.paragraph;
-		if (row.at("current_state") == "active") {
-			db::query("UPDATE passive_effect_status SET current_state = 'withdrawl', last_transition_time = UNIX_TIMESTAMP() WHERE id = ?", {row.at("id")});
-			bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on player " + event.command.usr.id.str() + " moved to state 'withdrawl'");
-			js::run(row.at("on_end"), p, player, {});
-		} else if (row.at("current_state") == "withdrawl") {
-			js::run(row.at("on_after"), p, player, {});
-			db::query("DELETE FROM passive_effect_status WHERE id = ?", {row.at("id")});
-			bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on player " + event.command.usr.id.str() + " ended");
+		if (player_is_live(event)) {
+			player player = get_live_player(event);
+			/* Initialise this paragraph 'empty' as we don't want to parse it and trigger any changes within */
+			paragraph p;
+			if (player.event.command.usr.id.empty()) {
+				player.event = event;
+			}
+			p.cur_player = &player;
+			p.id = player.paragraph;
+			if (row.at("current_state") == "active") {
+				if (!row.at("on_end").empty()) {
+					js::run(row.at("on_end"), p, player, {});
+					update_live_player(event, player);
+					player.save(event.command.usr.id);
+				}
+				db::query("UPDATE passive_effect_status SET current_state = 'withdrawl', last_transition_time = UNIX_TIMESTAMP() WHERE id = ?", {row.at("id")});
+				bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on player " + event.command.usr.id.str() + " moved to state 'withdrawl'");
+			} else if (row.at("current_state") == "withdrawl") {
+				if (!row.at("on_after").empty()) {
+					js::run(row.at("on_after"), p, player, {});
+					update_live_player(event, player);
+					player.save(event.command.usr.id);
+				}
+				db::query("DELETE FROM passive_effect_status WHERE id = ?", {row.at("id")});
+				bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on player " + event.command.usr.id.str() + " ended");
+			}
 		}
-
 	}
 }
 

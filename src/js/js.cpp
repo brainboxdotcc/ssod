@@ -1069,6 +1069,7 @@ bool run(const std::string& script, paragraph& p, player& current_player, const 
 	duk_int_t ret;
 
 	duk_context* ctx = duk_create_heap(nullptr, nullptr, nullptr, (void*)&p, sandbox_fatal);
+
 	duk_push_global_object(ctx);
 	define_string(ctx, "BOT_ID", bot->me.id.str());
 	define_number(ctx, "PARAGRAPH_ID", p.id);

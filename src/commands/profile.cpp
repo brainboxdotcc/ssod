@@ -111,7 +111,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field(tr("RATIONS", event), sprite::cheese.get_mention() + " " + rs[0].at("rations") + "/" + std::to_string(p2.max_rations()), true)
 		.add_field(tr("SCROLLS", event), sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
 	;
-	if (rs[0].at("user_id") == event.command.usr.id.str()) {
+	if (rs[0].at("user_id") == event.command.usr.id.str() && !effects.str().empty()) {
 		/* Can only view your own status effects */
 		embed.add_field(tr("EFFECTS", event), effects.str(), false);
 	}
