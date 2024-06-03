@@ -110,8 +110,11 @@ void profile_command::route(const dpp::slashcommand_t &event)
 		.add_field(tr("NOTORIETY", event), sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
 		.add_field(tr("RATIONS", event), sprite::cheese.get_mention() + " " + rs[0].at("rations") + "/" + std::to_string(p2.max_rations()), true)
 		.add_field(tr("SCROLLS", event), sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
-		.add_field(tr("EFFECTS", event), effects.str(), false)
 	;
+	if (rs[0].at("user_id") == event.command.usr.id.str()) {
+		/* Can only view your own status effects */
+		embed.add_field(tr("EFFECTS", event), effects.str(), false);
+	}
 
 	auto premium = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
 	if (!event.command.entitlements.empty() || !premium.empty()) {
