@@ -728,13 +728,13 @@ void game_nav(const dpp::button_click_t& event) {
 				}
 				uint64_t random_animal_part = d_random(0, animal.size() - 1);
 				std::string part = animal[random_animal_part].get<std::string>();
-				ss << "* " << part << "\n";
+				ss << "* 1x __" << part << "__\n";
 				p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
 				if (d12() == d12() && animal.size() > 1) {
 					/* 1D12 chance of getting a second animal part if the animal has more than one part */
 					random_animal_part = d_random(0, animal.size() - 1);
 					part = animal[random_animal_part].get<std::string>();
-					ss << "* " << part << "\n";
+					ss << "* 1x __" << part << "__\n";
 					p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
 				}
 				p.inv_change = true;
