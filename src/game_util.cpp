@@ -104,11 +104,12 @@ std::string describe_item(const std::string& modifier_flags, const std::string& 
 		}
 		auto food = db::query("SELECT * FROM food WHERE name = ?", {name});
 		if (!food.empty()) {
-			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("FOOD", event) + "\033[0m: {}" : tr("FOOD", event) + ": {}"), food[0].at("description"));
+			i = tr(item{ .name = food[0].at("name"), .flags = "" }, food[0].at("description"), event);
+			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("FOOD", event) + "\033[0m: {}" : tr("FOOD", event) + ": {}"), ellipsis(i.description, max_desc_len));
 		}
 		auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
 		if (!ingredient.empty()) {
-			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("INGREDIENT", event) + "\033[0m: {}" : tr("INGREDIENT", event) + ": {}"), "Cook at a campfire to create edible food");
+			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("INGREDIENT", event) + "\033[0m: {}" : tr("INGREDIENT", event) + ": {}"), tr("COOK_ME", event));
 		}
 	}
 	return rv;
