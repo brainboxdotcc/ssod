@@ -151,8 +151,8 @@ namespace i18n {
 		if (res.empty()) {
 			return {.name = i.name, .description = description};
 		}
-		auto translated_text = db::query("SELECT * FROM translations WHERE (table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col", {
-			"game_item_descs/name", "game_item_descs/idesc", res[0].at("id"), event.command.locale.substr(0, 2)
+		auto translated_text = db::query("SELECT * FROM translations WHERE (table_col = ? OR table_col = ? OR table_col = ? OR table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col", {
+			"game_item_descs/name", "game_item_descs/idesc", "food/name", "food/description", "ingredients/ingredient_name", res[0].at("id"), event.command.locale.substr(0, 2)
 		});
 		if (translated_text.size() != 2) {
 			return {.name = i.name, .description = description};

@@ -1,4 +1,7 @@
 {
+    "COOK_ME": {
+        "en": "Cook at a campfire to create edible food"
+    },
     "FAILED_HUNT": {
         "en": "Unfortunately, your hunt returned nothing. The effort of hunting cost 1 stamina.",
         "fr": "Malheureusement, votre chasse n'a rien donné. L'effort de chasse coûte 1 endurance.",

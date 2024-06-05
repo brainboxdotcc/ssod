@@ -722,19 +722,28 @@ void game_nav(const dpp::button_click_t& event) {
 				for (int i = 7; i >= 0; --i) {
 					if (x >= thresholds[i]) {
 						animal = animals[i].second;
-						ss << tr("SUCCESS_HUNT", event, animals[i].first) << "\n\n";
+						std::string animal_name{animal};
+						if (event.command.locale.substr(0, 2) != "en") {
+							auto t = db::query("SELECT * FROM translations WHERE row_id = 0 AND table_col = ? AND language = ?", {animal, event.command.locale.substr(0, 2)});
+							if (!t.empty()) {
+								animal_name = t[0].at("translation");
+							}
+						}
+						ss << tr("SUCCESS_HUNT", event, animal_name) << "\n\n";
 						break;
 					}
 				}
 				uint64_t random_animal_part = d_random(0, animal.size() - 1);
 				std::string part = animal[random_animal_part].get<std::string>();
-				ss << "* 1x __" << part << "__\n";
+				auto i = tr(item{ .name = part, .flags = "" }, std::string{}, event);
+				ss << "* 1x __" << i.name << "__\n";
 				p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
 				if (d12() == d12() && animal.size() > 1) {
 					/* 1D12 chance of getting a second animal part if the animal has more than one part */
 					random_animal_part = d_random(0, animal.size() - 1);
 					part = animal[random_animal_part].get<std::string>();
-					ss << "* 1x __" << part << "__\n";
+					i = tr(item{ .name = part, .flags = "" }, std::string{}, event);
+					ss << "* 1x __" << i.name << "__\n";
 					p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
 				}
 				p.inv_change = true;
