@@ -127,4 +127,5 @@ namespace sprite {
 	inline const dpp::emoji sword_box_green("S_Sword18", 1192261596156797029);
 	inline const dpp::emoji sword_box_blue("S_Sword19", 1192261656407969902);
 	inline const dpp::emoji sword_box_purple("S_Sword20", 1192261659469824070);
+	inline const dpp::emoji cooked_meat("I_C_Meat", 1247878576884285470);
 };

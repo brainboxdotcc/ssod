@@ -1,4 +1,19 @@
 {
+    "COOK":  {
+        "en": "Cook Food"
+    },
+    "CAMPFIRE": {
+        "en": "Camp Fire"
+    },
+    "RECIPES": {
+        "en": "Available Recipes"
+    },
+    "INGREDIENTS": {
+        "en": "Ingredients:"
+    },
+    "CAMPFOOTER":  {
+        "en": "{} is sat at a campfire cooking food"
+    },
     "COOK_ME": {
         "en": "Cook at a campfire to create edible food",
         "fr": "Cuisinez sur un feu de camp pour créer des aliments comestibles",
@@ -29,6 +44,37 @@
         "el": "Μαγειρέψτε σε μια φωτιά για να δημιουργήσετε βρώσιμο φαγητό",
         "uk": "Готуйте на багатті, щоб створити їстівну їжу",
         "th": "ปรุงอาหารที่แคมป์ไฟเพื่อสร้างอาหารที่กินได้"
+    },
+    "NOTHING_HUNT": {
+        "en": "There is nothing to be found here...",
+        "fr": "Il n'y a rien à trouver ici...",
+        "pt": "Não há nada para ser encontrado aqui...",
+        "tr": "Burada bulunacak hiçbir şey yok...",
+        "es": "Aquí no se puede encontrar nada...",
+        "de": "Hier ist nichts zu finden...",
+        "hi": "यहां कुछ भी नहीं मिलेगा...",
+        "sv": "Här finns inget att hitta...",
+        "ru": "Здесь ничего не найти...",
+        "it": "Qui non si trova nulla...",
+        "pl": "Nic tu nie można znaleźć...",
+        "ko": "여기서는 찾을 수 있는 것이 없습니다...",
+        "ja": "ここには何も見つかりません...",
+        "bg": "Тук няма какво да се намери...",
+        "zh": "这里什么也找不到……",
+        "nl": "Hier is niets te vinden...",
+        "id": "Tidak ada yang bisa ditemukan di sini...",
+        "da": "Der er ikke noget at finde her...",
+        "hr": "Ovdje se ništa ne može naći...",
+        "lt": "Nieko čia nerasi...",
+        "hu": "Itt nincs mit találni...",
+        "no": "Det er ingenting å finne her...",
+        "ro": "Nu se gaseste nimic aici...",
+        "fi": "Täältä ei löydy mitään...",
+        "vi": "Chẳng có gì có thể tìm thấy ở đây cả...",
+        "cs": "Tady není nic k nalezení...",
+        "el": "Δεν υπάρχει τίποτα να βρεθεί εδώ…",
+        "uk": "Тут нічого не знайти...",
+        "th": "ไม่มีอะไรที่จะพบที่นี่ ..."
     },
     "HUNT_ATTEMPT": {
         "en": "You have tried to hunt...",

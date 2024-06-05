@@ -98,6 +98,10 @@ struct player {
 	 */
 	bool in_grimoire{};
 	/**
+	 * @brief True if in the campfire
+	 */
+	bool in_campfire{};
+	/**
 	 * @brief True if in PVP picker
 	 */
 	bool in_pvp_picker{};

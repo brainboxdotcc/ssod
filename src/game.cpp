@@ -35,6 +35,7 @@
 #include <ssod/inventory.h>
 #include <ssod/regex.h>
 #include <ssod/grimoire.h>
+#include <ssod/campfire.h>
 #include <ssod/game_dice.h>
 
 using namespace i18n;
@@ -691,6 +692,9 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "grimoire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_grimoire = true;
 		claimed = true;
+	} else if (parts[0] == "campfire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
+		p.in_campfire = true;
+		claimed = true;
 	} else if (parts[0] == "hunt" && parts.size() >= 2 && !p.in_combat && p.stamina > 0) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID HUNT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
@@ -700,11 +704,11 @@ void game_nav(const dpp::button_click_t& event) {
 		if (rs.empty()) {
 			return;
 		}
+		std::stringstream ss;
 		try {
 			json hunt_data = json::parse(rs[0].at("hunting_json"));
 			double probability = 100.0 - (hunt_data["probability"].get<double>() * 100);
 			double find_chance = (double)d_random(0, 100) * (double)(p.profession == prof_woodsman ? 0.75 : 0.4);
-			std::stringstream ss;
 			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << hunt_data["reason"].get<std::string>() << "*\n\n";
 			std::vector<std::pair<std::string, json>> animals;
 			for (auto &el: hunt_data["animals"].items()) {
@@ -754,6 +758,8 @@ void game_nav(const dpp::button_click_t& event) {
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
 		}
 		catch (const std::exception& e) {
+			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << tr("NOTHING_HUNT", event) << "*\n\n" << tr("FAILED_HUNT", event) << "\n";
+			p.add_stamina(-1);
 			bot.log(dpp::ll_error, "Error in hunting, location " + std::to_string(p.paragraph) + ": " + std::string(e.what()));
 		}
 		claimed = true;
@@ -791,6 +797,9 @@ void game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "exit_grimoire" && parts.size() == 1 && !p.in_combat) {
 		p.in_grimoire = false;
+		claimed = true;
+	} else if (parts[0] == "exit_campfire" && parts.size() == 1 && !p.in_combat) {
+		p.in_campfire = false;
 		claimed = true;
 	} else if (parts[0] == "exit_bank" && parts.size() == 1 && !p.in_combat) {
 		p.in_bank = false;
@@ -1135,6 +1144,9 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 	} else if (p.in_grimoire) {
 		grimoire(event, p);
 		return;
+	} else if (p.in_campfire) {
+		campfire(event, p);
+		return;
 	} else if (p.in_bank) {
 		bank(event, p);
 		return;
@@ -1350,6 +1362,24 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			 .set_style(dpp::cos_secondary)
 			 .set_emoji(sprite::book07.name, sprite::book07.id)
 		);
+
+		auto r = db::query("SELECT hunting_json FROM game_locations WHERE id = ?", {p.paragraph});
+		if (!r.empty() && !r[0].at("hunting_json").empty()) {
+			try {
+				json hunt_data = json::parse(r[0].at("hunting_json"));
+				if (hunt_data["probability"].get<double>() > 0) {
+					cb.add_component(dpp::component()
+						.set_type(dpp::cot_button)
+						.set_id(security::encrypt("campfire"))
+						.set_label(tr("COOK", event))
+						.set_style(dpp::cos_secondary)
+						.set_emoji(sprite::cooked_meat.name, sprite::cooked_meat.id)
+					);
+				}
+			}
+			catch (...) {}
+		}
+
 
 		cb.add_component(dpp::component()
 			 .set_type(dpp::cot_button)
