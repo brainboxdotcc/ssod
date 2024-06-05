@@ -21,6 +21,11 @@
 
 /**
  * @brief Uniform distribution between first and last inclusive
+ *
+ * These randomness functions are cryptographically secure, and
+ * use industry standard randomness algorithms. There is no srand()
+ * here, this is pretty much as good as you'd find in a casino
+ * inside a blackjack machine. I take my randomness seriously.
  * 
  * @param first lowest number
  * @param last highest number

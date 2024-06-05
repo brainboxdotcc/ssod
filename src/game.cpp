@@ -764,7 +764,34 @@ void game_nav(const dpp::button_click_t& event) {
 		try {
 			json hunt_data = json::parse(rs[0].at("hunting_json"));
 			double probability = 100.0 - (hunt_data["probability"].get<double>() * 100);
+			/* The probability of finding an animal at all is random between 0 and 100, but
+			 * this random value is weighted against the player's profession. Woodsman profession
+			 * have this multiplied by 0.75, but all other professions get it multiplied by 0.4,
+			 * meaning if your job is not to hunt in the wilderness, you're going to have a harder
+			 * time of it.
+			 */
 			double find_chance = (double)d_random(0, 100) * (double)(p.profession == prof_woodsman ? 0.75 : 0.4);
+			auto bias = db::query("SELECT COUNT(*) AS current_ingredient_items FROM game_owned_items WHERE ((SELECT COUNT(*) FROM ingredients WHERE ingredient_name = item_desc LIMIT 1) > 0 OR (SELECT COUNT(*) FROM food WHERE food.name = item_desc LIMIT 1) > 0) AND user_id = ?", {event.command.usr.id});
+			uint64_t current_ingredient_items = atol(bias[0].at("current_ingredient_items")), bias_factor{0};
+			/* As you carry more and more ingredient items your probability of finding game animals decreases.
+			 * This is a bias factor to prevent the user continually farming game animals all day long. There
+			 * comes a limit where the odds of success are too great, and you have to sell, or take your
+			 * cooked items to the bank and stash them, or consume them to carry on, encouraging a break in
+			 * the game loop to do something else.
+			 */
+			if (current_ingredient_items >= 10 && current_ingredient_items < 15) {
+				find_chance *= 0.5;
+				bias_factor = 1;
+			} else if (current_ingredient_items >= 15 && current_ingredient_items < 20) {
+				find_chance *= 0.25;
+				bias_factor = 2;
+			} else if (current_ingredient_items >= 20 && current_ingredient_items < 25) {
+				find_chance *= 0.125;
+				bias_factor = 3;
+			} else if (current_ingredient_items >= 25) {
+				find_chance *= 0.05;
+				bias_factor = 4;
+			}
 			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << hunt_data["reason"].get<std::string>() << "*\n\n";
 			std::vector<std::pair<std::string, json>> animals;
 			for (auto &el: hunt_data["animals"].items()) {
@@ -773,10 +800,20 @@ void game_nav(const dpp::button_click_t& event) {
 			/* Reverse so the rarest animal is at the start and most common at the end */
 			reverse(begin(animals), end(animals));
 			size_t animal_count = animals.size();
-			bot.log(dpp::ll_debug, "Player hunting, probability of success=" + std::to_string(probability) + " score=" + std::to_string(find_chance) + " animal count=" + std::to_string(animal_count));
+			bot.log(dpp::ll_debug, "Player hunting, probability of success=" + std::to_string(probability) + " score=" + std::to_string(find_chance) + " animal count=" + std::to_string(animal_count) + " bias factor=" + std::to_string(bias_factor));
 			if (find_chance >= probability && animal_count > 0) {
 				/* Hunted and found something */
 				json animal = animals[0];
+				/* When there are multiple animals possible to be hunted at the location,
+				 * each successive animal is twice as unlikely to be encountered as the one
+				 * before it. So, if there are two animals, the first animal has a probabity
+				 * of 66% and the second has a probability of 33% of being encountered.
+				 * With Three animals, this factors up again and with each, in increases by
+				 * a square value. So, with the maximum of eight animals to pick from, the
+				 * odds of encountering the eighth animal in the list are 128/1 while the odds
+				 * of encountering the first are 50/50 (sucks to be the player who really
+				 * wants that one animals parts!).
+				 */
 				std::array<int, 8> thresholds{1, 2, 4, 8, 16, 32, 64, 128};
 				int x = d_random(1, 1 << (animal_count - 1));
 				for (int i = 7; i >= 0; --i) {
@@ -793,13 +830,17 @@ void game_nav(const dpp::button_click_t& event) {
 						break;
 					}
 				}
+				/* Choice of animal part you get is completely random. The rarest animals are
+				 * already 128/1 (0.7%) so having the same kind of thing AGAIN on the body
+				 * parts would make some body parts ridiculously impossible to obtain.
+				 */
 				uint64_t random_animal_part = d_random(0, animal.size() - 1);
 				std::string part = animal[random_animal_part].get<std::string>();
 				auto i = tr(item{ .name = part, .flags = "" }, std::string{}, event);
 				ss << "* 1x __" << i.name << "__\n";
 				p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
 				if (d12() == d12() && animal.size() > 1) {
-					/* 1D12 chance of getting a second animal part if the animal has more than one part */
+					/* 1/12 chance of getting a second animal part, if the animal has more than one part */
 					random_animal_part = d_random(0, animal.size() - 1);
 					part = animal[random_animal_part].get<std::string>();
 					i = tr(item{ .name = part, .flags = "" }, std::string{}, event);
@@ -814,6 +855,7 @@ void game_nav(const dpp::button_click_t& event) {
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
 		}
 		catch (const std::exception& e) {
+			/* We end up here if the hunting_json is invalid or empty */
 			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << tr("NOTHING_HUNT", event) << "*\n\n" << tr("FAILED_HUNT", event) << "\n";
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
 			p.add_stamina(-1);
