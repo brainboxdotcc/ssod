@@ -143,7 +143,7 @@ namespace security {
 	std::string random_string(size_t len) {
 		std::string out;
 		for (size_t x = 0; x < len; ++x) {
-			out += (char)random(65, 90);
+			out += (char)d_random(65, 90);
 		}
 		return out;
 	}

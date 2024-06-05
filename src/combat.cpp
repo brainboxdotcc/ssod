@@ -169,7 +169,7 @@ void update_opponent_message(const dpp::interaction_create_t& event, dpp::messag
 
 void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
 	std::lock_guard<std::mutex> l(pvp_list_lock);
-	bool turn = random(0, 1);
+	bool turn = d_random(0, 1);
 	if (id1 != 0 && id2 != 0) {
 		pvp_list[id2] = {
 			.opponent = id1,
@@ -532,7 +532,7 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 			if (opponent.stamina < 1 || p.stamina < 1) {
 
 				const size_t max_death_messages = 44;
-				std::string death_message = tr(fmt::format("DEATH_MSG_{}", random(0, max_death_messages)), event);
+				std::string death_message = tr(fmt::format("DEATH_MSG_{}", d_random(0, max_death_messages)), event);
 				if (p.stamina < 1) {
 					output1 << fmt::format(fmt::runtime(death_message), p.name, opponent.name);
 					output2 << fmt::format(fmt::runtime(death_message), p.name, opponent.name);
@@ -811,7 +811,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 
 			if (EStamina < 1 || p.stamina < 1) {
 				const size_t max_death_messages = 44;
-				std::string death_message = tr(fmt::format("DEATH_MSG_{}", random(0, max_death_messages)), event);
+				std::string death_message = tr(fmt::format("DEATH_MSG_{}", d_random(0, max_death_messages)), event);
 				if (p.stamina < 1) {
 					output << fmt::format(fmt::runtime(death_message), p.name, p.combatant.name);
 				} else {

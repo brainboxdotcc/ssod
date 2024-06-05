@@ -26,7 +26,7 @@
  * @param last highest number
  * @return int random between first and last
  */
-int random(int first, int last);
+int d_random(int first, int last);
 
 /**
  * @brief Uniform distribution D6
