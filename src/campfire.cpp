@@ -38,7 +38,9 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 
 	content << "## " << tr("CAMPFIRE", event) << "\n\n";
 
+	/* All available recipes */
 	auto recipes = db::query("SELECT food.id, food.name, food.description, GROUP_CONCAT(ingredient_name ORDER BY ingredient_name) AS ingredients, stamina_change, skill_change, luck_change, speed_change, value FROM food JOIN ingredients ON food_id = food.id GROUP BY food.id, food.name, food.description ORDER BY value DESC");
+	/* All the user's available ingredients and cooked food items, not grouped */
 	auto ingredients = db::query(
 		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ?"
 		" UNION "
@@ -56,6 +58,10 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		{event.command.usr.id, event.command.usr.id}
 	);
 
+	/**
+	 * Iterate through the player's list of available grouped ingredients and display it.
+	 * By "grouped" this means that it is shown in stacks.
+	 */
 	content << "### " << tr("AVAILABLE_INGREDIENTS", event) << "\n\n";
 	for (auto& stack : stacked_ingredients) {
 		std::string item{stack.at("item_desc")};
@@ -89,6 +95,9 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		.set_placeholder(tr("COOK_RECIPE", event))
 		.set_id(security::encrypt("cook"));
 
+	/*
+	 * Determine which of the master recipe list is available for the player to cook right now
+	 */
 	db::resultset can_cook;
 	for (auto& recipe : recipes) {
 		std::vector<std::string> recipe_ingredients = dpp::utility::tokenize(recipe.at("ingredients"), ",");
@@ -100,11 +109,13 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		for (auto& check_ingredient : recipe_ingredients) {
 			auto i = std::find(my_ingredients.begin(), my_ingredients.end(), check_ingredient);
 			if (i != my_ingredients.end()) {
+				/* This ingredient is required by the recipe, remove an instance of it */
 				my_ingredients.erase(i);
 				checked++;
 			}
 		}
 		if (checked >= recipe_ingredients.size()) {
+			/* All ingredients for this recipe are available */
 			can_cook.emplace_back(recipe);
 		}
 	}
@@ -114,6 +125,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 	for (auto& cookable : can_cook) {
 		std::string name{cookable.at("name")}, description{cookable.at("description")}, ingredients{cookable.at("ingredients")};
 		if (event.command.locale.substr(0, 2) != "en") {
+			/* For non-english game, translate the food names, descriptions and ingredient list */
 			auto food_q = db::query(
 				"SELECT food.id, food.name, "
 				"(SELECT translation FROM translations WHERE table_col = 'food/name' AND row_id = food.id AND language = ?) AS translate_name, "
