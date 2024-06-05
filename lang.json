@@ -11,6 +11,15 @@
     "INGREDIENTS": {
         "en": "Ingredients:"
     },
+    "AVAILABLE_INGREDIENTS": {
+        "en": "Available Ingredients and Food Items"
+    },
+    "COOK_RECIPE": {
+        "en": "Select Recipe to cook"
+    },
+    "COOK_FOOD": {
+        "en": "Cook {}"
+    },
     "CAMPFOOTER":  {
         "en": "{} is sat at a campfire cooking food"
     },

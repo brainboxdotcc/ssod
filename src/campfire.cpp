@@ -21,7 +21,6 @@
 #include <string>
 #include <fmt/format.h>
 #include <ssod/ssod.h>
-#include <ssod/game.h>
 #include <ssod/game_player.h>
 #include <ssod/game_util.h>
 #include <ssod/component_builder.h>
@@ -38,7 +37,6 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 	std::vector<dpp::embed_field> fields;
 
 	content << "## " << tr("CAMPFIRE", event) << "\n\n";
-	content << "### " << tr("RECIPES", event) << "\n\n";
 
 	auto recipes = db::query("SELECT food.id, food.name, food.description, GROUP_CONCAT(ingredient_name ORDER BY ingredient_name) AS ingredients, stamina_change, skill_change, luck_change, speed_change, value FROM food JOIN ingredients ON food_id = food.id GROUP BY food.id, food.name, food.description ORDER BY value DESC");
 	auto ingredients = db::query(
@@ -47,8 +45,39 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN food ON item_desc = food.name WHERE user_id = ?",
 		{event.command.usr.id, event.command.usr.id}
 	);
-	db::resultset can_cook;
+	/* Stacked food and ingredient items, with quantities for display */
+	auto stacked_ingredients = db::query(
+		"SELECT item_desc, SUM(qty) AS qty FROM "
+		"(SELECT game_owned_items.id, item_desc, COUNT(item_desc) AS qty FROM game_owned_items WHERE user_id = ? AND (SELECT COUNT(*) FROM ingredients WHERE ingredient_name = item_desc LIMIT 1) > 0 "
+		"GROUP BY game_owned_items.id, item_desc "
+		"UNION "
+		"SELECT game_owned_items.id, item_desc, COUNT(item_desc) AS qty FROM game_owned_items JOIN food ON item_desc = food.name WHERE user_id = ? GROUP BY game_owned_items.id, item_desc) "
+		"derived GROUP BY item_desc",
+		{event.command.usr.id, event.command.usr.id, event.command.usr.id, event.command.usr.id}
+	);
 
+	content << "### " << tr("AVAILABLE_INGREDIENTS", event) << "\n\n";
+	for (auto& stack : stacked_ingredients) {
+		if (event.command.locale.substr(0, 2) != "en") {
+			auto item = describe_item("", stack.at("item_desc"), event, false);
+			content << sprite::rawmeat.get_mention() << " ";
+			if (stack.at("qty") != "1") {
+				content << stack.at("qty") << "x ";
+			}
+			content << item << "\n";
+		}
+	}
+
+	content << "\n";
+
+	dpp::component cook_menu;
+	cook_menu.set_type(dpp::cot_selectmenu)
+		.set_min_values(0)
+		.set_max_values(1)
+		.set_placeholder(tr("COOK_RECIPE", event))
+		.set_id(security::encrypt("cook"));
+
+	db::resultset can_cook;
 	for (auto& recipe : recipes) {
 		std::vector<std::string> recipe_ingredients = dpp::utility::tokenize(recipe.at("ingredients"), ",");
 		std::vector<std::string> my_ingredients;
@@ -68,9 +97,42 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		}
 	}
 
+	content << "### " << tr("RECIPES", event) << "\n\n";
+	size_t index{0};
 	for (auto& cookable : can_cook) {
-		content << "__**" << cookable.at("name") << "**__\n";
-		content << tr("INGREDIENTS", event) <<" " << cookable.at("ingredients") << "\n";
+		std::string name{cookable.at("name")}, description{cookable.at("description")}, ingredients{cookable.at("ingredients")};
+		if (event.command.locale.substr(0, 2) != "en") {
+			auto food_q = db::query(
+				"SELECT food.id, food.name, "
+				"(SELECT translation FROM translations WHERE table_col = 'food/name' AND row_id = food.id AND language = ?) AS translate_name, "
+				"(SELECT translation FROM translations WHERE table_col = 'food/description' AND row_id = food.id AND language = ?) AS translate_description "
+				"FROM food WHERE name = ? LIMIT 1; ",
+				{event.command.locale.substr(0, 2), event.command.locale.substr(0, 2), name}
+			);
+			if (!food_q.empty()) {
+				name = !food_q[0].at("translate_name").empty() ? food_q[0].at("translate_name") : name;
+				description = !food_q[0].at("translate_description").empty() ? food_q[0].at("translate_description") : description;
+				auto ingredients_q = db::query(
+					"SELECT ingredient_name, translation FROM ingredients "
+					"LEFT JOIN translations ON table_col = 'ingredients/ingredient_name' AND row_id = ingredients.id AND language = ? "
+					"where food_id = ?",
+					{event.command.locale.substr(0, 2), food_q[0].at("id")}
+				);
+				ingredients.clear();
+				for (auto& ingredient : ingredients_q) {
+					std::string ing_name{!ingredient.at("translation").empty() ? ingredient.at("translation") : ingredient.at("ingredient_name")};
+					ingredients.append(ing_name).append(",");
+				}
+				if (!ingredients.empty()) {
+					ingredients = ingredients.substr(0, ingredients.length() - 1);
+				}
+			}
+			cook_menu.add_select_option(dpp::select_option(tr("COOK_FOOD", event, name), cookable.at("name") + ";" + std::to_string(++index)).set_emoji(sprite::cooked_meat.name, sprite::cooked_meat.id));
+		}
+		content << sprite::cooked_meat.get_mention() << " ";
+		content << "__**" << name << "**__\n";
+		content << "*" << description << "*\n";
+		content << tr("INGREDIENTS", event) <<" " << ingredients << "\n";
 		if (atol(cookable.at("stamina_change"))) {
 			content << tr("STAMINA", event) << " +" << cookable.at("stamina_change") << " ";
 		}

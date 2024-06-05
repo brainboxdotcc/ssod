@@ -21,7 +21,6 @@
 #include <string>
 #include <fmt/format.h>
 #include <ssod/ssod.h>
-#include <ssod/game.h>
 #include <ssod/game_player.h>
 #include <ssod/game_util.h>
 #include <ssod/component_builder.h>
