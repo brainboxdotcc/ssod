@@ -849,6 +849,14 @@ void game_nav(const dpp::button_click_t& event) {
 
 dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
 	dpp::emoji emoji = sprite::backpack;
+	auto food = db::query("SELECT * FROM food WHERE name = ?", {name});
+	if (!food.empty()) {
+		return sprite::cheese;
+	}
+	auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
+	if (!ingredient.empty()) {
+		return sprite::rawmeat;
+	}
 	if (flags.length() && flags[0] == 'W') {
 		if (dpp::lowercase(name).find("bow") != std::string::npos) {
 			emoji = sprite::bow02;
