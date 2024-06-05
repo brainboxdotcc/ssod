@@ -53,19 +53,31 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		"UNION "
 		"SELECT game_owned_items.id, item_desc, COUNT(item_desc) AS qty FROM game_owned_items JOIN food ON item_desc = food.name WHERE user_id = ? GROUP BY game_owned_items.id, item_desc) "
 		"derived GROUP BY item_desc",
-		{event.command.usr.id, event.command.usr.id, event.command.usr.id, event.command.usr.id}
+		{event.command.usr.id, event.command.usr.id}
 	);
 
 	content << "### " << tr("AVAILABLE_INGREDIENTS", event) << "\n\n";
 	for (auto& stack : stacked_ingredients) {
+		std::string item{stack.at("item_desc")};
 		if (event.command.locale.substr(0, 2) != "en") {
-			auto item = describe_item("", stack.at("item_desc"), event, false);
-			content << sprite::rawmeat.get_mention() << " ";
-			if (stack.at("qty") != "1") {
-				content << stack.at("qty") << "x ";
+			auto ingredients_q = db::query(
+				"SELECT ingredient_name, translation FROM ingredients "
+				"LEFT JOIN translations ON table_col = 'ingredients/ingredient_name' AND row_id = ingredients.id AND language = ? "
+				"where ingredient_name = ?",
+				{event.command.locale.substr(0, 2), item}
+			);
+			if (!ingredients_q.empty() && !ingredients_q[0].at("translation").empty()) {
+				item = ingredients_q[0].at("translation");
 			}
-			content << item << "\n";
 		}
+		content << sprite::rawmeat.get_mention() << " ";
+		if (stack.at("qty") != "1") {
+			content << stack.at("qty") << "x ";
+		}
+		content << item << "\n";
+	}
+	if (stacked_ingredients.empty()) {
+		content << tr("NO_INGREDIENTS", event) << "\n";
 	}
 
 	content << "\n";
@@ -127,12 +139,12 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 					ingredients = ingredients.substr(0, ingredients.length() - 1);
 				}
 			}
-			cook_menu.add_select_option(dpp::select_option(tr("COOK_FOOD", event, name), cookable.at("name") + ";" + std::to_string(++index)).set_emoji(sprite::cooked_meat.name, sprite::cooked_meat.id));
 		}
+		cook_menu.add_select_option(dpp::select_option(tr("COOK_FOOD", event, name), cookable.at("name") + ";" + std::to_string(++index)).set_emoji(sprite::cooked_meat.name, sprite::cooked_meat.id));
 		content << sprite::cooked_meat.get_mention() << " ";
 		content << "__**" << name << "**__\n";
 		content << "*" << description << "*\n";
-		content << tr("INGREDIENTS", event) <<" " << ingredients << "\n";
+		content << "**" << tr("INGREDIENTS", event) << "** " << ingredients << "\n";
 		if (atol(cookable.at("stamina_change"))) {
 			content << tr("STAMINA", event) << " +" << cookable.at("stamina_change") << " ";
 		}
@@ -145,7 +157,10 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		if (atol(cookable.at("speed_change"))) {
 			content << tr("SPEED", event) << " +" << cookable.at("speed_change") << " ";
 		}
-		content << tr("VALUE", event) << " " << cookable.at("value") << " 🪙";
+		content << tr("VALUE", event) << " " << cookable.at("value") << " 🪙\n\n";
+	}
+	if (can_cook.empty()) {
+		content << tr("NO_RECIPES", event) << "\n";
 	}
 
 	dpp::embed embed = dpp::embed()
@@ -171,6 +186,10 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 	);
 	cb.add_component(help_button(event));
 	m = cb.get_message();
+
+	if (!cook_menu.options.empty()) {
+		m.add_component(dpp::component().add_component(cook_menu));
+	}
 	embed.fields = fields;
 	m.embeds = { embed };
 

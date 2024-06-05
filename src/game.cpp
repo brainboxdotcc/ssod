@@ -319,6 +319,52 @@ void game_select(const dpp::select_click_t &event) {
 		}
 		p.in_grimoire = false;
 		claimed = true;
+	} else if (custom_id == "cook" && !event.values.empty() && p.in_campfire && p.stamina > 0) {
+		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.size() >= 1) {
+			bot.log(dpp::ll_debug, event.command.usr.id.str() + ": attempting to cook: '" + parts[0] + "'");
+			auto recipe = db::query(
+				"SELECT food.id, food.name, food.description, GROUP_CONCAT(ingredient_name ORDER BY ingredient_name) AS ingredients, "
+				"stamina_change, skill_change, luck_change, speed_change, value FROM food JOIN ingredients ON food_id = food.id "
+				"WHERE food.name = ? GROUP BY food.id, food.name, food.description",
+				{parts[0]}
+			);
+			if (recipe.empty()) {
+				/* Recipe doesnt even exist, wtf */
+				bot.log(dpp::ll_debug, event.command.usr.id.str() + ": invalid recipe name: '" + parts[0] + "'");
+				return;
+			}
+			auto ingredients = db::query(
+				"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ?"
+				" UNION "
+				"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN food ON item_desc = food.name WHERE user_id = ?",
+				{event.command.usr.id, event.command.usr.id}
+			);
+			std::vector<std::string> recipe_ingredients = dpp::utility::tokenize(recipe[0].at("ingredients"), ",");
+			std::vector<std::string> my_ingredients;
+			for (auto& ingredient : ingredients) {
+				my_ingredients.emplace_back(ingredient.at("item_desc"));
+			}
+			size_t checked{0};
+			for (auto& check_ingredient : recipe_ingredients) {
+				auto i = std::find(my_ingredients.begin(), my_ingredients.end(), check_ingredient);
+				if (i != my_ingredients.end()) {
+					my_ingredients.erase(i);
+					p.drop_possession(item{ .name = check_ingredient, .flags = ""});
+					checked++;
+				}
+			}
+			if (checked < recipe_ingredients.size()) {
+				/* Double-checked, can't cook this! */
+				bot.log(dpp::ll_debug, event.command.usr.id.str() + ": player lacks ingredients for '" + parts[0] + "'; lag, bug, or hack attempt");
+				return;
+			}
+
+			/* Replace ingredients with cooked meal */
+			p.possessions.emplace_back(stacked_item{ .name = parts[0], .flags = "", .qty = 1});
+			p.inv_change = true;
+		}
+		claimed = true;
 	} else if (custom_id == "use_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() >= 2 && p.has_possession(parts[0])) {
@@ -326,6 +372,13 @@ void game_select(const dpp::select_click_t &event) {
 			auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
 				trigger_effect(bot, event, p, "Consumable", parts[0]);
+			}
+			auto food = db::query("SELECT * FROM food WHERE name = ?", {parts[0]});
+			if (!food.empty()) {
+				p.add_stamina(atol(food[0].at("stamina_change")));
+				p.add_skill(atol(food[0].at("skill_change")));
+				p.add_luck(atol(food[0].at("luck_change")));
+				p.add_speed(atol(food[0].at("speed_change")));
 			}
 			std::string flags = parts[1];
 			if (flags.substr(0, 2) == "ST") {
@@ -700,6 +753,9 @@ void game_nav(const dpp::button_click_t& event) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID HUNT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
 			return;
 		}
+		if (p.possessions.size() >= p.max_inventory_slots()) {
+			return;
+		}
 		auto rs = db::query("SELECT * FROM game_locations WHERE id = ?", {parts[1]});
 		if (rs.empty()) {
 			return;
@@ -759,8 +815,11 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		catch (const std::exception& e) {
 			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << tr("NOTHING_HUNT", event) << "*\n\n" << tr("FAILED_HUNT", event) << "\n";
+			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
 			p.add_stamina(-1);
-			bot.log(dpp::ll_error, "Error in hunting, location " + std::to_string(p.paragraph) + ": " + std::string(e.what()));
+			if (!rs[0].at("hunting_json").empty()) {
+				bot.log(dpp::ll_error, "Error in hunting, location " + std::to_string(p.paragraph) + ": " + std::string(e.what()));
+			}
 		}
 		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
@@ -1363,6 +1422,15 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			 .set_emoji(sprite::book07.name, sprite::book07.id)
 		);
 
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("hunt;" +std::to_string(p.paragraph)))
+			.set_label(tr("HUNT", event))
+			.set_style(dpp::cos_secondary)
+			.set_emoji("🦌")
+			.set_disabled(p.possessions.size() >= p.max_inventory_slots())
+		);
+
 		auto r = db::query("SELECT hunting_json FROM game_locations WHERE id = ?", {p.paragraph});
 		if (!r.empty() && !r[0].at("hunting_json").empty()) {
 			try {
@@ -1379,15 +1447,6 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			}
 			catch (...) {}
 		}
-
-
-		cb.add_component(dpp::component()
-			 .set_type(dpp::cot_button)
-			 .set_id(security::encrypt("hunt;" +std::to_string(p.paragraph)))
-			 .set_label(tr("HUNT", event))
-			 .set_style(dpp::cos_secondary)
-			 .set_emoji(sprite::rawmeat.name, sprite::rawmeat.id)
-		);
 	}
 
 	if (enabled_links > 0 && p.stamina > 0 && p.after_fragment == 0) {
