@@ -1,0 +1,1157 @@
+[
+  {
+    "name": "rabbit pie",
+    "description": "Savory pie filled with rabbit meat and rabbit foot",
+    "ingredients": [
+      "rabbit meat",
+      "rabbit foot"
+    ],
+    "stamina_change": 4,
+    "skill_change": 3,
+    "luck_change": 2,
+    "speed_change": 6
+  },
+  {
+    "name": "pheasant roast",
+    "description": "Roasted pheasant seasoned with herbs",
+    "ingredients": [
+      "pheasant meat",
+      "pheasant feather",
+      "pheasant breast"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 4,
+    "speed_change": 3
+  },
+  {
+    "name": "hawk stew",
+    "description": "Hearty stew featuring hawk meat and hawk feather",
+    "ingredients": [
+      "hawk meat",
+      "hawk feather"
+    ],
+    "stamina_change": 8,
+    "skill_change": 7,
+    "luck_change": 6,
+    "speed_change": 5
+  },
+  {
+    "name": "snake surprise",
+    "description": "Exotic dish made with snake meat and snake skin",
+    "ingredients": [
+      "snake fang",
+      "snake skin"
+    ],
+    "stamina_change": 3,
+    "skill_change": 2,
+    "luck_change": 7,
+    "speed_change": 6
+  },
+  {
+    "name": "spider venom stew",
+    "description": "A hearty stew with a venomous kick",
+    "ingredients": [
+      "venom",
+      "rat meat",
+      "rib meat",
+      "slime trail"
+    ],
+    "stamina_change": 6,
+    "skill_change": 6,
+    "luck_change": 6,
+    "speed_change": 6
+  },
+  {
+    "name": "lynx claw jerky",
+    "description": "Jerky made from lynx claws, surprisingly tasty",
+    "ingredients": [
+      "lynx claw",
+      "Wolf Jerky"
+    ],
+    "stamina_change": 3,
+    "skill_change": 3,
+    "luck_change": 3,
+    "speed_change": 3
+  },
+  {
+    "name": "wolf pelt steak",
+    "description": "A savory steak made from wolf pelt",
+    "ingredients": [
+      "wolf pelt",
+      "wolf pelt"
+    ],
+    "stamina_change": 4,
+    "skill_change": 4,
+    "luck_change": 4,
+    "speed_change": 4
+  },
+  {
+    "name": "gator scale broth",
+    "description": "Broth infused with the essence of gator scales",
+    "ingredients": [
+      "gator scale",
+      "Rabbit Stew"
+    ],
+    "stamina_change": 3,
+    "skill_change": 3,
+    "luck_change": 3,
+    "speed_change": 3
+  },
+  {
+    "name": "hare foot stew",
+    "description": "A comforting stew featuring tender hare foot",
+    "ingredients": [
+      "hare foot",
+      "Rabbit Stew"
+    ],
+    "stamina_change": 3,
+    "skill_change": 3,
+    "luck_change": 3,
+    "speed_change": 3
+  },
+  {
+    "name": "dragon scale soup",
+    "description": "A magical soup made from dragon scales",
+    "ingredients": [
+      "dragon scale",
+      "Raven Eye Soup"
+    ],
+    "stamina_change": 3,
+    "skill_change": 3,
+    "luck_change": 3,
+    "speed_change": 3
+  },
+  {
+    "name": "elk liver fillet",
+    "description": "A flavorful fillet featuring elk liver",
+    "ingredients": [
+      "elk liver",
+      "fillet"
+    ],
+    "stamina_change": 3,
+    "skill_change": 3,
+    "luck_change": 3,
+    "speed_change": 3
+  },
+  {
+    "name": "moose steak with antlers",
+    "description": "Succulent moose steak garnished with antlers",
+    "ingredients": [
+      "moose steak",
+      "antlers"
+    ],
+    "stamina_change": 4,
+    "skill_change": 4,
+    "luck_change": 4,
+    "speed_change": 4
+  },
+  {
+    "name": "poison sac soup",
+    "description": "A unique soup made with a poisonous twist",
+    "ingredients": [
+      "poison sac",
+      "Raven Eye Soup"
+    ],
+    "stamina_change": 3,
+    "skill_change": 3,
+    "luck_change": 3,
+    "speed_change": 3
+  },
+  {
+    "name": "grim rabbit stew",
+    "description": "A dark and mysterious stew made with rabbit meat",
+    "ingredients": [
+      "moose steak",
+      "Rabbit Stew"
+    ],
+    "stamina_change": 4,
+    "skill_change": 4,
+    "luck_change": 4,
+    "speed_change": 4
+  },
+  {
+    "name": "spiked pheasant meat",
+    "description": "A dish featuring tender pheasant meat with a sharp kick.",
+    "ingredients": [
+      "pheasant meat",
+      "feather"
+    ],
+    "stamina_change": 5,
+    "skill_change": 3,
+    "luck_change": 4,
+    "speed_change": 5
+  },
+  {
+    "name": "crimson boar chowder",
+    "description": "A hearty chowder made from boar meat, with a deep red hue.",
+    "ingredients": [
+      "boar meat",
+      "boar hide",
+      "bacon"
+    ],
+    "stamina_change": 6,
+    "skill_change": 6,
+    "luck_change": 5,
+    "speed_change": 6
+  },
+  {
+    "name": "slimy frog stew",
+    "description": "A thick stew with chunks of frog meat, for the daring adventurer.",
+    "ingredients": [
+      "frog leg",
+      "slime essence",
+      "slime trail"
+    ],
+    "stamina_change": 7,
+    "skill_change": 7,
+    "luck_change": 8,
+    "speed_change": 7
+  },
+  {
+    "name": "venomous snake bites",
+    "description": "Savory bites of snake meat infused with venom for an extra zing.",
+    "ingredients": [
+      "snake fang",
+      "venom gland"
+    ],
+    "stamina_change": 6,
+    "skill_change": 2,
+    "luck_change": 5,
+    "speed_change": 4
+  },
+  {
+    "name": "wolf's shadow soup",
+    "description": "A mysterious soup that tastes like the essence of a wolf's shadow.",
+    "ingredients": [
+      "wolf meat",
+      "shadow essence",
+      "wolf fur",
+      "wolf fang"
+    ],
+    "stamina_change": 8,
+    "skill_change": 8,
+    "luck_change": 7,
+    "speed_change": 6
+  },
+  {
+    "name": "crab claw salad",
+    "description": "A refreshing salad with succulent crab claw meat.",
+    "ingredients": [
+      "crab meat",
+      "claw"
+    ],
+    "stamina_change": 5,
+    "skill_change": 5,
+    "luck_change": 6,
+    "speed_change": 4
+  },
+  {
+    "name": "pearl essence sushi",
+    "description": "Delicate sushi rolls filled with pearl essence for a touch of luxury.",
+    "ingredients": [
+      "essence",
+      "pearl"
+    ],
+    "stamina_change": 4,
+    "skill_change": 4,
+    "luck_change": 6,
+    "speed_change": 3
+  },
+  {
+    "name": "shark fin soup",
+    "description": "A rich and flavorful soup made with prized shark fins.",
+    "ingredients": [
+      "shark fin",
+      "shark meat"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 5,
+    "speed_change": 6
+  },
+  {
+    "name": "panther talon kebabs",
+    "description": "Spicy kebabs featuring panther talons, for a bold flavor.",
+    "ingredients": [
+      "panther fur",
+      "panther claw",
+      "panther claw",
+      "panther claw"
+    ],
+    "stamina_change": 8,
+    "skill_change": 8,
+    "luck_change": 7,
+    "speed_change": 8
+  },
+  {
+    "name": "grouse wing chips",
+    "description": "Crispy and flavorful chips made from fried grouse wings.",
+    "ingredients": [
+      "grouse wing",
+      "grouse feather"
+    ],
+    "stamina_change": 4,
+    "skill_change": 3,
+    "luck_change": 4,
+    "speed_change": 5
+  },
+  {
+    "name": "raven claw soup",
+    "description": "A hearty soup made with a blend of raven claws and various ingredients.",
+    "ingredients": [
+      "raven beak",
+      "claws"
+    ],
+    "stamina_change": 3,
+    "skill_change": 5,
+    "luck_change": 4,
+    "speed_change": 4
+  },
+  {
+    "name": "lion steak",
+    "description": "A hearty dish featuring juicy lion steak cooked to perfection.",
+    "ingredients": [
+      "lion claw",
+      "meat"
+    ],
+    "stamina_change": 6,
+    "skill_change": 7,
+    "luck_change": 4,
+    "speed_change": 7
+  },
+  {
+    "name": "dragon scale stew",
+    "description": "A mystical stew made with dragon scales and other exotic ingredients.",
+    "ingredients": [
+      "dragon scale",
+      "stinger",
+      "leg"
+    ],
+    "stamina_change": 6,
+    "skill_change": 8,
+    "luck_change": 6,
+    "speed_change": 8
+  },
+  {
+    "name": "elk liver surprise",
+    "description": "A surprising dish that brings out the flavors of elk liver and more.",
+    "ingredients": [
+      "elk liver",
+      "elk meat",
+      "golden horseshoe"
+    ],
+    "stamina_change": 7,
+    "skill_change": 6,
+    "luck_change": 7,
+    "speed_change": 7
+  },
+  {
+    "name": "boar tusk bacon",
+    "description": "Savory bacon made from boar tusks and other interesting components.",
+    "ingredients": [
+      "boar tusk",
+      "bacon"
+    ],
+    "stamina_change": 5,
+    "skill_change": 6,
+    "luck_change": 5,
+    "speed_change": 5
+  },
+  {
+    "name": "rabbit fur stew",
+    "description": "A warm stew made with tender rabbit fur and more.",
+    "ingredients": [
+      "rabbit fur",
+      "hare meat"
+    ],
+    "stamina_change": 5,
+    "skill_change": 4,
+    "luck_change": 6,
+    "speed_change": 5
+  },
+  {
+    "name": "wolf fang jerky",
+    "description": "Delicious jerky made from wolf fangs and other ingredients.",
+    "ingredients": [
+      "wolf fang",
+      "Wolf Jerky"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 6,
+    "speed_change": 6
+  },
+  {
+    "name": "deer antler soup",
+    "description": "A comforting soup with deer antlers as the star ingredient.",
+    "ingredients": [
+      "deer antler",
+      "Raven Eye Soup"
+    ],
+    "stamina_change": 5,
+    "skill_change": 4,
+    "luck_change": 5,
+    "speed_change": 6
+  },
+  {
+    "name": "turkey drumstick surprise",
+    "description": "A surprising dish featuring turkey drumsticks and more.",
+    "ingredients": [
+      "turkey drumstick",
+      "meat",
+      "beetle legs",
+      "plumage"
+    ],
+    "stamina_change": 8,
+    "skill_change": 7,
+    "luck_change": 8,
+    "speed_change": 8
+  },
+  {
+    "name": "crystal eye stew",
+    "description": "A hearty stew made with crystal eyes and other ingredients.",
+    "ingredients": [
+      "crystal eye",
+      "rabbit meat",
+      "wild turkey breast",
+      "saddle"
+    ],
+    "stamina_change": 4,
+    "skill_change": 6,
+    "luck_change": 3,
+    "speed_change": 5
+  },
+  {
+    "name": "slime essence soup",
+    "description": "A unique soup infused with slime essence.",
+    "ingredients": [
+      "slime essence",
+      "slimy skin",
+      "slime trail",
+      "eyes",
+      "gull beak"
+    ],
+    "stamina_change": 6,
+    "skill_change": 7,
+    "luck_change": 4,
+    "speed_change": 6
+  },
+  {
+    "name": "gator tooth roast",
+    "description": "A flavorful roast showcasing gator tooth as a key ingredient.",
+    "ingredients": [
+      "gator tooth",
+      "snake fang",
+      "hawk beak",
+      "rabbit foot",
+      "whisker",
+      "gator scale"
+    ],
+    "stamina_change": 7,
+    "skill_change": 8,
+    "luck_change": 6
+  },
+  {
+    "name": "wings of luck",
+    "description": "A dish known for bringing good fortune, made with various bird ingredients.",
+    "ingredients": [
+      "heron wing",
+      "duck feather",
+      "raven beak",
+      "bird feathers"
+    ],
+    "stamina_change": 5,
+    "skill_change": 7,
+    "luck_change": 8
+  },
+  {
+    "name": "fox feast",
+    "description": "A feast fit for kings, featuring the essence of fox.",
+    "ingredients": [
+      "fox meat",
+      "fox hide",
+      "fox fur",
+      "fox tail",
+      "fox pelt"
+    ],
+    "stamina_change": 6,
+    "skill_change": 8,
+    "luck_change": 7,
+    "speed_change": 5
+  },
+  {
+    "name": "boar bacon delight",
+    "description": "A delightful dish combining the flavors of boar bacon and other meats.",
+    "ingredients": [
+      "boar bacon",
+      "boar meat",
+      "boar tusk",
+      "boar hide",
+      "Boar Stew"
+    ],
+    "stamina_change": 12,
+    "skill_change": 10,
+    "luck_change": 6,
+    "speed_change": 10
+  },
+  {
+    "name": "venomous medley",
+    "description": "A medley of potent ingredients, including venom sac and toxic glands.",
+    "ingredients": [
+      "venom sac",
+      "venom gland",
+      "poison gland",
+      "poison sac",
+      "venom",
+      "poison"
+    ],
+    "stamina_change": 6,
+    "skill_change": 8,
+    "luck_change": 7
+  },
+  {
+    "name": "beetle shell stew",
+    "description": "A hearty stew made with beetle shell, boar meat, and squirrel meat.",
+    "ingredients": [
+      "beetle shell",
+      "boar meat",
+      "squirrel meat"
+    ],
+    "stamina_change": 8,
+    "skill_change": 6,
+    "luck_change": 4,
+    "speed_change": 6
+  },
+  {
+    "name": "lynx claw soup",
+    "description": "A savory soup featuring lynx claw and rabbit meat.",
+    "ingredients": [
+      "lynx claw",
+      "rabbit meat"
+    ],
+    "stamina_change": 5,
+    "skill_change": 4,
+    "luck_change": 3,
+    "speed_change": 4
+  },
+  {
+    "name": "dragon scale stir-fry",
+    "description": "An exotic stir-fry cooked with dragon scale and salmon fillet.",
+    "ingredients": [
+      "dragon scale",
+      "salmon fillet"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 3,
+    "speed_change": 5
+  },
+  {
+    "name": "crystal eye skewers",
+    "description": "Delicious skewers made with crystal eye, rabbit meat, and squirrel meat.",
+    "ingredients": [
+      "crystal eye",
+      "rabbit meat",
+      "squirrel meat"
+    ],
+    "stamina_change": 7,
+    "skill_change": 5,
+    "luck_change": 4,
+    "speed_change": 6
+  },
+  {
+    "name": "wolf fur jerky",
+    "description": "Savory jerky crafted from wolf fur and boar meat.",
+    "ingredients": [
+      "wolf fur",
+      "boar meat"
+    ],
+    "stamina_change": 6,
+    "skill_change": 4,
+    "luck_change": 3,
+    "speed_change": 5
+  },
+  {
+    "name": "gator scale steak",
+    "description": "Juicy steak featuring gator scale and elk steak.",
+    "ingredients": [
+      "gator scale",
+      "elk steak"
+    ],
+    "stamina_change": 7,
+    "skill_change": 6,
+    "luck_change": 4,
+    "speed_change": 6
+  },
+  {
+    "name": "snake skin salad",
+    "description": "A refreshing salad made with snake skin and wild turkey breast.",
+    "ingredients": [
+      "snake skin",
+      "wild turkey breast"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 3,
+    "speed_change": 5
+  },
+  {
+    "name": "Rabbit Stew",
+    "description": "A hearty stew made with tender rabbit meat, perfect for boosting stamina.",
+    "ingredients": [
+      "rabbit leg",
+      "rabbit meat"
+    ],
+    "stamina_change": 6
+  },
+  {
+    "name": "Fox's Cunning Dish",
+    "description": "A cleverly crafted dish made with fox fur and fox hide, boosting luck.",
+    "ingredients": [
+      "fox fur",
+      "fox hide"
+    ],
+    "luck_change": 4
+  },
+  {
+    "name": "wolf fang pie",
+    "description": "Savory pie filled with tender wolf fangs",
+    "ingredients": [
+      "wolf fang",
+      "wolf meat"
+    ],
+    "stamina_change": 6,
+    "skill_change": 7,
+    "speed_change": 7
+  },
+  {
+    "name": "hawk meat skewers",
+    "description": "Grilled skewers featuring succulent hawk meat",
+    "ingredients": [
+      "hawk meat",
+      "hawk eye"
+    ],
+    "stamina_change": 4,
+    "skill_change": 5,
+    "luck_change": 3,
+    "speed_change": 5
+  },
+  {
+    "name": "elk steak surprise",
+    "description": "A surprising dish with juicy elk steak as the star ingredient",
+    "ingredients": [
+      "elk steak",
+      "elk hide",
+      "elk meat"
+    ],
+    "stamina_change": 7,
+    "skill_change": 8,
+    "luck_change": 6,
+    "speed_change": 7
+  },
+  {
+    "name": "fox fur soup",
+    "description": "Warm soup made with tender fox fur for a unique taste",
+    "ingredients": [
+      "fox fur",
+      "fox meat",
+      "fox hide"
+    ],
+    "stamina_change": 6,
+    "skill_change": 6,
+    "luck_change": 5,
+    "speed_change": 7
+  },
+  {
+    "name": "bear feast",
+    "description": "A grand feast featuring various bear cuts",
+    "ingredients": [
+      "bear pelt",
+      "bear loin",
+      "bear meat",
+      "bear fur",
+      "bear hide"
+    ],
+    "stamina_change": 8,
+    "skill_change": 8,
+    "luck_change": 7,
+    "speed_change": 8
+  },
+  {
+    "name": "fish scale salad",
+    "description": "Refreshing salad with crispy fish scales as a special touch",
+    "ingredients": [
+      "fish scales",
+      "fish meat",
+      "fish fillet"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 6,
+    "speed_change": 4
+  },
+  {
+    "name": "wolf stew",
+    "description": "Savory stew made from a mix of wolf meat and various ingredients",
+    "ingredients": [
+      "wolf meat",
+      "thigh",
+      "eyes",
+      "elk antler"
+    ],
+    "stamina_change": 5,
+    "skill_change": 6,
+    "luck_change": 3,
+    "speed_change": 4
+  },
+  {
+    "name": "elk special",
+    "description": "A special dish made from elk meat and exotic elk horn",
+    "ingredients": [
+      "elk meat",
+      "elk horn",
+      "leather"
+    ],
+    "stamina_change": 7,
+    "skill_change": 4,
+    "luck_change": 2,
+    "speed_change": 6
+  },
+  {
+    "name": "raven delight",
+    "description": "A delicious treat made from raven meat and beak",
+    "ingredients": [
+      "bird meat",
+      "raven beak"
+    ],
+    "stamina_change": 4,
+    "skill_change": 2,
+    "luck_change": 5
+  },
+  {
+    "name": "lion feast",
+    "description": "A hearty meal made of lion claw and fur",
+    "ingredients": [
+      "lion claw",
+      "fur"
+    ],
+    "stamina_change": 6,
+    "skill_change": 7,
+    "luck_change": 4
+  },
+  {
+    "name": "froggy legs",
+    "description": "Tender frog legs cooked to perfection",
+    "ingredients": [
+      "frog legs",
+      "frog eyes"
+    ],
+    "stamina_change": 4,
+    "skill_change": 3,
+    "luck_change": 5
+  },
+  {
+    "name": "bear strength",
+    "description": "A dish that enhances strength made from bear meat and hide",
+    "ingredients": [
+      "bear meat",
+      "bear hide",
+      "claws"
+    ],
+    "stamina_change": 8,
+    "skill_change": 6,
+    "luck_change": 3,
+    "speed_change": 4
+  },
+  {
+    "name": "gator delight",
+    "description": "A unique dish combining gator meat and tooth",
+    "ingredients": [
+      "gator tooth",
+      "gator scale",
+      "hide"
+    ],
+    "stamina_change": 6,
+    "skill_change": 4,
+    "luck_change": 4
+  },
+  {
+    "name": "rabbit surprise",
+    "description": "A surprising dish made from rabbit meat and fur",
+    "ingredients": [
+      "rabbit meat",
+      "rabbit hide",
+      "rabbit foot"
+    ],
+    "stamina_change": 5,
+    "skill_change": 5,
+    "luck_change": 4
+  },
+  {
+    "name": "hawk special",
+    "description": "A special meal made from hawk meat and feather",
+    "ingredients": [
+      "hawk meat",
+      "hawk feather"
+    ],
+    "stamina_change": 6,
+    "skill_change": 4,
+    "luck_change": 5
+  },
+  {
+    "name": "turkey feast",
+    "description": "A feast made from juicy turkey breast and feather",
+    "ingredients": [
+      "turkey breast",
+      "turkey feather",
+      "foot"
+    ],
+    "stamina_change": 7,
+    "skill_change": 5,
+    "luck_change": 6
+  },
+  {
+    "name": "mole mystery",
+    "description": "Mysterious dish made from mole meat and essential saddle",
+    "ingredients": [
+      "mole meat",
+      "saddle"
+    ],
+    "stamina_change": 5,
+    "skill_change": 3,
+    "luck_change": 6
+  },
+  {
+    "name": "fox surprise",
+    "description": "A surprising dish made from fox meat and fur",
+    "ingredients": [
+      "fox meat",
+      "fox fur",
+      "hide"
+    ],
+    "stamina_change": 6,
+    "skill_change": 4,
+    "luck_change": 3,
+    "speed_change": 5
+  },
+  {
+    "name": "moose delight",
+    "description": "A delightful dish made from tender moose meat and antler",
+    "ingredients": [
+      "moose meat",
+      "moose antler",
+      "moose antler"
+    ],
+    "stamina_change": 7,
+    "skill_change": 5,
+    "luck_change": 4
+  },
+  {
+    "name": "beaver special",
+    "description": "A special dish made from beaver meat and pelt",
+    "ingredients": [
+      "beaver meat",
+      "beaver pelt",
+      "tail"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 3
+  },
+  {
+    "name": "badger bonus",
+    "description": "A bonus dish using badger meat and hide",
+    "ingredients": [
+      "badger meat",
+      "badger hide",
+      "claws"
+    ],
+    "stamina_change": 7,
+    "skill_change": 4,
+    "luck_change": 5
+  },
+  {
+    "name": "venomous delight",
+    "description": "A dish with a venomous twist using snake fang and venom sac",
+    "ingredients": [
+      "snake fang",
+      "venom sac",
+      "teeth"
+    ],
+    "stamina_change": 4,
+    "skill_change": 7,
+    "luck_change": 3,
+    "speed_change": 6
+  },
+  {
+    "name": "feathered surprise",
+    "description": "A surprising dish with feathered ingredients",
+    "ingredients": [
+      "feathers",
+      "feathers"
+    ],
+    "stamina_change": 4,
+    "skill_change": 4,
+    "luck_change": 5
+  },
+  {
+    "name": "crab delight",
+    "description": "A delightful dish made from fresh crab meat and shell",
+    "ingredients": [
+      "crab meat",
+      "shell",
+      "pincer"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 3
+  },
+  {
+    "name": "clawed feast",
+    "description": "A feast showcasing the power of claws made of talon and claw",
+    "ingredients": [
+      "claw",
+      "talons",
+      "foot"
+    ],
+    "stamina_change": 5,
+    "skill_change": 6,
+    "luck_change": 3,
+    "speed_change": 7
+  },
+  {
+    "name": "fisherman's delight",
+    "description": "A delicious dish using fresh fish meat and scales",
+    "ingredients": [
+      "fish meat",
+      "fish scales",
+      "eyes"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 4
+  },
+  {
+    "name": "squirrel surprise",
+    "description": "A surprising dish made from squirrel meat and fur",
+    "ingredients": [
+      "squirrel meat",
+      "squirrel tail",
+      "whiskers"
+    ],
+    "stamina_change": 5,
+    "skill_change": 4,
+    "luck_change": 4,
+    "speed_change": 6
+  },
+  {
+    "name": "wolf special",
+    "description": "A special dish made from wolf fur and tooth",
+    "ingredients": [
+      "wolf fur",
+      "wolf tooth",
+      "whisker"
+    ],
+    "stamina_change": 7,
+    "skill_change": 6,
+    "luck_change": 4
+  },
+  {
+    "name": "fox furball",
+    "description": "A unique dish full of fox goodness with fur and tail",
+    "ingredients": [
+      "fox fur",
+      "fox tail",
+      "eye"
+    ],
+    "stamina_change": 6,
+    "skill_change": 5,
+    "luck_change": 4
+  },
+  {
+    "name": "hare stew",
+    "description": "A hearty stew made from tender hare meat and lucky hare foot.",
+    "ingredients": [
+      "hare foot",
+      "hare meat"
+    ],
+    "stamina_change": 4,
+    "luck_change": 3
+  },
+  {
+    "name": "moose steak",
+    "description": "Succulent steak cooked from fresh moose meat.",
+    "ingredients": [
+      "moose meat"
+    ],
+    "stamina_change": 2
+  },
+  {
+    "name": "wolf fur soup",
+    "description": "A warming soup made from wolf fur for extra warmth.",
+    "ingredients": [
+      "wolf fur"
+    ],
+    "stamina_change": 2,
+    "speed_change": 4
+  },
+  {
+    "name": "hawk talon salad",
+    "description": "Salad topped with sharp hawk talons for a combat boost.",
+    "ingredients": [
+      "hawk talon"
+    ],
+    "skill_change": 3
+  },
+  {
+    "name": "fox meat skewers",
+    "description": "Delicious skewers made from juicy fox meat.",
+    "ingredients": [
+      "fox meat"
+    ],
+    "stamina_change": 3,
+    "luck_change": 2
+  },
+  {
+    "name": "grilled venison",
+    "description": "Lean venison meat grilled to perfection over an open flame.",
+    "ingredients": [
+      "venison"
+    ],
+    "stamina_change": 2,
+    "skill_change": 1
+  },
+  {
+    "name": "snakebite skewers",
+    "description": "Savory skewers made with meat and spicy seasoning.",
+    "ingredients": [
+      "meat",
+      "venom sac"
+    ],
+    "skill_change": 5,
+    "speed_change": 2
+  },
+  {
+    "name": "gator scale stew",
+    "description": "Hearty stew featuring tender gator scales and boar.",
+    "ingredients": [
+      "gator scale",
+      "Boar Stew"
+    ],
+    "stamina_change": 10,
+    "skill_change": 8
+  },
+  {
+    "name": "dragon scale steak",
+    "description": "Juicy steak topped with rare dragon scales for a unique flavor.",
+    "ingredients": [
+      "dragon scale",
+      "boar meat"
+    ],
+    "skill_change": 4,
+    "luck_change": 3
+  },
+  {
+    "name": "wolf pack feast",
+    "description": "A feast fit for wolves made from a mix of wolf meats.",
+    "ingredients": [
+      "wolf meat",
+      "wolf meat",
+      "wolf meat"
+    ],
+    "stamina_change": 4,
+    "luck_change": 3
+  },
+  {
+    "name": "siren's melody sushi",
+    "description": "Delicate sushi rolls made with fresh fish scales and essence leaf.",
+    "ingredients": [
+      "fish scales",
+      "essence leaf"
+    ],
+    "speed_change": 5
+  },
+  {
+    "name": "Boar Stew",
+    "description": "Hearty stew made from boar meat and other forest ingredients, providing a stamina boost and increased combat skills.",
+    "ingredients": [
+      "boar meat",
+      "bear meat",
+      "mole meat"
+    ],
+    "stamina_change": 5,
+    "skill_change": 3
+  },
+  {
+    "name": "Wolf Jerky",
+    "description": "Dried and seasoned wolf meat strips, great for a quick snack that boosts speed and luck.",
+    "ingredients": [
+      "wolf hide"
+    ],
+    "speed_change": 4,
+    "luck_change": 3
+  },
+  {
+    "name": "Raven Eye Soup",
+    "description": "Dark soup made with raven eyes for improved luck and stamina.",
+    "ingredients": [
+      "raven eye",
+      "raven eye"
+    ],
+    "stamina_change": 4,
+    "luck_change": 4
+  },
+  {
+    "name": "Snake Skin Sauté",
+    "description": "Tender snake meat cooked with flavorful snake skin for enhanced speed and skill.",
+    "ingredients": [
+      "snake skin",
+      "snake skin",
+      "meat"
+    ],
+    "speed_change": 5,
+    "skill_change": 3
+  },
+  {
+    "name": "Fox Tail Stew",
+    "description": "Savory stew with fox meat and fluffy fox tails, boosting luck and stamina.",
+    "ingredients": [
+      "fox tail",
+      "fox tail",
+      "fox meat"
+    ],
+    "stamina_change": 5,
+    "luck_change": 3
+  },
+  {
+    "name": "Venomous Essence Leaf Tea",
+    "description": "Herbal tea brewed with essence leaf and venom for increased luck and skill.",
+    "ingredients": [
+      "essence leaf",
+      "venom"
+    ],
+    "luck_change": 4,
+    "skill_change": 4
+  },
+  {
+    "name": "Elk Liver Pâté",
+    "description": "Smooth and flavorful liver pâté made from elk liver for a boost in luck and combat skills.",
+    "ingredients": [
+      "elk liver",
+      "venison"
+    ],
+    "luck_change": 4,
+    "skill_change": 4
+  },
+  {
+    "name": "Squirrel Pie",
+    "description": "Delicious pie filled with squirrel meat, increasing luck and speed.",
+    "ingredients": [
+      "squirrel meat",
+      "squirrel pie"
+    ],
+    "luck_change": 4,
+    "speed_change": 4
+  }
+]
