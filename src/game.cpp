@@ -35,6 +35,7 @@
 #include <ssod/inventory.h>
 #include <ssod/regex.h>
 #include <ssod/grimoire.h>
+#include <ssod/game_dice.h>
 
 using namespace i18n;
 
@@ -690,6 +691,63 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "grimoire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_grimoire = true;
 		claimed = true;
+	} else if (parts[0] == "hunt" && parts.size() >= 2 && !p.in_combat && p.stamina > 0) {
+		if (p.paragraph != atol(parts[1])) {
+			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID HUNT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
+			return;
+		}
+		auto rs = db::query("SELECT * FROM game_locations WHERE id = ?", {parts[1]});
+		if (rs.empty()) {
+			return;
+		}
+		try {
+			json hunt_data = json::parse(rs[0].at("hunting_json"));
+			double probability = 100.0 - (hunt_data["probability"].get<double>() * 100);
+			double find_chance = (double)d_random(0, 100) * (double)(p.profession == prof_woodsman ? 0.75 : 0.4);
+			std::stringstream ss;
+			ss << "## You have tried to hunt...\n\n" << "*" << hunt_data["reason"].get<std::string>() << "*\n\n";
+			std::vector<std::pair<std::string, json>> animals;
+			for (auto &el: hunt_data["animals"].items()) {
+				animals.emplace_back(el.key(), el.value());
+			}
+			/* Reverse so rarest animal is at the start and most common at the end */
+			reverse(begin(animals), end(animals));
+			size_t animal_count = animals.size();
+			bot.log(dpp::ll_debug, "Player hunting, probability of success=" + std::to_string(probability) + " score=" + std::to_string(find_chance) + " animal count=" + std::to_string(animal_count));
+			if (find_chance >= probability && animal_count > 0) {
+				/* Hunted and found something */
+				json animal = animals[0];
+				std::array<int, 8> thresholds{1, 2, 4, 8, 16, 32, 64, 128};
+				int x = d_random(1, 1 << (animal_count - 1));
+				for (int i = 7; i >= 0; --i) {
+					if (x >= thresholds[i]) {
+						animal = animals[i].second;
+						ss << tr("SUCCESS_HUNT", event, animals[i].first) << "\n\n";
+						break;
+					}
+				}
+				uint64_t random_animal_part = d_random(0, animal.size() - 1);
+				std::string part = animal[random_animal_part].get<std::string>();
+				ss << "* " << part << "\n";
+				p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
+				if (d12() == d12() && animal.size() > 1) {
+					/* 1D12 chance of getting a second animal part if the animal has more than one part */
+					random_animal_part = d_random(0, animal.size() - 1);
+					part = animal[random_animal_part].get<std::string>();
+					ss << "* " << part << "\n";
+					p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
+				}
+				p.inv_change = true;
+			} else {
+				ss << tr("FAILED_HUNT", event) << "\n";
+				p.add_stamina(-1);
+			}
+			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
+		}
+		catch (const std::exception& e) {
+			bot.log(dpp::ll_error, "Error in hunting, location" + std::to_string(p.paragraph) + ": " + std::string(e.what()));
+		}
+		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
 		/* Pick up frm floor */
 		if (p.paragraph != atol(parts[1])) {
@@ -1267,15 +1325,21 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_style(dpp::cos_secondary)
 			.set_emoji(sprite::backpack.name, sprite::backpack.id)
 		);
-	}
 
-	if (enabled_links > 0 && p.stamina > 0) {
 		cb.add_component(dpp::component()
 			 .set_type(dpp::cot_button)
 			 .set_id(security::encrypt("grimoire"))
 			 .set_label(tr("SPELLS", event))
 			 .set_style(dpp::cos_secondary)
 			 .set_emoji(sprite::book07.name, sprite::book07.id)
+		);
+
+		cb.add_component(dpp::component()
+			 .set_type(dpp::cot_button)
+			 .set_id(security::encrypt("hunt;" +std::to_string(p.paragraph)))
+			 .set_label(tr("HUNT", event))
+			 .set_style(dpp::cos_secondary)
+			 .set_emoji(sprite::rawmeat.name, sprite::rawmeat.id)
 		);
 	}
 

@@ -1,4 +1,19 @@
 {
+    "FAILED_HUNT": {
+        "en": "Unfortunately, your hunt returned nothing. The effort of hunting cost 1 stamina."
+    },
+    "SUCCESS_HUNT": {
+        "en": "You have successfully hunted and killed one **{}**! From the creature, you get:"
+    },
+    "HUNT": {
+        "en": "Go Hunting"
+    },
+    "INGREDIENT": {
+        "en": "Ingredient"
+    },
+    "FOOD": {
+        "en": "Food"
+    },
     "GET_HELP": {
         "en": "Get Help",
         "fr": "Obtenir de l'aide",

@@ -40,14 +40,31 @@ dpp::component help_button(const dpp::interaction_create_t& event) {
 
 sale_info get_sale_info(const std::string& name) {
 	auto res = db::query("SELECT * FROM game_item_descs WHERE name = ?", {name});
+	long value{0};
+	bool sellable{false}, qi{false};
+	std::string flags;
 	if (res.empty()) {
-		return sale_info{};
+		auto food = db::query("SELECT * FROM food WHERE name = ?", {name});
+		if (!food.empty()) {
+			value = atol(food[0].at("value"));
+			sellable = true;
+		}
+		auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
+		if (!ingredient.empty()) {
+			value = 1;
+			sellable = true;
+		}
+	} else {
+		value = atol(res[0].at("value"));
+		sellable = res[0].at("sellable") == "1";
+		flags = res[0].at("flags");
+		qi = res[0].at("quest_item") == "1";
 	}
 	return sale_info{
-		.flags = res[0].at("flags"),
-		.value = atol(res[0].at("value")),
-		.sellable = res[0].at("sellable") == "1",
-		.quest_item = res[0].at("quest_item") == "1",
+		.flags = flags,
+		.value = value,
+		.sellable = sellable,
+		.quest_item = qi,
 	};
 }
 
@@ -84,6 +101,14 @@ std::string describe_item(const std::string& modifier_flags, const std::string& 
 		auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {name});
 		if (!effect.empty()) {
 			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("CONSUMABLE", event) + "\033[0m: {}" : tr("CONSUMABLE", event) + ": {}"), rv);
+		}
+		auto food = db::query("SELECT * FROM food WHERE name = ?", {name});
+		if (!food.empty()) {
+			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("FOOD", event) + "\033[0m: {}" : tr("FOOD", event) + ": {}"), food[0].at("description"));
+		}
+		auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
+		if (!ingredient.empty()) {
+			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("INGREDIENT", event) + "\033[0m: {}" : tr("INGREDIENT", event) + ": {}"), "Cook at a campfire to create edible food");
 		}
 	}
 	return rv;
