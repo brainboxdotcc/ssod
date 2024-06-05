@@ -106,26 +106,26 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	size_t index{0};
 
 	cb.add_component(dpp::component()
-				 .set_type(dpp::cot_button)
-				 .set_id(security::encrypt("exit_inventory"))
-				 .set_label(tr("BACK", event))
-				 .set_style(dpp::cos_primary)
-				 .set_emoji(sprite::magic05.name, sprite::magic05.id)
+		.set_type(dpp::cot_button)
+		.set_id(security::encrypt("exit_inventory"))
+		.set_label(tr("BACK", event))
+		.set_style(dpp::cos_primary)
+		.set_emoji(sprite::magic05.name, sprite::magic05.id)
 	);
 
 	cb.add_component(dpp::component()
-				 .set_type(dpp::cot_button)
-				 .set_id(security::encrypt("inventory;" + std::to_string(p.inventory_page - 1)))
-				 .set_style(dpp::cos_secondary)
-				 .set_emoji("◀\uFE0F")
-				 .set_disabled(p.inventory_page <= 0)
+		.set_type(dpp::cot_button)
+		.set_id(security::encrypt("inventory;" + std::to_string(p.inventory_page - 1)))
+		.set_style(dpp::cos_secondary)
+		.set_emoji("◀\uFE0F")
+		.set_disabled(p.inventory_page <= 0)
 	);
 	cb.add_component(dpp::component()
-				 .set_type(dpp::cot_button)
-				 .set_id(security::encrypt("inventory;" + std::to_string(p.inventory_page + 1)))
-				 .set_style(dpp::cos_secondary)
-				 .set_emoji("▶")
-				 .set_disabled(p.inventory_page >= pages_max - 2)
+		.set_type(dpp::cot_button)
+		.set_id(security::encrypt("inventory;" + std::to_string(p.inventory_page + 1)))
+		.set_style(dpp::cos_secondary)
+		.set_emoji("▶")
+		.set_disabled(p.inventory_page >= pages_max - 2)
 	);
 	cb.add_component(help_button(event));
 
@@ -154,11 +154,12 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
 		auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {inv.name});
+		auto food = db::query("SELECT * FROM food WHERE name = ?", {inv.name});
 		if (!value.quest_item && value.sellable) {
 			auto i = tr(inv, "", event);
 			drop_menu.add_select_option(dpp::select_option(tr("DROP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));
 		}
-		if (!effect.empty() || inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
+		if (!food.empty() || !effect.empty() || inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
 			auto i = tr(inv, "", event);
 			use_menu.add_select_option(dpp::select_option(tr("USE", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		} else if (!inv.flags.empty() && (inv.flags[0] == 'A' || inv.flags[0] == 'W')) {

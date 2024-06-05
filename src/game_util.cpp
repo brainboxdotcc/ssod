@@ -48,11 +48,12 @@ sale_info get_sale_info(const std::string& name) {
 		if (!food.empty()) {
 			value = atol(food[0].at("value"));
 			sellable = true;
-		}
-		auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
-		if (!ingredient.empty()) {
-			value = 1;
-			sellable = true;
+		} else {
+			auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
+			if (!ingredient.empty()) {
+				value = 1;
+				sellable = true;
+			}
 		}
 	} else {
 		value = atol(res[0].at("value"));
