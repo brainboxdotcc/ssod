@@ -705,12 +705,12 @@ void game_nav(const dpp::button_click_t& event) {
 			double probability = 100.0 - (hunt_data["probability"].get<double>() * 100);
 			double find_chance = (double)d_random(0, 100) * (double)(p.profession == prof_woodsman ? 0.75 : 0.4);
 			std::stringstream ss;
-			ss << "## You have tried to hunt...\n\n" << "*" << hunt_data["reason"].get<std::string>() << "*\n\n";
+			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << hunt_data["reason"].get<std::string>() << "*\n\n";
 			std::vector<std::pair<std::string, json>> animals;
 			for (auto &el: hunt_data["animals"].items()) {
 				animals.emplace_back(el.key(), el.value());
 			}
-			/* Reverse so rarest animal is at the start and most common at the end */
+			/* Reverse so the rarest animal is at the start and most common at the end */
 			reverse(begin(animals), end(animals));
 			size_t animal_count = animals.size();
 			bot.log(dpp::ll_debug, "Player hunting, probability of success=" + std::to_string(probability) + " score=" + std::to_string(find_chance) + " animal count=" + std::to_string(animal_count));
@@ -722,9 +722,9 @@ void game_nav(const dpp::button_click_t& event) {
 				for (int i = 7; i >= 0; --i) {
 					if (x >= thresholds[i]) {
 						animal = animals[i].second;
-						std::string animal_name{animal};
+						std::string animal_name{animals[i].first};
 						if (event.command.locale.substr(0, 2) != "en") {
-							auto t = db::query("SELECT * FROM translations WHERE row_id = 0 AND table_col = ? AND language = ?", {animal, event.command.locale.substr(0, 2)});
+							auto t = db::query("SELECT * FROM translations WHERE row_id = 0 AND table_col = ? AND language = ?", {animal_name, event.command.locale.substr(0, 2)});
 							if (!t.empty()) {
 								animal_name = t[0].at("translation");
 							}
@@ -754,7 +754,7 @@ void game_nav(const dpp::button_click_t& event) {
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
 		}
 		catch (const std::exception& e) {
-			bot.log(dpp::ll_error, "Error in hunting, location" + std::to_string(p.paragraph) + ": " + std::string(e.what()));
+			bot.log(dpp::ll_error, "Error in hunting, location " + std::to_string(p.paragraph) + ": " + std::string(e.what()));
 		}
 		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {

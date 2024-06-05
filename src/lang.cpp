@@ -149,15 +149,37 @@ namespace i18n {
 		}
 		auto res = db::query("SELECT id FROM game_item_descs WHERE name = ?", {i.name});
 		if (res.empty()) {
+			/* Not an item desc */
+			res = db::query("SELECT id FROM food WHERE name = ?", {i.name});
+			if (res.empty()) {
+				/* Not food */
+				res = db::query("SELECT id FROM ingredients WHERE ingredient_name = ?", {i.name});
+				if (!res.empty()) {
+					auto translated_text = db::query("SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ? ORDER BY table_col", {
+						"ingredients/ingredient_name", res[0].at("id"), event.command.locale.substr(0, 2)
+					});
+					if (!translated_text.empty()) {
+						return {.name = translated_text[0].at("translation"), .description = tr("COOK_ME", event)};
+					}
+				}
+				return {.name = i.name, .description = description};
+			}
+			/* Is food */
+			auto translated_text = db::query("SELECT * FROM translations WHERE (table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col", {
+				"food/name", "food/description", res[0].at("id"), event.command.locale.substr(0, 2)
+			});
+			if (translated_text.size() == 2) {
+				return {.name = translated_text[1].at("translation"), .description = translated_text[0].at("translation")};
+			}
 			return {.name = i.name, .description = description};
 		}
-		auto translated_text = db::query("SELECT * FROM translations WHERE (table_col = ? OR table_col = ? OR table_col = ? OR table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col", {
-			"game_item_descs/name", "game_item_descs/idesc", "food/name", "food/description", "ingredients/ingredient_name", res[0].at("id"), event.command.locale.substr(0, 2)
+		/* Is item desc */
+		auto translated_text = db::query("SELECT * FROM translations WHERE (table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col", {
+			"game_item_descs/name", "game_item_descs/idesc", res[0].at("id"), event.command.locale.substr(0, 2)
 		});
 		if (translated_text.size() != 2) {
 			return {.name = i.name, .description = description};
 		}
-
 		return {.name = translated_text[1].at("translation"), .description = translated_text[0].at("translation")};
 	}
 
