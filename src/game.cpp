@@ -434,7 +434,7 @@ void game_select(const dpp::select_click_t &event) {
 				p.weapon.name = tr("NO_WEAPON", event) + " 👊";
 				p.weapon.rating = 0;
 			}
-			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
+			p.drop_possession(item{.name = parts[0], .flags = ""});
 			p.add_gold(s.value);
 			p.inv_change = true;
 		}
