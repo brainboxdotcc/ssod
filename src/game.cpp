@@ -379,35 +379,36 @@ void game_select(const dpp::select_click_t &event) {
 				p.add_skill(atol(food[0].at("skill_change")));
 				p.add_luck(atol(food[0].at("luck_change")));
 				p.add_speed(atol(food[0].at("speed_change")));
-			}
-			std::string flags = parts[1];
-			if (flags.substr(0, 2) == "ST") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_stamina(modifier);
-			} else if (flags.substr(0, 2) == "SN") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_sneak(modifier);
-			} else if (flags.substr(0, 2) == "SK") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_skill(modifier);
-			} else if (flags.substr(0, 2) == "MA") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_mana(modifier);
-			} else if (flags.substr(0, 2) == "SD") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_speed(modifier);
-			} else if (flags.substr(0, 2) == "EX") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_experience(modifier);
-			} else if (flags.substr(0, 2) == "LK") {
-				long modifier = atol(flags.substr(2, flags.length() - 2));
-				p.add_luck(modifier);
-			} else if (flags.substr(0, 1) == "A") {
-				long modifier = atol(flags.substr(1, flags.length() - 1));
-				p.armour.rating += modifier;
-			} else if (flags.substr(0, 1) == "W") {
-				long modifier = atol(flags.substr(1, flags.length() - 1));
-				p.weapon.rating += modifier;
+			} else {
+				std::string flags = parts[1];
+				if (flags.substr(0, 2) == "ST") {
+					long modifier = atol(flags.substr(2, flags.length() - 2));
+					p.add_stamina(modifier);
+				} else if (flags.substr(0, 2) == "SN") {
+					long modifier = atol(flags.substr(2, flags.length() - 2));
+					p.add_sneak(modifier);
+				} else if (flags.substr(0, 2) == "SK") {
+					long modifier = atol(flags.substr(2, flags.length() - 2));
+					p.add_skill(modifier);
+				} else if (flags.substr(0, 2) == "MA") {
+					long modifier = atol(flags.substr(2, flags.length() - 2));
+					p.add_mana(modifier);
+				} else if (flags.substr(0, 2) == "SD") {
+					long modifier = atol(flags.substr(2, flags.length() - 2));
+					p.add_speed(modifier);
+				} else if (flags.substr(0, 2) == "EX") {
+					long modifier = atol(flags.substr(2, flags.length() - 2));
+					p.add_experience(modifier);
+				} else if (flags.substr(0, 2) == "LK") {
+					long modifier = atol(flags.substr(2, flags.length() - 2));
+					p.add_luck(modifier);
+				} else if (flags.substr(0, 1) == "A") {
+					long modifier = atol(flags.substr(1, flags.length() - 1));
+					p.armour.rating += modifier;
+				} else if (flags.substr(0, 1) == "W") {
+						long modifier = atol(flags.substr(1, flags.length() - 1));
+					p.weapon.rating += modifier;
+				}
 			}
 		}
 		claimed = true;
