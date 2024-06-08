@@ -278,20 +278,24 @@ void game_select(const dpp::select_click_t &event) {
 	} else if (custom_id == "deposit" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		db::transaction();
+		std::string flags = "";
+		if (parts.size() >= 2) {
+			flags = parts[1];
+		}
 		if (p.has_possession(parts[0])) {
-			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,?,?)", {event.command.usr.id, parts[0], parts[1]});
-			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
+			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,?,?)", {event.command.usr.id, parts[0], flags});
+			p.drop_possession(item{.name = parts[0], .flags = flags});
 			p.inv_change = true;
 		}
 		db::commit();
 		claimed = true;
 	} else if (custom_id == "drop_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
-		if (parts.size() >= 2 && p.has_possession(parts[0])) {
+		if (parts.size() >= 1 && p.has_possession(parts[0])) {
 			sale_info si = get_sale_info(parts[0]);
 			if (dpp::lowercase(parts[0]) != "scroll" && !si.quest_item) {
 				/* Can't drop a scroll (is quest item) */
-				p.drop_possession(item{.name = parts[0], .flags = parts[1]});
+				p.drop_possession(item{.name = parts[0], .flags = ""});
 				if (p.armour.name == parts[0]) {
 					p.armour.name = tr("NO_ARMOUR", event) + " 👙";
 					p.armour.rating = 0;
@@ -302,7 +306,7 @@ void game_select(const dpp::select_click_t &event) {
 				/* Drop to floor */
 				db::query(
 					"INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)",
-					{p.paragraph, parts[0], parts[1]});
+					{p.paragraph, parts[0], parts.size() >= 2 ? parts[1] : ""});
 				send_chat(event.command.usr.id, p.paragraph, parts[0], "drop");
 			}
 		}
@@ -310,7 +314,7 @@ void game_select(const dpp::select_click_t &event) {
 	} else if (custom_id == "cast" && !event.values.empty() && p.in_grimoire && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		spell_info si = get_spell_info(parts[0]);
-		if (parts.size() >= 1 && p.has_spell(parts[0]) && p.has_component_herb(parts[0]) && p.mana >= si.mana_cost) {
+		if (!parts.empty() && p.has_spell(parts[0]) && p.has_component_herb(parts[0]) && p.mana >= si.mana_cost) {
 			p.add_mana(-si.mana_cost);
 			auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Spell' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
@@ -321,7 +325,7 @@ void game_select(const dpp::select_click_t &event) {
 		claimed = true;
 	} else if (custom_id == "cook" && !event.values.empty() && p.in_campfire && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
-		if (parts.size() >= 1) {
+		if (!parts.empty()) {
 			bot.log(dpp::ll_debug, event.command.usr.id.str() + ": attempting to cook: '" + parts[0] + "'");
 			auto recipe = db::query(
 				"SELECT food.id, food.name, food.description, GROUP_CONCAT(ingredient_name ORDER BY ingredient_name) AS ingredients, "
@@ -771,7 +775,7 @@ void game_nav(const dpp::button_click_t& event) {
 			 * meaning if your job is not to hunt in the wilderness, you're going to have a harder
 			 * time of it.
 			 */
-			double find_chance = (double)d_random(0, 100) * (double)(p.profession == prof_woodsman ? 0.75 : 0.4);
+			double find_chance = (double)d_random(0, 100) * (double)(p.profession == prof_woodsman ? 0.7 : 0.6);
 			auto bias = db::query("SELECT COUNT(*) AS current_ingredient_items FROM game_owned_items WHERE ((SELECT COUNT(*) FROM ingredients WHERE ingredient_name = item_desc LIMIT 1) > 0 OR (SELECT COUNT(*) FROM food WHERE food.name = item_desc LIMIT 1) > 0) AND user_id = ?", {event.command.usr.id});
 			uint64_t current_ingredient_items = atol(bias[0].at("current_ingredient_items")), bias_factor{0};
 			/* As you carry more and more ingredient items your probability of finding game animals decreases.
@@ -865,7 +869,7 @@ void game_nav(const dpp::button_click_t& event) {
 			}
 		}
 		claimed = true;
-	} else if (parts[0] == "pick" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
+	} else if (parts[0] == "pick" && parts.size() >= 3 && !p.in_inventory && p.stamina > 0) {
 		/* Pick up frm floor */
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID PICKUP FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
@@ -873,7 +877,7 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		long paragraph = atol(parts[1]);
 		std::string name = parts[2];
-		std::string flags = parts[3];
+		std::string flags = parts.size() >= 4 ? parts[3] : "";
 		size_t max = p.max_inventory_slots();
 		if (p.possessions.size() < max - 1) {
 			db::transaction();
