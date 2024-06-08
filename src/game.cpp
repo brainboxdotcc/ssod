@@ -266,6 +266,9 @@ void game_select(const dpp::select_click_t &event) {
 	bot.log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	if (custom_id == "withdraw" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.size() < 2) {
+			parts.emplace_back("[none]");
+		}
 		db::transaction();
 		auto rs = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {event.command.usr.id, parts[0], parts[1]});
 		if (!rs.empty()) {
@@ -354,7 +357,7 @@ void game_select(const dpp::select_click_t &event) {
 				auto i = std::find(my_ingredients.begin(), my_ingredients.end(), check_ingredient);
 				if (i != my_ingredients.end()) {
 					my_ingredients.erase(i);
-					p.drop_possession(item{ .name = check_ingredient, .flags = ""});
+					p.drop_possession(item{ .name = check_ingredient, .flags = "[none]"});
 					checked++;
 				}
 			}
@@ -365,7 +368,7 @@ void game_select(const dpp::select_click_t &event) {
 			}
 
 			/* Replace ingredients with cooked meal */
-			p.possessions.emplace_back(stacked_item{ .name = parts[0], .flags = "", .qty = 1});
+			p.possessions.emplace_back(stacked_item{ .name = parts[0], .flags = "[none]", .qty = 1});
 			p.inv_change = true;
 		}
 		claimed = true;
@@ -843,14 +846,14 @@ void game_nav(const dpp::button_click_t& event) {
 				std::string part = animal[random_animal_part].get<std::string>();
 				auto i = tr(item{ .name = part, .flags = "" }, std::string{}, event);
 				ss << "* 1x __" << i.name << "__\n";
-				p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
+				p.possessions.emplace_back(stacked_item{ .name = part, .flags = "[none]", .qty = 1 });
 				if (d12() == d12() && animal.size() > 1) {
 					/* 1/12 chance of getting a second animal part, if the animal has more than one part */
 					random_animal_part = d_random(0, animal.size() - 1);
 					part = animal[random_animal_part].get<std::string>();
 					i = tr(item{ .name = part, .flags = "" }, std::string{}, event);
 					ss << "* 1x __" << i.name << "__\n";
-					p.possessions.emplace_back(stacked_item{ .name = part, .flags = "", .qty = 1 });
+					p.possessions.emplace_back(stacked_item{ .name = part, .flags = "[none]", .qty = 1 });
 				}
 				p.inv_change = true;
 			} else {

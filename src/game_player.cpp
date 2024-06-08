@@ -413,7 +413,10 @@ bool player::drop_possession(const item& i) {
 	return false;
 }
 
-void player::pickup_possession(const item& i) {
+void player::pickup_possession(item i) {
+	if (i.flags == "") {
+		i.flags = "[none]";
+	}
 	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
 		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name) && i.flags == inv->flags) {
 			inv->qty++;
@@ -423,7 +426,10 @@ void player::pickup_possession(const item& i) {
 	possessions.push_back(stacked_item{ .name = i.name, .flags = i.flags, .qty = 1});
 }
 
-void player::pickup_possession(const stacked_item& i) {
+void player::pickup_possession(stacked_item i) {
+	if (i.flags == "") {
+		i.flags = "[none]";
+	}
 	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
 		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name) && i.flags == inv->flags) {
 			inv->qty += i.qty;
@@ -670,7 +676,7 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		} else if (item_flags == "HERB" && !item_desc.empty()) {
 			herbs.emplace_back(item{ .name = item_desc, .flags = item_flags });
 		} else if (!item_desc.empty()) {
-			possessions.emplace_back(stacked_item{ .name = item_desc, .flags = item_flags, .qty = qty });
+			possessions.emplace_back(stacked_item{ .name = item_desc, .flags = item_flags.empty() ? "[none]" : item_flags, .qty = qty });
 		}
 	}
 	if (get_backup) {

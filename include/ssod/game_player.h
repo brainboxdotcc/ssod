@@ -323,8 +323,8 @@ struct player {
 	size_t max_inventory_slots();
 
 	bool drop_possession(const item& i);
-	void pickup_possession(const item& i);
-	void pickup_possession(const stacked_item& i);
+	void pickup_possession(item i);
+	void pickup_possession(stacked_item i);
 	void drop_everything();
 	bool drop_spell(const item& i);
 	bool drop_herb(const item& i);
