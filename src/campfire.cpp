@@ -38,8 +38,8 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 
 	content << "## " << tr("CAMPFIRE", event) << "\n\n";
 
-	/* All available recipes */
-	auto recipes = db::query("SELECT food.id, food.name, food.description, GROUP_CONCAT(ingredient_name ORDER BY ingredient_name) AS ingredients, stamina_change, skill_change, luck_change, speed_change, value FROM food JOIN ingredients ON food_id = food.id GROUP BY food.id, food.name, food.description ORDER BY value DESC");
+	/* All available recipes - this is cached with 5 minute expiry */
+	auto recipes = db::query("SELECT food.id, food.name, food.description, GROUP_CONCAT(ingredient_name ORDER BY ingredient_name) AS ingredients, stamina_change, skill_change, luck_change, speed_change, value FROM food JOIN ingredients ON food_id = food.id GROUP BY food.id, food.name, food.description ORDER BY value DESC", {}, 300.0);
 	/* All the user's available ingredients and cooked food items, not grouped */
 	auto ingredients = db::query(
 		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ?"
@@ -123,7 +123,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 	content << "### " << tr("RECIPES", event) << "\n\n";
 	size_t index{0};
 	for (auto& cookable : can_cook) {
-		std::string name{cookable.at("name")}, description{cookable.at("description")}, ingredients{cookable.at("ingredients")};
+		std::string name{cookable.at("name")}, description{cookable.at("description")}, ingredients_list{cookable.at("ingredients")};
 		if (event.command.locale.substr(0, 2) != "en") {
 			/* For non-english game, translate the food names, descriptions and ingredient list */
 			auto food_q = db::query(
@@ -142,13 +142,13 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 					"where food_id = ?",
 					{event.command.locale.substr(0, 2), food_q[0].at("id")}
 				);
-				ingredients.clear();
+				ingredients_list.clear();
 				for (auto& ingredient : ingredients_q) {
 					std::string ing_name{!ingredient.at("translation").empty() ? ingredient.at("translation") : ingredient.at("ingredient_name")};
-					ingredients.append(ing_name).append(",");
+					ingredients_list.append(ing_name).append(",");
 				}
-				if (!ingredients.empty()) {
-					ingredients = ingredients.substr(0, ingredients.length() - 1);
+				if (!ingredients_list.empty()) {
+					ingredients_list = ingredients_list.substr(0, ingredients_list.length() - 1);
 				}
 			}
 		}
@@ -156,7 +156,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		content << sprite::cooked_meat.get_mention() << " ";
 		content << "__**" << name << "**__\n";
 		content << "*" << description << "*\n";
-		content << "**" << tr("INGREDIENTS", event) << "** " << ingredients << "\n";
+		content << "**" << tr("INGREDIENTS", event) << "** " << ingredients_list << "\n";
 		if (atol(cookable.at("stamina_change"))) {
 			content << tr("STAMINA", event) << " +" << cookable.at("stamina_change") << " ";
 		}
