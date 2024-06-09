@@ -37,7 +37,7 @@ else()
 endif()
 
 set(CMAKE_CXX_FLAGS "-g -O2 -Wall -Wno-psabi -Wempty-body -Wignored-qualifiers -Wimplicit-fallthrough -Wmissing-field-initializers -Wsign-compare -Wtype-limits -Wuninitialized -Wshift-negative-value -fuse-ld=mold")
-target_compile_definitions(${BOT_NAME} PUBLIC DPP_CORO=ON)
+target_compile_definitions(${BOT_NAME} PUBLIC DPP_CORO=ON _GNU_SOURCE)
 
 target_include_directories(${BOT_NAME} PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include
