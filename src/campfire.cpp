@@ -123,7 +123,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		if (checked >= recipe_ingredients.size()) {
 			/* All ingredients for this recipe are available */
 			can_cook.emplace_back(recipe);
-		} else if (recipe.at("name").find("rations") != std::string::npos && !meat.empty()) {
+		} else if (dpp::lowercase(recipe.at("name")).find("rations") != std::string::npos && !meat.empty()) {
 			can_cook.emplace_back(recipe);
 		}
 	}
