@@ -356,7 +356,7 @@ void game_select(const dpp::select_click_t &event) {
 				if (meat.empty()) {
 					bot.log(dpp::ll_debug, event.command.usr.id.str() + ": player lacks ingredients for '" + parts[0] + "'; lag, bug, or hack attempt");
 				}
-				p.drop_possession(item{ .name = meat[0].at("ingredient_name"), .flags = "[none]"});
+				p.drop_possession(item{ .name = meat[0].at("item_desc"), .flags = "[none]"});
 			} else {
 				std::vector<std::string> recipe_ingredients = dpp::utility::tokenize(recipe[0].at("ingredients"), ",");
 				std::vector<std::string> my_ingredients;
