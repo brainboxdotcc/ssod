@@ -347,28 +347,44 @@ void game_select(const dpp::select_click_t &event) {
 				"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN food ON item_desc = food.name WHERE user_id = ?",
 				{event.command.usr.id, event.command.usr.id}
 			);
-			std::vector<std::string> recipe_ingredients = dpp::utility::tokenize(recipe[0].at("ingredients"), ",");
-			std::vector<std::string> my_ingredients;
-			for (auto& ingredient : ingredients) {
-				my_ingredients.emplace_back(ingredient.at("item_desc"));
-			}
-			size_t checked{0};
-			for (auto& check_ingredient : recipe_ingredients) {
-				auto i = std::find(my_ingredients.begin(), my_ingredients.end(), check_ingredient);
-				if (i != my_ingredients.end()) {
-					my_ingredients.erase(i);
-					p.drop_possession(item{ .name = check_ingredient, .flags = "[none]"});
-					checked++;
+			if (dpp::lowercase(parts[0]).find("rations") != std::string::npos) {
+				/* Find any meat item */
+				auto meat = db::query(
+					"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ? AND ingredient_name LIKE '%meat%' ORDER BY RAND()",
+					{event.command.usr.id}
+				);
+				if (meat.empty()) {
+					bot.log(dpp::ll_debug, event.command.usr.id.str() + ": player lacks ingredients for '" + parts[0] + "'; lag, bug, or hack attempt");
 				}
-			}
-			if (checked < recipe_ingredients.size()) {
-				/* Double-checked, can't cook this! */
-				bot.log(dpp::ll_debug, event.command.usr.id.str() + ": player lacks ingredients for '" + parts[0] + "'; lag, bug, or hack attempt");
-				return;
+				p.drop_possession(item{ .name = meat[0].at("ingredient_name"), .flags = "[none]"});
+			} else {
+				std::vector<std::string> recipe_ingredients = dpp::utility::tokenize(recipe[0].at("ingredients"), ",");
+				std::vector<std::string> my_ingredients;
+				for (auto &ingredient: ingredients) {
+					my_ingredients.emplace_back(ingredient.at("item_desc"));
+				}
+				size_t checked{0};
+				for (auto &check_ingredient: recipe_ingredients) {
+					auto i = std::find(my_ingredients.begin(), my_ingredients.end(), check_ingredient);
+					if (i != my_ingredients.end()) {
+						my_ingredients.erase(i);
+						p.drop_possession(item{.name = check_ingredient, .flags = "[none]"});
+						checked++;
+					}
+				}
+				if (checked < recipe_ingredients.size()) {
+					/* Double-checked, can't cook this! */
+					bot.log(dpp::ll_debug, event.command.usr.id.str() + ": player lacks ingredients for '" + parts[0] + "'; lag, bug, or hack attempt");
+					return;
+				}
 			}
 
 			/* Replace ingredients with cooked meal */
-			p.possessions.emplace_back(stacked_item{ .name = parts[0], .flags = "[none]", .qty = 1});
+			if (dpp::lowercase(parts[0]).find("rations") != std::string::npos) {
+				p.add_rations(p.profession == prof_woodsman ? dice() + dice() : dice());
+			} else {
+				p.possessions.emplace_back(stacked_item{.name = parts[0], .flags = "[none]", .qty = 1});
+			}
 			p.inv_change = true;
 		}
 		claimed = true;

@@ -44,7 +44,8 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 	auto ingredients = db::query(
 		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ?"
 		" UNION "
-		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN food ON item_desc = food.name WHERE user_id = ?",
+		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items "
+		"JOIN food ON item_desc = food.name WHERE user_id = ?",
 		{event.command.usr.id, event.command.usr.id}
 	);
 	/* Stacked food and ingredient items, with quantities for display */
@@ -56,6 +57,11 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		"SELECT game_owned_items.id, item_desc, COUNT(item_desc) AS qty FROM game_owned_items JOIN food ON item_desc = food.name WHERE user_id = ? GROUP BY game_owned_items.id, item_desc) "
 		"derived GROUP BY item_desc",
 		{event.command.usr.id, event.command.usr.id}
+	);
+	/* Player can cook generic rations */
+	auto meat = db::query(
+		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ? AND ingredient_name LIKE '%meat%' ORDER BY RAND()",
+		{event.command.usr.id}
 	);
 
 	/**
@@ -116,6 +122,8 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		}
 		if (checked >= recipe_ingredients.size()) {
 			/* All ingredients for this recipe are available */
+			can_cook.emplace_back(recipe);
+		} else if (recipe.at("name").find("rations") != std::string::npos && !meat.empty()) {
 			can_cook.emplace_back(recipe);
 		}
 	}
