@@ -167,13 +167,13 @@ namespace listeners {
 	}
 
 	void on_entitlement_delete(const dpp::entitlement_delete_t& event) {
-		db::query("UPDATE premium_credits SET active = 0, updated_at = now() WHERE user_id = ? AND subscription_id = ?",
+		db::query("UPDATE premium_credits SET active = 0, cancel_date = now(), updated_at = now() WHERE user_id = ? AND subscription_id = ?",
 			  { event.deleted.owner_id, event.deleted.id });
 	}
 
 	void on_entitlement_update(const dpp::entitlement_update_t& event) {
 		db::query("UPDATE premium_credits SET active = ?, updated_at = now() WHERE user_id = ? AND subscription_id = ?",
-			  { event.updating_entitlement.is_deleted() ? 0 : 1, event.updating_entitlement.owner_id, event.updating_entitlement.id });
+			  { event.updating_entitlement.is_deleted() || event.updating_entitlement.ends_at < time(nullptr) ? 0 : 1, event.updating_entitlement.owner_id, event.updating_entitlement.id });
 	}
 
 	std::vector<dpp::slashcommand> get_commands(dpp::cluster& bot) {
