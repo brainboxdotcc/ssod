@@ -153,3 +153,6 @@ No variables
 * loss - numeric, stamina lost
 ### CURED
 * disease - string CUREBLOOD, CURERASP etc
+### DEATH
+Died in any way but not yet chosen to resurrect/respawn
+No variables

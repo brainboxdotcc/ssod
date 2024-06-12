@@ -144,6 +144,8 @@ void death(player& p, component_builder& cb) {
 		 .set_style(dpp::cos_link)
 	);
 
+	achievement_check("DEATH", p.event, p);
+
 }
 
 void add_chat(std::string& text, const dpp::interaction_create_t& event, long paragraph_id, uint64_t guild_id) {
