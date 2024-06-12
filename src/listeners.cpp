@@ -161,7 +161,6 @@ namespace listeners {
 	}
 
 	void on_entitlement_create(const dpp::entitlement_create_t& event) {
-		event.from->creator->log(dpp::ll_info, event.raw_event);
 		db::query("INSERT INTO premium_credits (user_id, subscription_id, active, since, plan_id, payment_failed, created_at, updated_at)"
 			  "VALUES(?, ?, 1, now(), 'ssod-monthly', 0, now(), now()) ON DUPLICATE KEY UPDATE subscription_id = ?, active = 1",
 			  { event.created.user_id, event.created.subscription_id, event.created.subscription_id });

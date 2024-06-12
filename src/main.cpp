@@ -52,7 +52,7 @@ int main(int argc, char const *argv[]) {
 		exit(0);
 	}
 
-	//bot.set_websocket_protocol(dpp::ws_etf);
+	bot.set_websocket_protocol(dpp::ws_etf);
 
 	security::init(bot);
 	js::init(bot);
