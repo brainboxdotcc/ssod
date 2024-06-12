@@ -75,6 +75,20 @@ static duk_ret_t js_print(duk_context *cx) {
 	return 0;
 }
 
+static duk_ret_t js_log(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	std::string output;
+	if (argc < 1) {
+		return 0;
+	}
+	for (int i = 0; i < argc; i++) {
+		output.append(duk_to_string(cx, i - argc)).append(" ");
+	}
+	paragraph& p = duk_get_udata(cx);
+	bot->log(dpp::ll_debug, output);
+	return 0;
+}
+
 static duk_ret_t js_tag(duk_context *cx) {
 	int argc = duk_get_top(cx);
 	std::string output;
@@ -1160,6 +1174,7 @@ bool run(const std::string& script, paragraph& p, player& current_player, const 
 	define_string(ctx, "BOT_ID", bot->me.id.str());
 	define_number(ctx, "PARAGRAPH_ID", p.id);
 	define_func(ctx, "print", js_print, DUK_VARARGS);
+	define_func(ctx, "log", js_log, DUK_VARARGS);
 	define_func(ctx, "tag", js_tag, DUK_VARARGS);
 	define_func(ctx, "exit", js_exit, 1);
 	define_func(ctx, "get_name", js_get_name, 0);
