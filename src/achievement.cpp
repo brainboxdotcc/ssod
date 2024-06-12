@@ -48,13 +48,15 @@ void unlock_achievement(player& p, const db::row& achievement) {
 		}
 	}
 
+	long xp_bonus = atol(achievement.at("xp"));
+
 	content << "## " << name;
 	content << "\n\n*";
 	content << description;
 	content << "*\n\n";
-	content << tr("PLUS_TEN_XP", p.event);
+	content << tr("PLUS_TEN_XP", p.event, xp_bonus);
 
 	p.add_toast(toast{ .message = "# " + tr("ACH_UNLOCK", p.event) + "\n\n" + content.str(), .image = "achievements/" + achievement.at("emoji") });
-	p.add_experience(10);
+	p.add_experience(xp_bonus);
 }
 
