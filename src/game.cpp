@@ -549,6 +549,7 @@ void game_nav(const dpp::button_click_t& event) {
 		} else {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID NAV FROM " + std::to_string(p.paragraph) + " TO " + std::to_string(dest));
 		}
+		achievement_check("VIEW_LOCATION", event, p, {{"loc_id", parts[1]}});
 		claimed = true;
 	} else if (parts[0] == "shop" && parts.size() >= 6) {
 		std::string flags = parts[3];
@@ -1604,8 +1605,6 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 
 	cb.add_component(help_button(event));
 	m = cb.get_message();
-
-	achievement_check("VIEW_LOCATION", event, p, {}, location);
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
 		if (cc.is_error()) {{
