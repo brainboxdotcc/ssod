@@ -145,3 +145,5 @@ Otherwise:
 * flag - string, flag name
 ### FORCED_EAT
 No variables
+### SCROLL
+* scrolls - numeric, player's scroll count, 1 through 7
