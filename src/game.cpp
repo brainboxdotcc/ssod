@@ -71,10 +71,13 @@ void do_toasts(player &p, component_builder& cb) {
 			.set_colour(EMBED_COLOUR)
 			.set_description(toast.message);
 		if (!toast.image.empty()) {
-			if (toast.image == "death.png") {
+			if (toast.image == "death.png" || toast.image.starts_with("achievements/")) {
 				e.set_image("https://images.ssod.org/resource/" + toast.image);
 			} else {
 				e.set_thumbnail("https://images.ssod.org/resource/" + toast.image);
+			}
+			if (toast.image.starts_with("achievements/")) {
+				e.set_thumbnail("https://images.ssod.org/resource/achievement.png");
 			}
 		}
 		cb.add_embed(e);
