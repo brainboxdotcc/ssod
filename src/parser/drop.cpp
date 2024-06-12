@@ -18,6 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/parser.h>
+#include <ssod/achievement.h>
 
 struct drop_tag : public tag {
 	drop_tag() { register_tag<drop_tag>(); }
@@ -33,6 +34,7 @@ struct drop_tag : public tag {
 		current_player.drop_possession(item{ .name = i, .flags = "" });
 		current_player.drop_spell(item{ .name = i, .flags = "" });
 		current_player.drop_herb(item{ .name = i, .flags = "" });
+		achievement_check("DISCARD", current_player.event, current_player, {{"name", i}});
 	}
 };
 

@@ -27,6 +27,7 @@
 #include <ssod/aes.h>
 #include <fmt/format.h>
 #include <ssod/game.h>
+#include <ssod/achievement.h>
 
 using namespace i18n;
 
@@ -257,6 +258,7 @@ void end_abandoned_pvp() {
 				opponent.add_experience(p.xp_worth());
 				send_chat(event.command.usr.id, p.paragraph, tr("RAVAGES", event), "death");
 				update_save_opponent(event, opponent);
+				achievement_check("PVP_TIMEOUT", event, p);
 			}
 		}
 	}
@@ -328,8 +330,10 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			output << tr("OTHER_TURN", event, opponent.name, dpp::utility::timestamp(time(nullptr) + combat_timeout, dpp::utility::tf_relative_time));
 		}
 	}
+
 	if (p.stamina < 1) {
 		death(p, cb);
+		achievement_check("PVP_LOSE", event, p, {});
 		p.save(event.command.usr.id);
 		update_live_player(event, p);
 	}
@@ -342,6 +346,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 		);
+		achievement_check("PVP_WIN", event, p, {});
 	}
 
 	output << "\nYour Stance: **" << (p.stance == DEFENSIVE ? "defensive " + sprite::wood03.get_mention() : "offensive " + sprite::sword008.get_mention()) << "**";
@@ -516,7 +521,8 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 			}
 			opponent.stamina -= SDamage;
 			opponent.skill -= KDamage;
-			p.strike();			
+			achievement_check("PVP_HIT", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
+			p.strike();
 			if (p.stamina < 4) {
 				output1 << tr("YOU_DYING", event) << " ";
 				output2 << tr("ENEMY_FOCUS", event) << " ";
@@ -658,6 +664,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 		);
+		achievement_check("COMBAT_WIN", event, p, {});
 		output1 << "\n\n```ansi\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("SKILL", event), p.skill) << "\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("STAMINA", event), p.stamina) << "\n";
@@ -707,7 +714,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		else
 		{
 			output << "__**" << tr("YOUHITENEMY", event) << "**__.";
-			
+
 			if (EStance == DEFENSIVE) {
 				output << tr("ATKBONUS", event);
 				SaveRoll -= dice();
@@ -794,6 +801,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				EStamina -= SDamage;
 				ESkill -= KDamage;
 				p.strike();
+				achievement_check("COMBAT_HIT", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
 			}
 
 			if (p.stamina < 4) {
@@ -839,6 +847,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 
 		bool CombatEnded = false;
 		if (p.stamina < 1) {
+			achievement_check("COMBAT_PLAYER_DEAD", event, p, {{"enemy", p.combatant.name}});
 			death(p, cb);
 			p.save(event.command.usr.id);
 			update_live_player(event, p);

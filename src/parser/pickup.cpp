@@ -19,6 +19,7 @@
  ************************************************************************************/
 #include <ssod/parser.h>
 #include <ssod/wildcard.h>
+#include <ssod/achievement.h>
 
 struct pickup_tag : public tag {
 	pickup_tag() { register_tag<pickup_tag>(); }
@@ -36,6 +37,7 @@ struct pickup_tag : public tag {
 			if (!current_player.has_flag("SCROLL", p.id)) {
 				current_player.scrolls++;
 				current_player.add_flag("SCROLL", p.id);
+				achievement_check("COLLECT", current_player.event, current_player, {{"name", "scroll"}});
 			}
 			current_player.inv_change = true;
 			return;
@@ -50,6 +52,7 @@ struct pickup_tag : public tag {
 			current_player.add_flag(p_text, p.id);
 			current_player.add_gold(atoi(p_text.c_str()));
 			current_player.inv_change = true;
+			achievement_check("COLLECT", current_player.event, current_player, {{"name", "gold"}, {"amount", atoi(p_text.c_str())}});
 			return;
 		}
 
@@ -62,6 +65,7 @@ struct pickup_tag : public tag {
 			current_player.add_flag(p_text, p.id);
 			current_player.add_silver(atoi(p_text.c_str()));
 			current_player.inv_change = true;
+			achievement_check("COLLECT", current_player.event, current_player, {{"name", "silver"}, {"amount", atoi(p_text.c_str())}});
 			return;
 		}
 
@@ -94,6 +98,9 @@ struct pickup_tag : public tag {
 			return;
 		}
 		current_player.add_flag(item_name, p.id);
+
+		achievement_check("COLLECT", current_player.event, current_player, {{"name", item_name}, {"flags", flags}});
+
 		if (flags == "SPELL") {
 			item_name = replace_string(item_name, " ", "");
 			item_name = replace_string(item_name, "-", "");
