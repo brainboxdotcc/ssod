@@ -84,7 +84,6 @@ static duk_ret_t js_log(duk_context *cx) {
 	for (int i = 0; i < argc; i++) {
 		output.append(duk_to_string(cx, i - argc)).append(" ");
 	}
-	paragraph& p = duk_get_udata(cx);
 	bot->log(dpp::ll_debug, output);
 	return 0;
 }
