@@ -19,6 +19,7 @@
  ************************************************************************************/
 #include <ssod/parser.h>
 #include <ssod/database.h>
+#include <ssod/achievement.h>
 
 struct eat_tag : public tag {
 	eat_tag() { register_tag<eat_tag>(); }
@@ -27,6 +28,7 @@ struct eat_tag : public tag {
 		if (!p.didntmove) {
 			current_player.eat_ration();
 			p.safe = false;
+			achievement_check("FORCED_EAT", current_player.event, current_player);
 		}
 	}
 };

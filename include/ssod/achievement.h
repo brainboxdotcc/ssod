@@ -1,8 +1,8 @@
 /************************************************************************************
- * 
+ *
  * The Seven Spells Of Destruction
  *
- * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
+ * Copyright 1993,2001,2023,2024 Craig Edwards <brain@ssod.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,16 @@
  * limitations under the License.
  *
  ************************************************************************************/
-#include <ssod/parser.h>
-#include <ssod/database.h>
-#include <ssod/achievement.h>
 
-struct setglobal_tag : public tag {
-	setglobal_tag() { register_tag<setglobal_tag>(); }
-	static constexpr std::string_view tags[]{"<setglobal"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		paragraph_content >> p_text;
-		p_text = dpp::lowercase(remove_last_char(p_text));
-		db::query("REPLACE INTO game_global_flags (flag) VALUES(?)", {p_text});
-		achievement_check("GLOBAL_STATE", current_player.event, current_player, {{"flag", p_text}});
-	}
-};
+#pragma once
 
-static setglobal_tag self_init;
+#include <dpp/dpp.h>
+#include <vector>
+#include <map>
+#include <string>
+#include "database.h"
+#include "game_player.h"
+#include "paragraph.h"
+
+void achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables = {}, const paragraph& para = paragraph());
+void unlock_achievement(player& p, const db::row& achievement);

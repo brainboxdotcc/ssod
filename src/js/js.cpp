@@ -26,6 +26,7 @@
 #include "duktape.h"
 #include <ssod/paragraph.h>
 #include <ssod/database.h>
+#include <ssod/achievement.h>
 
 namespace js {
 
@@ -1065,6 +1066,91 @@ static duk_ret_t js_add_mana(duk_context *cx) {
 	return 0;
 }
 
+static duk_ret_t js_get_ach_key(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS get_ach_key: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	const char* key = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	auto rs = db::query("SELECT achievements_kv FROM kv_store WHERE user_id = ? AND kv_key = ?", { p.cur_player->event.command.usr.id, key });
+	if (rs.empty()) {
+		duk_push_string(cx, "");
+	} else {
+		duk_push_string(cx, rs[0].at("kv_value").c_str());
+	}
+	return 1;
+}
+
+static duk_ret_t js_delete_ach_key(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS delete_ach_key: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	const char* key = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	db::query("DELETE FROM achievements_kv WHERE user_id = ? AND kv_key = ?", { p.cur_player->event.command.usr.id, key });
+	return 0;
+}
+
+
+static duk_ret_t js_set_ach_key(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 2) {
+		bot->log(dpp::ll_warning, "JS set_ach_key: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	if (!duk_is_string(cx, 0)) {
+		bot->log(dpp::ll_warning, "JS set_ach_key: parameter 1 is not a string");
+		return 0;
+	}
+	std::string v;
+	if (duk_is_string(cx, -1)) {
+		const char* value = duk_get_string(cx, -1);
+		v = value ? value : "";
+	} else {
+		auto value = (double)duk_get_number(cx, -1);
+		v = fmt::format("{0:f}", value);
+	}
+	const char* key = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	db::query("INSERT INTO achievements_kv (user_id, kv_key, kv_value) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE kv_value = ?", { p.cur_player->event.command.usr.id, key, v, v });
+	return 0;
+}
+
+static duk_ret_t js_has_ach(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS has_ach: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	const char* slug = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	auto rs = db::query("SELECT achievements.id FROM achievements JOIN achievements_unlocked ON achievements.id = achievements_unlocked.achievement_id AND user_id = ? WHERE slug = ?", { p.cur_player->event.command.usr.id, slug });
+	duk_push_boolean(cx, !rs.empty());
+	return 1;
+}
+
+static duk_ret_t js_unlock_ach(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 1) {
+		bot->log(dpp::ll_warning, "JS unlock_ach: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	const char* slug = duk_get_string(cx, 0);
+	paragraph& p = duk_get_udata(cx);
+	auto achievement = db::query("SELECT achievements.* FROM achievements WHERE slug = ?", { slug });
+	if (!achievement.empty()) {
+		db::query("INSERT INTO achievements_unlocked (user_id, achievement_id) VALUES(?, ?)", {p.cur_player->event.command.usr.id, achievement[0].at("id")});
+		unlock_achievement(*(p.cur_player), achievement[0]);
+	}
+	return 0;
+}
+
+
+
 bool run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars) {
 	duk_int_t ret;
 
@@ -1142,13 +1228,18 @@ bool run(const std::string& script, paragraph& p, player& current_player, const 
 	define_func(ctx, "get_key", js_get_key, 1);
 	define_func(ctx, "delete_key", js_delete_key, 1);
 	define_func(ctx, "toast", js_toast, 2);
+	define_func(ctx, "set_ach_key", js_set_ach_key, 2);
+	define_func(ctx, "get_ach_key", js_get_ach_key, 1);
+	define_func(ctx, "delete_ach_key", js_delete_ach_key, 1);
+	define_func(ctx, "has_ach", js_has_ach, 1);
+	define_func(ctx, "unlock_ach", js_unlock_ach, 1);
 
 	duk_pop(ctx);
 
 	duk_push_string(ctx, "paragraph.js");
 	std::string source;
-	for (auto i = vars.begin(); i != vars.end(); ++i) {
-		source += i->first + "=" + i->second.dump() + ";";
+	for (const auto & var : vars) {
+		source += var.first + "=" + var.second.dump() + ";";
 	}
 	source += ";" + script;
 

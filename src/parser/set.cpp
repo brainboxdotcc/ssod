@@ -18,6 +18,7 @@
  *
  ************************************************************************************/
 #include <ssod/parser.h>
+#include <ssod/achievement.h>
 
 struct set_tag : public tag {
 	set_tag() { register_tag<set_tag>(); }
@@ -31,6 +32,7 @@ struct set_tag : public tag {
 			if (p_text == "steam_copter" && !current_player.has_flag("steamcopter")) {
 				current_player.add_flag("steamcopter");
 			}
+			achievement_check("STATE", current_player.event, current_player, {{"flag", p_text}});
 		}
 	}
 };

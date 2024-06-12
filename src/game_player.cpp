@@ -24,6 +24,7 @@
 #include <ssod/game_dice.h>
 #include <ssod/game_util.h>
 #include <ssod/aes.h>
+#include <ssod/achievement.h>
 #include <span>
 
 using namespace i18n;
@@ -875,6 +876,7 @@ void player::add_experience(long modifier) {
 	long new_value = get_level();
 	if (new_value > old_value && new_value > 1) {
 		add_toast({ .message = tr("LEVELUP", event, new_value), .image = "level-up.png" });
+		achievement_check("LEVEL_UP", event, *this, {{"level", new_value}});
 	}
 }
 

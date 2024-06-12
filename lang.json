@@ -1,4 +1,10 @@
 {
+    "ACH_UNLOCK": {
+        "en": "Achievement Unlocked!"
+    },
+    "PLUS_TEN_XP": {
+        "en": "Achievement reward: +10 XP"
+    },
     "COOK": {
         "en": "Cook Food",
         "fr": "Cuire les aliments",

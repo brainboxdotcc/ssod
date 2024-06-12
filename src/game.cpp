@@ -37,6 +37,7 @@
 #include <ssod/grimoire.h>
 #include <ssod/campfire.h>
 #include <ssod/game_dice.h>
+#include <ssod/achievement.h>
 
 using namespace i18n;
 
@@ -200,6 +201,7 @@ void game_input(const dpp::form_submit_t & event) {
 		if (p.gold > 0 && amount > 0) {
 			p.add_gold(-amount);
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, amount});
+			achievement_check("BANK_DEPOSIT_GOLD", event, p, {{"amount", std::to_string(amount)}});
 		}
 		claimed = true;
 	} else if (parts[0] == "answer" && p.stamina > 0 && !p.in_bank && !p.in_inventory) {
@@ -212,8 +214,10 @@ void game_input(const dpp::form_submit_t & event) {
 			send_chat(event.command.usr.id, p.paragraph, "", "part");
 			send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
 			p.paragraph = atol(parts[1]);
+			achievement_check("ANSWER_RIDDLE_CORRECT", event, p);
 		} else {
 			p.add_toast({ .message = "### " + sprite::inv_drop.get_mention() + " " + tr("INCORRECT_RIDDLE", event), .image = "confused.png" });
+			achievement_check("ANSWER_RIDDLE_INCORRECT", event, p);
 		}
 		bot.log(dpp::ll_debug, "Answered: " + entered_answer);
 		claimed = true;
@@ -227,6 +231,7 @@ void game_input(const dpp::form_submit_t & event) {
 			bot.log(dpp::ll_info, p.event.command.locale + " " + " Chat: [L(" + std::to_string(p.paragraph) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
 			send_chat(event.command.usr.id, p.paragraph, message);
 		}
+		achievement_check("SEND_CHAT", event, p, {{"message", message}});
 		claimed = true;
 	} else if (custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
@@ -242,6 +247,7 @@ void game_input(const dpp::form_submit_t & event) {
 			db::query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = '__GOLD__'", {event.command.usr.id});
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, balance_amount - amount});
 			db::commit();
+			achievement_check("BANK_WITHDRAW_GOLD", event, p, {{"amount", std::to_string(amount)}});
 		}
 	}
 	if (claimed) {
@@ -275,6 +281,7 @@ void game_select(const dpp::select_click_t &event) {
 			db::query("DELETE FROM game_bank WHERE id = ?", { rs[0].at("id") });
 			p.pickup_possession(stacked_item{.name = parts[0], .flags = parts[1], .qty = 1 });
 			p.inv_change = true;
+			achievement_check("BANK_WITHDRAW_ITEM", event, p, {{"item", parts[0]}, {"flags", parts[1]}});
 		}
 		db::commit();
 		claimed = true;
@@ -289,6 +296,7 @@ void game_select(const dpp::select_click_t &event) {
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,?,?)", {event.command.usr.id, parts[0], flags});
 			p.drop_possession(item{.name = parts[0], .flags = flags});
 			p.inv_change = true;
+			achievement_check("BANK_DEPOSIT_ITEM", event, p, {{"item", parts[0]}, {"flags", flags}});
 		}
 		db::commit();
 		claimed = true;
@@ -302,15 +310,18 @@ void game_select(const dpp::select_click_t &event) {
 				if (p.armour.name == parts[0]) {
 					p.armour.name = tr("NO_ARMOUR", event) + " 👙";
 					p.armour.rating = 0;
+					achievement_check("NAKED", event, p, {});
 				} else if (p.weapon.name == parts[0]) {
 					p.weapon.name = tr("NO_WEAPON", event) + " 👊";
 					p.weapon.rating = 0;
+					achievement_check("BARE_FISTED", event, p, {});
 				}
 				/* Drop to floor */
 				db::query(
 					"INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)",
 					{p.paragraph, parts[0], parts.size() >= 2 ? parts[1] : ""});
 				send_chat(event.command.usr.id, p.paragraph, parts[0], "drop");
+				achievement_check("DROP_ITEM", event, p, {{"item", parts[0]}, {"value", si.value}});
 			}
 		}
 		claimed = true;
@@ -324,6 +335,7 @@ void game_select(const dpp::select_click_t &event) {
 				trigger_effect(bot, event, p, "Spell", parts[0]);
 			}
 		}
+		achievement_check("CAST_SPELL", event, p, {{"spell", parts[0]}});
 		p.in_grimoire = false;
 		claimed = true;
 	} else if (custom_id == "cook" && !event.values.empty() && p.in_campfire && p.stamina > 0) {
@@ -382,8 +394,10 @@ void game_select(const dpp::select_click_t &event) {
 			/* Replace ingredients with cooked meal */
 			if (dpp::lowercase(parts[0]).find("rations") != std::string::npos) {
 				p.add_rations(p.profession == prof_woodsman ? dice() + dice() : dice());
+				achievement_check("COOK_RATIONS", event, p, {{"name", parts[0]}});
 			} else {
 				p.possessions.emplace_back(stacked_item{.name = parts[0], .flags = "[none]", .qty = 1});
+				achievement_check("COOK_MEAL", event, p, {{"name", parts[0]}});
 			}
 			p.inv_change = true;
 		}
@@ -392,12 +406,15 @@ void game_select(const dpp::select_click_t &event) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() >= 2 && p.has_possession(parts[0])) {
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
+			achievement_check("USE_ITEM", event, p, {{"name", parts[0]},{"flags", parts[1]}});
 			auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
 				trigger_effect(bot, event, p, "Consumable", parts[0]);
+				achievement_check("USE_CONSUMABLE", event, p, {{"name", parts[0]}});
 			}
 			auto food = db::query("SELECT * FROM food WHERE name = ?", {parts[0]});
 			if (!food.empty()) {
+				achievement_check("EAT_FOOD", event, p, {{"name", parts[0]},{"food", food[0]}});
 				p.add_stamina(atol(food[0].at("stamina_change")));
 				p.add_skill(atol(food[0].at("skill_change")));
 				p.add_luck(atol(food[0].at("luck_change")));
@@ -429,7 +446,7 @@ void game_select(const dpp::select_click_t &event) {
 					long modifier = atol(flags.substr(1, flags.length() - 1));
 					p.armour.rating += modifier;
 				} else if (flags.substr(0, 1) == "W") {
-						long modifier = atol(flags.substr(1, flags.length() - 1));
+					long modifier = atol(flags.substr(1, flags.length() - 1));
 					p.weapon.rating += modifier;
 				}
 			}
@@ -438,6 +455,7 @@ void game_select(const dpp::select_click_t &event) {
 	} else if (custom_id == "equip_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() >= 2 && p.has_possession(parts[0])) {
+			achievement_check("EQUIP_ITEM", event, p, {{"name", parts[0]},{"rating", parts[1]}});
 			if (parts[1][0] == 'W') {
 				std::string rating = parts[1].substr(1, parts[1].length());
 				p.weapon = rated_item{.name = parts[0], .rating = atol(rating)};
@@ -453,19 +471,23 @@ void game_select(const dpp::select_click_t &event) {
 		if (p.has_possession(parts[0]) && s.sellable && !s.quest_item && dpp::lowercase(parts[0]) != "scroll") {
 			if (p.armour.name == parts[0]) {
 				p.armour.name = tr("NO_ARMOUR", event) + " 👙";
+				achievement_check("NAKED", event, p, {});
 				p.armour.rating = 0;
 			} else if (p.weapon.name == parts[0]) {
 				p.weapon.name = tr("NO_WEAPON", event) + " 👊";
+				achievement_check("BARE_FISTED", event, p, {});
 				p.weapon.rating = 0;
 			}
 			p.drop_possession(item{.name = parts[0], .flags = ""});
 			p.add_gold(s.value);
 			p.inv_change = true;
+			achievement_check("SELL_ITEM", event, p, {{"name", parts[0]},{"value", s.value}});
 		}
 		claimed = true;
 	} else if (custom_id == "fight_pvp" && p.in_pvp_picker && !event.values.empty()) {
 		dpp::snowflake user(event.values[0]);
 		challenge_pvp(event, user);
+		achievement_check("CHALLENGE_PVP", event, p, {{"other_user", event.values[0]}});
 		claimed = true;
 	}
 	if (claimed) {
@@ -615,6 +637,7 @@ void game_nav(const dpp::button_click_t& event) {
 					}
 				}
 				p.inv_change = true;
+				achievement_check("SHOP_BUY", event, p, {{"name", name}, {"cost", cost}});
 			}
 		}
 		claimed = true;
@@ -641,12 +664,14 @@ void game_nav(const dpp::button_click_t& event) {
 			.armour = atol(parts[6]),
 			.weapon = atol(parts[5]),
 		};
+		achievement_check("COMBAT", event, p, {{"enemy", {{"name", monster_name}, {"stamina", parts[3]}, {"skill", parts[3]}, {"armour", parts[3]}, {"weapon", parts[3]}}}});
 		claimed = true;
 	} else if (parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID BANK FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
 			return;
 		}
+		achievement_check("ENTER_BANK", event, p, {});
 		p.in_bank = true;
 		claimed = true;
 	} else if (parts[0] == "answer" && !p.in_combat && !p.in_inventory) {
@@ -705,6 +730,7 @@ void game_nav(const dpp::button_click_t& event) {
 				}
 				p.inv_change = true;
 				p.add_flag("PICKED", p.paragraph);
+				achievement_check("CHOOSE_ITEM", event, p, {{"name", parts[3]}, {"flags", parts[4]}});
 			}
 		}
 		claimed = true;
@@ -733,6 +759,7 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.save(event.command.usr.id);
 		p = new_p;
 		claimed = true;
+		achievement_check("RESPAWN", event, p, {});
 	} else if (parts[0] == "resurrect") {
 		time_t when = RESURRECT_SECS;
 		auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
@@ -761,17 +788,21 @@ void game_nav(const dpp::button_click_t& event) {
 			update_live_player(event, p);
 			p.save(event.command.usr.id);
 			claimed = true;
+			achievement_check("RESURRECT", event, p, {});
 		}
 	} else if (parts[0] == "inventory" && parts.size() >= 2 && !p.in_combat && p.stamina > 0) {
 		p.in_inventory = true;
 		p.inventory_page = atoi(parts[1].c_str());
+		achievement_check("ENTER_INVENTORY", event, p, {});
 		claimed = true;
 	} else if (parts[0] == "grimoire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_grimoire = true;
 		claimed = true;
+		achievement_check("ENTER_GRIMOIRE", event, p, {});
 	} else if (parts[0] == "campfire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_campfire = true;
 		claimed = true;
+		achievement_check("ENTER_CAMPFIRE", event, p, {});
 	} else if (parts[0] == "hunt" && parts.size() >= 2 && !p.in_combat && p.stamina > 0) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID HUNT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
@@ -839,11 +870,13 @@ void game_nav(const dpp::button_click_t& event) {
 				 * wants that one animals parts!).
 				 */
 				std::array<int, 8> thresholds{1, 2, 4, 8, 16, 32, 64, 128};
+				std::string english_name, animal_name;
 				int x = d_random(1, 1 << (animal_count - 1));
 				for (int i = 7; i >= 0; --i) {
 					if (x >= thresholds[i]) {
 						animal = animals[i].second;
-						std::string animal_name{animals[i].first};
+						animal_name = animals[i].first;
+						english_name = animal_name;
 						if (event.command.locale.substr(0, 2) != "en") {
 							auto t = db::query("SELECT * FROM translations WHERE row_id = 0 AND table_col = ? AND language = ?", {animal_name, event.command.locale.substr(0, 2)});
 							if (!t.empty()) {
@@ -871,9 +904,11 @@ void game_nav(const dpp::button_click_t& event) {
 					ss << "* 1x __" << i.name << "__\n";
 					p.possessions.emplace_back(stacked_item{ .name = part, .flags = "[none]", .qty = 1 });
 				}
+				achievement_check("HUNT_SUCCESS", event, p, {{"name", part}, {"animal", english_name}, {"localised_name", i.name}, {"localised_animal", animal_name}});
 				p.inv_change = true;
 			} else {
 				ss << tr("FAILED_HUNT", event) << "\n";
+				achievement_check("HUNT_FAILURE", event, p);
 				p.add_stamina(-1);
 			}
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
@@ -883,6 +918,7 @@ void game_nav(const dpp::button_click_t& event) {
 			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << tr("NOTHING_HUNT", event) << "*\n\n" << tr("FAILED_HUNT", event) << "\n";
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
 			p.add_stamina(-1);
+			achievement_check("HUNT_FAILURE", event, p);
 			if (!rs[0].at("hunting_json").empty()) {
 				bot.log(dpp::ll_error, "Error in hunting, location " + std::to_string(p.paragraph) + ": " + std::string(e.what()));
 			}
@@ -915,6 +951,7 @@ void game_nav(const dpp::button_click_t& event) {
 				send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 			}
 			db::commit();
+			achievement_check("PICKUP_FLOOR_ITEM", event, p, {{"name", name}, {"flags", flags}});
 		}
 		claimed = true;
 	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat) {
@@ -958,6 +995,7 @@ void game_nav(const dpp::button_click_t& event) {
 		if (p2.event.from) {
 			p2.event.edit_original_response(m);
 		}
+		achievement_check("PVP_ACCEPT", event, p, {{"opponent", opponent.str()}});
 		claimed = true;
 	} else if (parts[0] == "pvp_accept" && p.stamina > 0) {
 		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
@@ -966,6 +1004,7 @@ void game_nav(const dpp::button_click_t& event) {
 		p.in_pvp_picker = false;
 		p = set_in_pvp_combat(event);
 		update_opponent_message(event, get_pvp_round(p2.event), std::stringstream());
+		achievement_check("PVP_ACCEPT", event, p, {{"opponent", opponent.str()}});
 		claimed = true;
 	} else if (parts[0] == "chat" && p.stamina > 0) {
 		dpp::interaction_modal_response modal(security::encrypt("chat_modal"), "Chat",	{
@@ -1556,6 +1595,8 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 
 	cb.add_component(help_button(event));
 	m = cb.get_message();
+
+	achievement_check("VIEW_LOCATION", event, p, {}, location);
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
 		if (cc.is_error()) {{
