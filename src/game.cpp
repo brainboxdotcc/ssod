@@ -612,6 +612,7 @@ void game_nav(const dpp::button_click_t& event) {
 						if (!p.has_flag("SCROLL", p.paragraph)) {
 							p.gold -= cost;
 							p.scrolls++;
+							achievement_check("SCROLL", p.event, p, {{"scrolls", p.scrolls}});
 							p.add_flag("SCROLL", p.paragraph);
 						}
 					} else {

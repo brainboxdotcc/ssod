@@ -38,6 +38,7 @@ struct pickup_tag : public tag {
 				current_player.scrolls++;
 				current_player.add_flag("SCROLL", p.id);
 				achievement_check("COLLECT", current_player.event, current_player, {{"name", "scroll"}});
+				achievement_check("SCROLL", current_player.event, current_player, {{"scrolls", current_player.scrolls}});
 			}
 			current_player.inv_change = true;
 			return;
