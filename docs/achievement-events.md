@@ -147,3 +147,5 @@ Otherwise:
 No variables
 ### SCROLL
 * scrolls - numeric, player's scroll count, 1 through 7
+### VOTE
+No variables
