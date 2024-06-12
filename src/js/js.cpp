@@ -1087,7 +1087,7 @@ static duk_ret_t js_get_ach_key(duk_context *cx) {
 	}
 	const char* key = duk_get_string(cx, 0);
 	paragraph& p = duk_get_udata(cx);
-	auto rs = db::query("SELECT achievements_kv FROM kv_store WHERE user_id = ? AND kv_key = ?", { p.cur_player->event.command.usr.id, key });
+	auto rs = db::query("SELECT kv_value FROM achievements_kv WHERE user_id = ? AND kv_key = ?", { p.cur_player->event.command.usr.id, key });
 	if (rs.empty()) {
 		duk_push_string(cx, "");
 	} else {
@@ -1156,8 +1156,7 @@ static duk_ret_t js_unlock_ach(duk_context *cx) {
 	paragraph& p = duk_get_udata(cx);
 	auto achievement = db::query("SELECT achievements.* FROM achievements WHERE slug = ?", { slug });
 	if (!achievement.empty()) {
-		db::query("INSERT INTO achievements_unlocked (user_id, achievement_id) VALUES(?, ?)", {p.cur_player->event.command.usr.id, achievement[0].at("id")});
-		unlock_achievement(*(p.cur_player), achievement[0]);
+		db::query("INSERT INTO achievements_unlocked (user_id, achievement_id, announced, created_at) VALUES(?, ?, 0, UNIX_TIMESTAMP())", {p.cur_player->event.command.usr.id, achievement[0].at("id")});
 	}
 	return 0;
 }

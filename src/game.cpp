@@ -58,6 +58,12 @@ void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& me
 }
 
 void do_toasts(player &p, component_builder& cb) {
+
+	auto achievements = db::query("SELECT achievements.* FROM achievements_unlocked JOIN achievements ON achievement_id = achievements.id WHERE announced = 0 and user_id = ?", { p.event.command.usr.id });
+	for (const auto& achievement : achievements) {
+		unlock_achievement(p, achievement);
+		db::query("UPDATE achievements_unlocked SET announced = 1 WHERE user_id = ? AND achievement_id = ?", {p.event.command.usr.id, achievement.at("id")});
+	}
 	/* Display and clear toasts */
 	std::vector<toast> toasts = p.get_toasts();
 	for (const auto& toast : toasts) {
