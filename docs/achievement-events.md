@@ -149,3 +149,7 @@ No variables
 * scrolls - numeric, player's scroll count, 1 through 7
 ### VOTE
 No variables
+### PLAGUE
+* loss - numeric, stamina lost
+### CURED
+* disease - string CUREBLOOD, CURERASP etc
