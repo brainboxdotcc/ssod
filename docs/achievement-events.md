@@ -107,7 +107,7 @@ No variables
 ### PVP_ACCEPT
 * opponent - string, opponent snowflake ID
 ### VIEW_LOCATION
-* location - object, paragraph data
+* loc_id - numeric, paragraph id
 ### TEST_SNEAK
 * success - boolean, success or failure of test
 * enemy - string, enemy name
