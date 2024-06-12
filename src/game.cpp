@@ -602,6 +602,7 @@ void game_nav(const dpp::button_click_t& event) {
 					catch (const regex_exception& e) {
 						bot.log(dpp::ll_error, std::string("Regular expression error: ") + e.what());
 					}
+					achievement_check("CURED", event, p, {{"disease", flags}});
 				} else if (flags == "HERB") {
 					if (!p.has_herb(name)) {
 						p.gold -= cost;
