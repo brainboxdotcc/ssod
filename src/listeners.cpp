@@ -90,7 +90,7 @@ namespace listeners {
 				p.pickup_possession(stacked_item{ .name = "stamina potion", .flags = "ST+5", .qty = 1});
 				p.inv_change = true;
 				if (user.at("origin") == "vote") {
-					achievement_check("VOTE", e, p, {{"time":time(nullptr)}});
+					achievement_check("VOTE", e, p, {{"time", time(nullptr)}});
 				}
 				p.add_toast({ .message = "## A loot drop has arrived!\n\nYou have received a stamina potion and a skill potion!", .image = "potions.jpg" });
 				p.last_resurrect = time(nullptr) - 3600;
