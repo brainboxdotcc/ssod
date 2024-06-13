@@ -79,7 +79,7 @@ namespace listeners {
 	}
 
 	void process_potion_drops(dpp::cluster& bot) {
-		auto rs = db::query("SELECT user_id FROM potion_drops");
+		auto rs = db::query("SELECT user_id, origin FROM potion_drops");
 		for (const auto& user : rs) {
 			dpp::snowflake user_id(user.at("user_id"));
 			dpp::interaction_create_t e;
@@ -89,7 +89,9 @@ namespace listeners {
 				p.pickup_possession(stacked_item{ .name = "skill potion", .flags = "SK+5", .qty = 1});
 				p.pickup_possession(stacked_item{ .name = "stamina potion", .flags = "ST+5", .qty = 1});
 				p.inv_change = true;
-				achievement_check("VOTE", e, p);
+				if (user.at("origin") == "vote") {
+					achievement_check("VOTE", e, p, {{"time":time(nullptr)}});
+				}
 				p.add_toast({ .message = "## A loot drop has arrived!\n\nYou have received a stamina potion and a skill potion!", .image = "potions.jpg" });
 				p.last_resurrect = time(nullptr) - 3600;
 				update_live_player(p.event, p);
