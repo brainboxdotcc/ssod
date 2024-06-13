@@ -148,7 +148,7 @@ No variables
 ### SCROLL
 * scrolls - numeric, player's scroll count, 1 through 7
 ### VOTE
-No variables
+* time - numeric, time_t time the vote happened
 ### PLAGUE
 * loss - numeric, stamina lost
 ### CURED
