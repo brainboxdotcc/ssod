@@ -32,7 +32,13 @@ void achievement_check(const std::string& event_type, const dpp::interaction_cre
 	/* Trigger all achievement events of this event type, but only if the player has not yet unlocked the achievement they are attached to */
 	auto achievements = db::query("SELECT * FROM achievements WHERE enabled = 1 AND event_type = ? AND check_event IS NOT NULL AND (SELECT COUNT(*) FROM achievements_unlocked WHERE user_id = ? AND achievement_id = achievements.id) = 0", {event_type, event.command.usr.id});
 	for (const auto& achievement : achievements) {
-		js::run(achievement.at("check_event"), (paragraph&)para, p, variables);
+		if (para.id == 0) {
+			paragraph blank;
+			blank.cur_player = &p;
+			js::run(achievement.at("check_event"), blank, p, variables);
+		} else {
+			js::run(achievement.at("check_event"), (paragraph &) para, p, variables);
+		}
 	}
 }
 
