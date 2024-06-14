@@ -64,10 +64,10 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 	 */
 	auto ach = db::query(
 		"SELECT achievements.*, DATE_FORMAT(FROM_UNIXTIME(achievements_unlocked.created_at), '%D %b %Y, %H:%i') AS unlock_date FROM `achievements_unlocked`"
-		"JOIN achievements ON achievement_id = achievements.id WHERE "
+		"JOIN achievements ON achievement_id = achievements.id AND achievements_unlocked.user_id = ? WHERE "
 		"(achievements.secret = 0 OR (SELECT COUNT(*) FROM achievements_unlocked self WHERE self.achievement_id = achievements_unlocked.achievement_id AND self.user_id = ?) > 0) "
 		"ORDER BY achievements_unlocked.created_at DESC",
-		{event.command.usr.id}
+		{ event.command.usr.id, event.command.usr.id }
 	);
 
 	size_t c{};
