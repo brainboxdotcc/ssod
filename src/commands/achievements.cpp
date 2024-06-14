@@ -58,10 +58,15 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 
 	content << "## " + tr("ACHIEVEMENTS", event) +  "\n\n";
 
+	/**
+	 * User can view all non-secret achievements, or secret achievements they have unlocked in common with the target user.
+	 * Achievements are listed in reverse date order.
+	 */
 	auto ach = db::query(
 		"SELECT achievements.*, DATE_FORMAT(FROM_UNIXTIME(achievements_unlocked.created_at), '%D %b %Y, %H:%i') AS unlock_date FROM `achievements_unlocked`"
 		"JOIN achievements ON achievement_id = achievements.id WHERE "
-		"(achievements.secret = 0 OR (SELECT COUNT(*) FROM achievements_unlocked self WHERE self.achievement_id = achievements_unlocked.achievement_id AND self.user_id = ?) > 0)",
+		"(achievements.secret = 0 OR (SELECT COUNT(*) FROM achievements_unlocked self WHERE self.achievement_id = achievements_unlocked.achievement_id AND self.user_id = ?) > 0) "
+		"ORDER BY achievements_unlocked.created_at DESC",
 		{event.command.usr.id}
 	);
 
@@ -74,6 +79,11 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 				name = translations[1].at("translation");
 			}
 		}
+		/**
+		 * Bronze: 1-10 XP award achievement
+		 * Silver: 11-99 XP award achievement
+		 * Gold: 100+ XP award achievement
+		 */
 		long xp = atol(achievement.at("xp"));
 		std::string trophy{"🥉"};
 		if (xp > 10 && xp < 100) {
