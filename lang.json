@@ -1,4 +1,22 @@
 {
+	"ACHIEVEMENTS_LIST": {
+		"en": "Achievement List"
+	},
+	"UNLOCKED": {
+		"en": "Unlocked:"
+	},
+	"ACHIEVEMENTS": {
+		"en": "Achievements"
+	},
+	"cmd_achievements": {
+		"en": "achievements"
+	},
+	"achievements_desc": {
+		"en": "List a player's unlocked achievements"
+	},
+	"user_achievements_desc": {
+		"en": "Player to list achievements for"
+	},
     "ACH_UNLOCK": {
         "en": "Achievement Unlocked!",
         "fr": "Succès dévérouillé!",

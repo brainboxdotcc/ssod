@@ -43,6 +43,7 @@
 #include <ssod/commands/premium.h>
 #include <ssod/commands/reset.h>
 #include <ssod/commands/guild.h>
+#include <ssod/commands/achievements.h>
 
 #include <ssod/botlist.h>
 #include <ssod/botlists/topgg.h>
@@ -195,6 +196,7 @@ namespace listeners {
 			register_command<premium_command>(bot),
 			register_command<reset_command>(bot),
 			register_command<guild_command>(bot),
+			register_command<achievements_command>(bot),
 		};
 	}
 
