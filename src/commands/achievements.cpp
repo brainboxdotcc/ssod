@@ -70,6 +70,7 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 		{event.command.usr.id}
 	);
 
+	size_t c{};
 	for (const auto& achievement : ach) {
 		std::string name{achievement.at("name")}, description{achievement.at("description")};
 		if (event.command.locale.substr(0, 2) != "en") {
@@ -85,15 +86,21 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 		 * Gold: 100+ XP award achievement
 		 */
 		long xp = atol(achievement.at("xp"));
-		std::string trophy{"🥉"};
+		std::string trophy{sprite::bronze_coin.format()};
 		if (xp > 10 && xp < 100) {
-			trophy = "🥈";
+			trophy = sprite::silver_coin.format();
 		} else if (xp >= 100) {
-			trophy = "🥇";
+			trophy = sprite::gold_coin.format();
 		}
-		content << trophy << " __**" << name << "**__\n";
+		content << "<:" << trophy << "> __**" << name << "**__\n";
 		content << "[" << description << "](https://images.ssod.org/resource/achievements/" << achievement.at("emoji") << ")\n";
 		content << tr("UNLOCKED", event) << " " << achievement.at("unlock_date") << "\n\n";
+		++c;
+
+		if (content.str().length() > 5700) {
+			content << "(and " << (ach.size() - c) << " more...)";
+			break;
+		}
 	}
 
 	dpp::embed embed = dpp::embed()
