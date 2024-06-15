@@ -775,9 +775,9 @@ void game_nav(const dpp::button_click_t& event) {
 		db::query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
 		update_live_player(event, new_p);
 		new_p.save(event.command.usr.id);
+		achievement_check("RESPAWN", event, p, {});
 		p = new_p;
 		claimed = true;
-		achievement_check("RESPAWN", event, p, {});
 	} else if (parts[0] == "resurrect") {
 		time_t when = RESURRECT_SECS;
 		auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
