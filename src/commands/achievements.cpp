@@ -67,17 +67,17 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 		"JOIN achievements ON achievement_id = achievements.id AND achievements_unlocked.user_id = ? WHERE "
 		"(achievements.secret = 0 OR (SELECT COUNT(*) FROM achievements_unlocked self WHERE self.achievement_id = achievements_unlocked.achievement_id AND self.user_id = ?) > 0) "
 		"ORDER BY achievements_unlocked.created_at DESC",
-		{ event.command.usr.id, event.command.usr.id }
+		{ rs[0].at("user_id"), event.command.usr.id }
 	);
 
 	size_t c{};
 	for (const auto& achievement : ach) {
-		std::string name{achievement.at("name")}, description{achievement.at("description")};
+		std::string achievement_name{achievement.at("achievement_name")}, description{achievement.at("description")};
 		if (event.command.locale.substr(0, 2) != "en") {
-			auto translations = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col IN ('achievements/description', 'achievements/name') ORDER BY table_col", {achievement.at("id"), event.command.locale.substr(0, 2)});
+			auto translations = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col IN ('achievements/description', 'achievements/achievement_name') ORDER BY table_col", {achievement.at("id"), event.command.locale.substr(0, 2)});
 			if (translations.size() == 2) {
 				description = translations[0].at("translation");
-				name = translations[1].at("translation");
+				achievement_name = translations[1].at("translation");
 			}
 		}
 		/**
@@ -92,7 +92,7 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 		} else if (xp >= 100) {
 			trophy = sprite::gold_coin.format();
 		}
-		content << "<:" << trophy << "> __**" << name << "**__\n";
+		content << "<:" << trophy << "> __**" << achievement_name << "**__\n";
 		content << "[" << description << "](https://images.ssod.org/resource/achievements/" << achievement.at("emoji") << ")\n";
 		content << tr("UNLOCKED", event) << " " << achievement.at("unlock_date") << "\n\n";
 		++c;
