@@ -738,6 +738,10 @@ void player::drop_everything() {
 
 bool player::save(dpp::snowflake user_id, bool put_backup)
 {
+	if (user_id.empty()) {
+		std::cout << "EMPTY snowflake on user " << this->name << "\n";
+		return false;
+	}
 	tick_mana();
 	db::transaction();
 
