@@ -46,7 +46,7 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 			self = true;
 		}
 	} else {
-		user = std::get<std::string>(event.get_parameter("user"));
+		user = std::get<std::string>(param);
 	}
 	auto rs = db::query("SELECT * FROM game_users WHERE name = ?", {user});
 	if (rs.empty()) {
@@ -72,9 +72,9 @@ void achievements_command::route(const dpp::slashcommand_t &event)
 
 	size_t c{};
 	for (const auto& achievement : ach) {
-		std::string achievement_name{achievement.at("achievement_name")}, description{achievement.at("description")};
+		std::string achievement_name{achievement.at("name")}, description{achievement.at("description")};
 		if (event.command.locale.substr(0, 2) != "en") {
-			auto translations = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col IN ('achievements/description', 'achievements/achievement_name') ORDER BY table_col", {achievement.at("id"), event.command.locale.substr(0, 2)});
+			auto translations = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col IN ('achievements/description', 'achievements/name') ORDER BY table_col", {achievement.at("id"), event.command.locale.substr(0, 2)});
 			if (translations.size() == 2) {
 				description = translations[0].at("translation");
 				achievement_name = translations[1].at("translation");
