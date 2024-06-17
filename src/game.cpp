@@ -771,6 +771,7 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.toasts = {};
 		new_p.death_xp_loss();
 		new_p.reset_to_spawn_point();
+		new_p.event = event;
 		db::query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
 		db::query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
 		update_live_player(event, new_p);
@@ -802,6 +803,7 @@ void game_nav(const dpp::button_click_t& event) {
 			p.after_fragment = 0;
 			p.combatant = {};
 			p.toasts = {};
+			p.event = event;
 			p.state = state_play;
 			update_live_player(event, p);
 			p.save(event.command.usr.id);

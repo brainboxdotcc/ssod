@@ -120,7 +120,9 @@ void update_save_opponent(const dpp::interaction_create_t& event, player p) {
 	dpp::interaction_create_t tmp(event.from, "");
 	tmp.command.usr.id = o;
 	update_live_player(tmp, p);
-	p.save(o);
+	if (!o.empty()) {
+		p.save(o);
+	}
 }
 
 player set_in_pvp_combat(const dpp::interaction_create_t& event) {
