@@ -1075,41 +1075,28 @@ std::string bonuses(int type, player_race R, player_profession P) {
 }
 
 long player::max_stamina() {
-	long level = get_level(), special = 0;
-	if (profession == prof_warrior) {
-		special += 5;
-        } else if (race == race_barbarian || race == race_orc) {
-		special += 4;
-	}
-	return 20 + level + special;
+	long level = get_level();
+	return 20 + level + bonuses_numeric(1, race, profession);
 }
 
 long player::max_skill() {
 	long level = get_level();
-	return 18 + level;
+	return 18 + level + bonuses_numeric(2, race, profession);
 }
 
 long player::max_luck() {
 	long level = get_level();
-	return 16 + level;
+	return 16 + level + bonuses_numeric(3, race, profession);
 }
 
 long player::max_sneak() {
-	long level = get_level(), special = 0;
-	if (profession == prof_thief) {
-		special += 3;
-	} else if (profession == prof_assassin) {
-		special += 2;
-	}
-	if (race == race_lesser_orc) {
-		special += 3;
-	}
-	return 15 + level + special;
+	long level = get_level();
+	return 15 + level + bonuses_numeric(4, race, profession);
 }
 
 long player::max_speed() {
 	long level = get_level();
-	return 20 + level;
+	return 20 + level + bonuses_numeric(5, race, profession);
 }
 
 long player::max_gold() {

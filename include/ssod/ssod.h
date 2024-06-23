@@ -102,7 +102,15 @@ namespace i18n {
 
 	template<typename... T>
 	std::string tr(const std::string& key, const dpp::interaction_create_t& interaction, T &&... args) {
-		return fmt::format(fmt::runtime(tr(key, interaction)), std::forward<T>(args)...);
+		try {
+			return fmt::format(fmt::runtime(tr(key, interaction)), std::forward<T>(args)...);
+		}
+		catch (const std::exception& format_exception) {
+			if (interaction.from && interaction.from->creator) {
+				interaction.from->creator->log(dpp::ll_error, "Error in translation string for translation " + key + " lang " + interaction.command.locale + ": " + format_exception.what());
+			}
+			return key;
+		}
 	}
 
 };
