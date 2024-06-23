@@ -1344,6 +1344,14 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 		location = paragraph(location.navigation_links[0].paragraph, p, event.command.usr.id);
 		p.paragraph = location.id;
 	}
+
+	bool is_fight{};
+	for (const auto & n : location.navigation_links) {
+		if (n.type == nav_type_combat) {
+			is_fight = true;
+		}
+	}
+
 	dpp::cluster& bot = *(event.from->creator);
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -1375,7 +1383,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			list_others = list_others.substr(0, list_others.length() - 2);
 			text += "**__" + tr("OTHERS", event) + "__**\n" + list_others + "\n\n";
 		}
-		if (location.dropped_items.size()) {
+		if (!is_fight && location.dropped_items.size()) {
 			for (const auto & dropped : location.dropped_items) {
 				item dropped_single{ .name = dropped.name, .flags = dropped.flags };
 				auto i = tr(dropped_single, "", event);
@@ -1599,7 +1607,8 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 			.set_style(dpp::cos_secondary)
 			.set_emoji("💬")
 		);
-
+	}
+	if (!is_fight && enabled_links > 0 && p.stamina > 0) {
 		for (const auto & dropped : location.dropped_items) {
 			item dropped_single{ .name = dropped.name, .flags = dropped.flags };
 			auto i = tr(dropped_single, "", event);
@@ -1611,6 +1620,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				.set_emoji(sprite::backpack.name, sprite::backpack.id)
 			);
 		}
+
 	}
 
 	cb.add_component(help_button(event));
