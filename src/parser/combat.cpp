@@ -28,6 +28,18 @@ using namespace i18n;
 struct combat_tag : public tag {
 	combat_tag() { register_tag<combat_tag>(); }
 	static constexpr std::string_view tags[]{"<combat"};
+
+	static long calc_xp_worth(player&p, long stamina, long skill, long armour, long weapon) {
+		long xp = std::max(skill - p.skill, 1L);
+		if (xp < 1) {
+			xp = 1;
+		}
+		if (skill > p.skill * 1.25) {
+			xp *= 1.5;
+		}
+		return xp;
+	}
+
 	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// combat tag
 		p.links++;
@@ -105,6 +117,7 @@ struct combat_tag : public tag {
 						.skill = monster_skill,
 						.armour = monster_armour,
 						.weapon = monster_weapon,
+						.xp_value = calc_xp_worth(current_player, monster_stamina, monster_skill, monster_armour, monster_weapon),
 					},
 					.buyable = {},
 					.prompt = "",

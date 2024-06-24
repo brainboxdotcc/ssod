@@ -16,6 +16,9 @@ No variables
 ### COMBAT_HIT
 * stamina_damage - numeric, stamina damage
 * skill_damage - numeric, skill damage
+### CRITICAL
+* stamina_damage - numeric, stamina damage
+* skill_damage - numeric, skill damage
 ### COMBAT_PLAYER_DEAD
 * enemy - string, enemy name
 ### BANK_DEPOSIT_GOLD
