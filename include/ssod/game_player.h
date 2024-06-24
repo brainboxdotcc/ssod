@@ -43,6 +43,7 @@ struct enemy {
 	long skill{};
 	long armour{};
 	long weapon{};
+	long xp_value{};
 };
 
 enum combat_stance {
@@ -109,6 +110,10 @@ struct player {
 	 * @brief Inventory, spells or herbs have changed
 	 */
 	bool inv_change{};
+	/**
+	 * @brief True if next hit in pve combat is to be a critical
+	 */
+	bool next_crit{};
 	/**
 	 * @brief Who has challenged this user to pvp
 	 */

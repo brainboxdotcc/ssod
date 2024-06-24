@@ -599,6 +599,9 @@ bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<st
 		p.weapon.rating = atol(parts[2]);
 		p.weapon.name = parts[1];
 		claimed = true;
+	} else if (parts[0] == "crit" && parts.size() >= 2) {
+		p.next_crit = true;
+		claimed = true;
 	} else if (parts[0] == "change_stance" && parts.size() >= 2) {
 		p.stance = (parts[1] == "o" ? OFFENSIVE : DEFENSIVE);
 		claimed = true;
@@ -628,6 +631,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 	dpp::message m;
 	component_builder cb(m);
 	std::stringstream output1, output2;
+	std::string fighting{p.combatant.name.substr(0, 80)};
 
 	long PArmour = p.armour.rating, PWeapon = p.weapon.rating;
 	long& ESkill = p.combatant.skill;
@@ -654,10 +658,33 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 
 	output << "__" << tr("COMBAT", event) << "__: **" << p.name << "** vs. **" << p.combatant.name << "**\n\n";
 
+	db::transaction();
+	auto r = db::query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
+	long banked{0};
+	bool critical{};
+	if (!r.empty()) {
+		long counter = atol(r[0].at("critical_counter"));
+		banked = atol(r[0].at("banked_criticals"));
+		if (banked > 0 && p.next_crit) {
+			db::query("UPDATE criticals SET banked_criticals = banked_criticals - 1 WHERE user_id = ?", {event.command.usr.id});
+			critical = true;
+			p.next_crit = false;
+		}
+		banked--;
+		long next = 1000 + (p.get_level() * 4);
+		int percent = (double)counter / (double)next * 100.0f;
+		output << tr("CRITICAL_METER", event) << ": ";
+		for (int x = 0; x < 100; x += 10) {
+			output << (x < percent ? sprite::bar_green.get_mention() : sprite::bar_red.get_mention());
+		}
+		output << " (" + std::to_string(percent) + "%)\n";
+		output << tr("CRITICALS", event) << ": " << banked;
+ 	}
+	db::commit();
+
 	if (EStamina <= 0) {
 		output << tr("HES_DEAD_JIM", event) << "\n\n";
 		p.after_fragment++;
-		p.combatant = {};
 		p.in_combat = false;
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
@@ -672,58 +699,84 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("STAMINA", event), p.stamina) << "\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("ARMOUR", event), p.armour.rating) << "\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("WEAPON", event), p.weapon.rating) << "\n";
-		output1 << "```\n\n";
+		output1 << "```\n";
+		output1 << tr("YOURSTANCE", event) << "\n" << (p.stance == DEFENSIVE ? tr("DEFENSIVE", event) + " " + sprite::wood03.get_mention() : tr("OFFENSIVE", event) + " " + sprite::sword008.get_mention());
 		output2 << "\n\n```ansi\n";
 		output2 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("SKILL", event), p.combatant.skill) << "\n";
 		output2 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("STAMINA", event), p.combatant.stamina) << "\n";
 		output2 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("ARMOUR", event), p.combatant.armour) << "\n";
 		output2 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("WEAPON", event), p.combatant.weapon) << "\n";
-		output2 << "```\n\n";
+		output2 << "```\n";
+		output2 << tr("ENEMYSTANCE", event) << "\n" << (EStance == DEFENSIVE ? tr("DEFENSIVE", event) + " " + sprite::wood03.get_mention() : tr("OFFENSIVE", event) + " " + sprite::sword008.get_mention());
+		p.combatant = {};
+
 	} else {
 
 		long EAttack = dice() + dice() + ESkill + EWeapon;
 		long PAttack = dice() + dice() + p.skill + PWeapon;
-
-		output << tr("ENEMYSTANCE", event) << " **" << (EStance == DEFENSIVE ? tr("DEFENSIVE", event) + " " + sprite::wood03.get_mention() : tr("OFFENSIVE", event) + " " + sprite::sword008.get_mention()) << "**\n";
-		output << tr("YOURSTANCE", event) << " **" << (p.stance == DEFENSIVE ? tr("DEFENSIVE", event) + " " + sprite::wood03.get_mention() : tr("OFFENSIVE", event) + " " + sprite::sword008.get_mention()) << "**\n";
-
-		if ((EStance == OFFENSIVE) && (p.stance == DEFENSIVE)) {
-			int Bonus = dice();
-			EAttack += Bonus;
-			output << tr("COWERING", event, Bonus);
-		} else  if ((p.stance == OFFENSIVE) && (EStance == DEFENSIVE)) {
-			int Bonus = dice();
-			PAttack += Bonus;
-			output << tr("LOOMING", event, Bonus);
-		}
-	
-		output << "\n\n" << tr("PVETOTALS", event, PAttack, EAttack) << "\n\n";
-
-		long SaveRoll = dice() + dice();
 		bool Saved = false;
 
-		if (EAttack > PAttack) {
-			output << "__**" << tr("ENEMYHITSYOU", event) << "**__. ";
-			
-			if (p.stance == DEFENSIVE) {
-				output << tr("SAVEBONUS", event);
-				SaveRoll -= dice();
-			}
-			if (SaveRoll <= PArmour) {
-				Saved = true;
-			}
-		}
-		else
-		{
-			output << "__**" << tr("YOUHITENEMY", event) << "**__.";
+		if (critical) {
 
-			if (EStance == DEFENSIVE) {
-				output << tr("ATKBONUS", event);
-				SaveRoll -= dice();
+			std::string msg = fmt::format("CRITICALMSG{0}", d_random(1, 35));
+			std::string crit_message = tr(msg, event, p.combatant.name, p.weapon.name);
+			output << "\n\n### " << sprite::skull.get_mention() << " " << crit_message << "\n\n";
+
+		} else {
+
+			if ((EStance == OFFENSIVE) && (p.stance == DEFENSIVE)) {
+				int Bonus = dice();
+				EAttack += Bonus;
+				output << "\n\n" << tr("COWERING", event, Bonus);
+			} else if ((p.stance == OFFENSIVE) && (EStance == DEFENSIVE)) {
+				int Bonus = dice();
+				PAttack += Bonus;
+				output << "\n\n" << tr("LOOMING", event, Bonus);
 			}
-			if (SaveRoll <= EArmour) {
-				Saved = true;
+
+			output << "\n\n" << tr("PVETOTALS", event, PAttack, EAttack) << "\n\n";
+
+			long SaveRoll = dice() + dice();
+
+			if (EAttack > PAttack) {
+				output << "__**" << tr("ENEMYHITSYOU", event) << "**__. ";
+
+				// TODO: If you're hit, you can use a luck test to block the hit
+
+				if (p.stance == DEFENSIVE) {
+					output << tr("SAVEBONUS", event);
+					SaveRoll -= dice();
+				}
+				if (SaveRoll <= PArmour) {
+					Saved = true;
+				}
+			} else {
+				output << "__**" << tr("YOUHITENEMY", event) << "**__.";
+
+				/* If you hit enemy, critical meter ticks up based on your luck.
+				 * If critical meter reaches max, you gain a critical hit, that you
+				 * can spend on an overwhelming attack.
+				 */
+				db::transaction();
+				db::query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, p.luck + 1});
+				auto r = db::query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
+				long counter = atol(r[0].at("critical_counter"));
+				if (counter > 200 + (p.get_level() * 4)) {
+					/* User gains a new banked critical */
+					long new_banked = atol(r[0].at("banked_criticals")) + 1;
+					db::query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
+				}
+				db::commit();
+
+				if (EStance == DEFENSIVE) {
+					output << tr("ATKBONUS", event);
+					SaveRoll -= dice();
+				}
+				if (SaveRoll <= EArmour) {
+					Saved = true;
+				}
 			}
+
 		}
 		long D6 = dice();
 		long SDamage{}, KDamage{};
@@ -733,56 +786,66 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			output << " " << tr("PVESAVED", event);
 		} else {
 
-			output << tr("PVENOSAVE", event) << " **";
-			switch (D6) {
-				case 1:
-					output << tr("HEAD", event);
-					SDamage = dice();
-					KDamage = 1;
-					break;
-				case 2:
-					output << tr("LEGS", event);
-					SDamage = 3;
-					KDamage = 1;
-					break;
-				case 3:
-					output << tr("TORSO", event);
-					SDamage = dice();
-					KDamage = 0;
-					break;
-				case 4:
-					output << tr("ARMS", event);
-					SDamage = 2;
-					KDamage = 2;
-					break;
-				case 5:
-					output << tr("HANDS", event);
-					SDamage = 2;
-					KDamage = 1;
-					break;
-				case 6:
-					output << tr("BWEAPON", event);
-					SDamage = 0;
-					KDamage = 1;
-					break;
-			}
+			if (critical) {
+				SDamage = 6 + p.luck + (p.get_level() - 1);
+				KDamage = 3 + (p.luck / 2);
+				EAttack = 0;
+				PAttack = 999999;
+				KAttackType = p.attack;
+				achievement_check("CRITICAL", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
+			} else {
 
-			output << "** " << tr("AREA", event) << ".";;
+				output << tr("PVENOSAVE", event) << " **";
+				switch (D6) {
+					case 1:
+						output << tr("HEAD", event);
+						SDamage = dice();
+						KDamage = 1;
+						break;
+					case 2:
+						output << tr("LEGS", event);
+						SDamage = 3;
+						KDamage = 1;
+						break;
+					case 3:
+						output << tr("TORSO", event);
+						SDamage = dice();
+						KDamage = 0;
+						break;
+					case 4:
+						output << tr("ARMS", event);
+						SDamage = 2;
+						KDamage = 2;
+						break;
+					case 5:
+						output << tr("HANDS", event);
+						SDamage = 2;
+						KDamage = 1;
+						break;
+					case 6:
+						output << tr("BWEAPON", event);
+						SDamage = 0;
+						KDamage = 1;
+						break;
+				}
+
+				output << "** " << tr("AREA", event) << ".";;
 
 
-			switch (D6) {
-				case 1:
-					if (KAttackType == CUTTING) {
-						output << tr("CUTTING_CONSEQUENCE", event);
-						SDamage += dice();
-					}
-					break;
-				case 2:
-					if (KAttackType == PIERCING) {
-						output << tr("PIERCING_CONSEQUENCE", event);
-						SDamage += dice();
-					}
-					break;
+				switch (D6) {
+					case 1:
+						if (KAttackType == CUTTING) {
+							output << tr("CUTTING_CONSEQUENCE", event);
+							SDamage += dice();
+						}
+						break;
+					case 2:
+						if (KAttackType == PIERCING) {
+							output << tr("PIERCING_CONSEQUENCE", event);
+							SDamage += dice();
+						}
+						break;
+				}
 			}
 
 			if (SDamage == 0) {
@@ -806,16 +869,18 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				achievement_check("COMBAT_HIT", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
 			}
 
-			if (p.stamina < 4) {
-				output << tr("YOU_DYING", event) << " ";
-			} else if (EStamina < 4) {
-				output << tr("ENEMY_DYING", event) << " ";
-			}
+			if (!critical) {
+				if (p.stamina < 4) {
+					output << tr("YOU_DYING", event) << " ";
+				} else if (EStamina < 4) {
+					output << tr("ENEMY_DYING", event) << " ";
+				}
 
-			if (p.skill < 5) {
-				output << tr("YOU_FOCUS", event) << " ";
-			} else if (ESkill < 5) {
-				output << tr("ENEMY_FOCUS", event) << " ";
+				if (p.skill < 5) {
+					output << tr("YOU_FOCUS", event) << " ";
+				} else if (ESkill < 5) {
+					output << tr("ENEMY_FOCUS", event) << " ";
+				}
 			}
 
 
@@ -825,10 +890,9 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				if (p.stamina < 1) {
 					output << fmt::format(fmt::runtime(death_message), p.name, p.combatant.name);
 				} else {
-					/* Add experience on victory equal to remaining skill of enemy (indicates difficulty of the fight) */
-					long xp = abs(std::max(p.combatant.skill, 0l) * 0.15f) + 1;
-					output << "\n\n***+" + std::to_string(xp) + " XP!***\n\n";
-					p.add_experience(xp);
+					/* Add experience on victory */
+					output << "\n\n***+" + std::to_string(p.combatant.xp_value) + " XP!***\n\n";
+					p.add_experience(p.combatant.xp_value);
 					output << "**" << fmt::format(fmt::runtime(death_message), p.combatant.name, p.name) << "**";
 				}
 			}
@@ -839,13 +903,15 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("STAMINA", event), p.stamina) << "\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("ARMOUR", event), p.armour.rating) << "\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("WEAPON", event), p.weapon.rating) << "\n";
-		output1 << "```\n\n";
+		output1 << "```\n";
+		output1 << tr("YOURSTANCE", event) << "\n" << (p.stance == DEFENSIVE ? tr("DEFENSIVE", event) + " " + sprite::wood03.get_mention() : tr("OFFENSIVE", event) + " " + sprite::sword008.get_mention());
 		output2 << "\n\n```ansi\n";
 		output2 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("SKILL", event), p.combatant.skill) << "\n";
 		output2 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("STAMINA", event), p.combatant.stamina) << "\n";
 		output2 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("ARMOUR", event), p.combatant.armour) << "\n";
 		output2 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("WEAPON", event), p.combatant.weapon) << "\n";
-		output2 << "```\n\n";
+		output2 << "```\n";
+		output2 << tr("ENEMYSTANCE", event) << "\n" << (EStance == DEFENSIVE ? tr("DEFENSIVE", event) + " " + sprite::wood03.get_mention() : tr("OFFENSIVE", event) + " " + sprite::sword008.get_mention());
 
 		bool CombatEnded = false;
 		if (p.stamina < 1) {
@@ -869,8 +935,18 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		}
 
 		if (!CombatEnded) {
-			// todo: iterate inventory for anything with weapon score and present as option here,
-			// also combat spells
+
+			if (banked > 0) {
+				cb.add_component(dpp::component()
+					.set_type(dpp::cot_button)
+					.set_id(security::encrypt("crit;" + std::to_string(p.paragraph)))
+					.set_label(tr("CRITICAL", event))
+					.set_style(dpp::cos_success)
+					.set_emoji(sprite::clover.name, sprite::clover.id)
+				);
+			}
+
+
 			size_t index = 0;
 			for (const auto & inv :  p.possessions) {
 				if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
@@ -925,8 +1001,8 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.add_field(p.name.substr(0, 80),output1.str(), true)
-		.add_field(p.combatant.name.substr(0, 80),output2.str(), true)
+		.add_field(p.name.substr(0, 80), output1.str(), true)
+		.add_field(fighting, output2.str(), true)
 		.set_description(output.str());
 
 	std::array<std::string, 3> types{".png", ".jpg", ".webm"};

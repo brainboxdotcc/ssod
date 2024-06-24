@@ -659,7 +659,7 @@ void game_nav(const dpp::button_click_t& event) {
 			}
 		}
 		claimed = true;
-	} else if (parts[0] == "combat" && parts.size() >= 7) {
+	} else if (parts[0] == "combat" && parts.size() >= 8) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID COMBAT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
 			return;
@@ -681,6 +681,7 @@ void game_nav(const dpp::button_click_t& event) {
 			.skill = atol(parts[4]),
 			.armour = atol(parts[6]),
 			.weapon = atol(parts[5]),
+			.xp_value = atol(parts[6]),
 		};
 		achievement_check("COMBAT", event, p, {{"enemy", {{"name", monster_name}, {"stamina", parts[3]}, {"skill", parts[3]}, {"armour", parts[3]}, {"weapon", parts[3]}}}});
 		claimed = true;
@@ -774,6 +775,7 @@ void game_nav(const dpp::button_click_t& event) {
 		new_p.event = event;
 		db::query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
 		db::query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
+		db::query("DELETE FROM criticals WHERE user_id = ?", { event.command.usr.id });
 		update_live_player(event, new_p);
 		new_p.save(event.command.usr.id);
 		achievement_check("RESPAWN", event, p, {});
@@ -1489,7 +1491,7 @@ void continue_game(const dpp::interaction_create_t& event, player p) {
 				break;
 			case nav_type_combat:
 				label = tr("FIGHT", event, n.monster.name);
-				id = "combat;" + std::to_string(n.paragraph) + ";" + n.monster.name + ";" + std::to_string(n.monster.stamina) + ";" + std::to_string(n.monster.skill) + ";" + std::to_string(n.monster.armour) + ";" + std::to_string(n.monster.weapon) + ";" + std::to_string(++unique);
+				id = "combat;" + std::to_string(n.paragraph) + ";" + n.monster.name + ";" + std::to_string(n.monster.stamina) + ";" + std::to_string(n.monster.skill) + ";" + std::to_string(n.monster.armour) + ";" + std::to_string(n.monster.weapon) + ";" + std::to_string(n.monster.xp_value) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
 			case nav_type_respawn:
