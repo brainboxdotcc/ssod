@@ -44,18 +44,35 @@ struct combat_tag : public tag {
 		// combat tag
 		p.links++;
 		p.safe = false;
+		bool leveled{};
 		paragraph_content >> p_text;
+		if (dpp::lowercase(p_text) == "leveled") {
+			leveled = true;
+			paragraph_content >> p_text;
+		}
 		extract_to_quote(p_text, paragraph_content, '"');
 		std::string monster_name = extract_value(p_text);
 		std::string english_monster_name{monster_name};
 		paragraph_content >> p_text;
 		long monster_skill = extract_value_number(p_text);
+		if (leveled) {
+			monster_skill += current_player.get_level() / 4;
+		}
 		paragraph_content >> p_text;
 		long monster_stamina = extract_value_number(p_text);
+		if (leveled) {
+			monster_stamina += current_player.get_level();
+		}
 		paragraph_content >> p_text;
 		long monster_armour = extract_value_number(p_text);
+		if (leveled) {
+			monster_armour = std::min(monster_armour + current_player.get_level() / 6L, 6L);
+		}
 		paragraph_content >> p_text;
 		long monster_weapon = extract_value_number(p_text);
+		if (leveled) {
+			monster_weapon = std::min(monster_weapon + current_player.get_level() / 6L, 6L);
+		}
 		if (p.current_fragment == current_player.after_fragment) {
 			// when combat link is finished it goes back to the
 			// paragraph it came from, but the next fragment of it.
@@ -98,7 +115,7 @@ struct combat_tag : public tag {
 
 			output << fmt::format(
 				"\n```ansi\n⚔ \033[2;34m{0:16s}\033[0m \033[2;31mSTM\033[0m:\033[2;33m{1:2d}\033[0m \033[2;31mSKL\033[0m:\033[2;33m{2:2d}\033[0m \033[2;31mARM\033[0m:\033[2;33m{3:2d}\033[0m \033[2;31mWPN\033[0m:\033[2;33m{4:2d}\033[0m {5}\n```\n",
-				dpp::utility::utf8substr(monster_name, 0, 16),
+				dpp::utility::utf8substr(monster_name, 0, leveled ? 14 : 16) + (leveled ? " ⭐" : ""),
 				monster_stamina,
 				monster_skill,
 				monster_armour,
