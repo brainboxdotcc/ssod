@@ -712,6 +712,10 @@ long player::max_rations() {
 	return 16 + (get_level() * 4);
 }
 
+long player::max_crits() {
+	return floor(get_level() / 6) + 1;
+}
+
 void player::tick_mana() {
 	if (mana_tick < time(nullptr) - 60) {
 		// Wizards regain 2 mana per 1 min. other professions gain 1 mana point per min.
