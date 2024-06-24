@@ -30,7 +30,7 @@ struct combat_tag : public tag {
 	static constexpr std::string_view tags[]{"<combat"};
 
 	static long calc_xp_worth(player&p, long stamina, long skill, long armour, long weapon) {
-		long xp = std::max(skill - p.skill, 1L);
+		long xp = std::max(skill - p.max_skill(), 1L);
 		if (xp < 1) {
 			xp = 1;
 		}
