@@ -720,6 +720,9 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 
 			std::string msg = fmt::format("CRITICALMSG{0}", d_random(1, 35));
 			std::string crit_message = tr(msg, event, p.combatant.name, p.weapon.name);
+			if (dpp::lowercase(p.combatant.name) == "garneth") {
+				crit_message = "Garneth moves with demonic speed to block your critical attack. Laughing at your attempts to critically wound him, he effortlessly deflects your move and advances back into an attacking pose...";
+			}
 			output << "\n\n### " << sprite::skull.get_mention() << " " << crit_message << "\n\n";
 
 		} else {
@@ -791,8 +794,12 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		} else {
 
 			if (critical) {
-				SDamage = 6 + p.luck + (p.get_level() - 1);
-				KDamage = 3 + (p.luck / 2);
+				if (dpp::lowercase(p.combatant.name) == "garneth") {
+					SDamage = KDamage = 0;
+				} else {
+					SDamage = 6 + p.luck + (p.get_level() - 1);
+					KDamage = 3 + (p.luck / 2);
+				}
 				EAttack = 0;
 				PAttack = 999999;
 				KAttackType = p.attack;
