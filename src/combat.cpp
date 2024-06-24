@@ -669,8 +669,8 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			db::query("UPDATE criticals SET banked_criticals = banked_criticals - 1 WHERE user_id = ?", {event.command.usr.id});
 			critical = true;
 			p.next_crit = false;
+			banked--;
 		}
-		banked--;
 		long next = 1000 + (p.get_level() * 4);
 		int percent = (double)counter / (double)next * 100.0f;
 		output << tr("CRITICAL_METER", event) << ": ";
@@ -678,7 +678,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			output << (x < percent ? sprite::bar_green.get_mention() : sprite::bar_red.get_mention());
 		}
 		output << " (" + std::to_string(percent) + "%)\n";
-		output << tr("CRITICALS", event) << ": " << banked;
+		output << tr("CRITICALS", event) << ": " << std::max(banked, 0L) << "/" << p.max_crits();
  	}
 	db::commit();
 
@@ -761,10 +761,14 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				db::query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, p.luck + 1});
 				auto r = db::query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
 				long counter = atol(r[0].at("critical_counter"));
-				if (counter > 200 + (p.get_level() * 4)) {
+				if (counter > 1000 + (p.get_level() * 4)) {
 					/* User gains a new banked critical */
 					long new_banked = atol(r[0].at("banked_criticals")) + 1;
-					db::query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
+					if (new_banked < p.max_crits()) {
+						db::query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
+					} else {
+						db::query("UPDATE criticals SET critical_counter = 0 WHERE user_id = ?", {event.command.usr.id});
+					}
 				}
 				db::commit();
 
