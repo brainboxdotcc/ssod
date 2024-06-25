@@ -5,3 +5,5 @@ Magic, in its essence, is drawn from the ambient energies that envelop the surro
 Amidst this magical landscape, certain creatures defy the conventional rules of existence. Demons and ethereal apparitions, for instance, operate on a metabolism fueled entirely by energy. These entities, driven by their malevolent nature, harbor the ability to transfer their energies into matter-based creatures. The consequence is possession, a perilous act that grants the demon complete control over the host. In the case of a wizard, this intrusion can prove highly perilous, often resulting in devastating outcomes.
 
 As wizards tread the delicate balance between harnessing the energies around them and protecting themselves from the predatory entities drawn to their power, the arcane arts become both a source of awe and trepidation in Cryptillia. In the pursuit of magical mastery, wizards navigate the unknown, delving into the mysteries that underpin the very fabric of their mystical existence.
+
+**Wizards can select up to 5 spells when starting out, as opposed to all other professions 2.**
