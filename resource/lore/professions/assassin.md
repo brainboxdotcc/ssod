@@ -7,3 +7,5 @@ Within the arsenal of an assassin, poison and crossbows take center stage. But i
 Contrary to popular misconception, assassins do not confine their activities solely to the cover of night, draped in black robes. Instead, they adopt a pragmatic approach, wearing attire that enables them to blend seamlessly into any environment. Their movements are calculated, their presence unnoticed, allowing for swift and inconspicuous getaways. Garments with concealed pouches for equipment enhance their efficiency, ensuring that they remain prepared for any eventuality.
 
 The guild's central hub in Cryptillius Centralius becomes the epicenter of this covert world, where skilled individuals master the art of silence, shadows, and the swift, unseen strike. In the ever-shifting dynamics of Cryptillia, assassins stand as silent sentinels, their elusive presence etching a mysterious thread into the fabric of this fantastical realm.
+
+**Assassins get to save up an extra critical hit for use in combat, from the start of the game compared to all other professions.**
