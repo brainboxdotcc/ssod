@@ -713,7 +713,7 @@ long player::max_rations() {
 }
 
 long player::max_crits() {
-	return floor(get_level() / 6) + 1;
+	return floor(get_level() / 6) + 1 + (profession == prof_assassin ? 1 : 0);
 }
 
 void player::tick_mana() {
