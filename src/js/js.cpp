@@ -108,9 +108,6 @@ static duk_ret_t js_tag(duk_context *cx) {
 	for (const auto& nav : inner.navigation_links) {
 		p.navigation_links.push_back(nav);
 	}
-	if (inner.g_dice) {
-		p.g_dice = inner.g_dice;
-	}
 	return 0;
 }
 

@@ -767,7 +767,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				if (counter > 1000 + (p.get_level() * 4)) {
 					/* User gains a new banked critical */
 					long new_banked = atol(r[0].at("banked_criticals")) + 1;
-					if (new_banked < p.max_crits()) {
+					if (new_banked <= p.max_crits()) {
 						db::query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
 					} else {
 						db::query("UPDATE criticals SET critical_counter = 0 WHERE user_id = ?", {event.command.usr.id});
