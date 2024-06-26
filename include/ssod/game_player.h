@@ -267,6 +267,8 @@ struct player {
 
 	time_t last_resurrect;
 
+	int g_dice{0};
+
 	/**
 	 * @brief Destroy the player object
 	 * 

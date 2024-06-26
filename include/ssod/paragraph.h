@@ -109,7 +109,6 @@ struct paragraph {
 	std::vector<bool> display;
 	long current_fragment{0};	
 	bool auto_test{false}, didntmove{false};
-	int g_dice{0};
 
 	player* cur_player{nullptr};
 

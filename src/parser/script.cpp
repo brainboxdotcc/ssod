@@ -68,6 +68,7 @@ struct script_tag : public tag {
 				{"muted", current_player.muted},
 				{"mana", current_player.mana},
 				{"mana_tick", current_player.mana_tick},
+				{"g_dice", current_player.g_dice},
 			}},
 		{"paragraph", {
 				{"id", p.id},
@@ -85,7 +86,6 @@ struct script_tag : public tag {
 				{"current_fragment", p.current_fragment},
 				{"auto_test", p.auto_test},
 				{"didntmove", p.didntmove},
-				{"g_dice", p.g_dice},
 			}}
 		});
 	}

@@ -118,7 +118,7 @@ struct if_tag : public tag {
 		std::string scorename = dpp::lowercase(p_text);
 		const std::map<std::string, long> scorename_map = {
 			{ "exp", current_player.experience },
-			{ "dice", p.g_dice },
+			{ "dice", current_player.g_dice },
 			{ "stm", current_player.stamina },
 			{ "skl", current_player.skill },
 			{ "arm", current_player.armour.rating },
@@ -139,7 +139,7 @@ struct if_tag : public tag {
 			paragraph_content >> condition;
 			paragraph_content >> p_text;
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(comparison(condition, check->second, p_text, p.g_dice));
+				p.display.push_back(comparison(condition, check->second, p_text, current_player.g_dice));
 			} else {
 				p.display.push_back(false);
 			}

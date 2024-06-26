@@ -541,6 +541,7 @@ void game_nav(const dpp::button_click_t& event) {
 				return;
 			}
 			p.gold -= link_cost;
+			p.g_dice = 0;
 		}
 		if (parts[1] != parts[2]) {
 			p.after_fragment = 0; // Resets current combat index and announces travel
@@ -552,6 +553,7 @@ void game_nav(const dpp::button_click_t& event) {
 		long dest = atol(parts[1]);
 		if (paragraph::valid_next(p.paragraph, dest)) {
 			p.paragraph = dest;
+			p.g_dice = 0;
 		} else {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID NAV FROM " + std::to_string(p.paragraph) + " TO " + std::to_string(dest));
 		}
