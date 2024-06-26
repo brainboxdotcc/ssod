@@ -21,6 +21,8 @@
 #include <ssod/database.h>
 #include <ssod/commands/guild.h>
 #include <fmt/format.h>
+#include <ssod/config.h>
+#include <ssod/neutrino_api.h>
 
 using namespace i18n;
 
@@ -65,23 +67,32 @@ void guild_command::route(const dpp::slashcommand_t &event)
 	if (subcommand.name == "create") {
 		auto param = subcommand.options[0].value;
 		std::string guild_name = std::get<std::string>(param);
-		db::transaction();
-		auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", { event.command.usr.id });
-		if (g.empty()) {
-			auto rs = db::query("SELECT id FROM guilds WHERE name = ?", { guild_name });
-			if (rs.empty()) {
-				db::query("INSERT INTO guilds (owner_id, name) VALUES(?, ?)", { event.command.usr.id, guild_name });
-				auto rs = db::query("SELECT id FROM guilds WHERE name = ?", { guild_name });
-				db::query("INSERT INTO guild_members (user_id, guild_id) VALUES(?, ?)", { event.command.usr.id, rs[0].at("id") });
-				embed.set_description(tr("GUILD_CREATED", event) + "\n\n" + dpp::utility::markdown_escape(guild_name));
-			} else {
-				embed.set_description(tr("GUILD_EXISTS", event));
+		neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
+		swear_check.contains_bad_word(guild_name, [&bot, nn_guild_name = guild_name, event, nn_embed = embed](const swear_filter_t& swear_filter) {
+			dpp::embed embed = nn_embed;
+			std::string guild_name{nn_guild_name};
+			if (!swear_filter.clean) {
+				guild_name = swear_filter.censored_content;
+				bot.log(dpp::ll_warning, "Potty-mouth guild name " + nn_guild_name + " censored for id " + event.command.usr.id.str());
 			}
-		} else {
-			embed.set_description(tr("GUILD_ALREADY_MEMBER", event) + "\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
-		}
-		db::commit();
-		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+			db::transaction();
+			auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", { event.command.usr.id });
+			if (g.empty()) {
+				auto rs = db::query("SELECT id FROM guilds WHERE name = ?", { guild_name });
+				if (rs.empty()) {
+					db::query("INSERT INTO guilds (owner_id, name) VALUES(?, ?)", { event.command.usr.id, guild_name });
+					auto rs = db::query("SELECT id FROM guilds WHERE name = ?", { guild_name });
+					db::query("INSERT INTO guild_members (user_id, guild_id) VALUES(?, ?)", { event.command.usr.id, rs[0].at("id") });
+					embed.set_description(tr("GUILD_CREATED", event) + "\n\n" + dpp::utility::markdown_escape(guild_name));
+				} else {
+					embed.set_description(tr("GUILD_EXISTS", event));
+				}
+			} else {
+				embed.set_description(tr("GUILD_ALREADY_MEMBER", event) + "\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
+			}
+			db::commit();
+			event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+		});
 	} else if (subcommand.name == "join") {
 		auto param = subcommand.options[0].value;
             	std::string guild_name = std::get<std::string>(param);

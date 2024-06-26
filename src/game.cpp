@@ -557,6 +557,8 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		achievement_check("VIEW_LOCATION", event, p, {{"loc_id", parts[1]}});
 		claimed = true;
+	} else if (parts[0] == "player_reset") {
+		claimed = true;
 	} else if (parts[0] == "shop" && parts.size() >= 6) {
 		std::string flags = parts[3];
 		long cost = atol(parts[4]);
