@@ -22,6 +22,8 @@
 #include <ssod/commands/bio.h>
 #include <ssod/game_util.h>
 #include <fmt/format.h>
+#include <ssod/neutrino_api.h>
+#include <ssod/config.h>
 
 using namespace i18n;
 
@@ -63,9 +65,18 @@ void bio_command::route(const dpp::slashcommand_t &event)
 	} else  if (subcommand.name == "text") {
 		auto param = subcommand.options[0].value;
 		std::string text = std::get<std::string>(param);
-		db::query("INSERT INTO character_bio (user_id, bio) VALUES(?, ?) ON DUPLICATE KEY UPDATE bio = ?", { event.command.usr.id, text, text });
-		embed.set_description(tr("CUSTOM_BIO_SET", event) +"\n\n" + text);
-		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+		neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
+		swear_check.contains_bad_word(text, [&bot, nn_text = text, event, nn_embed = embed](const swear_filter_t& swear_filter) {
+			std::string text{nn_text};
+			dpp::embed embed = nn_embed;
+			if (!swear_filter.clean) {
+				text = swear_filter.censored_content;
+				bot.log(dpp::ll_warning, "Potty-mouth bio: " + nn_text + " censored for id: " + event.command.usr.id.str());
+			}
+			db::query("INSERT INTO character_bio (user_id, bio) VALUES(?, ?) ON DUPLICATE KEY UPDATE bio = ?", { event.command.usr.id, text, text });
+			embed.set_description(tr("CUSTOM_BIO_SET", event) +"\n\n" + text);
+			event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+		});
 	} else if (subcommand.name == "picture") {
 		auto param = subcommand.options[0].value;
             	dpp::snowflake file_id = std::get<dpp::snowflake>(param);
