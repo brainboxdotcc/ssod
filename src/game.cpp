@@ -745,11 +745,21 @@ void game_nav(const dpp::button_click_t& event) {
 		}
 		p.paragraph = atol(parts[1]);
 		size_t max = p.max_inventory_slots();
-		if (p.possessions.size() < max - 1) {
+		if (p.possessions.size() < max - 1 || parts[4] == "SPELL" || parts[4] == "HERB") {
 			if (!p.has_flag("PICKED", p.paragraph)) {
-				stacked_item i{.name = parts[3], .flags = parts[4], .qty = 1};
-				if (!p.convert_rations(item{ .name = i.name, .flags = i.flags })) {
-					p.pickup_possession(i);
+				if (parts[4] == "SPELL") {
+					if (!p.has_spell(parts[3])) {
+						p.spells.emplace_back(item{ .name = parts[3], .flags = parts[4]});
+					}
+				} else if (parts[4] == "HERB") {
+					if (!p.has_herb(parts[3])) {
+						p.herbs.emplace_back(item{ .name = parts[3], .flags = parts[4]});
+					}
+				} else {
+					stacked_item i{.name = parts[3], .flags = parts[4], .qty = 1};
+					if (!p.convert_rations(item{.name = i.name, .flags = i.flags})) {
+						p.pickup_possession(i);
+					}
 				}
 				p.inv_change = true;
 				p.add_flag("PICKED", p.paragraph);
