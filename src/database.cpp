@@ -102,12 +102,17 @@ namespace db {
 	 */
 	std::map<std::string, cached_query> cached_queries;
 
+	using sql_query_callback = std::function<void(const resultset&)>;
+
+	std::condition_variable sql_worker_cv;
+
 	/**
 	 * @brief Cached query result parameters
 	 */
 	struct cached_query_results {
 		const std::string format;
 		const paramlist parameters;
+		sql_query_callback callback;
 	};
 
 	/**
@@ -117,6 +122,11 @@ namespace db {
 		const resultset results;
 		const double expiry;
 	};
+
+#ifdef DPP_CORO
+	std::vector<cached_query_results> sql_query_queue;
+	std::shared_mutex query_queue_mtx;
+#endif
 
 	template<class> inline constexpr bool always_false_v = false;
 
@@ -204,6 +214,18 @@ namespace db {
 		return unsafe_connect(host, user, pass, db, port, socket);
 	}
 
+#ifdef DPP_CORO
+	void query_callback(const std::string &format, const paramlist &parameters, const sql_query_callback& cb) {
+		std::unique_lock queue_lock(query_queue_mtx);
+		sql_query_queue.push_back(cached_query_results{ .format = format, .parameters = parameters, .callback = cb });
+		sql_worker_cv.notify_one();
+	}
+
+	dpp::async<resultset> co_query(const std::string &format, const paramlist &parameters) {
+		return dpp::async<resultset>{ [format, parameters] <typename C> (C &&cc) { return query_callback(format, parameters, std::forward<C>(cc)); }};
+	}
+#endif
+
 	void init (dpp::cluster& bot) {
 		creator = &bot;
 		const json& dbconf = config::get("database");
@@ -211,6 +233,35 @@ namespace db {
 			creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"], mysql_error(&connection)));
 			exit(2);
 		}
+#ifdef DPP_CORO
+		std::thread([&]() {
+			dpp::utility::set_thread_name("sql/coro");
+			while (true) {
+				std::mutex mtx;
+				std::unique_lock<std::mutex> lock{ mtx };
+				sql_worker_cv.wait_for(lock, std::chrono::seconds(60));
+				std::vector<cached_query_results> to_process;
+				{
+					std::unique_lock queue_lock(query_queue_mtx);
+					to_process.clear();
+					to_process.reserve(sql_query_queue.size());
+					for (const auto& i : sql_query_queue) {
+						to_process.push_back(i);
+					}
+					sql_query_queue.clear();
+				}
+				for (const auto& qr : to_process) {
+					auto results = query(qr.format, qr.parameters);
+					if (qr.callback) {
+						qr.callback(results);
+					}
+				}
+				if (to_process.empty()) {
+					std::this_thread::yield();
+				}
+			}
+		}).detach();
+#endif
 		creator->log(dpp::ll_info, fmt::format("Connected to database: {}", dbconf["database"]));
 	}
 
@@ -278,7 +329,7 @@ namespace db {
 
 	resultset query(const std::string &format, const paramlist &parameters, double lifetime) {
 		double now = dpp::utility::time_f();
-		cached_query_results r{ .format = format, .parameters = parameters };
+		cached_query_results r{ .format = format, .parameters = parameters, .callback = nullptr };
 		auto f = cached_query_res.find(r);
 		if (f != cached_query_res.end()) {
 			if (now < f->second.expiry) {

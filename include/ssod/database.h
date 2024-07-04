@@ -88,6 +88,7 @@ namespace db {
 	 * 
 	 * @param format Format string, where each parameter should be indicated by a ? symbol
 	 * @param parameters Parameters to prepare into the query in place of the ?'s
+	 * @return result set
 	 * 
 	 * The parameters given should be a vector of strings. You can instantiate this using "{}".
 	 * The queries are cached as prepared statements and therefore do not need quote symbols
@@ -98,18 +99,39 @@ namespace db {
 	 * ```cpp
 	 * 	db::query("UPDATE foo SET bar = ? WHERE id = ?", { "baz", 3 });
 	 * ```
-	 * 
-	 * Returns a resultset of the results as rows. Avoid returning massive resultsets if you can.
 	 */
 	resultset query(const std::string &format, const paramlist &parameters = {});
 
+#ifdef DPP_CORO
+	/**
+	 * @brief Run a mysql query, with automatic escaping of parameters to prevent SQL injection.
+	 * This is the coroutine asynchronous version of db::query. It will complete its dpp::async
+	 * once the query has finished without blocking, by means of a separate thread.
+	 *
+	 * @param format Format string, where each parameter should be indicated by a ? symbol
+	 * @param parameters Parameters to prepare into the query in place of the ?'s
+	 * @return dpp::async which you can co_await to get the result set.
+	 *
+	 * The parameters given should be a vector of strings. You can instantiate this using "{}".
+	 * The queries are cached as prepared statements and therefore do not need quote symbols
+	 * to be placed around parameters in the query. These will be automatically added if required.
+	 *
+	 * For example:
+	 *
+	 * ```cpp
+	 * 	auto rs = co_await db::co_query("SELECT * FROM bigtable WHERE bar = ?", { "baz" });
+	 * ```
+	 */
+	dpp::async<resultset> co_query(const std::string &format, const paramlist &parameters = {});
+#endif
 	/**
 	 * @brief Run a mysql query, with automatic escaping of parameters to prevent SQL injection.
 	 * 
 	 * @param format Format string, where each parameter should be indicated by a ? symbol
 	 * @param parameters Parameters to prepare into the query in place of the ?'s
 	 * @param lifetime How long to cache this query's resultset in memory for
-	 * 
+	 * @return result set
+	 *
 	 * @note If the query is already cached in memory, the cached resultset will be returned instead
 	 * of querying the database.
 	 * 
@@ -122,8 +144,6 @@ namespace db {
 	 * ```cpp
 	 * 	db::query("UPDATE foo SET bar = ? WHERE id = ?", { "baz", 3 });
 	 * ```
-	 * 
-	 * Returns a resultset of the results as rows. Avoid returning massive resultsets if you can.
 	 */
 	resultset query(const std::string &format, const paramlist &parameters, double lifetime);
 
