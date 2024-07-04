@@ -211,7 +211,7 @@ namespace listeners {
 		return j.dump(1, '\t', false, json::error_handler_t::replace);
 	}
 
-	void on_ready(const dpp::ready_t& event) {
+	dpp::task<void> on_ready(const dpp::ready_t& event) {
 		dpp::cluster& bot = *event.from->creator;
 		if (dpp::run_once<struct register_bot_commands>()) {
 			if (bot.cluster_id == 0) {
@@ -227,7 +227,7 @@ namespace listeners {
 				}, 537746810471448576);
 			}
 
-			auto set_presence = [&bot]() {
+			auto set_presence = [&bot]() -> void {
 				auto rs = db::query("SELECT (SELECT COUNT(id) FROM guild_cache) AS guild_count, (SELECT SUM(user_count) FROM guild_cache) AS discord_user_count, (SELECT COUNT(user_id) FROM game_users) AS game_user_count");
 				bot.set_presence(dpp::presence(dpp::ps_online, dpp::at_game, fmt::format("on {} servers with {} active players and {} users", rs[0].at("guild_count"), rs[0].at("game_user_count"), rs[0].at("discord_user_count"))));
 			};
@@ -257,6 +257,10 @@ namespace listeners {
 				check_effects(bot);
 			}, 1);
 
+			/*std::cout << "Set presence\n";
+			auto rs = co_await db::co_query("SELECT (SELECT COUNT(id) FROM guild_cache) AS guild_count, (SELECT SUM(user_count) FROM guild_cache) AS discord_user_count, (SELECT COUNT(user_id) FROM game_users) AS game_user_count");
+			std::cout << "Set presence done, rs.size() = " << rs.size() << "\n";*/
+
 			set_presence();
 			welcome_new_guilds(bot);
 			process_potion_drops(bot);
@@ -270,6 +274,7 @@ namespace listeners {
 
 			post_botlists(bot);
 		}
+		co_return;
 	}
 
 	void on_guild_create(const dpp::guild_create_t &event) {

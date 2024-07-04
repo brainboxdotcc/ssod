@@ -29,7 +29,7 @@ namespace listeners {
 	 * 
 	 * @param event ready_t
 	 */
-	void on_ready(const dpp::ready_t &event);
+	dpp::task<void> on_ready(const dpp::ready_t &event);
 
 	/**
 	 * @brief handle slash command
