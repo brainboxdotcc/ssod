@@ -30,7 +30,7 @@ struct discords : public botlist {
 	static constexpr std::string_view server_count_field{"server_count"};
 	static constexpr std::string_view shard_count_field{""};
 
-	static void post(dpp::cluster& bot) {  
-		botlist::run(bot, discords::name, discords::url, discords::server_count_field, discords::shard_count_field);
+	static dpp::task<void> post(dpp::cluster& bot) {
+		co_await botlist::run(bot, discords::name, discords::url, discords::server_count_field, discords::shard_count_field);
 	}
 };

@@ -58,7 +58,7 @@ struct botlist {
 	 * 
 	 * @param bot reference to D++ cluster
 	 */
-	static void post(dpp::cluster& bot);
+	static dpp::task<void> post(dpp::cluster& bot);
 
 protected:
 	/**
@@ -73,13 +73,13 @@ protected:
 	 * @param count_field count field in postdata
 	 * @param shards_field shards field in postdata
 	 */
-	static void run(dpp::cluster& bot, const std::string_view key, const std::string_view url, const std::string_view count_field, const std::string_view shards_field);
+	static dpp::task<void> run(dpp::cluster& bot, const std::string_view key, const std::string_view url, const std::string_view count_field, const std::string_view shards_field);
 };
 
 /**
  * @brief Represents the botlist::post() function
  */
-using botlist_router = auto (*)(dpp::cluster&) -> void;
+using botlist_router = auto (*)(dpp::cluster&) -> dpp::task<void>;
 
 /**
  * @brief Represents a list of registered botlists stored in an unordered_map
@@ -104,4 +104,4 @@ template <typename T> void register_botlist()
  * 
  * @param bot cluster reference
  */
-void post_botlists(dpp::cluster &bot);
+dpp::task<void> post_botlists(dpp::cluster &bot);
