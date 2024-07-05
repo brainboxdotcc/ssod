@@ -32,7 +32,7 @@ dpp::slashcommand profile_command::register_command(dpp::cluster& bot) {
 		.add_option(dpp::command_option(dpp::co_string, "opt_user", "user_profile_desc", false)));
 }
 
-void profile_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
 	auto param = event.get_parameter("user");
@@ -51,7 +51,7 @@ void profile_command::route(const dpp::slashcommand_t &event)
 	auto rs = db::query("SELECT * FROM game_users WHERE name = ?", {user});
 	if (rs.empty()) {
 		event.reply(dpp::message(tr(self ? "NOPROFILE" : "NOSUCHUSER", event)).set_flags(dpp::m_ephemeral));
-		return;
+		co_return;
 	}
 	p.experience = atol(rs[0].at("experience"));
 	auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", {rs[0].at("user_id")});
@@ -128,5 +128,6 @@ void profile_command::route(const dpp::slashcommand_t &event)
 			}
 		}
 	}
-	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));	
+	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+	co_return;
 }

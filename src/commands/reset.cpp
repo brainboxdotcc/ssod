@@ -28,17 +28,17 @@ using namespace i18n;
 
 dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 {
-	bot.on_button_click([&bot](const dpp::button_click_t& event) {
+	bot.on_button_click([&bot](const dpp::button_click_t& event) -> dpp::task<void> {
 		if (!player_is_live(event)) {
-			return;
+			co_return;
 		}
 		player p = get_live_player(event);
 		if (p.state != state_play || event.custom_id.empty()) {
-			return;
+			co_return;
 		}
 		std::string custom_id = security::decrypt(event.custom_id);
 		if (custom_id.empty()) {
-			return;
+			co_return;
        		}
 		if (custom_id == "player_reset") {
 			dpp::cluster* bot = event.from->creator;
@@ -64,7 +64,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 	return tr(dpp::slashcommand("cmd_reset", "reset_desc", bot.me.id).set_dm_permission(true));
 }
 
-void reset_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> reset_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
@@ -92,4 +92,6 @@ void reset_command::route(const dpp::slashcommand_t &event)
 		.add_embed(embed)
 		.set_flags(dpp::m_ephemeral)
 	);
+
+	co_return;
 }

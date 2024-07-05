@@ -28,7 +28,7 @@ dpp::slashcommand map_command::register_command(dpp::cluster& bot)
 	return tr(dpp::slashcommand("cmd_map", "map_desc", bot.me.id).set_dm_permission(true));
 }
 
-void map_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> map_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
@@ -46,4 +46,5 @@ void map_command::route(const dpp::slashcommand_t &event)
 		.add_embed(embed)
 		.set_flags(dpp::m_ephemeral)
 	);
+	co_return;
 }

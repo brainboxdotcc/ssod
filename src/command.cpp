@@ -30,13 +30,14 @@ registered_command_list& get_command_map()
 	return registered_commands;
 }
 
-void route_command(const dpp::slashcommand_t &event)
+dpp::task<void> route_command(const dpp::slashcommand_t &event)
 {
 	auto ref = registered_commands.find(event.command.get_command_name());
 	if (ref != registered_commands.end()) {
 		auto ptr = ref->second;
-		(*ptr)(event);
+		co_await (*ptr)(event);
 	} else {
 		event.from->creator->log(dpp::ll_error, "Unable to route command: " + event.command.get_command_name());
 	}
+	co_return;
 }

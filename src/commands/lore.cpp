@@ -216,6 +216,7 @@ dpp::slashcommand lore_command::register_command(dpp::cluster& bot) {
 	return tr(dpp::slashcommand("cmd_lore", "lore_desc", bot.me.id).set_dm_permission(true));
 }
 
-void lore_command::route(const dpp::slashcommand_t &event) {
+dpp::task<void> lore_command::route(const dpp::slashcommand_t &event) {
 	page(event, false);
+	co_return;
 }

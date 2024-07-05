@@ -24,5 +24,5 @@
 struct admin_command : public command {
 	static constexpr std::string_view name{"admin"};
 	static dpp::slashcommand register_command(dpp::cluster& bot);
-	static void route(const dpp::slashcommand_t &event);
+	static dpp::task<void> route(const dpp::slashcommand_t &event);
 };

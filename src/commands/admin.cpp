@@ -85,13 +85,13 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
 		);
 }
 
-void admin_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> admin_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
 	auto admin_rs = db::query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
 	if (admin_rs.empty()) {
 		event.reply("This command is for game admins only");
-		return;
+		co_return;
 	}
 
 	dpp::command_interaction cmd_data = event.command.get_command_interaction();
@@ -102,7 +102,7 @@ void admin_command::route(const dpp::slashcommand_t &event)
 		auto check = db::query("SELECT secure_id, id FROM game_locations WHERE id = ? OR secure_id = ?", {location, location});
 		if (check.empty()) {
 			event.reply(dpp::message("Location " + std::to_string(location) + " does not exist.").set_flags(dpp::m_ephemeral));	
-			return;
+			co_return;
 		}
 		db::query("UPDATE game_users SET paragraph = ? WHERE user_id = ?", {check[0].at("id"), event.command.usr.id});
 		player p(event.command.usr.id);
@@ -127,7 +127,7 @@ void admin_command::route(const dpp::slashcommand_t &event)
 		auto rs = db::query("SELECT user_id FROM game_users WHERE name = ?", {user});
 		if (rs.empty()) {
 			event.reply(dpp::message(user + " does not exist.").set_flags(dpp::m_ephemeral));
-			return;
+			co_return;
 		}
 		uint64_t id = atoll(rs[0].at("user_id"));
 		// Get the backup copy of the user
@@ -142,11 +142,12 @@ void admin_command::route(const dpp::slashcommand_t &event)
 		auto rs = db::query("SELECT user_id FROM game_users WHERE name = ?", {user});
 		if (rs.empty()) {
 			event.reply(dpp::message(user + " does not exist.").set_flags(dpp::m_ephemeral));
-			return;
+			co_return;
 		}
 		uint64_t id = atoll(rs[0].at("user_id"));
 		unload_live_player(id);
 		event.reply(dpp::message(user + " has been unloaded.").set_flags(dpp::m_ephemeral));
 		bot.log(dpp::ll_info, "ADMIN UNLOAD by " + event.command.usr.global_name + " -> " + user);
 	}
+	co_return;
 }

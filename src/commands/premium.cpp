@@ -30,7 +30,7 @@ dpp::slashcommand premium_command::register_command(dpp::cluster& bot)
 	return tr(dpp::slashcommand("cmd_premium", "premium_desc", bot.me.id).set_dm_permission(true));
 }
 
-void premium_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> premium_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
@@ -70,4 +70,5 @@ void premium_command::route(const dpp::slashcommand_t &event)
 		.add_embed(embed)
 		.set_flags(dpp::m_ephemeral)
 	);
+	co_return;
 }

@@ -62,17 +62,17 @@ dpp::slashcommand rename_command::register_command(dpp::cluster& bot) {
 		.add_option(dpp::command_option(dpp::co_string, "opt_name", "rename_name_desc", true).set_max_value(20)));
 }
 
-void rename_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> rename_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
 	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
 	if (event.command.entitlements.empty() && rs.empty()) {
 		premium_required(event);
-		return;
+		co_return;
 	}
 	if (!player_is_live(event)) {
 		event.reply(dpp::message(tr("NOPROFILE", event)).set_flags(dpp::m_ephemeral));
-		return;
+		co_return;
 	}
 
 	std::string oldname = std::get<std::string>(event.get_parameter("item"));
@@ -83,7 +83,7 @@ void rename_command::route(const dpp::slashcommand_t &event)
 	auto r = db::query("SELECT * FROM game_item_descs WHERE (name = ? OR name = ?) AND (quest_item = 1 OR sellable = 0)", {oldname, newname});
 	if (!r.empty()) {
 		event.reply(dpp::message(tr("INVALIDRENAME", event, oldname, newname)).set_flags(dpp::m_ephemeral));
-		return;
+		co_return;
 	}
 	neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
 	swear_check.contains_bad_word(newname, [player_v = p, &bot, oldname, nn_v = newname, event](const swear_filter_t& swear_filter) {
@@ -119,5 +119,7 @@ void rename_command::route(const dpp::slashcommand_t &event)
 		p.save(event.command.usr.id);
 
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+		return;
 	});
+	co_return;
 }

@@ -33,14 +33,14 @@ using namespace i18n;
 
 dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 {
-	bot.on_button_click([](const dpp::button_click_t &event) {
+	bot.on_button_click([](const dpp::button_click_t &event) -> dpp::task<void> {
 		if (player_is_live(event)) {
-			return;
+			co_return;
 		}
 		player p_old = get_registering_player(event);
 		std::string custom_id = security::decrypt(event.custom_id);
 		if (custom_id.empty()) {
-			return;
+			co_return;
 		}
 		dpp::cluster& bot = *(event.from->creator);
 		bot.log(dpp::ll_debug, event.command.locale + " " + event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
@@ -80,17 +80,18 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		} else {
 			event.reply(dpp::message(tr("EXPIRED", event, sprite::skull.get_mention())).set_flags(dpp::m_ephemeral));
 		}
+		co_return;
 	});
 	
-	bot.on_select_click([](const dpp::select_click_t &event) {
+	bot.on_select_click([](const dpp::select_click_t &event) -> dpp::task<void> {
 		if (player_is_live(event)) {
-			return;
+			co_return;
 		}
 		event.reply();
 		player p_old = get_registering_player(event);
 		std::string custom_id = security::decrypt(event.custom_id);
 		if (custom_id.empty()) {
-			return;
+			co_return;
 		}
 		dpp::cluster& bot = *(event.from->creator);
 		if (custom_id == "select_player_race" && p_old.state == state_roll_stats && !event.values.empty()) {
@@ -124,15 +125,17 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		} else {
 			event.reply(dpp::message(tr("EXPIRED", event, sprite::skull.get_mention())).set_flags(dpp::m_ephemeral));
 		}
+		co_return;
 	});
-	bot.on_form_submit([&bot](const dpp::form_submit_t & event) {
+
+	bot.on_form_submit([&bot](const dpp::form_submit_t & event) -> dpp::task<void> {
 		if (player_is_live(event)) {
-			return;
+			co_return;
 		}
 		player p_old = get_registering_player(event);
 		std::string custom_id = security::decrypt(event.custom_id);
 		if (custom_id.empty()) {
-			return;
+			co_return;
 		}
 		if (custom_id == "name_character" && p_old.state == state_name_player) {
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
@@ -166,11 +169,12 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 				bot.log(dpp::ll_info, "New player creation: " + name + " for id: " + event.command.usr.id.str());
 			});
 		}
+		co_return;
 	});
 	return tr(dpp::slashcommand("cmd_start", "start_desc", bot.me.id).set_dm_permission(true));
 }
 
-void start_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> start_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 
@@ -178,7 +182,7 @@ void start_command::route(const dpp::slashcommand_t &event)
 		auto admin_rs = db::query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
 		if (admin_rs.empty()) {
 			event.reply(dpp::message("This is the development copy of Seven Spells Of Destruction. Only developers of the game may play on this instance.").set_flags(dpp::m_ephemeral));
-			return;
+			co_return;
 		}
 	}
 
@@ -187,7 +191,7 @@ void start_command::route(const dpp::slashcommand_t &event)
 		p.event = event;
 		send_chat(event.command.usr.id, p.paragraph, "", "join");
 		continue_game(event, p);
-		return;
+		co_return;
 	}
 
 	player p = get_registering_player(event);
@@ -196,4 +200,5 @@ void start_command::route(const dpp::slashcommand_t &event)
 	update_registering_player(event, p);
 
 	event.reply(p.get_registration_message(*bot, event));
+	co_return;
 }

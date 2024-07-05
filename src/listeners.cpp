@@ -299,7 +299,7 @@ namespace listeners {
 
 	dpp::task<void> on_slashcommand(const dpp::slashcommand_t &event) {
 		double start = dpp::utility::time_f();
-		route_command(event);
+		co_await route_command(event);
 		event.from->creator->log(
 			dpp::ll_info,
 			fmt::format(
