@@ -30,7 +30,7 @@ struct topgg : public botlist {
 	static constexpr std::string_view server_count_field{"server_count"};
 	static constexpr std::string_view shard_count_field{"shard_count"};
 
-	static void post(dpp::cluster& bot) {  
-		botlist::run(bot, topgg::name, topgg::url, topgg::server_count_field, topgg::shard_count_field);
+	static dpp::task<void> post(dpp::cluster& bot) {
+		co_await botlist::run(bot, topgg::name, topgg::url, topgg::server_count_field, topgg::shard_count_field);
 	}
 };

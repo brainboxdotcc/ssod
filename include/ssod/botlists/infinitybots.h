@@ -30,7 +30,7 @@ struct infinitybots : public botlist {
 	static constexpr std::string_view server_count_field{"servers"};
 	static constexpr std::string_view shard_count_field{"shards"};
 
-	static void post(dpp::cluster& bot) {  
-		botlist::run(bot, infinitybots::name, infinitybots::url, infinitybots::server_count_field, infinitybots::shard_count_field);
+	static dpp::task<void> post(dpp::cluster& bot) {
+		co_await botlist::run(bot, infinitybots::name, infinitybots::url, infinitybots::server_count_field, infinitybots::shard_count_field);
 	}
 };

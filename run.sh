@@ -5,6 +5,6 @@ ulimit -c unlimited
 # run repeatedly until ctrl+c
 while true;
 do
-	 ./ssod -clusterid 0 -maxclusters 1
+	LD_LIBRARY_PATH=/usr/local/lib64 ./ssod -clusterid 0 -maxclusters 1
 done
 

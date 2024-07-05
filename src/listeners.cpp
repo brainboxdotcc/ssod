@@ -62,7 +62,7 @@ namespace listeners {
 	 * @param guild_id 
 	 * @param channel_id 
 	 */
-	void send_welcome(dpp::cluster& bot, dpp::snowflake guild_id, dpp::snowflake channel_id) {
+	dpp::task<void> send_welcome(dpp::cluster& bot, dpp::snowflake guild_id, dpp::snowflake channel_id) {
 		/*bot.message_create(
 			dpp::message(channel_id, "")
 			.add_embed(
@@ -76,11 +76,12 @@ namespace listeners {
 			)
 		);*/
 		/* Probably successfully welcomed */
-		db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
+		co_await db::co_query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
+		co_return;
 	}
 
-	void process_potion_drops(dpp::cluster& bot) {
-		auto rs = db::query("SELECT user_id, origin FROM potion_drops");
+	dpp::task<void> process_potion_drops(dpp::cluster& bot) {
+		auto rs = co_await db::co_query("SELECT user_id, origin FROM potion_drops");
 		for (const auto& user : rs) {
 			dpp::snowflake user_id(user.at("user_id"));
 			dpp::interaction_create_t e;
@@ -98,8 +99,9 @@ namespace listeners {
 				update_live_player(p.event, p);
 				p.save(user_id);
 			}
-			db::query("DELETE FROM potion_drops WHERE user_id = ?", {user_id});
+			co_await db::co_query("DELETE FROM potion_drops WHERE user_id = ?", {user_id});
 		}
+		co_return;
 	}
 
 	/**
@@ -107,77 +109,76 @@ namespace listeners {
 	 * 
 	 * @param bot cluster ref
 	 */
-	void welcome_new_guilds(dpp::cluster& bot) {
-		auto result = db::query("SELECT id FROM guild_cache WHERE welcome_sent = 0");
+	dpp::task<void> welcome_new_guilds(dpp::cluster& bot) {
+		auto result = co_await db::co_query("SELECT id FROM guild_cache WHERE welcome_sent = 0");
 		for (const auto& row : result) {
 			/* Determine the correct channel to send to */
 			dpp::snowflake guild_id = row.at("id");
 			bot.log(dpp::ll_info, "New guild: " + guild_id.str());
 			/* Temp disabled */
-			bot.guild_get(guild_id, [&bot, guild_id](const auto& cc) {
-				if (cc.is_error()) {
-					/* Couldn't fetch the guild - kicked within 30 secs of inviting, bummer. */
-					db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
-					return;
+			auto cc = co_await bot.co_guild_get(guild_id);
+			if (cc.is_error()) {
+				/* Couldn't fetch the guild - kicked within 30 secs of inviting, bummer. */
+				co_await db::co_query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
+				co_return;
+			}
+			dpp::guild guild = std::get<dpp::guild>(cc.value);
+			/* First try to send the message to system channel or safety alerts channel if defined */
+			if (!guild.system_channel_id.empty()) {
+				co_await send_welcome(bot, guild.id, guild.system_channel_id);
+				co_return;
+			}
+			if (!guild.safety_alerts_channel_id.empty()) {
+				co_await send_welcome(bot, guild.id, guild.safety_alerts_channel_id);
+				co_return;
+			}
+			/* As a last resort if they dont have one of those channels set up, find a named
+			 * text channel that looks like its the main general/chat channel
+			 */
+			auto cc2 = co_await bot.co_channels_get(guild_id);
+			if (cc2.is_error()) {
+				/* Couldn't fetch the channels - kicked within 30 secs of inviting, bummer. */
+				co_await db::co_query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
+				co_return;
+			}
+			dpp::channel_map channels = std::get<dpp::channel_map>(cc.value);
+			dpp::snowflake selected_channel_id, first_text_channel_id;
+			for (const auto& c : channels) {
+				const dpp::channel& channel = c.second;
+				std::string lowername = dpp::lowercase(channel.name);
+				if ((lowername == "general" || lowername == "chat" || lowername == "moderators") && channel.is_text_channel()) {
+					selected_channel_id = channel.id;
+					break;
+				} else if (channel.is_text_channel()) {
+					first_text_channel_id = channel.id;
 				}
-				dpp::guild guild = std::get<dpp::guild>(cc.value);
-				/* First try to send the message to system channel or safety alerts channel if defined */
-				if (!guild.system_channel_id.empty()) {
-					send_welcome(bot, guild.id, guild.system_channel_id);
-					return;
-				}
-				if (!guild.safety_alerts_channel_id.empty()) {
-					send_welcome(bot, guild.id, guild.safety_alerts_channel_id);
-					return;
-				}
-				/* As a last resort if they dont have one of those channels set up, find a named
-				 * text channel that looks like its the main general/chat channel
-				 */
-				bot.channels_get(guild_id, [&bot, guild_id, guild](const auto& cc) {
-					if (cc.is_error()) {
-						/* Couldn't fetch the channels - kicked within 30 secs of inviting, bummer. */
-						db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
-						return;
-					}
-					dpp::channel_map channels = std::get<dpp::channel_map>(cc.value);
-					dpp::snowflake selected_channel_id, first_text_channel_id;
-					for (const auto& c : channels) {
-						const dpp::channel& channel = c.second;
-						std::string lowername = dpp::lowercase(channel.name);
-						if ((lowername == "general" || lowername == "chat" || lowername == "moderators") && channel.is_text_channel()) {
-							selected_channel_id = channel.id;
-							break;
-						} else if (channel.is_text_channel()) {
-							first_text_channel_id = channel.id;
-						}
-					}
-					if (selected_channel_id.empty() && !first_text_channel_id.empty()) {
-						selected_channel_id = first_text_channel_id;
-					}
-					if (!selected_channel_id.empty()) {
-						send_welcome(bot, guild_id, selected_channel_id);
-					} else {
-						/* What sort of server has NO text channels and invites a game bot??? */
-						db::query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
-					}
-				});
-			});
+			}
+			if (selected_channel_id.empty() && !first_text_channel_id.empty()) {
+				selected_channel_id = first_text_channel_id;
+			}
+			if (!selected_channel_id.empty()) {
+				co_await send_welcome(bot, guild_id, selected_channel_id);
+			} else {
+				/* What sort of server has NO text channels and invites a game bot??? */
+				co_await db::co_query("UPDATE guild_cache SET welcome_sent = 1 WHERE id = ?", {guild_id});
+			}
 		}
+		co_return;
 	}
 
-	void on_entitlement_create(const dpp::entitlement_create_t& event) {
-		db::query("INSERT INTO premium_credits (user_id, subscription_id, active, since, plan_id, payment_failed, created_at, updated_at)"
+	dpp::task<void> on_entitlement_create(const dpp::entitlement_create_t& event) {
+		co_await db::co_query("INSERT INTO premium_credits (user_id, subscription_id, active, since, plan_id, payment_failed, created_at, updated_at)"
 			  "VALUES(?, ?, 1, now(), 'ssod-monthly', 0, now(), now()) ON DUPLICATE KEY UPDATE subscription_id = ?, active = 1",
 			  { event.created.user_id, event.created.subscription_id, event.created.subscription_id });
 	}
 
-	void on_entitlement_delete(const dpp::entitlement_delete_t& event) {
-		db::query("UPDATE premium_credits SET active = 0, cancel_date = now(), updated_at = now() WHERE user_id = ? AND subscription_id = ?",
+	dpp::task<void> on_entitlement_delete(const dpp::entitlement_delete_t& event) {
+		co_await db::co_query("UPDATE premium_credits SET active = 0, cancel_date = now(), updated_at = now() WHERE user_id = ? AND subscription_id = ?",
 			  { event.deleted.user_id, event.deleted.subscription_id });
 	}
 
-	void on_entitlement_update(const dpp::entitlement_update_t& event) {
-		db::query("UPDATE premium_credits SET active = ?, updated_at = now() WHERE user_id = ? AND subscription_id = ?",
+	dpp::task<void> on_entitlement_update(const dpp::entitlement_update_t& event) {
+		co_await db::co_query("UPDATE premium_credits SET active = ?, updated_at = now() WHERE user_id = ? AND subscription_id = ?",
 			  { event.updating_entitlement.is_deleted() || event.updating_entitlement.ends_at < time(nullptr) ? 0 : 1, event.updating_entitlement.user_id, event.updating_entitlement.subscription_id });
 	}
 
@@ -227,43 +228,47 @@ namespace listeners {
 				}, 537746810471448576);
 			}
 
-			auto set_presence = [&bot]() -> void {
+			auto set_presence = [&bot]() -> dpp::task<void> {
 				auto rs = db::query("SELECT (SELECT COUNT(id) FROM guild_cache) AS guild_count, (SELECT SUM(user_count) FROM guild_cache) AS discord_user_count, (SELECT COUNT(user_id) FROM game_users) AS game_user_count");
 				bot.set_presence(dpp::presence(dpp::ps_online, dpp::at_game, fmt::format("on {} servers with {} active players and {} users", rs[0].at("guild_count"), rs[0].at("game_user_count"), rs[0].at("discord_user_count"))));
+				co_return;
 			};
 
-			bot.start_timer([&bot, set_presence](dpp::timer t) {
-				set_presence();
+			bot.start_timer([set_presence](dpp::timer t) -> dpp::task<void> {
+				co_await set_presence();
+				co_return;
 			}, 240);
-			bot.start_timer([&bot](dpp::timer t) {
-				post_botlists(bot);
+			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
+				co_await post_botlists(bot);
+				co_return;
 			}, 60 * 15);
-			bot.start_timer([&bot](dpp::timer t) {
-				welcome_new_guilds(bot);
+			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
+				co_await welcome_new_guilds(bot);
+				co_return;
 			}, 30);
-			bot.start_timer([&bot](dpp::timer t) {
+			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
 				end_abandoned_pvp();
+				co_return;
 			}, 10);
-			bot.start_timer([&bot](dpp::timer t) {
-				process_potion_drops(bot);
+			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
+				co_await process_potion_drops(bot);
 				cleanup_idle_live_players();
 				i18n::check_lang_reload(bot);
+				co_return;
 			}, 60);
-			bot.start_timer([](dpp::timer t) {
+			bot.start_timer([](dpp::timer t) -> dpp::task<void> {
 				/* Garbage collect free memory by consolidating free malloc() blocks */
 				malloc_trim(0);
+				co_return;
 			}, 600);
-			bot.start_timer([&bot](dpp::timer t) {
+			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
 				check_effects(bot);
+				co_return;
 			}, 1);
 
-			/*std::cout << "Set presence\n";
-			auto rs = co_await db::co_query("SELECT (SELECT COUNT(id) FROM guild_cache) AS guild_count, (SELECT SUM(user_count) FROM guild_cache) AS discord_user_count, (SELECT COUNT(user_id) FROM game_users) AS game_user_count");
-			std::cout << "Set presence done, rs.size() = " << rs.size() << "\n";*/
-
-			set_presence();
-			welcome_new_guilds(bot);
-			process_potion_drops(bot);
+			co_await set_presence();
+			co_await welcome_new_guilds(bot);
+			co_await process_potion_drops(bot);
 
 			register_botlist<topgg>();
 			register_botlist<discordbotlist>();
@@ -272,26 +277,27 @@ namespace listeners {
 			register_botlist<discords>();
 			register_botlist<botlistme>();
 
-			post_botlists(bot);
+			co_await post_botlists(bot);
 		}
 		co_return;
 	}
 
-	void on_guild_create(const dpp::guild_create_t &event) {
+	dpp::task<void> on_guild_create(const dpp::guild_create_t &event) {
 		if (event.created->is_unavailable()) {
-			return;
+			co_return;
 		}
-		db::query("INSERT INTO guild_cache (id, owner_id, name, user_count) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE owner_id = ?, name = ?, user_count = ?", { event.created->id, event.created->owner_id, event.created->name, event.created->member_count, event.created->owner_id, event.created->name, event.created->member_count });
+		co_await db::co_query("INSERT INTO guild_cache (id, owner_id, name, user_count) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE owner_id = ?, name = ?, user_count = ?", { event.created->id, event.created->owner_id, event.created->name, event.created->member_count, event.created->owner_id, event.created->name, event.created->member_count });
 	}
 
-	void on_guild_delete(const dpp::guild_delete_t &event) {
+	dpp::task<void> on_guild_delete(const dpp::guild_delete_t &event) {
 		if (!event.deleted.is_unavailable()) {
-			db::query("DELETE FROM guild_cache WHERE id = ?", { event.deleted.id });
+			co_await db::co_query("DELETE FROM guild_cache WHERE id = ?", { event.deleted.id });
 			event.from->creator->log(dpp::ll_info, "Removed from guild: " + event.deleted.id.str());
 		}
+		co_return;
 	}
 
-	void on_slashcommand(const dpp::slashcommand_t &event) {
+	dpp::task<void> on_slashcommand(const dpp::slashcommand_t &event) {
 		double start = dpp::utility::time_f();
 		route_command(event);
 		event.from->creator->log(
@@ -306,5 +312,6 @@ namespace listeners {
 				(dpp::utility::time_f() - start) * 1000
 			)
 		);
+		co_return;
 	}
 }

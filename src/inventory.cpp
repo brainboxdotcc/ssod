@@ -202,7 +202,7 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 			}
 			description += "\n```\n";
 			auto i = tr(inv, "", event);
-			auto f = dpp::embed_field("<:" + emoji + "> " + i.name + (inv.qty > 1 ? fmt::format(" (x{})", inv.qty) : ""), description, true);
+			auto f = dpp::embed_field(std::string("<:") + emoji + "> " + i.name + (inv.qty > 1 ? fmt::format(" (x{})", inv.qty) : ""), description, true);
 			fields.push_back(f);
 
 			dpp::message saved = m;

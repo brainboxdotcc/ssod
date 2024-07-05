@@ -32,16 +32,16 @@ registered_botlist_list& get_botlist_map() {
 	return registered_botlists;
 }
 
-void post_botlists(dpp::cluster &bot) {
+dpp::task<void> post_botlists(dpp::cluster &bot) {
 	for (const auto & botlist : registered_botlists) {
 		auto ptr = botlist.second;
-		(*ptr)(bot);
+		co_await (*ptr)(bot);
 	}
 }
 
-void botlist::run(dpp::cluster& bot, const std::string_view key, const std::string_view url, const std::string_view count_field, const std::string_view shards_field) {
+dpp::task<void> botlist::run(dpp::cluster& bot, const std::string_view key, const std::string_view url, const std::string_view count_field, const std::string_view shards_field) {
 	const json& list_config = config::get("botlists");
-	auto rs = db::query("SELECT COUNT(id) AS count FROM guild_cache");
+	auto rs = co_await db::co_query("SELECT COUNT(id) AS count FROM guild_cache");
 	if (list_config.contains(key.data())) {
 		const json& topgg_config = list_config.at(key.data());
 		std::string token = topgg_config.at("token");
@@ -53,10 +53,10 @@ void botlist::run(dpp::cluster& bot, const std::string_view key, const std::stri
 			j[count_field.data()] = atoi(rs[0].at("count").c_str());
 		}
 		std::string post_url = replace_string(url.data(), "{}", bot.me.id.str());
-		bot.request(post_url, dpp::m_post, [&bot, key](const auto & cc){
-			if (cc.status >= 400) {
-				bot.log(dpp::ll_warning, std::string(key) + " returned: " + cc.body);
-			}
-		}, j.dump(), "application/json", {{"Authorization", token}});
+		auto cc = co_await bot.co_request(post_url, dpp::m_post, j.dump(), "application/json", {{"Authorization", token}});
+		if (cc.status >= 400) {
+			bot.log(dpp::ll_warning, std::string(key) + " returned: " + cc.body);
+		}
 	}
+	co_return;
 }
