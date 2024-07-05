@@ -46,7 +46,7 @@ dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
 		));
 }
 
-void guild_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> guild_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
 
@@ -138,4 +138,5 @@ void guild_command::route(const dpp::slashcommand_t &event)
 		db::commit();
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	}
+	co_return;
 }

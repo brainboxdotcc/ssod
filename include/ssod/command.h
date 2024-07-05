@@ -54,13 +54,13 @@ struct command {
 	 * 
 	 * @param event The slash command event data
 	 */
-	static void route(const dpp::slashcommand_t &event);
+	static dpp::task<void> route(const dpp::slashcommand_t &event);
 };
 
 /**
  * @brief A function pointer to the static route() function of a command
  */
-using command_router = auto (*)(const dpp::slashcommand_t&) -> void;
+using command_router = auto (*)(const dpp::slashcommand_t&) -> dpp::task<void>;
 
 /**
  * @brief Represents a list of registered commands stored in an unordered_map
@@ -94,4 +94,4 @@ template <typename T> dpp::slashcommand register_command(dpp::cluster& bot)
  * 
  * @param event Slash command interaction event
  */
-void route_command(const dpp::slashcommand_t &event);
+dpp::task<void> route_command(const dpp::slashcommand_t &event);

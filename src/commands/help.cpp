@@ -28,7 +28,7 @@ dpp::slashcommand help_command::register_command(dpp::cluster& bot)
 	return tr(dpp::slashcommand("cmd_help", "help_description", bot.me.id).set_dm_permission(true));
 }
 
-void help_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> help_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 	dpp::embed embed = dpp::embed()
@@ -56,4 +56,5 @@ void help_command::route(const dpp::slashcommand_t &event)
 		;
 
 	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+	co_return;
 }

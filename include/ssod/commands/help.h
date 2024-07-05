@@ -24,5 +24,5 @@
 struct help_command : public command {
 	static constexpr std::string_view name{"help"};
 	static dpp::slashcommand register_command(dpp::cluster& bot);
-	static void route(const dpp::slashcommand_t &event);
+	static dpp::task<void> route(const dpp::slashcommand_t &event);
 };

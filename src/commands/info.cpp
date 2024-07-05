@@ -50,7 +50,7 @@ int64_t rss() {
 	return proc_self_value("VmRSS:") * 1024;
 }
 
-void info_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> info_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
 	auto rs = db::query("SELECT COUNT(id) AS guild_count, SUM(user_count) AS user_count FROM guild_cache");
@@ -79,4 +79,5 @@ void info_command::route(const dpp::slashcommand_t &event)
 		;
 
 	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+	co_return;
 }
