@@ -24,7 +24,7 @@
 struct tempset_tag : public tag {
 	tempset_tag() { register_tag<tempset_tag>(); }
 	static constexpr std::string_view tags[]{"<tempset"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// set a state-flag
 		long lifetime{0};
 		paragraph_content >> lifetime;
@@ -35,6 +35,7 @@ struct tempset_tag : public tag {
 			current_player.event.command.usr.id, p_text, expiry, expiry
 		});
 		achievement_check("TEMP_STATE", current_player.event, current_player, {{"flag", p_text}});
+		co_return;
 	}
 };
 

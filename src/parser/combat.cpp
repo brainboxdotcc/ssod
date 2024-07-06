@@ -40,7 +40,7 @@ struct combat_tag : public tag {
 		return xp;
 	}
 
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// combat tag
 		p.links++;
 		p.safe = false;
@@ -145,6 +145,7 @@ struct combat_tag : public tag {
 			throw parse_end_exception();
 		}
 		p.current_fragment++;
+		co_return;
 	}
 };
 

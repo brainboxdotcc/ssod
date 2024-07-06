@@ -140,34 +140,31 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id == "name_character" && p_old.state == state_name_player) {
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
 			neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
-			swear_check.contains_bad_word(name, [player_v = p_old, nn_v = name, &bot, event](const swear_filter_t& swear_filter) {
-				player p_old = player_v;
-				std::string name{nn_v};
-				if (!swear_filter.clean) {
-					bot.log(dpp::ll_warning, "Potty-mouth player name: " + nn_v + " censored for id: " + event.command.usr.id.str());
-					name = swear_filter.censored_content;
-				}
-				auto check = db::query("SELECT * FROM game_default_users WHERE name = ?", {name});
-				if (!check.empty()) {
-					event.reply();
-					dpp::message m = p_old.get_magic_selection_message(bot, event);
-					m.embeds[0].description += "\n\n## " + tr("EXISTS", event);
-					p_old.event.edit_original_response(m);
-					return;
-				}
-				p_old.event.delete_original_response();
-				p_old.name = name;
-				p_old.state = state_play;
-				update_registering_player(event, p_old);
-				// Save to database and overwrite backup state
-				p_old.save(event.command.usr.id, true);
-				p_old.event = event;
-				move_from_registering_to_live(event, p_old);
-				db::query("DELETE FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
-				db::query("INSERT INTO game_default_spells (user_id, name, flags) SELECT user_id, item_desc, item_flags FROM game_owned_items WHERE user_id = ? AND item_flags in ('HERB','SPELL')", {event.command.usr.id});
-				continue_game(event, p_old);
-				bot.log(dpp::ll_info, "New player creation: " + name + " for id: " + event.command.usr.id.str());
-			});
+			auto swear_filter = co_await swear_check.co_contains_bad_word(name);
+			if (!swear_filter.clean) {
+				bot.log(dpp::ll_warning, "Potty-mouth player name: " + name + " censored for id: " + event.command.usr.id.str());
+				name = swear_filter.censored_content;
+			}
+			auto check = db::query("SELECT * FROM game_default_users WHERE name = ?", {name});
+			if (!check.empty()) {
+				event.reply();
+				dpp::message m = p_old.get_magic_selection_message(bot, event);
+				m.embeds[0].description += "\n\n## " + tr("EXISTS", event);
+				p_old.event.edit_original_response(m);
+				co_return;
+			}
+			p_old.event.delete_original_response();
+			p_old.name = name;
+			p_old.state = state_play;
+			update_registering_player(event, p_old);
+			// Save to database and overwrite backup state
+			p_old.save(event.command.usr.id, true);
+			p_old.event = event;
+			move_from_registering_to_live(event, p_old);
+			db::query("DELETE FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
+			db::query("INSERT INTO game_default_spells (user_id, name, flags) SELECT user_id, item_desc, item_flags FROM game_owned_items WHERE user_id = ? AND item_flags in ('HERB','SPELL')", {event.command.usr.id});
+			co_await continue_game(event, p_old);
+			bot.log(dpp::ll_info, "New player creation: " + name + " for id: " + event.command.usr.id.str());
 		}
 		co_return;
 	});
@@ -190,7 +187,7 @@ dpp::task<void> start_command::route(const dpp::slashcommand_t &event)
 		player p = get_live_player(event);
 		p.event = event;
 		send_chat(event.command.usr.id, p.paragraph, "", "join");
-		continue_game(event, p);
+		co_await continue_game(event, p);
 		co_return;
 	}
 

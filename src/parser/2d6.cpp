@@ -23,11 +23,12 @@
 struct twod6_tag : public tag {
 	twod6_tag() { register_tag<twod6_tag>(); }
 	static constexpr std::string_view tags[]{"<2d6>"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		if (!current_player.g_dice) {
 			std::cout << "reroll\n";
 			current_player.g_dice = dice() + dice();
 		}
+		co_return;
 	}
 };
 

@@ -55,7 +55,6 @@ paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user
 		dropped_items.push_back(stacked_item{ .name = dropped_item.at("item_desc"), .flags = dropped_item.at("item_flags"), .qty = atol(dropped_item.at("stack_count")) });
 	}
 	display.push_back(true);
-	parse(current, user_id);
 }
 
 paragraph::paragraph(const std::string& data, player& current) {
@@ -180,7 +179,7 @@ std::string remove_last_char(const std::string& s) {
 	return dpp::utility::utf8substr(s, 0, dpp::utility::utf8len(s) - 1);
 }
 
-void paragraph::parse(player& current_player, dpp::snowflake user_id) {
+dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id) {
 	std::stringstream paragraph_content(replace_string(text, "><", "> <") + "\r\n<br>\r\n");
 	std::string p_text, LastLink;
 	output = new std::stringstream();
@@ -194,7 +193,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 		}
 
 		try {	
-			if (route_tag(*this, p_text, paragraph_content, *output, current_player, display.size() ? display[display.size() - 1] : true)) {
+			if (co_await route_tag(*this, p_text, paragraph_content, *output, current_player, display.size() ? display[display.size() - 1] : true)) {
 				continue;
 			}
 		}
@@ -303,7 +302,7 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 	if (id && words && safe) {
 		if (!current_player.breadcrumb_trail.empty()) {
 			if (current_player.breadcrumb_trail[current_player.breadcrumb_trail.size() - 1] == id) {
-				return;
+				co_return;
 			}
 		}
 		current_player.breadcrumb_trail.push_back(id);
@@ -311,4 +310,5 @@ void paragraph::parse(player& current_player, dpp::snowflake user_id) {
 			current_player.breadcrumb_trail.pop_front();
 		}
 	}
+	co_return;
 }

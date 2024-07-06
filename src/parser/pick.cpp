@@ -22,7 +22,7 @@
 struct pick_tag : public tag {
 	pick_tag() { register_tag<pick_tag>(); }
 	static constexpr std::string_view tags[]{"<pick"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// pick up free items (one-choice)
 		size_t max = current_player.max_inventory_slots();
 		paragraph_content >> p_text;
@@ -44,6 +44,7 @@ struct pick_tag : public tag {
 			output << "\n **" << ItemName << "**\n";
 		}
 		p.words++;
+		co_return;
 	}
 };
 

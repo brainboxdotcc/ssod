@@ -26,7 +26,7 @@ using namespace i18n;
 struct test_tag : public tag {
 	test_tag() { register_tag<test_tag>(); }
 	static constexpr std::string_view tags[]{"<test"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// test score tag
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(p_text);
@@ -54,6 +54,7 @@ struct test_tag : public tag {
 			p.auto_test = current_player.test_experience();
 			achievement_check("TEST_XP", current_player.event, current_player, {{"success", p.auto_test}});
 		}
+		co_return;
 	}
 };
 

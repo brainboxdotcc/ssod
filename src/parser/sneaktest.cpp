@@ -26,7 +26,7 @@ using namespace i18n;
 struct sneaktest_tag : public tag {
 	sneaktest_tag() { register_tag<sneaktest_tag>(); }
 	static constexpr std::string_view tags[]{"<sneaktest"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		paragraph_content >> p_text;
 
 		extract_to_quote(p_text, paragraph_content, '"');
@@ -40,6 +40,8 @@ struct sneaktest_tag : public tag {
 		p.words++;
 		p.safe = false;
 		achievement_check("TEST_SNEAK", current_player.event, current_player, {{"success", p.auto_test}, {"enemy", monster_name}});
+
+		co_return;
 	}
 };
 

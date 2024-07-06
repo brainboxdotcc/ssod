@@ -23,13 +23,14 @@
 struct expire_tag : public tag {
 	expire_tag() { register_tag<expire_tag>(); }
 	static constexpr std::string_view tags[]{"<expire"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// set a state-flag
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
 		db::query("DELETE FROM timed_flags  WHERE user_id = ? AND flag = ?", {
 			current_player.event.command.usr.id, p_text
 		});
+		co_return;
 	}
 };
 

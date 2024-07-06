@@ -48,13 +48,13 @@ struct tag {
 	 * @param output output text content
 	 * @param current_player current player
 	 */
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player);
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player);
 };
 
 /**
  * @brief A function pointer to the static route() function of a tag
  */
-using tag_router = auto (*)(paragraph&, std::string&, std::stringstream&, std::stringstream&, player&) -> void;
+using tag_router = auto (*)(paragraph&, std::string&, std::stringstream&, std::stringstream&, player&) -> dpp::task<void>;
 
 /**
  * @brief Represents a list of registered tags stored in an unordered_map
@@ -87,4 +87,4 @@ template <typename T> void register_tag()
 struct parse_end_exception : public std::exception {
 };
 
-bool route_tag(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player, bool display);
+dpp::task<bool> route_tag(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player, bool display);

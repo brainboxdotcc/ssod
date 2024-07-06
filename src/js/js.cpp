@@ -103,6 +103,7 @@ static duk_ret_t js_tag(duk_context *cx) {
 		return 0;
 	}
 	paragraph inner(output, *p.cur_player);
+	inner.parse(*p.cur_player, p.cur_player->event.command.usr.id);
 	*p.output << inner.text;
 	p.links += inner.links;
 	for (const auto& nav : inner.navigation_links) {
