@@ -119,8 +119,7 @@ struct paragraph {
 
 	static bool valid_next(long Current, long Next);
 
-private:
-	void parse(player& current_player, dpp::snowflake user_id);
+	dpp::task<void> parse(player& current_player, dpp::snowflake user_id);
 };
 
 std::string extract_value(const std::string& p_text);

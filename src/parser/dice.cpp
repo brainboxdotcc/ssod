@@ -23,10 +23,11 @@
 struct dice_tag : public tag {
 	dice_tag() { register_tag<dice_tag>(); }
 	static constexpr std::string_view tags[]{"<dice>"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		if (!current_player.g_dice) {
 			current_player.g_dice = dice();
 		}
+		co_return;
 	}
 };
 

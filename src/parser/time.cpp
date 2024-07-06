@@ -24,11 +24,12 @@
 struct time_tag : public tag {
 	time_tag() { register_tag<time_tag>(); }
 	static constexpr std::string_view tags[]{"<time>"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		if (!p.didntmove) {
 			current_player.eat_ration();
 			achievement_check("TIME", current_player.event, current_player);
 		}
+		co_return;
 	}
 };
 

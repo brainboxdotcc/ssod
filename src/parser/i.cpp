@@ -24,7 +24,7 @@
 struct i_tag : public tag {
 	i_tag() { register_tag<i_tag>(); }
 	static constexpr std::string_view tags[]{"<i"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		p.trader = true;
 		size_t max = current_player.max_inventory_slots();
 		// purchase item tag
@@ -90,7 +90,7 @@ struct i_tag : public tag {
 					nav_link{.paragraph = p.id, .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "Inventory Full"});
 			}
 		}
-
+		co_return;
 	}
 };
 

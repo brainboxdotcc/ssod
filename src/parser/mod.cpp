@@ -32,7 +32,7 @@ struct modifier_t {
 struct mod_tag : public tag {
 	mod_tag() { register_tag<mod_tag>(); }
 	static constexpr std::string_view tags[]{"<mod"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		std::string mod;
 		bool repeatable{false};
 		paragraph_content >> p_text;
@@ -67,7 +67,7 @@ struct mod_tag : public tag {
 					current_player.add_flag(flag, p.id);
 				} else {
 					output << " ***" << tr("MODNO", current_player.event, m->first) << "*** ";
-					return;
+					co_return;
 				}
 			}
 			output << " ***" << tr(modifier < 1 ? "MODNEG" : "MODPLUS", current_player.event, abs(modifier), m->second.name) << "*** ";
@@ -89,6 +89,7 @@ struct mod_tag : public tag {
 		} else {
 			std::cout << "Error: Invalid MOD " << p_text << " in location " << p.id << "\n";
 		}
+		co_return;
 	}
 };
 

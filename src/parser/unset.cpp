@@ -24,11 +24,12 @@
 struct unset_tag : public tag {
 	unset_tag() { register_tag<unset_tag>(); }
 	static constexpr std::string_view tags[]{"<unset"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// set a state-flag
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
 		db::query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, "gamestate_" + p_text + "%"});
+		co_return;
 	}
 };
 

@@ -24,7 +24,7 @@
 struct script_tag : public tag {
 	script_tag() { register_tag<script_tag>(); }
 	static constexpr std::string_view tags[]{"<script>"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		std::string script, partial;
 		while (partial != "</script>") {
 			script += " " + partial;
@@ -88,6 +88,7 @@ struct script_tag : public tag {
 				{"didntmove", p.didntmove},
 			}}
 		});
+		co_return;
 	}
 };
 

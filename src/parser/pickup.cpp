@@ -24,7 +24,7 @@
 struct pickup_tag : public tag {
 	pickup_tag() { register_tag<pickup_tag>(); }
 	static constexpr std::string_view tags[]{"<pickup"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		std::string item_name, item_flags, flags;
 
 		paragraph_content >> p_text;
@@ -41,33 +41,33 @@ struct pickup_tag : public tag {
 				achievement_check("SCROLL", current_player.event, current_player, {{"scrolls", current_player.scrolls}});
 			}
 			current_player.inv_change = true;
-			return;
+			co_return;
 		}
 
 		if (dpp::lowercase(p_text) == "gold") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
 			if (current_player.has_flag(p_text, p.id)) {
-				return;
+				co_return;
 			}
 			current_player.add_flag(p_text, p.id);
 			current_player.add_gold(atoi(p_text.c_str()));
 			current_player.inv_change = true;
 			achievement_check("COLLECT", current_player.event, current_player, {{"name", "gold"}, {"amount", atoi(p_text.c_str())}});
-			return;
+			co_return;
 		}
 
 		if (dpp::lowercase(p_text) == "silver") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
 			if (current_player.has_flag(p_text, p.id)) {
-				return;
+				co_return;
 			}
 			current_player.add_flag(p_text, p.id);
 			current_player.add_silver(atoi(p_text.c_str()));
 			current_player.inv_change = true;
 			achievement_check("COLLECT", current_player.event, current_player, {{"name", "silver"}, {"amount", atoi(p_text.c_str())}});
-			return;
+			co_return;
 		}
 
 		item_name = p_text;
@@ -92,11 +92,11 @@ struct pickup_tag : public tag {
 
 		if (current_player.has_flag(item_name, p.id)) {
 			// crafty player trying to get the same item twice! Not good if it's unique!
-			return;
+			co_return;
 		}
 		if (current_player.possessions.size() >= max - 1 && dpp::lowercase(item_name) != "scroll" && flags != "SPELL" && flags != "HERB") {
 			// Inventory full
-			return;
+			co_return;
 		}
 		current_player.add_flag(item_name, p.id);
 
@@ -120,6 +120,7 @@ struct pickup_tag : public tag {
 			}
 		}
 		current_player.inv_change = true;
+		co_return;
 	}
 };
 

@@ -22,7 +22,7 @@
 struct input_tag : public tag {
 	input_tag() { register_tag<input_tag>(); }
 	static constexpr std::string_view tags[]{"<input"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		paragraph_content >> p_text;
 		extract_to_quote(p_text, paragraph_content, '"');
 		std::string Prompt = extract_value(p_text);
@@ -34,6 +34,7 @@ struct input_tag : public tag {
 		++p.links;
 		p.navigation_links.push_back(nav_link{ .paragraph = destination, .type = nav_type_modal, .cost = 0, .monster = {}, .buyable = {}, .prompt = Prompt, .answer = Correct, .label = "" });
 		p.words++;
+		co_return;
 	}
 };
 

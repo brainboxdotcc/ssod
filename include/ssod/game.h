@@ -23,10 +23,10 @@
 #include <ssod/game_player.h>
 #include <ssod/component_builder.h>
 
-void game_nav(const dpp::button_click_t& event);
-void continue_game(const dpp::interaction_create_t& event, player p);
-void game_select(const dpp::select_click_t &event);
-void game_input(const dpp::form_submit_t & event);
+dpp::task<void> game_nav(const dpp::button_click_t& event);
+dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p);
+dpp::task<void> game_select(const dpp::select_click_t &event);
+dpp::task<void> game_input(const dpp::form_submit_t & event);
 void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type = "chat", uint64_t guild_id = 0);
 dpp::emoji get_emoji(const std::string& name, const std::string& flags);
 void death(player& p, component_builder& cb);

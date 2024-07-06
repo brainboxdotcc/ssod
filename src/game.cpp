@@ -194,16 +194,16 @@ void add_chat(std::string& text, const dpp::interaction_create_t& event, long pa
 	text += "```\n";
 }
 
-void game_input(const dpp::form_submit_t & event) {
+dpp::task<void> game_input(const dpp::form_submit_t & event) {
 	if (!player_is_live(event)) {
-		return;
+		co_return;
 	}
 	player p = get_live_player(event);
 	dpp::cluster& bot = *(event.from->creator);
 	bool claimed{true};
 	std::string custom_id = security::decrypt(event.custom_id);
 	if (custom_id.empty()) {
-		return;
+		co_return;
 	}
 	bot.log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
@@ -269,20 +269,21 @@ void game_input(const dpp::form_submit_t & event) {
 		p.event = event;
 		update_live_player(event, p);
 		p.save(event.command.usr.id);
-		continue_game(event, p);
+		co_await continue_game(event, p);
 	}
+	co_return;
 }
 
-void game_select(const dpp::select_click_t &event) {
+dpp::task<void> game_select(const dpp::select_click_t &event) {
 	if (!player_is_live(event)) {
-		return;
+		co_return;
 	}
 	bool claimed{false};
 	player p = get_live_player(event);
 	dpp::cluster& bot = *(event.from->creator);
 	std::string custom_id = security::decrypt(event.custom_id);
 	if (custom_id.empty()) {
-		return;
+		co_return;
 	}
 	bot.log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	if (custom_id == "withdraw" && p.in_bank && !event.values.empty()) {
@@ -366,7 +367,7 @@ void game_select(const dpp::select_click_t &event) {
 			if (recipe.empty()) {
 				/* Recipe doesnt even exist, wtf */
 				bot.log(dpp::ll_debug, event.command.usr.id.str() + ": invalid recipe name: '" + parts[0] + "'");
-				return;
+				co_return;
 			}
 			auto ingredients = db::query(
 				"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ?"
@@ -402,7 +403,7 @@ void game_select(const dpp::select_click_t &event) {
 				if (checked < recipe_ingredients.size()) {
 					/* Double-checked, can't cook this! */
 					bot.log(dpp::ll_debug, event.command.usr.id.str() + ": player lacks ingredients for '" + parts[0] + "'; lag, bug, or hack attempt");
-					return;
+					co_return;
 				}
 			}
 
@@ -509,36 +510,37 @@ void game_select(const dpp::select_click_t &event) {
 		p.event = event;
 		update_live_player(event, p);
 		p.save(event.command.usr.id);
-		continue_game(event, p);
+		co_await continue_game(event, p);
 	}
+	co_return;
 }
 
-void game_nav(const dpp::button_click_t& event) {
+dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	if (!player_is_live(event)) {
-		return;
+		co_return;
 	}
 	dpp::cluster& bot = *(event.from->creator);
 	player p = get_live_player(event);
 	bool claimed = false;
 	if (p.state != state_play || event.custom_id.empty()) {
-		return;
+		co_return;
 	}
 	std::string custom_id = security::decrypt(event.custom_id);
 	if (custom_id.empty()) {
-		return;
+		co_return;
 	}
 	event.from->log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (p.in_combat) {
 		if (combat_nav(event, p, parts)) {
-			return;
+			co_return;
 		}
 	}
 	if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay" || parts[0] == "follow_nav_win") && parts.size() >= 3) {
 		if (parts[0] == "follow_nav_pay" && parts.size() >= 4) {
 			long link_cost = atol(parts[3]);
 			if (p.gold < link_cost) {
-				return;
+				co_return;
 			}
 			p.gold -= link_cost;
 			p.g_dice = 0;
@@ -567,7 +569,7 @@ void game_nav(const dpp::button_click_t& event) {
 		std::string name = parts[5];
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID SHOP FROM " + std::to_string(p.paragraph));
-			return;
+			co_return;
 		}
 		size_t max = p.max_inventory_slots();
 		if (
@@ -666,7 +668,7 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "combat" && parts.size() >= 8) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID COMBAT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
-			return;
+			co_return;
 		}
 		std::string monster_name{parts[2]};
 		if (p.event.command.locale != "en") {
@@ -692,7 +694,7 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID BANK FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
-			return;
+			co_return;
 		}
 		achievement_check("ENTER_BANK", event, p, {});
 		p.in_bank = true;
@@ -709,7 +711,7 @@ void game_nav(const dpp::button_click_t& event) {
 			.set_text_style(dpp::text_short)
 		});
 		event.dialog(modal);
-		return;
+		co_return;
 	} else if (parts[0] == "deposit_gold" && p.in_bank) {
 		dpp::interaction_modal_response modal(security::encrypt("deposit_gold_amount_modal"), "Deposit Gold",	{
 			dpp::component()
@@ -723,7 +725,7 @@ void game_nav(const dpp::button_click_t& event) {
 			.set_text_style(dpp::text_short)
 		});
 		event.dialog(modal);
-		return;
+		co_return;
 	} else if (parts[0] == "withdraw_gold" && p.in_bank) {
 		dpp::interaction_modal_response modal(security::encrypt("withdraw_gold_amount_modal"), "Withdraw Gold",	{
 			dpp::component()
@@ -737,11 +739,11 @@ void game_nav(const dpp::button_click_t& event) {
 			.set_text_style(dpp::text_short)
 		});
 		event.dialog(modal);
-		return;
+		co_return;
 	} else if (parts[0] == "pick_one" && parts.size() >= 5) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID PICK_ONE FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
-			return;
+			co_return;
 		}
 		p.paragraph = atol(parts[1]);
 		size_t max = p.max_inventory_slots();
@@ -842,14 +844,14 @@ void game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "hunt" && parts.size() >= 2 && !p.in_combat && p.stamina > 0) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID HUNT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
-			return;
+			co_return;
 		}
 		if (p.possessions.size() >= p.max_inventory_slots()) {
-			return;
+			co_return;
 		}
 		auto rs = db::query("SELECT * FROM game_locations WHERE id = ?", {parts[1]});
 		if (rs.empty()) {
-			return;
+			co_return;
 		}
 		std::stringstream ss;
 		try {
@@ -964,7 +966,7 @@ void game_nav(const dpp::button_click_t& event) {
 		/* Pick up frm floor */
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID PICKUP FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
-			return;
+			co_return;
 		}
 		long paragraph = atol(parts[1]);
 		std::string name = parts[2];
@@ -1055,14 +1057,15 @@ void game_nav(const dpp::button_click_t& event) {
 			.set_text_style(dpp::text_short)
 		});
 		event.dialog(modal);
-		return;
+		co_return;
 	}
 	if (claimed) {
 		p.event = event;
 		update_live_player(event, p);
 		p.save(event.command.usr.id);
-		continue_game(event, p);
+		co_await continue_game(event, p);
 	}
+	co_return;
 };
 
 dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
@@ -1327,31 +1330,32 @@ uint64_t get_guild_id(const player& p) {
 	return 0;
 }
 
-void continue_game(const dpp::interaction_create_t& event, player p) {
+dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) {
 	if (p.in_combat) {
 		if (has_active_pvp(event.command.usr.id)) {
 			continue_pvp_combat(event, p, std::stringstream());
 		} else {
 			continue_combat(event, p);
 		}
-		return;
+		co_return;
 	} else if (p.in_pvp_picker) {
 		pvp_picker(event, p);
-		return;
+		co_return;
 	} else if (p.in_inventory) {
 		inventory(event, p);
-		return;
+		co_return;
 	} else if (p.in_grimoire) {
 		grimoire(event, p);
-		return;
+		co_return;
 	} else if (p.in_campfire) {
 		campfire(event, p);
-		return;
+		co_return;
 	} else if (p.in_bank) {
 		bank(event, p);
-		return;
+		co_return;
 	}
 	paragraph location(p.paragraph, p, event.command.usr.id);
+	co_await location.parse(p, event.command.usr.id);
 	/* If the current paragraph is an empty page with nothing but a link, skip over it.
 	 * These link pages are old data and not relavent to gameplay. Basically just a paragraph
 	 * that says "Turn to X" which were an anti-cheat holdover from book-form content.

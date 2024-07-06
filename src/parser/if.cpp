@@ -45,7 +45,7 @@ struct if_tag : public tag {
 	if_tag() { register_tag<if_tag>(); }
 	static constexpr bool overrides_display{true};
 	static constexpr std::string_view tags[]{"<if"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		std::string condition;
 		paragraph_content >> p_text;
 		// -------------------------------------------------------
@@ -60,7 +60,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "!item") {
 			paragraph_content >> p_text;
 			extract_to_quote(p_text, paragraph_content, '>');
@@ -70,7 +70,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} if (dpp::lowercase(p_text) == "has") {
 			size_t number{};
 			paragraph_content >> number;
@@ -90,7 +90,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
@@ -100,7 +100,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "!flag") {
 			paragraph_content >> p_text;
 			p_text = remove_last_char(p_text);
@@ -110,7 +110,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		}
 		// -------------------------------------------------------
 		// <if scorename gt|lt|eq value>
@@ -143,7 +143,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "race") {
 			// ------------------------------------------------------
 			// <if race x>
@@ -166,7 +166,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "raceex") {
 			// ------------------------------------------------------
 			// <if raceex x>
@@ -194,7 +194,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "prof") {
 			// ------------------------------------------------------
 			// <if prof x>
@@ -215,7 +215,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "profex") {
 			// ------------------------------------------------------
 			// <if profex x>
@@ -239,7 +239,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "mounted>") {
 			// ------------------------------------------------------
 			// <if mounted>
@@ -249,7 +249,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "premium>") {
 			// ------------------------------------------------------
 			// <if premium>
@@ -260,7 +260,7 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		} else if (dpp::lowercase(p_text) == "water>") {
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
 				p.display.push_back(
@@ -269,8 +269,9 @@ struct if_tag : public tag {
 			} else {
 				p.display.push_back(false);
 			}
-			return;
+			co_return;
 		}
+		co_return;
 	}
 };
 

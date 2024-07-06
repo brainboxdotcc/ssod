@@ -36,16 +36,16 @@ registered_over_list& get_over_set()
 	return tag_display_override;
 }
 
-bool route_tag(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player, bool display) {
+dpp::task<bool> route_tag(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player, bool display) {
 	auto ref = registered_tags.find(dpp::lowercase(p_text));
 	if (ref != registered_tags.end()) {
 		auto ovr = tag_display_override.find(dpp::lowercase(p_text));
 		if (!display && ovr == tag_display_override.end()) {
-			return true;
+			co_return true;
 		}
 		auto ptr = ref->second;
-		(*ptr)(p, p_text, paragraph_content, output, current_player);
-		return true;
+		co_await (*ptr)(p, p_text, paragraph_content, output, current_player);
+		co_return true;
 	}
-	return false;
+	co_return false;
 }

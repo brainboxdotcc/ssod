@@ -82,4 +82,16 @@ public:
          * @param callback callback to receive swear filter result
          */
         void contains_bad_word(const std::string& text, swear_filter_event_t callback);
+
+	/**
+	 * @brief Returns a swear_filter_t when co_awaited, after checking text for swearing.
+	 * Uses a HTTPS REST API call.
+	 *
+	 * @param text text to check
+	 * @param callback callback to receive swear filter result
+	 */
+	dpp::async<swear_filter_t> co_contains_bad_word(const std::string& text) {
+		return dpp::async<swear_filter_t>{ [text, this] <typename C> (C &&cc) { return contains_bad_word(text, std::forward<C>(cc)); }};
+	}
+
 };

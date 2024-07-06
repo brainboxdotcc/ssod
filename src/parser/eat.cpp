@@ -24,12 +24,13 @@
 struct eat_tag : public tag {
 	eat_tag() { register_tag<eat_tag>(); }
 	static constexpr std::string_view tags[]{"<eat>"};
-	static void route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		if (!p.didntmove) {
 			current_player.eat_ration();
 			p.safe = false;
 			achievement_check("FORCED_EAT", current_player.event, current_player);
 		}
+		co_return;
 	}
 };
 
