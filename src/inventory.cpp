@@ -31,7 +31,7 @@
 
 using namespace i18n;
 
-void inventory(const dpp::interaction_create_t& event, player p) {
+dpp::task<void> inventory(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
 	bool equip_w{false}, equip_a{false};
@@ -153,8 +153,8 @@ void inventory(const dpp::interaction_create_t& event, player p) {
 	for (const auto& inv : possessions) {
 		sale_info value = get_sale_info(inv.name);
 		dpp::emoji e = get_emoji(inv.name, inv.flags);
-		auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {inv.name});
-		auto food = db::query("SELECT * FROM food WHERE name = ?", {inv.name});
+		auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {inv.name});
+		auto food = co_await db::co_query("SELECT * FROM food WHERE name = ?", {inv.name});
 		if (!value.quest_item && value.sellable) {
 			auto i = tr(inv, "", event);
 			drop_menu.add_select_option(dpp::select_option(tr("DROP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji("❌"));

@@ -28,9 +28,8 @@
 
 using namespace i18n;
 
-void achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables, const paragraph& para) {
-	/* Trigger all achievement events of this event type, but only if the player has not yet unlocked the achievement they are attached to */
-	auto achievements = db::query("SELECT * FROM achievements WHERE enabled = 1 AND event_type = ? AND check_event IS NOT NULL AND (SELECT COUNT(*) FROM achievements_unlocked WHERE user_id = ? AND achievement_id = achievements.id) = 0", {event_type, event.command.usr.id});
+void achievement_loop(auto achievements, const paragraph& para, player& p, std::map<std::string, json>& variables)
+{
 	for (const auto& achievement : achievements) {
 		if (para.id == 0) {
 			paragraph blank;
@@ -40,6 +39,19 @@ void achievement_check(const std::string& event_type, const dpp::interaction_cre
 			js::run(achievement.at("check_event"), (paragraph &) para, p, variables);
 		}
 	}
+}
+
+void blocking_achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables, const paragraph& para) {
+	/* Trigger all achievement events of this event type, but only if the player has not yet unlocked the achievement they are attached to */
+	auto achievements = db::query("SELECT * FROM achievements WHERE enabled = 1 AND event_type = ? AND check_event IS NOT NULL AND (SELECT COUNT(*) FROM achievements_unlocked WHERE user_id = ? AND achievement_id = achievements.id) = 0", {event_type, event.command.usr.id});
+	achievement_loop(achievements, para, p, variables);
+}
+
+dpp::task<void> achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables, const paragraph& para) {
+	/* Trigger all achievement events of this event type, but only if the player has not yet unlocked the achievement they are attached to */
+	auto achievements = co_await db::co_query("SELECT * FROM achievements WHERE enabled = 1 AND event_type = ? AND check_event IS NOT NULL AND (SELECT COUNT(*) FROM achievements_unlocked WHERE user_id = ? AND achievement_id = achievements.id) = 0", {event_type, event.command.usr.id});
+	achievement_loop(achievements, para, p, variables);
+	co_return;
 }
 
 void unlock_achievement(player& p, const db::row& achievement) {
@@ -63,6 +75,6 @@ void unlock_achievement(player& p, const db::row& achievement) {
 	content << tr("PLUS_TEN_XP", p.event, xp_bonus);
 
 	p.add_toast(toast{ .message = "# " + tr("ACH_UNLOCK", p.event) + "\n\n" + content.str(), .image = "achievements/" + achievement.at("emoji") });
-	p.add_experience(xp_bonus);
+	p.blocking_add_experience(xp_bonus);
 }
 

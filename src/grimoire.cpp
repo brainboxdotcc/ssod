@@ -49,7 +49,7 @@ std::string pretty_duration(uint64_t diff) {
 	return r.substr(0, r.length() - 2);
 }
 
-void grimoire(const dpp::interaction_create_t& event, player p) {
+dpp::task<void> grimoire(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
 
@@ -68,7 +68,7 @@ void grimoire(const dpp::interaction_create_t& event, player p) {
 	std::ranges::sort(p.spells, [](const item &a, const item &b) -> bool { return a.name < b.name; });
 	uint32_t index{0};
 	for (const auto &inv: p.spells) {
-		auto rs = db::query("SELECT * FROM passive_effect_types WHERE type = 'Spell' AND requirements = ? AND (SELECT COUNT(*) FROM passive_effect_status WHERE user_id = ? AND passive_effect_id = passive_effect_types.id) = 0", {inv.name, event.command.usr.id});
+		auto rs = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Spell' AND requirements = ? AND (SELECT COUNT(*) FROM passive_effect_status WHERE user_id = ? AND passive_effect_id = passive_effect_types.id) = 0", {inv.name, event.command.usr.id});
 		if (!rs.empty()) {
 			spell_info si = get_spell_info(inv.name);
 			std::string duration = pretty_duration(atoll(rs[0].at("duration")));

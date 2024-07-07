@@ -1041,7 +1041,7 @@ static duk_ret_t js_add_experience(duk_context *cx) {
 	}
 	long new_value = (long)duk_get_number(cx, 0);
 	paragraph& p = duk_get_udata(cx);
-	p.cur_player->add_experience(new_value);
+	p.cur_player->blocking_add_experience(new_value);
 	return 0;
 }
 

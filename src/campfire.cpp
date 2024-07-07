@@ -30,7 +30,7 @@
 
 using namespace i18n;
 
-void campfire(const dpp::interaction_create_t& event, player p) {
+dpp::task<void> campfire(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
 
@@ -41,7 +41,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 	/* All available recipes - this is cached with 5 minute expiry */
 	auto recipes = db::query("SELECT food.id, food.name, food.description, GROUP_CONCAT(ingredient_name ORDER BY ingredient_name) AS ingredients, stamina_change, skill_change, luck_change, speed_change, value FROM food JOIN ingredients ON food_id = food.id GROUP BY food.id, food.name, food.description ORDER BY value DESC", {}, 300.0);
 	/* All the user's available ingredients and cooked food items, not grouped */
-	auto ingredients = db::query(
+	auto ingredients = co_await db::co_query(
 		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ?"
 		" UNION "
 		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items "
@@ -49,7 +49,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		{event.command.usr.id, event.command.usr.id}
 	);
 	/* Stacked food and ingredient items, with quantities for display */
-	auto stacked_ingredients = db::query(
+	auto stacked_ingredients = co_await db::co_query(
 		"SELECT item_desc, SUM(qty) AS qty FROM "
 		"(SELECT game_owned_items.id, item_desc, COUNT(item_desc) AS qty FROM game_owned_items WHERE user_id = ? AND (SELECT COUNT(*) FROM ingredients WHERE ingredient_name = item_desc LIMIT 1) > 0 "
 		"GROUP BY game_owned_items.id, item_desc "
@@ -59,7 +59,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		{event.command.usr.id, event.command.usr.id}
 	);
 	/* Player can cook generic rations */
-	auto meat = db::query(
+	auto meat = co_await db::co_query(
 		"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ? AND ingredient_name LIKE '%meat%' ORDER BY RAND()",
 		{event.command.usr.id}
 	);
@@ -72,7 +72,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 	for (auto& stack : stacked_ingredients) {
 		std::string item{stack.at("item_desc")};
 		if (event.command.locale.substr(0, 2) != "en") {
-			auto ingredients_q = db::query(
+			auto ingredients_q = co_await db::co_query(
 				"SELECT ingredient_name, translation FROM ingredients "
 				"LEFT JOIN translations ON table_col = 'ingredients/ingredient_name' AND row_id = ingredients.id AND language = ? "
 				"where ingredient_name = ?",
@@ -134,7 +134,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 		std::string name{cookable.at("name")}, description{cookable.at("description")}, ingredients_list{cookable.at("ingredients")};
 		if (event.command.locale.substr(0, 2) != "en") {
 			/* For non-english game, translate the food names, descriptions and ingredient list */
-			auto food_q = db::query(
+			auto food_q = co_await db::co_query(
 				"SELECT food.id, food.name, "
 				"(SELECT translation FROM translations WHERE table_col = 'food/name' AND row_id = food.id AND language = ?) AS translate_name, "
 				"(SELECT translation FROM translations WHERE table_col = 'food/description' AND row_id = food.id AND language = ?) AS translate_description "
@@ -144,7 +144,7 @@ void campfire(const dpp::interaction_create_t& event, player p) {
 			if (!food_q.empty()) {
 				name = !food_q[0].at("translate_name").empty() ? food_q[0].at("translate_name") : name;
 				description = !food_q[0].at("translate_description").empty() ? food_q[0].at("translate_description") : description;
-				auto ingredients_q = db::query(
+				auto ingredients_q = co_await db::co_query(
 					"SELECT ingredient_name, translation FROM ingredients "
 					"LEFT JOIN translations ON table_col = 'ingredients/ingredient_name' AND row_id = ingredients.id AND language = ? "
 					"where food_id = ?",

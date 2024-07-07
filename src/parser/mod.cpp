@@ -75,11 +75,11 @@ struct mod_tag : public tag {
 			*(m->second.score) += modifier;
 			*(m->second.score) = std::min(*(m->second.score), m->second.max);
 			*(m->second.score) = std::max(*(m->second.score), 0L);
-			achievement_check("MOD", current_player.event, current_player, {{"modifier", modifier}, {"stat", p_text}});
+			co_await achievement_check("MOD", current_player.event, current_player, {{"modifier", modifier}, {"stat", p_text}});
 			long new_value = current_player.get_level();
 			if (new_value > old_value && new_value > 1) {
 				current_player.add_toast({ .message = tr("LEVELUP", current_player.event, new_value), .image = "level-up.png" });
-				achievement_check("LEVEL_UP", current_player.event, current_player, {{"level", new_value}});
+				co_await achievement_check("LEVEL_UP", current_player.event, current_player, {{"level", new_value}});
 			}
 			p.words++;
 			if (modifier < 0 || p_text == "notoriety" || p_text == "gold" || p_text == "silver") {

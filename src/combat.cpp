@@ -60,7 +60,7 @@ player get_pvp_opponent(const dpp::snowflake id, dpp::discord_client* shard) {
 	return player();
 }
 
-void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake opponent) {
+dpp::task<void> challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake opponent) {
 	player p = get_live_player(event, false);
 	{
 		std::lock_guard<std::mutex> l(pvp_list_lock);
@@ -78,7 +78,7 @@ void challenge_pvp(const dpp::interaction_create_t& event, const dpp::snowflake 
 		};
 	}
 	player p2 = get_pvp_opponent(event.command.usr.id, event.from);
-	send_chat(event.command.usr.id, p.paragraph, p2.name, "combat");
+	co_await send_chat(event.command.usr.id, p.paragraph, p2.name, "combat");
 	dpp::message m = dpp::message(tr("CHALLENGE_PVP", event, opponent.str(), p.name)).set_allowed_mentions(true, false, false, false, {}, {});
 	m.channel_id = p2.event.command.channel_id;
 	m.guild_id = p2.event.command.guild_id;
@@ -140,37 +140,35 @@ player set_in_pvp_combat(const dpp::interaction_create_t& event) {
 	return p1;
 }
 
-void update_opponent_message(const dpp::interaction_create_t& event, dpp::message m, const std::stringstream& output) {
+dpp::task<void> update_opponent_message(const dpp::interaction_create_t& event, dpp::message m, const std::stringstream& output) {
 	m.embeds[0].description += output.str();
 	if (has_active_pvp(event.command.usr.id)) {
 		player opponent = get_pvp_opponent(event.command.usr.id, event.from);
 		if (opponent.event.from) {
-			opponent.event.edit_original_response(m, [event, o = opponent](const auto& cc) {
-				if (cc.is_error()) {
-					player opponent = o;
-					player p = get_live_player(event, false);
-					if (opponent.stamina > 0 && p.stamina > 0) {
-						opponent.stamina = 0;
-						opponent.in_pvp_picker = false;
-						p.in_pvp_picker = false;
-						opponent.save(event.command.usr.id);
-						update_live_player(event, p);
-						update_save_opponent(event, opponent);
-						update_opponent_message(event, get_pvp_round(opponent.event), std::stringstream(tr("TIMEOUT", event, opponent.name)));
-						update_opponent_message(opponent.event, get_pvp_round(event), std::stringstream(tr("TIMEOUT", event, opponent.name)));
-						p = end_pvp_combat(event);
-						/* To the victor go the spoils */
-						p.add_experience(opponent.xp_worth());
-						send_chat(opponent.event.command.usr.id, p.paragraph, tr("WHIMS", event), "death");
-						update_save_opponent(event, opponent);
-					}
+			auto cc = co_await opponent.event.co_edit_original_response(m);
+			if (cc.is_error()) {
+				player p = get_live_player(event, false);
+				if (opponent.stamina > 0 && p.stamina > 0) {
+					opponent.stamina = 0;
+					opponent.in_pvp_picker = false;
+					p.in_pvp_picker = false;
+					opponent.save(event.command.usr.id);
+					update_live_player(event, p);
+					update_save_opponent(event, opponent);
+					update_opponent_message(event, co_await get_pvp_round(opponent.event), std::stringstream(tr("TIMEOUT", event, opponent.name)));
+					update_opponent_message(opponent.event, co_await get_pvp_round(event), std::stringstream(tr("TIMEOUT", event, opponent.name)));
+					p = end_pvp_combat(event);
+					/* To the victor go the spoils */
+					co_await p.add_experience(opponent.xp_worth());
+					co_await send_chat(opponent.event.command.usr.id, p.paragraph, tr("WHIMS", event), "death");
+					update_save_opponent(event, opponent);
 				}
-			});	
+			}
 		}
 	}	
 }
 
-void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
+dpp::task<void> accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
 	std::lock_guard<std::mutex> l(pvp_list_lock);
 	bool turn = d_random(0, 1);
 	if (id1 != 0 && id2 != 0) {
@@ -187,6 +185,7 @@ void accept_pvp(const dpp::snowflake id1, const dpp::snowflake id2) {
 			.last_updated = time(nullptr),
 		};
 	}
+	co_return;
 }
 
 player end_pvp_combat(const dpp::interaction_create_t& event) {
@@ -231,7 +230,7 @@ void swap_pvp_turn(const dpp::snowflake id) {
 	}
 }
 
-void end_abandoned_pvp() {
+dpp::task<void> end_abandoned_pvp() {
 	time_t now = time(nullptr);
 	std::map<dpp::snowflake, combat_state> pvp_list_copy;
 	{
@@ -253,17 +252,18 @@ void end_abandoned_pvp() {
 				p.save(event.command.usr.id);
 				update_live_player(event, p);
 				update_save_opponent(event, opponent);
-				update_opponent_message(event, get_pvp_round(opponent.event), std::stringstream(tr("TIMEOUT5", event, p.name)));
-				update_opponent_message(opponent.event, get_pvp_round(event), std::stringstream(tr("TIMEOUT5", event, p.name)));
+				update_opponent_message(event, co_await get_pvp_round(opponent.event), std::stringstream(tr("TIMEOUT5", event, p.name)));
+				update_opponent_message(opponent.event, co_await get_pvp_round(event), std::stringstream(tr("TIMEOUT5", event, p.name)));
 				p = end_pvp_combat(event);
 				/* To the victor go the spoils */
-				opponent.add_experience(p.xp_worth());
-				send_chat(event.command.usr.id, p.paragraph, tr("RAVAGES", event), "death");
+				co_await opponent.add_experience(p.xp_worth());
+				co_await send_chat(event.command.usr.id, p.paragraph, tr("RAVAGES", event), "death");
 				update_save_opponent(event, opponent);
-				achievement_check("PVP_TIMEOUT", event, p);
+				co_await achievement_check("PVP_TIMEOUT", event, p);
 			}
 		}
 	}
+	co_return;
 }
 
 long get_spell_rating(const std::string& name) {
@@ -272,7 +272,7 @@ long get_spell_rating(const std::string& name) {
 }
 
 
-dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
+dpp::task<dpp::message> get_pvp_round(const dpp::interaction_create_t& event) {
 	dpp::message m;
 	component_builder cb(m);
 	std::stringstream output;
@@ -335,7 +335,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 
 	if (p.stamina < 1) {
 		death(p, cb);
-		achievement_check("PVP_LOSE", event, p, {});
+		co_await achievement_check("PVP_LOSE", event, p, {});
 		p.save(event.command.usr.id);
 		update_live_player(event, p);
 	}
@@ -348,7 +348,7 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 		);
-		achievement_check("PVP_WIN", event, p, {});
+		co_await achievement_check("PVP_WIN", event, p, {});
 	}
 
 	output << "\nYour Stance: **" << (p.stance == DEFENSIVE ? "defensive " + sprite::wood03.get_mention() : "offensive " + sprite::sword008.get_mention()) << "**";
@@ -383,12 +383,12 @@ dpp::message get_pvp_round(const dpp::interaction_create_t& event) {
 
 	do_toasts(p, cb);
 
-	return m;
+	co_return m;
 }
 
-void continue_pvp_combat(const dpp::interaction_create_t& event, player p, const std::stringstream& output) {
+dpp::task<void> continue_pvp_combat(const dpp::interaction_create_t& event, player p, const std::stringstream& output) {
 
-	dpp::message m(get_pvp_round(event));
+	dpp::message m(co_await get_pvp_round(event));
 	m.embeds[0].description += output.str();
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, m, p](const auto& cc) {
@@ -397,11 +397,12 @@ void continue_pvp_combat(const dpp::interaction_create_t& event, player p, const
 			event.reply(dpp::message("Internal error displaying Pvp combat location " + std::to_string(p.paragraph) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
+	co_return;
 }
 
-bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts) {
+dpp::task<bool> pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts) {
 	if (!p.in_combat && !has_active_pvp(event.command.usr.id)) {
-		return false;
+		co_return false;
 	}
 	bool claimed{false};
 	player opponent = get_pvp_opponent(event.command.usr.id, event.from);
@@ -523,7 +524,7 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 			}
 			opponent.stamina -= SDamage;
 			opponent.skill -= KDamage;
-			achievement_check("PVP_HIT", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
+			co_await achievement_check("PVP_HIT", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
 			p.strike();
 			if (p.stamina < 4) {
 				output1 << tr("YOU_DYING", event) << " ";
@@ -564,34 +565,34 @@ bool pvp_combat_nav(const dpp::button_click_t& event, player p, const std::vecto
 		p.save(event.command.usr.id);
 		update_live_player(event, p);
 		update_save_opponent(event, opponent);
-		update_opponent_message(event, get_pvp_round(opponent.event), output2);
+		update_opponent_message(event, co_await get_pvp_round(opponent.event), output2);
 		continue_pvp_combat(event, p, output1);
 		if (p.stamina < 1 || opponent.stamina < 1) {
 			p = end_pvp_combat(event);
 			/* To the victor go the spoils */
 			if (opponent.stamina < 1) {
-				p.add_experience(opponent.xp_worth());
-				send_chat(oid, opponent.paragraph, p.name, "death");
+				co_await p.add_experience(opponent.xp_worth());
+				co_await send_chat(oid, opponent.paragraph, p.name, "death");
 			} else {
-				opponent.add_experience(p.xp_worth());
-				send_chat(event.command.usr.id, p.paragraph, opponent.name, "death");
+				co_await opponent.add_experience(p.xp_worth());
+				co_await send_chat(event.command.usr.id, p.paragraph, opponent.name, "death");
 			}
 			p.save(event.command.usr.id);
 			update_live_player(event, p);
 			update_save_opponent(event, opponent);
 		}
-		return true;
+		co_return true;
 	}
-	return false;
+	co_return false;
 
 }
 
-bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts) {
+dpp::task<bool> combat_nav(const dpp::button_click_t& event, player p, const std::vector<std::string>& parts) {
 	if (!p.in_combat) {
-		return false;
+		co_return false;
 	}
-	if (pvp_combat_nav(event, p, parts)) {
-		return true;
+	if (co_await pvp_combat_nav(event, p, parts)) {
+		co_return true;
 	}
 	bool claimed{false};
 
@@ -620,13 +621,13 @@ bool combat_nav(const dpp::button_click_t& event, player p, const std::vector<st
 
 	if (claimed) {
 		continue_combat(event, p);
-		return true;
+		co_return true;
 	}
-	return false;
+	co_return false;
 }
 
 
-void continue_combat(const dpp::interaction_create_t& event, player p) {
+dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	dpp::message m;
 	component_builder cb(m);
@@ -693,7 +694,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 		);
-		achievement_check("COMBAT_WIN", event, p, {});
+		co_await achievement_check("COMBAT_WIN", event, p, {});
 		output1 << "\n\n```ansi\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("SKILL", event), p.skill) << "\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("STAMINA", event), p.stamina) << "\n";
@@ -803,7 +804,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				EAttack = 0;
 				PAttack = 999999;
 				KAttackType = p.attack;
-				achievement_check("CRITICAL", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
+				co_await achievement_check("CRITICAL", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
 			} else {
 
 				output << tr("PVENOSAVE", event) << " **";
@@ -877,7 +878,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				EStamina -= SDamage;
 				ESkill -= KDamage;
 				p.strike();
-				achievement_check("COMBAT_HIT", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
+				co_await achievement_check("COMBAT_HIT", event, p, {{"stamina_damage", SDamage}, {"skill_damage", KDamage}});
 			}
 
 			if (!critical) {
@@ -903,7 +904,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 				} else {
 					/* Add experience on victory */
 					output << "\n\n***+" + std::to_string(p.combatant.xp_value) + " XP!***\n\n";
-					p.add_experience(p.combatant.xp_value);
+					co_await p.add_experience(p.combatant.xp_value);
 					output << "**" << fmt::format(fmt::runtime(death_message), p.combatant.name, p.name) << "**";
 				}
 			}
@@ -926,7 +927,7 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 
 		bool CombatEnded = false;
 		if (p.stamina < 1) {
-			achievement_check("COMBAT_PLAYER_DEAD", event, p, {{"enemy", p.combatant.name}});
+			co_await achievement_check("COMBAT_PLAYER_DEAD", event, p, {{"enemy", p.combatant.name}});
 			death(p, cb);
 			p.save(event.command.usr.id);
 			update_live_player(event, p);
@@ -1037,4 +1038,5 @@ void continue_combat(const dpp::interaction_create_t& event, player p) {
 		}
 	});
 
+	co_return;
 }

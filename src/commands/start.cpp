@@ -186,7 +186,7 @@ dpp::task<void> start_command::route(const dpp::slashcommand_t &event)
 	if (player_is_live(event)) {
 		player p = get_live_player(event);
 		p.event = event;
-		send_chat(event.command.usr.id, p.paragraph, "", "join");
+		co_await send_chat(event.command.usr.id, p.paragraph, "", "join");
 		co_await continue_game(event, p);
 		co_return;
 	}

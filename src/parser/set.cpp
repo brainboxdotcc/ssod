@@ -32,7 +32,7 @@ struct set_tag : public tag {
 			if (p_text == "steam_copter" && !current_player.has_flag("steamcopter")) {
 				current_player.add_flag("steamcopter");
 			}
-			achievement_check("STATE", current_player.event, current_player, {{"flag", p_text}});
+			co_await achievement_check("STATE", current_player.event, current_player, {{"flag", p_text}});
 		}
 		co_return;
 	}

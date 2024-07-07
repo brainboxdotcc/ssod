@@ -34,7 +34,7 @@ struct tempset_tag : public tag {
 		db::query("INSERT INTO timed_flags (user_id, flag, expiry) VALUES(?,?,?) ON DUPLICATE KEY UPDATE expiry = ?", {
 			current_player.event.command.usr.id, p_text, expiry, expiry
 		});
-		achievement_check("TEMP_STATE", current_player.event, current_player, {{"flag", p_text}});
+		co_await achievement_check("TEMP_STATE", current_player.event, current_player, {{"flag", p_text}});
 		co_return;
 	}
 };

@@ -878,13 +878,23 @@ dpp::snowflake player::get_user() {
 	return event.command.usr.id;
 }
 
-void player::add_experience(long modifier) {
+dpp::task<void> player::add_experience(long modifier) {
 	long old_value = get_level();
 	experience = std::max((long)0, experience + modifier);
 	long new_value = get_level();
 	if (new_value > old_value && new_value > 1) {
 		add_toast({ .message = tr("LEVELUP", event, new_value), .image = "level-up.png" });
-		achievement_check("LEVEL_UP", event, *this, {{"level", new_value}});
+		co_await achievement_check("LEVEL_UP", event, *this, {{"level", new_value}});
+	}
+}
+
+void player::blocking_add_experience(long modifier) {
+	long old_value = get_level();
+	experience = std::max((long)0, experience + modifier);
+	long new_value = get_level();
+	if (new_value > old_value && new_value > 1) {
+		add_toast({ .message = tr("LEVELUP", event, new_value), .image = "level-up.png" });
+		blocking_achievement_check("LEVEL_UP", event, *this, {{"level", new_value}});
 	}
 }
 

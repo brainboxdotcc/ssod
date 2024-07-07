@@ -28,5 +28,6 @@
 #include "game_player.h"
 #include "paragraph.h"
 
-void achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables = {}, const paragraph& para = paragraph());
+dpp::task<void> achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables = {}, const paragraph& para = paragraph());
+void blocking_achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables = {}, const paragraph& para = paragraph());
 void unlock_achievement(player& p, const db::row& achievement);
