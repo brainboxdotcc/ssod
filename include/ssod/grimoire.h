@@ -23,5 +23,5 @@
 
 #pragma once
 
-void grimoire(const dpp::interaction_create_t& event, player p);
+dpp::task<void> grimoire(const dpp::interaction_create_t& event, player p);
 std::string pretty_duration(uint64_t diff);

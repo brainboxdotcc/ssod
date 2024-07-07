@@ -282,7 +282,8 @@ struct player {
 	void reset_to_spawn_point();
 	bool sneak_test(long monster_sneak);
 	void add_stamina(long modifier);
-	void add_experience(long modifier);
+	dpp::task<void> add_experience(long modifier);
+	void blocking_add_experience(long modifier);
 	bool is_dead();
 	bool time_up();
 	void add_skill(long modifier);

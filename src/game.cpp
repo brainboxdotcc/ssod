@@ -44,9 +44,9 @@ using namespace i18n;
 #define RESURRECT_SECS 3600
 #define RESURRECT_SECS_PREMIUM 900
 
-uint64_t get_guild_id(const player& p);
+dpp::task<uint64_t> get_guild_id(const player& p);
 
-void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type, uint64_t guild_id) {
+dpp::task<void> send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type, uint64_t guild_id) {
 	if (guild_id) {
 		db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message, guild_id) VALUES(?,?,?,?,?)",
 			  {type, user_id, paragraph, dpp::utility::utf8substr(message, 0, 140), guild_id});
@@ -55,6 +55,7 @@ void send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& me
 		db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)",
 			  {type, user_id, paragraph, dpp::utility::utf8substr(message, 0, 140)});
 	}
+	co_return;
 }
 
 void do_toasts(player &p, component_builder& cb) {
@@ -88,7 +89,7 @@ void do_toasts(player &p, component_builder& cb) {
 	}
 }
 
-void death(player& p, component_builder& cb) {
+dpp::task<void> death(player& p, component_builder& cb) {
 	p.stamina = 0;
 	p.in_pvp_picker = false;
 	std::string toast;
@@ -99,7 +100,7 @@ void death(player& p, component_builder& cb) {
 	if (!p.event.command.entitlements.empty()) {
 		when = RESURRECT_SECS_PREMIUM;
 	} else {
-		auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", {p.event.command.usr.id});
+		auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", {p.event.command.usr.id});
 		if (!rs.empty()) {
 			when = RESURRECT_SECS_PREMIUM;
 		}
@@ -148,13 +149,13 @@ void death(player& p, component_builder& cb) {
 		 .set_style(dpp::cos_link)
 	);
 
-	achievement_check("DEATH", p.event, p);
+	co_await achievement_check("DEATH", p.event, p);
 
 }
 
-void add_chat(std::string& text, const dpp::interaction_create_t& event, long paragraph_id, uint64_t guild_id) {
+dpp::task<void> add_chat(std::string& text, const dpp::interaction_create_t& event, long paragraph_id, uint64_t guild_id) {
 	text += "\n__**" + tr("CHAT", event) + "**__\n```ansi\n";
-	auto rs = db::query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND (location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) ORDER BY sent DESC, id DESC LIMIT 5", {paragraph_id, guild_id});
+	auto rs = co_await db::co_query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND (location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) ORDER BY sent DESC, id DESC LIMIT 5", {paragraph_id, guild_id});
 	for (size_t x = 0; x < 5 - rs.size(); ++x) {
 		text += std::string(80, ' ') + "\n";
 	}
@@ -208,15 +209,15 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 	bot.log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (custom_id == "deposit_gold_amount_modal" && p.in_bank) {
-		auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
+		auto bank_amount = co_await db::co_query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 		long balance_amount = atol(bank_amount[0].at("gold"));
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
 		amount = std::min(amount, p.gold);
 		amount = std::min(amount, p.max_gold() - balance_amount);
 		if (p.gold > 0 && amount > 0) {
 			p.add_gold(-amount);
-			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, amount});
-			achievement_check("BANK_DEPOSIT_GOLD", event, p, {{"amount", std::to_string(amount)}});
+			co_await db::co_query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, amount});
+			co_await achievement_check("BANK_DEPOSIT_GOLD", event, p, {{"amount", std::to_string(amount)}});
 		}
 		claimed = true;
 	} else if (parts[0] == "answer" && p.stamina > 0 && !p.in_bank && !p.in_inventory) {
@@ -226,27 +227,27 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 			p.after_fragment = 0; // Resets current combat index and announces travel
 			p.challenged_by = 0ull;
 			remove_pvp(event.command.usr.id);
-			send_chat(event.command.usr.id, p.paragraph, "", "part");
-			send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
+			co_await send_chat(event.command.usr.id, p.paragraph, "", "part");
+			co_await send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
 			p.paragraph = atol(parts[1]);
-			achievement_check("ANSWER_RIDDLE_CORRECT", event, p);
+			co_await achievement_check("ANSWER_RIDDLE_CORRECT", event, p);
 		} else {
 			p.add_toast({ .message = "### " + sprite::inv_drop.get_mention() + " " + tr("INCORRECT_RIDDLE", event), .image = "confused.png" });
-			achievement_check("ANSWER_RIDDLE_INCORRECT", event, p);
+			co_await achievement_check("ANSWER_RIDDLE_INCORRECT", event, p);
 		}
 		bot.log(dpp::ll_debug, "Answered: " + entered_answer);
 		claimed = true;
 	} else if (custom_id == "chat_modal" && p.stamina > 0) {
 		std::string message = std::get<std::string>(event.components[0].components[0].value);
-		uint64_t guild_id = get_guild_id(p);
+		uint64_t guild_id = co_await get_guild_id(p);
 		if (guild_id) {
 			bot.log(dpp::ll_info, p.event.command.locale + " " + " Chat: [G(" + std::to_string(p.paragraph) + "," + std::to_string(guild_id) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
-			send_chat(event.command.usr.id, p.paragraph, message, "chat", guild_id);
+			co_await send_chat(event.command.usr.id, p.paragraph, message, "chat", guild_id);
 		} else {
 			bot.log(dpp::ll_info, p.event.command.locale + " " + " Chat: [L(" + std::to_string(p.paragraph) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
-			send_chat(event.command.usr.id, p.paragraph, message);
+			co_await send_chat(event.command.usr.id, p.paragraph, message);
 		}
-		achievement_check("SEND_CHAT", event, p, {{"message", message}});
+		co_await achievement_check("SEND_CHAT", event, p, {{"message", message}});
 		claimed = true;
 	} else if (custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
@@ -262,7 +263,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 			db::query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = '__GOLD__'", {event.command.usr.id});
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, balance_amount - amount});
 			db::commit();
-			achievement_check("BANK_WITHDRAW_GOLD", event, p, {{"amount", std::to_string(amount)}});
+			co_await achievement_check("BANK_WITHDRAW_GOLD", event, p, {{"amount", std::to_string(amount)}});
 		}
 	}
 	if (claimed) {
@@ -297,7 +298,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			db::query("DELETE FROM game_bank WHERE id = ?", { rs[0].at("id") });
 			p.pickup_possession(stacked_item{.name = parts[0], .flags = parts[1], .qty = 1 });
 			p.inv_change = true;
-			achievement_check("BANK_WITHDRAW_ITEM", event, p, {{"item", parts[0]}, {"flags", parts[1]}});
+			co_await achievement_check("BANK_WITHDRAW_ITEM", event, p, {{"item", parts[0]}, {"flags", parts[1]}});
 		}
 		db::commit();
 		claimed = true;
@@ -312,7 +313,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,?,?)", {event.command.usr.id, parts[0], flags});
 			p.drop_possession(item{.name = parts[0], .flags = flags});
 			p.inv_change = true;
-			achievement_check("BANK_DEPOSIT_ITEM", event, p, {{"item", parts[0]}, {"flags", flags}});
+			co_await achievement_check("BANK_DEPOSIT_ITEM", event, p, {{"item", parts[0]}, {"flags", flags}});
 		}
 		db::commit();
 		claimed = true;
@@ -326,18 +327,18 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 				if (p.armour.name == parts[0]) {
 					p.armour.name = tr("NO_ARMOUR", event) + " 👙";
 					p.armour.rating = 0;
-					achievement_check("NAKED", event, p, {});
+					co_await achievement_check("NAKED", event, p, {});
 				} else if (p.weapon.name == parts[0]) {
 					p.weapon.name = tr("NO_WEAPON", event) + " 👊";
 					p.weapon.rating = 0;
-					achievement_check("BARE_FISTED", event, p, {});
+					co_await achievement_check("BARE_FISTED", event, p, {});
 				}
 				/* Drop to floor */
 				db::query(
 					"INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)",
 					{p.paragraph, parts[0], parts.size() >= 2 ? parts[1] : ""});
-				send_chat(event.command.usr.id, p.paragraph, parts[0], "drop");
-				achievement_check("DROP_ITEM", event, p, {{"item", parts[0]}, {"value", si.value}});
+				co_await send_chat(event.command.usr.id, p.paragraph, parts[0], "drop");
+				co_await achievement_check("DROP_ITEM", event, p, {{"item", parts[0]}, {"value", si.value}});
 			}
 		}
 		claimed = true;
@@ -351,7 +352,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 				trigger_effect(bot, event, p, "Spell", parts[0]);
 			}
 		}
-		achievement_check("CAST_SPELL", event, p, {{"spell", parts[0]}});
+		co_await achievement_check("CAST_SPELL", event, p, {{"spell", parts[0]}});
 		p.in_grimoire = false;
 		claimed = true;
 	} else if (custom_id == "cook" && !event.values.empty() && p.in_campfire && p.stamina > 0) {
@@ -410,10 +411,10 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			/* Replace ingredients with cooked meal */
 			if (dpp::lowercase(parts[0]).find("rations") != std::string::npos) {
 				p.add_rations(p.profession == prof_woodsman ? dice() + dice() : dice());
-				achievement_check("COOK_RATIONS", event, p, {{"name", parts[0]}});
+				co_await achievement_check("COOK_RATIONS", event, p, {{"name", parts[0]}});
 			} else {
 				p.possessions.emplace_back(stacked_item{.name = parts[0], .flags = "[none]", .qty = 1});
-				achievement_check("COOK_MEAL", event, p, {{"name", parts[0]}});
+				co_await achievement_check("COOK_MEAL", event, p, {{"name", parts[0]}});
 			}
 			p.inv_change = true;
 		}
@@ -422,15 +423,15 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() >= 2 && p.has_possession(parts[0])) {
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
-			achievement_check("USE_ITEM", event, p, {{"name", parts[0]},{"flags", parts[1]}});
+			co_await achievement_check("USE_ITEM", event, p, {{"name", parts[0]},{"flags", parts[1]}});
 			auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
 				trigger_effect(bot, event, p, "Consumable", parts[0]);
-				achievement_check("USE_CONSUMABLE", event, p, {{"name", parts[0]}});
+				co_await achievement_check("USE_CONSUMABLE", event, p, {{"name", parts[0]}});
 			}
 			auto food = db::query("SELECT * FROM food WHERE name = ?", {parts[0]});
 			if (!food.empty()) {
-				achievement_check("EAT_FOOD", event, p, {{"name", parts[0]},{"food", food[0]}});
+				co_await achievement_check("EAT_FOOD", event, p, {{"name", parts[0]},{"food", food[0]}});
 				p.add_stamina(atol(food[0].at("stamina_change")));
 				p.add_skill(atol(food[0].at("skill_change")));
 				p.add_luck(atol(food[0].at("luck_change")));
@@ -454,7 +455,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 					p.add_speed(modifier);
 				} else if (flags.substr(0, 2) == "EX") {
 					long modifier = atol(flags.substr(2, flags.length() - 2));
-					p.add_experience(modifier);
+					co_await p.add_experience(modifier);
 				} else if (flags.substr(0, 2) == "LK") {
 					long modifier = atol(flags.substr(2, flags.length() - 2));
 					p.add_luck(modifier);
@@ -471,7 +472,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 	} else if (custom_id == "equip_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() >= 2 && p.has_possession(parts[0])) {
-			achievement_check("EQUIP_ITEM", event, p, {{"name", parts[0]},{"rating", parts[1]}});
+			co_await achievement_check("EQUIP_ITEM", event, p, {{"name", parts[0]},{"rating", parts[1]}});
 			if (parts[1][0] == 'W') {
 				std::string rating = parts[1].substr(1, parts[1].length());
 				p.weapon = rated_item{.name = parts[0], .rating = atol(rating)};
@@ -487,23 +488,23 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		if (p.has_possession(parts[0]) && s.sellable && !s.quest_item && dpp::lowercase(parts[0]) != "scroll") {
 			if (p.armour.name == parts[0]) {
 				p.armour.name = tr("NO_ARMOUR", event) + " 👙";
-				achievement_check("NAKED", event, p, {});
+				co_await achievement_check("NAKED", event, p, {});
 				p.armour.rating = 0;
 			} else if (p.weapon.name == parts[0]) {
 				p.weapon.name = tr("NO_WEAPON", event) + " 👊";
-				achievement_check("BARE_FISTED", event, p, {});
+				co_await achievement_check("BARE_FISTED", event, p, {});
 				p.weapon.rating = 0;
 			}
 			p.drop_possession(item{.name = parts[0], .flags = ""});
 			p.add_gold(s.value);
 			p.inv_change = true;
-			achievement_check("SELL_ITEM", event, p, {{"name", parts[0]},{"value", s.value}});
+			co_await achievement_check("SELL_ITEM", event, p, {{"name", parts[0]},{"value", s.value}});
 		}
 		claimed = true;
 	} else if (custom_id == "fight_pvp" && p.in_pvp_picker && !event.values.empty()) {
 		dpp::snowflake user(event.values[0]);
-		challenge_pvp(event, user);
-		achievement_check("CHALLENGE_PVP", event, p, {{"other_user", event.values[0]}});
+		co_await challenge_pvp(event, user);
+		co_await achievement_check("CHALLENGE_PVP", event, p, {{"other_user", event.values[0]}});
 		claimed = true;
 	}
 	if (claimed) {
@@ -532,7 +533,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	event.from->log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (p.in_combat) {
-		if (combat_nav(event, p, parts)) {
+		if (co_await combat_nav(event, p, parts)) {
 			co_return;
 		}
 	}
@@ -549,8 +550,8 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			p.after_fragment = 0; // Resets current combat index and announces travel
 			p.challenged_by = 0ull;
 			remove_pvp(event.command.usr.id);
-			send_chat(event.command.usr.id, atoi(parts[2]), "", "part");
-			send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
+			co_await send_chat(event.command.usr.id, atoi(parts[2]), "", "part");
+			co_await send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
 		}
 		long dest = atol(parts[1]);
 		if (paragraph::valid_next(p.paragraph, dest)) {
@@ -559,7 +560,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		} else {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID NAV FROM " + std::to_string(p.paragraph) + " TO " + std::to_string(dest));
 		}
-		achievement_check("VIEW_LOCATION", event, p, {{"loc_id", parts[1]}});
+		co_await achievement_check("VIEW_LOCATION", event, p, {{"loc_id", parts[1]}});
 		claimed = true;
 	} else if (parts[0] == "player_reset") {
 		claimed = true;
@@ -614,7 +615,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 					catch (const regex_exception& e) {
 						bot.log(dpp::ll_error, std::string("Regular expression error: ") + e.what());
 					}
-					achievement_check("CURED", event, p, {{"disease", flags}});
+					co_await achievement_check("CURED", event, p, {{"disease", flags}});
 				} else if (flags == "HERB") {
 					if (!p.has_herb(name)) {
 						p.gold -= cost;
@@ -625,7 +626,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 						if (!p.has_flag("SCROLL", p.paragraph)) {
 							p.gold -= cost;
 							p.scrolls++;
-							achievement_check("SCROLL", p.event, p, {{"scrolls", p.scrolls}});
+							co_await achievement_check("SCROLL", p.event, p, {{"scrolls", p.scrolls}});
 							p.add_flag("SCROLL", p.paragraph);
 						}
 					} else {
@@ -661,7 +662,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 					}
 				}
 				p.inv_change = true;
-				achievement_check("SHOP_BUY", event, p, {{"name", name}, {"cost", cost}});
+				co_await achievement_check("SHOP_BUY", event, p, {{"name", name}, {"cost", cost}});
 			}
 		}
 		claimed = true;
@@ -689,14 +690,14 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			.weapon = atol(parts[5]),
 			.xp_value = atol(parts[6]),
 		};
-		achievement_check("COMBAT", event, p, {{"enemy", {{"name", monster_name}, {"stamina", parts[3]}, {"skill", parts[3]}, {"armour", parts[3]}, {"weapon", parts[3]}}}});
+		co_await achievement_check("COMBAT", event, p, {{"enemy", {{"name", monster_name}, {"stamina", parts[3]}, {"skill", parts[3]}, {"armour", parts[3]}, {"weapon", parts[3]}}}});
 		claimed = true;
 	} else if (parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID BANK FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
 			co_return;
 		}
-		achievement_check("ENTER_BANK", event, p, {});
+		co_await achievement_check("ENTER_BANK", event, p, {});
 		p.in_bank = true;
 		claimed = true;
 	} else if (parts[0] == "answer" && !p.in_combat && !p.in_inventory) {
@@ -765,7 +766,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 				}
 				p.inv_change = true;
 				p.add_flag("PICKED", p.paragraph);
-				achievement_check("CHOOSE_ITEM", event, p, {{"name", parts[3]}, {"flags", parts[4]}});
+				co_await achievement_check("CHOOSE_ITEM", event, p, {{"name", parts[3]}, {"flags", parts[4]}});
 			}
 		}
 		claimed = true;
@@ -794,7 +795,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		db::query("DELETE FROM criticals WHERE user_id = ?", { event.command.usr.id });
 		update_live_player(event, new_p);
 		new_p.save(event.command.usr.id);
-		achievement_check("RESPAWN", event, p, {});
+		co_await achievement_check("RESPAWN", event, p, {});
 		p = new_p;
 		claimed = true;
 	} else if (parts[0] == "resurrect") {
@@ -826,21 +827,21 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			update_live_player(event, p);
 			p.save(event.command.usr.id);
 			claimed = true;
-			achievement_check("RESURRECT", event, p, {});
+			co_await achievement_check("RESURRECT", event, p, {});
 		}
 	} else if (parts[0] == "inventory" && parts.size() >= 2 && !p.in_combat && p.stamina > 0) {
 		p.in_inventory = true;
 		p.inventory_page = atoi(parts[1].c_str());
-		achievement_check("ENTER_INVENTORY", event, p, {});
+		co_await achievement_check("ENTER_INVENTORY", event, p, {});
 		claimed = true;
 	} else if (parts[0] == "grimoire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_grimoire = true;
 		claimed = true;
-		achievement_check("ENTER_GRIMOIRE", event, p, {});
+		co_await achievement_check("ENTER_GRIMOIRE", event, p, {});
 	} else if (parts[0] == "campfire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_campfire = true;
 		claimed = true;
-		achievement_check("ENTER_CAMPFIRE", event, p, {});
+		co_await achievement_check("ENTER_CAMPFIRE", event, p, {});
 	} else if (parts[0] == "hunt" && parts.size() >= 2 && !p.in_combat && p.stamina > 0) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID HUNT FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
@@ -942,11 +943,11 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 					ss << "* 1x __" << i.name << "__\n";
 					p.possessions.emplace_back(stacked_item{ .name = part, .flags = "[none]", .qty = 1 });
 				}
-				achievement_check("HUNT_SUCCESS", event, p, {{"name", part}, {"animal", english_name}, {"localised_name", i.name}, {"localised_animal", animal_name}});
+				co_await achievement_check("HUNT_SUCCESS", event, p, {{"name", part}, {"animal", english_name}, {"localised_name", i.name}, {"localised_animal", animal_name}});
 				p.inv_change = true;
 			} else {
 				ss << tr("FAILED_HUNT", event) << "\n";
-				achievement_check("HUNT_FAILURE", event, p);
+				co_await achievement_check("HUNT_FAILURE", event, p);
 				p.add_stamina(-1);
 			}
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
@@ -956,7 +957,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << tr("NOTHING_HUNT", event) << "*\n\n" << tr("FAILED_HUNT", event) << "\n";
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
 			p.add_stamina(-1);
-			achievement_check("HUNT_FAILURE", event, p);
+			blocking_achievement_check("HUNT_FAILURE", event, p);
 			if (!rs[0].at("hunting_json").empty()) {
 				bot.log(dpp::ll_error, "Error in hunting, location " + std::to_string(p.paragraph) + ": " + std::string(e.what()));
 			}
@@ -986,10 +987,10 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 					p.pickup_possession(i);
 				}
 				p.inv_change = true;
-				send_chat(event.command.usr.id, p.paragraph, name, "pickup");
+				co_await send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 			}
 			db::commit();
-			achievement_check("PICKUP_FLOOR_ITEM", event, p, {{"name", name}, {"flags", flags}});
+			co_await achievement_check("PICKUP_FLOOR_ITEM", event, p, {{"name", name}, {"flags", flags}});
 		}
 		claimed = true;
 	} else if (parts[0] == "exit_inventory" && parts.size() == 1 && !p.in_combat) {
@@ -1033,7 +1034,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		if (p2.event.from) {
 			p2.event.edit_original_response(m);
 		}
-		achievement_check("PVP_ACCEPT", event, p, {{"opponent", opponent.str()}});
+		co_await achievement_check("PVP_ACCEPT", event, p, {{"opponent", opponent.str()}});
 		claimed = true;
 	} else if (parts[0] == "pvp_accept" && p.stamina > 0) {
 		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
@@ -1041,8 +1042,8 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 		p.in_pvp_picker = false;
 		p = set_in_pvp_combat(event);
-		update_opponent_message(event, get_pvp_round(p2.event), std::stringstream());
-		achievement_check("PVP_ACCEPT", event, p, {{"opponent", opponent.str()}});
+		update_opponent_message(event, co_await get_pvp_round(p2.event), std::stringstream());
+		co_await achievement_check("PVP_ACCEPT", event, p, {{"opponent", opponent.str()}});
 		claimed = true;
 	} else if (parts[0] == "chat" && p.stamina > 0) {
 		dpp::interaction_modal_response modal(security::encrypt("chat_modal"), "Chat",	{
@@ -1108,18 +1109,18 @@ dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
 	return emoji;
 }
 
-void bank(const dpp::interaction_create_t& event, player p) {
+dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
 
-	auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
+	auto bank_amount = co_await db::co_query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 	long amount = atol(bank_amount[0].at("gold"));
 	content << "__**" << tr("BANK_WELCOME", event) << "**__\n\n";
 	content << tr("BANK_MAX", event, p.max_gold()) << "\n";
 	content << tr("SILVER_UPSELL", event) << "\n";
 
 	std::ranges::sort(p.possessions, [](const stacked_item &a, const stacked_item& b) -> bool { return a.name < b.name; });
-	auto bank_items = db::query("SELECT owner_id, item_desc, item_flags, COUNT(item_desc) AS qty FROM `game_bank` where owner_id = ? and item_desc != ? GROUP BY owner_id, item_desc, item_flags ORDER BY item_desc LIMIT 25",{event.command.usr.id, "__GOLD__"});
+	auto bank_items = co_await db::co_query("SELECT owner_id, item_desc, item_flags, COUNT(item_desc) AS qty FROM `game_bank` where owner_id = ? and item_desc != ? GROUP BY owner_id, item_desc, item_flags ORDER BY item_desc LIMIT 25",{event.command.usr.id, "__GOLD__"});
 	if (!bank_items.empty()) {
 		content << "\n__**" << bank_items.size() << "/25 " << tr("BANK_ITEMS", event) << "**__\n";
 		for (const auto& bank_item : bank_items) {
@@ -1240,12 +1241,12 @@ void bank(const dpp::interaction_create_t& event, player p) {
 	});
 }
 
-void pvp_picker(const dpp::interaction_create_t& event, player p) {
+dpp::task<void> pvp_picker(const dpp::interaction_create_t& event, player p) {
 	dpp::cluster& bot = *(event.from->creator);
 	std::stringstream content;
 
 	int64_t t = time(nullptr) - 600;
-	auto others = db::query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
+	auto others = co_await db::co_query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
 	dpp::snowflake opponent_id = get_pvp_opponent_id(event.command.usr.id);
 
 	if (opponent_id.empty()) {
@@ -1322,12 +1323,12 @@ void pvp_picker(const dpp::interaction_create_t& event, player p) {
 	});
 }
 
-uint64_t get_guild_id(const player& p) {
+dpp::task<uint64_t> get_guild_id(const player& p) {
 	auto rs = db::query("SELECT guild_id FROM guild_members WHERE user_id = ?", { p.event.command.usr.id });
 	if (!rs.empty()) {
-		return atoll(rs[0].at("guild_id"));
+		co_return atoll(rs[0].at("guild_id"));
 	}
-	return 0;
+	co_return 0;
 }
 
 dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) {
@@ -1339,19 +1340,19 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		}
 		co_return;
 	} else if (p.in_pvp_picker) {
-		pvp_picker(event, p);
+		co_await pvp_picker(event, p);
 		co_return;
 	} else if (p.in_inventory) {
-		inventory(event, p);
+		co_await inventory(event, p);
 		co_return;
 	} else if (p.in_grimoire) {
-		grimoire(event, p);
+		co_await grimoire(event, p);
 		co_return;
 	} else if (p.in_campfire) {
-		campfire(event, p);
+		co_await campfire(event, p);
 		co_return;
 	} else if (p.in_bank) {
-		bank(event, p);
+		co_await bank(event, p);
 		co_return;
 	}
 	paragraph location(p.paragraph, p, event.command.usr.id);
@@ -1393,7 +1394,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 
 	m.add_embed(embed);
 	int64_t t = time(nullptr) - 600;
-	auto others = db::query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
+	auto others = co_await db::co_query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
 	if (others.size() > 0 || location.dropped_items.size() > 0) {
 		std::string list_others, list_dropped, text;
 		for (const auto & other : others) {
@@ -1418,14 +1419,14 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 				text += "**__" + tr("ITEMS", event) + "__**\n" + list_dropped + "\n\n";
 			}
 		}
-		add_chat(text, p.event, location.id, get_guild_id(p));
+		co_await add_chat(text, p.event, location.id, co_await get_guild_id(p));
 		m.add_embed(dpp::embed()
 			.set_colour(EMBED_COLOUR)
 			.set_description(text)
 		);
 	} else {
 		std::string text = "";
-		add_chat(text, p.event, location.id, get_guild_id(p));
+		co_await add_chat(text, p.event, location.id, co_await get_guild_id(p));
 		m.add_embed(dpp::embed()
 			.set_colour(EMBED_COLOUR)
 			.set_description(text)
@@ -1584,7 +1585,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 			.set_disabled(p.possessions.size() >= p.max_inventory_slots())
 		);
 
-		auto r = db::query("SELECT hunting_json FROM game_locations WHERE id = ?", {p.paragraph});
+		auto r = co_await db::co_query("SELECT hunting_json FROM game_locations WHERE id = ?", {p.paragraph});
 		if (!r.empty() && !r[0].at("hunting_json").empty()) {
 			try {
 				json hunt_data = json::parse(r[0].at("hunting_json"));

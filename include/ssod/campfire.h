@@ -23,4 +23,4 @@
 
 #pragma once
 
-void campfire(const dpp::interaction_create_t& event, player p);
+dpp::task<void> campfire(const dpp::interaction_create_t& event, player p);

@@ -107,7 +107,7 @@ struct combat_tag : public tag {
 						}
 						current_player.add_stamina(-atol(illness.at("stamina_debuff").c_str()));
 						current_player.add_toast({ .message = tr("DISEASED", current_player.event, name, illness.at("stamina_debuff")), .image = "diseased.png" });
-						achievement_check("PLAGUE", current_player.event, current_player, {{"loss", atol(illness.at("stamina_debuff").c_str())}});
+						co_await achievement_check("PLAGUE", current_player.event, current_player, {{"loss", atol(illness.at("stamina_debuff").c_str())}});
 						p.sick = true;
 					}
 				}

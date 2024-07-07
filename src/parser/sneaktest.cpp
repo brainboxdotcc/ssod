@@ -39,7 +39,7 @@ struct sneaktest_tag : public tag {
 		output << (p.auto_test ? " **" + tr("PASS", current_player.event) + "**!\n" : " **" + tr("FAIL", current_player.event) + "**!\n");
 		p.words++;
 		p.safe = false;
-		achievement_check("TEST_SNEAK", current_player.event, current_player, {{"success", p.auto_test}, {"enemy", monster_name}});
+		co_await achievement_check("TEST_SNEAK", current_player.event, current_player, {{"success", p.auto_test}, {"enemy", monster_name}});
 
 		co_return;
 	}

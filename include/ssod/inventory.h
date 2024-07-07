@@ -23,4 +23,4 @@
 
 #pragma once
 
-void inventory(const dpp::interaction_create_t& event, player p);
+dpp::task<void> inventory(const dpp::interaction_create_t& event, player p);

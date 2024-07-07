@@ -28,7 +28,7 @@ struct setglobal_tag : public tag {
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
 		db::query("REPLACE INTO game_global_flags (flag) VALUES(?)", {p_text});
-		achievement_check("GLOBAL_STATE", current_player.event, current_player, {{"flag", p_text}});
+		co_await achievement_check("GLOBAL_STATE", current_player.event, current_player, {{"flag", p_text}});
 		co_return;
 	}
 };

@@ -28,7 +28,7 @@ struct eat_tag : public tag {
 		if (!p.didntmove) {
 			current_player.eat_ration();
 			p.safe = false;
-			achievement_check("FORCED_EAT", current_player.event, current_player);
+			co_await achievement_check("FORCED_EAT", current_player.event, current_player);
 		}
 		co_return;
 	}
