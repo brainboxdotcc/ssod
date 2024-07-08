@@ -55,7 +55,12 @@ int main(int argc, char const *argv[]) {
 	bot.set_websocket_protocol(dpp::ws_etf);
 
 	security::init(bot);
-	js::init(bot);
+	js::init(
+		bot,
+		config::exists("js_thread_pool_size") ?
+		config::get("js_thread_pool_size").get<int>() :
+		std::thread::hardware_concurrency()
+	);
 
 	bot.on_log(&logger::log);
 	bot.on_guild_create(&listeners::on_guild_create);

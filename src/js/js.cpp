@@ -1,8 +1,8 @@
 /************************************************************************************
  * 
- * Sporks, the learning, scriptable Discord bot!
+ * The Seven Spells Of Destruction
  *
- * Copyright 2019 Craig Edwards <support@sporks.gg>
+ * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 namespace js {
 
 dpp::cluster* bot = nullptr;
-thread_pool* pool{};
+std::unique_ptr<thread_pool> pool{};
 
 void sandbox_fatal(void *udata, const char *msg);
 
@@ -137,9 +137,9 @@ static duk_ret_t js_exit(duk_context *cx) {
 	throw exit_exception();
 }
 
-void init(dpp::cluster& _bot) {
+void init(dpp::cluster& _bot, int thread_pool_size) {
 	bot = &_bot;
-	pool = new thread_pool();
+	pool = std::make_unique<thread_pool>(thread_pool_size);
 }
 
 static duk_ret_t js_get_name(duk_context *cx) {
@@ -1164,6 +1164,9 @@ static duk_ret_t js_unlock_ach(duk_context *cx) {
 
 void run(const std::string& script, paragraph& p, player& current_player, const var_list &vars, const js_callback& callback) {
 	pool->enqueue([script, vp = p, v_player = current_player, vars, callback]() {
+		/**
+		 * Ownership safety: Take a copy of the player and paragraph
+		 */
 		player current_player = v_player;
 		paragraph p = vp;
 		js::run(script, p, current_player, vars);
@@ -1173,7 +1176,7 @@ void run(const std::string& script, paragraph& p, player& current_player, const 
 	});
 }
 
-dpp::async<script_result> co_run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars) {
+dpp::async<script_result> co_run(const std::string& script, paragraph& p, player& current_player, const var_list& vars) {
 	return dpp::async<script_result>{ [script, vp = p, v_player = current_player, vars] <typename C> (C &&cc) {
 		player current_player = v_player;
 		paragraph p = vp;
@@ -1181,7 +1184,7 @@ dpp::async<script_result> co_run(const std::string& script, paragraph& p, player
 	}};
 }
 
-bool run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars) {
+bool run(const std::string& script, paragraph& p, player& current_player, const var_list& vars) {
 	duk_int_t ret;
 
 	duk_context* ctx = duk_create_heap(nullptr, nullptr, nullptr, (void*)&p, sandbox_fatal);
