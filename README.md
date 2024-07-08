@@ -69,7 +69,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 ## Software Dependencies
 
 * [D++](https://github.com/brainboxdotcc/dpp) v10.0.30 or later
-* * D++ must be built with `-DDPP_CORO=ON`
+  * D++ must be built with `-DDPP_CORO=ON`
 * libcrypto/libssl
 * libmysqlclient 8.x
 * zlib
