@@ -137,8 +137,8 @@ const std::string b64decode(const void* data, size_t len) {
 }
 
 namespace security {
-	aes256_cbc* enc = nullptr;
-	dpp::cluster* bot = nullptr;
+	std::unique_ptr<aes256_cbc> enc{};
+	dpp::cluster* bot{nullptr};
 
 	std::string random_string(size_t len) {
 		std::string out;
@@ -149,7 +149,7 @@ namespace security {
 	}
 
 	void init(dpp::cluster& creator) {
-		enc = new aes256_cbc(str_to_bytes(config::get("encryption")["iv"]));
+		enc = std::make_unique<aes256_cbc>(str_to_bytes(config::get("encryption")["iv"]));
 		bot = &creator;
 	}
 
