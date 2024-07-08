@@ -30,7 +30,7 @@ struct script_tag : public tag {
 			script += " " + partial;
 			paragraph_content >> partial;
 		}
-		js::run(script, p, current_player, {
+		js::script_result r = co_await js::co_run(script, p, current_player, {
 			{"player", {
 				{"stance", current_player.stance},
 				{"attack", current_player.attack},
@@ -88,6 +88,8 @@ struct script_tag : public tag {
 				{"didntmove", p.didntmove},
 			}}
 		});
+		p = r.p;
+		current_player = r.current_player;
 		co_return;
 	}
 };

@@ -29,9 +29,9 @@
 
 using namespace i18n;
 
-static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
-	if (!player_is_live(event)) {
-		return;
+static dpp::task<void> autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
+	if (!(co_await player_is_live(event))) {
+		co_return;
 	}
 	player p = get_live_player(event, false);
 	dpp::interaction_response ir(dpp::ir_autocomplete_reply);
@@ -48,12 +48,12 @@ static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, co
 }
 
 dpp::slashcommand rename_command::register_command(dpp::cluster& bot) {
-	bot.on_autocomplete([&bot](const dpp::autocomplete_t & event) {
+	bot.on_autocomplete([&bot](const dpp::autocomplete_t & event) -> dpp::task<void> {
 		if (event.name != "rename") {
-			return;
+			co_return;
 		}
 		std::string partial = std::get<std::string>(event.options[0].value);
-		autocomplete(bot, event, partial);
+		co_await autocomplete(bot, event, partial);
 	});
 
 	return tr(dpp::slashcommand("cmd_rename", "rename_desc", bot.me.id)
@@ -65,12 +65,12 @@ dpp::slashcommand rename_command::register_command(dpp::cluster& bot) {
 dpp::task<void> rename_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
-	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
+	auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
 	if (event.command.entitlements.empty() && rs.empty()) {
 		premium_required(event);
 		co_return;
 	}
-	if (!player_is_live(event)) {
+	if (!(co_await player_is_live(event))) {
 		event.reply(dpp::message(tr("NOPROFILE", event)).set_flags(dpp::m_ephemeral));
 		co_return;
 	}
@@ -80,7 +80,7 @@ dpp::task<void> rename_command::route(const dpp::slashcommand_t &event)
 	player p = get_live_player(event, false);
 	newname = replace_string(newname, ";", "");
 
-	auto r = db::query("SELECT * FROM game_item_descs WHERE (name = ? OR name = ?) AND (quest_item = 1 OR sellable = 0)", {oldname, newname});
+	auto r = co_await db::co_query("SELECT * FROM game_item_descs WHERE (name = ? OR name = ?) AND (quest_item = 1 OR sellable = 0)", {oldname, newname});
 	if (!r.empty()) {
 		event.reply(dpp::message(tr("INVALIDRENAME", event, oldname, newname)).set_flags(dpp::m_ephemeral));
 		co_return;

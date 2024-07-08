@@ -34,7 +34,7 @@ using namespace i18n;
 dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 {
 	bot.on_button_click([](const dpp::button_click_t &event) -> dpp::task<void> {
-		if (player_is_live(event)) {
+		if (co_await player_is_live(event)) {
 			co_return;
 		}
 		player p_old = get_registering_player(event);
@@ -49,7 +49,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			player p_new(true);
 			p_new.event = p_old.event;
 			update_registering_player(event, p_new);
-			p_new.event.edit_original_response(p_new.get_registration_message(bot, event));
+			p_new.event.edit_original_response(co_await p_new.get_registration_message(bot, event));
 		} else if (custom_id == "player_herb_spell_selection" && p_old.state == state_roll_stats) {
 			event.reply();
 			p_old.state = state_pick_magic;
@@ -59,7 +59,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			p_old.sneak += bonuses_numeric(4, p_old.race, p_old.profession);
 			p_old.speed += bonuses_numeric(5, p_old.race, p_old.profession);
 			update_registering_player(event, p_old);
-			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
+			p_old.event.edit_original_response(co_await p_old.get_magic_selection_message(bot, event));
 		} else if (custom_id == "player_name" && p_old.state == state_pick_magic) {
 			p_old.state = state_name_player;
 			update_registering_player(event, p_old);
@@ -84,7 +84,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 	});
 	
 	bot.on_select_click([](const dpp::select_click_t &event) -> dpp::task<void> {
-		if (player_is_live(event)) {
+		if (co_await player_is_live(event)) {
 			co_return;
 		}
 		event.reply();
@@ -97,15 +97,15 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id == "select_player_race" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.race = (player_race)atoi(event.values[0]);
 			update_registering_player(event, p_old);
-			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
+			p_old.event.edit_original_response(co_await p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_gender" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.gender = event.values[0];
 			update_registering_player(event, p_old);
-			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
+			p_old.event.edit_original_response(co_await p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_profession" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.profession = (player_profession)atoi(event.values[0]);
 			update_registering_player(event, p_old);
-			p_old.event.edit_original_response(p_old.get_registration_message(bot, event));
+			p_old.event.edit_original_response(co_await p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_herbs" && p_old.state == state_pick_magic) {
 			p_old.herbs.clear();
 			for (const auto & h : event.values) {
@@ -113,7 +113,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			}
 			p_old.inv_change = true;
 			update_registering_player(event, p_old);
-			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
+			p_old.event.edit_original_response(co_await p_old.get_magic_selection_message(bot, event));
 		} else if (custom_id == "select_player_spells" && p_old.state == state_pick_magic) {
 			p_old.spells.clear();
 			for (const auto & s : event.values) {
@@ -121,7 +121,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			}
 			p_old.inv_change = true;
 			update_registering_player(event, p_old);
-			p_old.event.edit_original_response(p_old.get_magic_selection_message(bot, event));
+			p_old.event.edit_original_response(co_await p_old.get_magic_selection_message(bot, event));
 		} else {
 			event.reply(dpp::message(tr("EXPIRED", event, sprite::skull.get_mention())).set_flags(dpp::m_ephemeral));
 		}
@@ -129,7 +129,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 	});
 
 	bot.on_form_submit([&bot](const dpp::form_submit_t & event) -> dpp::task<void> {
-		if (player_is_live(event)) {
+		if (co_await player_is_live(event)) {
 			co_return;
 		}
 		player p_old = get_registering_player(event);
@@ -145,10 +145,10 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 				bot.log(dpp::ll_warning, "Potty-mouth player name: " + name + " censored for id: " + event.command.usr.id.str());
 				name = swear_filter.censored_content;
 			}
-			auto check = db::query("SELECT * FROM game_default_users WHERE name = ?", {name});
+			auto check = co_await db::co_query("SELECT * FROM game_default_users WHERE name = ?", {name});
 			if (!check.empty()) {
 				event.reply();
-				dpp::message m = p_old.get_magic_selection_message(bot, event);
+				dpp::message m = co_await p_old.get_magic_selection_message(bot, event);
 				m.embeds[0].description += "\n\n## " + tr("EXISTS", event);
 				p_old.event.edit_original_response(m);
 				co_return;
@@ -161,8 +161,8 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			p_old.save(event.command.usr.id, true);
 			p_old.event = event;
 			move_from_registering_to_live(event, p_old);
-			db::query("DELETE FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
-			db::query("INSERT INTO game_default_spells (user_id, name, flags) SELECT user_id, item_desc, item_flags FROM game_owned_items WHERE user_id = ? AND item_flags in ('HERB','SPELL')", {event.command.usr.id});
+			co_await db::co_query("DELETE FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
+			co_await db::co_query("INSERT INTO game_default_spells (user_id, name, flags) SELECT user_id, item_desc, item_flags FROM game_owned_items WHERE user_id = ? AND item_flags in ('HERB','SPELL')", {event.command.usr.id});
 			co_await continue_game(event, p_old);
 			bot.log(dpp::ll_info, "New player creation: " + name + " for id: " + event.command.usr.id.str());
 		}
@@ -176,14 +176,14 @@ dpp::task<void> start_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster* bot = event.from->creator;
 
 	if (config::exists("dev") && config::get("dev") == true) {
-		auto admin_rs = db::query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
+		auto admin_rs = co_await db::co_query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
 		if (admin_rs.empty()) {
 			event.reply(dpp::message("This is the development copy of Seven Spells Of Destruction. Only developers of the game may play on this instance.").set_flags(dpp::m_ephemeral));
 			co_return;
 		}
 	}
 
-	if (player_is_live(event)) {
+	if (co_await player_is_live(event)) {
 		player p = get_live_player(event);
 		p.event = event;
 		co_await send_chat(event.command.usr.id, p.paragraph, "", "join");
@@ -196,6 +196,6 @@ dpp::task<void> start_command::route(const dpp::slashcommand_t &event)
 	p.event = event;
 	update_registering_player(event, p);
 
-	event.reply(p.get_registration_message(*bot, event));
+	event.reply(co_await p.get_registration_message(*bot, event));
 	co_return;
 }

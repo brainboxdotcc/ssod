@@ -28,7 +28,7 @@ struct unset_tag : public tag {
 		// set a state-flag
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
-		db::query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, "gamestate_" + p_text + "%"});
+		co_await db::co_query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, "gamestate_" + p_text + "%"});
 		co_return;
 	}
 };

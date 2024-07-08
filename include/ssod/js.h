@@ -28,6 +28,19 @@
 #include <ssod/game_player.h>
 
 namespace js {
+
+	using var_list = std::map<std::string, json>;
+
+	struct script_result {
+		bool success{};
+		player current_player;
+		paragraph p;
+	};
+
+	using js_callback = std::function<void(script_result)>;
+
 	void init(class dpp::cluster& _bot);
-	bool run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars);
+	bool run(const std::string& script, paragraph& p, player& current_player, const var_list &vars);
+	void run(const std::string& script, paragraph& p, player& current_player, const var_list &vars, const js_callback& callback);
+	dpp::async<script_result> co_run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars);
 }

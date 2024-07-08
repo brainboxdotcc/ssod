@@ -40,12 +40,12 @@ dpp::task<void> gender_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster& bot = *event.from->creator;
 	auto param = event.get_parameter("gender");
 	std::string new_gender = std::get<std::string>(param);
-	if (!player_is_live(event)) {
+	if (co_await player_is_live(event)) {
 		event.reply(dpp::message(tr("NO_PROFILE", event)).set_flags(dpp::m_ephemeral));
 		co_return;
 	}
-	db::query("UPDATE game_users SET gender = ? WHERE user_id = ?", {new_gender, event.command.usr.id});
-	db::query("UPDATE game_default_users SET gender = ? WHERE user_id = ?", {new_gender, event.command.usr.id});
+	co_await db::co_query("UPDATE game_users SET gender = ? WHERE user_id = ?", {new_gender, event.command.usr.id});
+	co_await db::co_query("UPDATE game_default_users SET gender = ? WHERE user_id = ?", {new_gender, event.command.usr.id});
 
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")

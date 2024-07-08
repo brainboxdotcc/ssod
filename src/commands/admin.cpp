@@ -24,8 +24,8 @@
 #include <ssod/game_player.h>
 #include <dpp/etf.h>
 
-static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
-	auto rs = db::query("SELECT lower(name) AS name FROM game_users WHERE name LIKE ?", {uservalue + "%"});
+static dpp::task<void> autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, const std::string& uservalue) {
+	auto rs = co_await db::co_query("SELECT lower(name) AS name FROM game_users WHERE name LIKE ?", {uservalue + "%"});
 	dpp::interaction_response ir(dpp::ir_autocomplete_reply);
 	for (const auto& r : rs) {
 		ir.add_autocomplete_choice(dpp::command_option_choice(r.at("name"), r.at("name")));
@@ -34,10 +34,10 @@ static void autocomplete(dpp::cluster& bot, const dpp::autocomplete_t& event, co
 }
 
 dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
-	bot.on_autocomplete([&bot](const dpp::autocomplete_t & event) {
+	bot.on_autocomplete([&bot](const dpp::autocomplete_t & event) -> dpp::task<void> {
 		for (auto & opt : event.options) {
 			if (opt.name != "mute" && opt.name != "pin" && opt.name != "reset" && opt.name != "unload") {
-				return;
+				co_return;
 			}
 			dpp::etf_parser etf;
 			json j = etf.parse(event.raw_event);
@@ -45,10 +45,11 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
 			if (j.at("data").contains("options")) {
 				json& choices = j["data"]["options"][0]["options"][0];
 				if (choices.at("focused").get<bool>() == true && choices.at("name").get<std::string>() == "user") {
-					autocomplete(bot, event, choices.at("value").get<std::string>());
+					co_await autocomplete(bot, event, choices.at("value").get<std::string>());
 				}
 			}
 		}
+		co_return;
 	});
 
 	dpp::command_option duration(dpp::co_integer, "duration", "How long to mute the user for");
@@ -88,7 +89,7 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
 dpp::task<void> admin_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
-	auto admin_rs = db::query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
+	auto admin_rs = co_await db::co_query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
 	if (admin_rs.empty()) {
 		event.reply("This command is for game admins only");
 		co_return;
@@ -99,12 +100,12 @@ dpp::task<void> admin_command::route(const dpp::slashcommand_t &event)
 
 	if (subcommand.name == "teleport") {
 		int64_t location = std::get<int64_t>(subcommand.options[0].value);
-		auto check = db::query("SELECT secure_id, id FROM game_locations WHERE id = ? OR secure_id = ?", {location, location});
+		auto check = co_await db::co_query("SELECT secure_id, id FROM game_locations WHERE id = ? OR secure_id = ?", {location, location});
 		if (check.empty()) {
 			event.reply(dpp::message("Location " + std::to_string(location) + " does not exist.").set_flags(dpp::m_ephemeral));	
 			co_return;
 		}
-		db::query("UPDATE game_users SET paragraph = ? WHERE user_id = ?", {check[0].at("id"), event.command.usr.id});
+		co_await db::co_query("UPDATE game_users SET paragraph = ? WHERE user_id = ?", {check[0].at("id"), event.command.usr.id});
 		player p(event.command.usr.id);
 		p.save(event.command.usr.id);
 		p.state = state_play;
@@ -118,13 +119,13 @@ dpp::task<void> admin_command::route(const dpp::slashcommand_t &event)
 		std::string user = std::get<std::string>(subcommand.options[0].value);
 		int64_t duration = std::get<int64_t>(subcommand.options[1].value);
 		std::string field{subcommand.name == "mute" ? "muted" : "pinned"};
-		db::query("UPDATE game_users SET " + field + " = ? WHERE name = ?", { duration + time(nullptr), user});
+		co_await db::co_query("UPDATE game_users SET " + field + " = ? WHERE name = ?", { duration + time(nullptr), user});
 		event.reply(dpp::message(user + " has been " + field + " until " + dpp::utility::timestamp(duration + time(nullptr))).set_flags(dpp::m_ephemeral));
 		bot.log(dpp::ll_info, "ADMIN " + dpp::uppercase(subcommand.name) + " by " + event.command.usr.global_name + " -> " + user);
 	}
 	if (subcommand.name == "reset") {
 		std::string user = std::get<std::string>(subcommand.options[0].value);
-		auto rs = db::query("SELECT user_id FROM game_users WHERE name = ?", {user});
+		auto rs = co_await db::co_query("SELECT user_id FROM game_users WHERE name = ?", {user});
 		if (rs.empty()) {
 			event.reply(dpp::message(user + " does not exist.").set_flags(dpp::m_ephemeral));
 			co_return;
@@ -139,7 +140,7 @@ dpp::task<void> admin_command::route(const dpp::slashcommand_t &event)
 	}
 	if (subcommand.name == "unload") {
 		std::string user = std::get<std::string>(subcommand.options[0].value);
-		auto rs = db::query("SELECT user_id FROM game_users WHERE name = ?", {user});
+		auto rs = co_await db::co_query("SELECT user_id FROM game_users WHERE name = ?", {user});
 		if (rs.empty()) {
 			event.reply(dpp::message(user + " does not exist.").set_flags(dpp::m_ephemeral));
 			co_return;

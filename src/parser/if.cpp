@@ -96,7 +96,7 @@ struct if_tag : public tag {
 			p_text = remove_last_char(p_text);
 			std::string flag = "gamestate_" + p_text + "%";
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(!db::query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag}).empty() || global_set(p_text) || timed_set(current_player.event, p_text));
+				p.display.push_back(!(co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag})).empty() || co_await global_set(p_text) || co_await timed_set(current_player.event, p_text));
 			} else {
 				p.display.push_back(false);
 			}
@@ -106,7 +106,7 @@ struct if_tag : public tag {
 			p_text = remove_last_char(p_text);
 			std::string flag = "gamestate_" + p_text + "%";
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(db::query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag}).empty() && !global_set(p_text) && !timed_set(current_player.event, p_text));
+				p.display.push_back((co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag})).empty() && !(co_await global_set(p_text)) && !(co_await timed_set(current_player.event, p_text)));
 			} else {
 				p.display.push_back(false);
 			}
@@ -254,7 +254,7 @@ struct if_tag : public tag {
 			// ------------------------------------------------------
 			// <if premium>
 			// ------------------------------------------------------
-			auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { current_player.event.command.usr.id });
+			auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { current_player.event.command.usr.id });
 			if (p.display.empty() || p.display[p.display.size() - 1]) {
 				p.display.push_back(!current_player.event.command.entitlements.empty() || !rs.empty());
 			} else {

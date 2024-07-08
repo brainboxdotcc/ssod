@@ -81,7 +81,7 @@ struct combat_tag : public tag {
 
 
 			if (current_player.event.command.locale != "en") {
-				auto translation = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
+				auto translation = co_await db::co_query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
 					0, current_player.event.command.locale.substr(0, 2), monster_name
 				});
 				if (!translation.empty()) {
@@ -91,13 +91,13 @@ struct combat_tag : public tag {
 
 			if (!p.sick) {
 				/* Once per paragraph, check for existing illnesses and apply debuffs */
-				auto illnesses = db::query("SELECT * FROM diseases");
+				auto illnesses = co_await db::co_query("SELECT * FROM diseases");
 				for (auto& illness : illnesses) {
 					std::string flag = "gamestate_" + illness.at("flag") + "%";
-					if (!db::query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag}).empty()) {
+					if (!(co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag})).empty()) {
 						std::string name{illness.at("name")};
 						if (current_player.event.command.locale != "en") {
-							auto translation = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
+							auto translation = co_await db::co_query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
 								illness.at("id"), current_player.event.command.locale.substr(0, 2), "diseases/name"
 							});
 							if (!translation.empty()) {

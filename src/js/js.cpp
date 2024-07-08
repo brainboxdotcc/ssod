@@ -27,10 +27,12 @@
 #include <ssod/paragraph.h>
 #include <ssod/database.h>
 #include <ssod/achievement.h>
+#include <ssod/thread_pool.h>
 
 namespace js {
 
 dpp::cluster* bot = nullptr;
+thread_pool* pool{};
 
 void sandbox_fatal(void *udata, const char *msg);
 
@@ -137,6 +139,7 @@ static duk_ret_t js_exit(duk_context *cx) {
 
 void init(dpp::cluster& _bot) {
 	bot = &_bot;
+	pool = new thread_pool();
 }
 
 static duk_ret_t js_get_name(duk_context *cx) {
@@ -1159,7 +1162,24 @@ static duk_ret_t js_unlock_ach(duk_context *cx) {
 	return 0;
 }
 
+void run(const std::string& script, paragraph& p, player& current_player, const var_list &vars, const js_callback& callback) {
+	pool->enqueue([script, vp = p, v_player = current_player, vars, callback]() {
+		player current_player = v_player;
+		paragraph p = vp;
+		js::run(script, p, current_player, vars);
+		if (callback) {
+			callback(script_result{ .current_player = current_player, .p = p });
+		}
+	});
+}
 
+dpp::async<script_result> co_run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars) {
+	return dpp::async<script_result>{ [script, vp = p, v_player = current_player, vars] <typename C> (C &&cc) {
+		player current_player = v_player;
+		paragraph p = vp;
+		return js::run(script, p, current_player, vars, std::forward<C>(cc));
+	}};
+}
 
 bool run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars) {
 	duk_int_t ret;

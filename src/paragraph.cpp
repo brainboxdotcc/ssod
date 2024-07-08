@@ -28,32 +28,8 @@
 using namespace i18n;
 
 paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id) {
-	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});
-	if (location.empty()) {
-		throw dpp::logic_exception("Invalid location, internal error");
-	}
 	id = paragraph_id;
-	/* Check for a translation for the user's locale, if there is one */
-	if (current.event.command.locale.substr(0, 2) != "en") {
-		auto translated_text = db::query("SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ?", {"game_locations/data", paragraph_id, current.event.command.locale.substr(0, 2)});
-		if (!translated_text.empty()) {
-			text = translated_text[0].at("translation");
-		} else {
-			text = location[0].at("data");
-		}
-	} else {
-		text = location[0].at("data");
-	}
-	secure_id = location[0].at("secure_id");
-	combat_disabled = location[0].at("combat_disabled") == "1";
-	magic_disabled = location[0].at("magic_disabled") == "1";
-	theft_disabled = location[0].at("theft_disabled") == "1";
-	chat_disabled = location[0].at("chat_disabled") == "1";
 	cur_player = &current;
-	auto dropped = db::query("SELECT item_desc, item_flags, count(item_desc) as stack_count FROM game_dropped_items WHERE location_id = ? GROUP BY item_desc, item_flags ORDER BY item_desc, item_flags LIMIT 50", {paragraph_id});
-	for (const auto& dropped_item : dropped) {
-		dropped_items.push_back(stacked_item{ .name = dropped_item.at("item_desc"), .flags = dropped_item.at("item_flags"), .qty = atol(dropped_item.at("stack_count")) });
-	}
 	display.push_back(true);
 }
 
@@ -63,7 +39,6 @@ paragraph::paragraph(const std::string& data, player& current) {
 	secure_id = "";
 	combat_disabled = magic_disabled = theft_disabled = chat_disabled = false;
 	cur_player = &current;
-	parse(current, 0);
 }
 
 // extracts from any NAME=Value pair
@@ -82,12 +57,12 @@ std::string extract_without_quotes(const std::string& p_text) {
 	return item_name;
 }
 
-bool paragraph::valid_next(long Current, long Next) {
-	std::set<long> Paralist{Current};
+dpp::task<bool> paragraph::valid_next(long current, long next) {
+	std::set<long> paralist{current};
 	std::string p_text;
-	auto location = db::query("SELECT * FROM game_locations WHERE id = ?", {Current});
+	auto location = co_await db::co_query("SELECT * FROM game_locations WHERE id = ?", {current});
 	if (location.empty()) {
-		return false;
+		co_return false;
 	}
 	std::stringstream paragraph_content(location[0].at("data") + "\r\n");
 
@@ -110,7 +85,7 @@ bool paragraph::valid_next(long Current, long Next) {
 			while (p_text[i] != '>') {
 				pnum += p_text[i++];
 			}
-			Paralist.insert(atol(pnum));
+			paralist.insert(atol(pnum));
 		} else if (tag.find("<link=") != std::string::npos) {
 			int i{0};
 			std::string pnum;
@@ -118,7 +93,7 @@ bool paragraph::valid_next(long Current, long Next) {
 			while (p_text[i] != '>' && p_text[i] != ',') {
 				pnum += p_text[i++];
 			}
-			Paralist.insert(atol(pnum));
+			paralist.insert(atol(pnum));
 		} else if (tag.find("<autolink=") != std::string::npos) {
 			int i{0};
 			std::string pnum;
@@ -126,10 +101,10 @@ bool paragraph::valid_next(long Current, long Next) {
 			while (p_text[i] != '>') {
 				pnum += p_text[i++];
 			}
-			Paralist.insert(atol(pnum));
+			paralist.insert(atol(pnum));
 		}
 	}
-	return Paralist.find(Next) != Paralist.end();
+	co_return paralist.find(next) != paralist.end();
 }
 
 // extracts a value from any NAME="Value" pair
@@ -156,14 +131,14 @@ long extract_value_number(const std::string& p_text)
 	return atol(extract_value(p_text));
 }
 
-bool global_set(const std::string& flag) {
-	return db::query("SELECT flag FROM game_global_flags WHERE flag = ?", {flag}).size() > 0;
+dpp::task<bool> global_set(const std::string& flag) {
+	co_return !(co_await db::co_query("SELECT flag FROM game_global_flags WHERE flag = ?", {flag})).empty();
 }
 
-bool timed_set(dpp::interaction_create_t& event, const std::string& flag) {
-	bool is_set = db::query("SELECT id FROM timed_flags WHERE user_id = ? AND flag = ? AND UNIX_TIMESTAMP() < expiry", {event.command.usr.id, flag}).size() > 0;
-	db::query("DELETE FROM timed_flags WHERE user_id = ? AND flag = ? AND UNIX_TIMESTAMP() >= expiry", {event.command.usr.id, flag});
-	return is_set;
+dpp::task<bool> timed_set(dpp::interaction_create_t& event, const std::string& flag) {
+	bool is_set = !(co_await db::co_query("SELECT id FROM timed_flags WHERE user_id = ? AND flag = ? AND UNIX_TIMESTAMP() < expiry", {event.command.usr.id, flag})).empty();
+	co_await db::co_query("DELETE FROM timed_flags WHERE user_id = ? AND flag = ? AND UNIX_TIMESTAMP() >= expiry", {event.command.usr.id, flag});
+	co_return is_set;
 }
 
 
@@ -180,6 +155,34 @@ std::string remove_last_char(const std::string& s) {
 }
 
 dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id) {
+
+	/* BUG: g++14.1 ICE: Can't pass members of `this` to an initialiser list within a coroutine */
+	uint32_t paragraph_id{id};
+	auto location = co_await db::co_query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});
+	if (location.empty()) {
+		throw dpp::logic_exception("Invalid location, internal error");
+	}
+	/* Check for a translation for the user's locale, if there is one */
+	if (current_player.event.command.locale.substr(0, 2) != "en") {
+		auto translated_text = co_await db::co_query("SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ?", {"game_locations/data", paragraph_id, current_player.event.command.locale.substr(0, 2)});
+		if (!translated_text.empty()) {
+			text = translated_text[0].at("translation");
+		} else {
+			text = location[0].at("data");
+		}
+	} else {
+		text = location[0].at("data");
+	}
+	secure_id = location[0].at("secure_id");
+	combat_disabled = location[0].at("combat_disabled") == "1";
+	magic_disabled = location[0].at("magic_disabled") == "1";
+	theft_disabled = location[0].at("theft_disabled") == "1";
+	chat_disabled = location[0].at("chat_disabled") == "1";
+	auto dropped = co_await db::co_query("SELECT item_desc, item_flags, count(item_desc) as stack_count FROM game_dropped_items WHERE location_id = ? GROUP BY item_desc, item_flags ORDER BY item_desc, item_flags LIMIT 50", {paragraph_id});
+	for (const auto& dropped_item : dropped) {
+		dropped_items.push_back(stacked_item{ .name = dropped_item.at("item_desc"), .flags = dropped_item.at("item_flags"), .qty = atol(dropped_item.at("stack_count")) });
+	}
+
 	std::stringstream paragraph_content(replace_string(text, "><", "> <") + "\r\n<br>\r\n");
 	std::string p_text, LastLink;
 	output = new std::stringstream();
@@ -193,7 +196,7 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id)
 		}
 
 		try {	
-			if (co_await route_tag(*this, p_text, paragraph_content, *output, current_player, display.size() ? display[display.size() - 1] : true)) {
+			if (co_await route_tag(*this, p_text, paragraph_content, *this->output, current_player, display.size() ? display[display.size() - 1] : true)) {
 				continue;
 			}
 		}

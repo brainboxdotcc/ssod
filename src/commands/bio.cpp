@@ -59,40 +59,36 @@ dpp::task<void> bio_command::route(const dpp::slashcommand_t &event)
 		.set_colour(EMBED_COLOUR);
 
 
-	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
+	auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
 	if (event.command.entitlements.empty() && rs.empty()) {
 		premium_required(event);
 	} else  if (subcommand.name == "text") {
 		auto param = subcommand.options[0].value;
 		std::string text = std::get<std::string>(param);
 		neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
-		swear_check.contains_bad_word(text, [&bot, nn_text = text, event, nn_embed = embed](const swear_filter_t& swear_filter) {
-			std::string text{nn_text};
-			dpp::embed embed = nn_embed;
-			if (!swear_filter.clean) {
-				text = swear_filter.censored_content;
-				bot.log(dpp::ll_warning, "Potty-mouth bio: " + nn_text + " censored for id: " + event.command.usr.id.str());
-			}
-			db::query("INSERT INTO character_bio (user_id, bio) VALUES(?, ?) ON DUPLICATE KEY UPDATE bio = ?", { event.command.usr.id, text, text });
-			embed.set_description(tr("CUSTOM_BIO_SET", event) +"\n\n" + text);
-			event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
-		});
+		swear_filter_t swear_filter = co_await swear_check.co_contains_bad_word(text);
+		if (!swear_filter.clean) {
+			bot.log(dpp::ll_warning, "Potty-mouth bio: " + text + " censored for id: " + event.command.usr.id.str());
+			text = swear_filter.censored_content;
+		}
+		co_await db::co_query("INSERT INTO character_bio (user_id, bio) VALUES(?, ?) ON DUPLICATE KEY UPDATE bio = ?", { event.command.usr.id, text, text });
+		embed.set_description(tr("CUSTOM_BIO_SET", event) +"\n\n" + text);
+		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	} else if (subcommand.name == "picture") {
 		auto param = subcommand.options[0].value;
             	dpp::snowflake file_id = std::get<dpp::snowflake>(param);
 		dpp::attachment att = event.command.get_resolved_attachment(file_id);
-		bot.request(att.url, dpp::m_get, [embed, att, event](const dpp::http_request_completion_t& data) {
-			std::string filename = event.command.usr.id.str() + fs::path(att.filename).extension().c_str();
-			std::fstream file;
-			dpp::embed e = embed;
-			file.open("../uploads/" + filename, std::ios::app | std::ios::binary);
-			file.write(data.body.data(), data.body.length());
-			file.close();
-			db::query("INSERT INTO character_bio (user_id, image_name) VALUES(?, ?) ON DUPLICATE KEY UPDATE image_name = ?", { event.command.usr.id, filename, filename });
-			e.set_description(tr("CUSTOM_PIC_UPLOADED", event));
-			e.set_image("attachment://" + filename);
-			event.reply(dpp::message().add_embed(e).add_file(filename, data.body).set_flags(dpp::m_ephemeral));
-		});
+		auto data = co_await bot.co_request(att.url, dpp::m_get);
+		std::string filename = event.command.usr.id.str() + fs::path(att.filename).extension().c_str();
+		std::fstream file;
+		dpp::embed e = embed;
+		file.open("../uploads/" + filename, std::ios::app | std::ios::binary);
+		file.write(data.body.data(), data.body.length());
+		file.close();
+		co_await db::co_query("INSERT INTO character_bio (user_id, image_name) VALUES(?, ?) ON DUPLICATE KEY UPDATE image_name = ?", { event.command.usr.id, filename, filename });
+		e.set_description(tr("CUSTOM_PIC_UPLOADED", event));
+		e.set_image("attachment://" + filename);
+		event.reply(dpp::message().add_embed(e).add_file(filename, data.body).set_flags(dpp::m_ephemeral));
 	}
 	co_return;
 }

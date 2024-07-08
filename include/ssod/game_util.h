@@ -45,5 +45,5 @@ sale_info get_sale_info(const std::string& name);
 std::string human_readable_spell_name(const std::string& spell, const dpp::interaction_create_t& event);
 std::string human_readable_herb_name(const std::string& herb, const dpp::interaction_create_t& event);
 spell_info get_spell_info(const std::string& name);
-void trigger_effect(dpp::cluster& bot, const dpp::interaction_create_t& event, player& player, const std::string& type, const std::string& requirements);
-void check_effects(dpp::cluster& bot);
+dpp::task<void> trigger_effect(dpp::cluster& bot, const dpp::interaction_create_t& event, player& player, const std::string& type, const std::string& requirements);
+dpp::task<void> check_effects(dpp::cluster& bot);

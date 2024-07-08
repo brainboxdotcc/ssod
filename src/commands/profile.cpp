@@ -40,7 +40,7 @@ dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 	player p;
 	bool self{false};
 	if (param.index() == 0) {
-		if (player_is_live(event)) {
+		if (co_await player_is_live(event)) {
 			p = get_live_player(event);
 			user = p.name;
 			self = true;
@@ -48,14 +48,14 @@ dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 	} else {
 		user = std::get<std::string>(event.get_parameter("user"));
 	}
-	auto rs = db::query("SELECT * FROM game_users WHERE name = ?", {user});
+	auto rs = co_await db::co_query("SELECT * FROM game_users WHERE name = ?", {user});
 	if (rs.empty()) {
 		event.reply(dpp::message(tr(self ? "NOPROFILE" : "NOSUCHUSER", event)).set_flags(dpp::m_ephemeral));
 		co_return;
 	}
 	p.experience = atol(rs[0].at("experience"));
-	auto g = db::query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", {rs[0].at("user_id")});
-	auto status = db::query("SELECT passive_effect_status.*, on_end, on_after, type, requirements, duration, withdrawl FROM passive_effect_status join passive_effect_types on passive_effect_id = passive_effect_types.id where user_id = ?", {rs[0].at("user_id")});
+	auto g = co_await db::co_query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", {rs[0].at("user_id")});
+	auto status = co_await db::co_query("SELECT passive_effect_status.*, on_end, on_after, type, requirements, duration, withdrawl FROM passive_effect_status join passive_effect_types on passive_effect_id = passive_effect_types.id where user_id = ?", {rs[0].at("user_id")});
 	std::stringstream effects;
 	for (const auto& s : status) {
 		effects << tr(dpp::uppercase(s.at("type")), event) << ": *" << s.at("requirements") << "* ";
@@ -116,9 +116,9 @@ dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 		embed.add_field(tr("EFFECTS", event), effects.str(), false);
 	}
 
-	auto premium = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
+	auto premium = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
 	if (!event.command.entitlements.empty() || !premium.empty()) {
-		auto bio = db::query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
+		auto bio = co_await db::co_query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
 		if (!bio.empty()) {
 			if (!bio[0].at("bio").empty()) {
 				embed.set_description(content + "\n### " + tr("BIOGRAPHY", event) + "\n" + dpp::utility::markdown_escape(bio[0].at("bio")) + "\n\n");

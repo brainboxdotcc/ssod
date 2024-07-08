@@ -31,7 +31,7 @@ struct tempset_tag : public tag {
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
 		long expiry = time(nullptr) + lifetime;
-		db::query("INSERT INTO timed_flags (user_id, flag, expiry) VALUES(?,?,?) ON DUPLICATE KEY UPDATE expiry = ?", {
+		co_await db::co_query("INSERT INTO timed_flags (user_id, flag, expiry) VALUES(?,?,?) ON DUPLICATE KEY UPDATE expiry = ?", {
 			current_player.event.command.usr.id, p_text, expiry, expiry
 		});
 		co_await achievement_check("TEMP_STATE", current_player.event, current_player, {{"flag", p_text}});

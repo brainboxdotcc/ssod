@@ -27,7 +27,7 @@ struct expire_tag : public tag {
 		// set a state-flag
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
-		db::query("DELETE FROM timed_flags  WHERE user_id = ? AND flag = ?", {
+		co_await db::co_query("DELETE FROM timed_flags  WHERE user_id = ? AND flag = ?", {
 			current_player.event.command.usr.id, p_text
 		});
 		co_return;

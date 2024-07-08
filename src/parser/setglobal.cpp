@@ -27,7 +27,7 @@ struct setglobal_tag : public tag {
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
-		db::query("REPLACE INTO game_global_flags (flag) VALUES(?)", {p_text});
+		co_await db::co_query("INSERT INTO game_global_flags (flag) VALUES(?) ON DUPLICATE KEY UPDATE flag = ?", {p_text, p_text});
 		co_await achievement_check("GLOBAL_STATE", current_player.event, current_player, {{"flag", p_text}});
 		co_return;
 	}
