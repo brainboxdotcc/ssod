@@ -24,7 +24,7 @@
 thread_pool::thread_pool(size_t num_threads) {
 	for (size_t i = 0; i < num_threads; ++i) {
 		threads.emplace_back([this, i]() {
-			dpp::utility::set_thread_name("js/exec/" + std::to_string(i));
+			dpp::utility::set_thread_name("pool/exec/" + std::to_string(i));
 			while (true) {
 				thread_pool_task task;
 				{
