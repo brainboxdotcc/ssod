@@ -38,18 +38,18 @@ dpp::component help_button(const dpp::interaction_create_t& event) {
 		.set_style(dpp::cos_link);		
 }
 
-sale_info get_sale_info(const std::string& name) {
-	auto res = db::query("SELECT * FROM game_item_descs WHERE name = ?", {name});
+dpp::task<sale_info> get_sale_info(const std::string& name) {
+	auto res = co_await db::co_query("SELECT * FROM game_item_descs WHERE name = ?", {name});
 	long value{0};
 	bool sellable{false}, qi{false};
 	std::string flags;
 	if (res.empty()) {
-		auto food = db::query("SELECT * FROM food WHERE name = ?", {name});
+		auto food = co_await db::co_query("SELECT * FROM food WHERE name = ?", {name});
 		if (!food.empty()) {
 			value = atol(food[0].at("value"));
 			sellable = true;
 		} else {
-			auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
+			auto ingredient = co_await db::co_query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
 			if (!ingredient.empty()) {
 				value = 1;
 				sellable = true;
@@ -61,7 +61,7 @@ sale_info get_sale_info(const std::string& name) {
 		flags = res[0].at("flags");
 		qi = res[0].at("quest_item") == "1";
 	}
-	return sale_info{
+	co_return sale_info{
 		.flags = flags,
 		.value = value,
 		.sellable = sellable,
@@ -76,44 +76,45 @@ std::string ellipsis(const std::string& in, size_t max_len) {
 	return in;
 }
 
-std::string describe_item(const std::string& modifier_flags, const std::string& name, const dpp::interaction_create_t& event, bool ansi, size_t max_desc_len) {
-	auto res = db::query("SELECT idesc FROM game_item_descs WHERE name = ?", {name});
+dpp::task<std::string> describe_item(const std::string& modifier_flags, const std::string& name, const dpp::interaction_create_t& event, bool ansi, size_t max_desc_len) {
+	auto res = co_await db::co_query("SELECT idesc FROM game_item_descs WHERE name = ?", {name});
 	auto i = tr(item{ .name = name, .flags = modifier_flags }, res.size() ? res[0].at("idesc") : name, event);
 	std::string rv{ellipsis(i.description, max_desc_len)};
 
-
 	if (modifier_flags.substr(0, 3) == "ST+") {
-		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("STAMINA", event) + "\033[0m \033[2;34m+{}\033[0m: {}" :  tr("STAMINA", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("STAMINA", event) + "\033[0m \033[2;34m+{}\033[0m: {}" :  tr("STAMINA", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
 	} else if (modifier_flags.substr(0, 3) == "SK+") {
-		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("SKILL", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("SKILL", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("SKILL", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("SKILL", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
 	} else if (modifier_flags.substr(0, 3) == "LK+") {
-		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("LUCK", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("LUCK", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("LUCK", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("LUCK", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
+	} else if (modifier_flags.substr(0, 3) == "MA+") {
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("MANA", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("MANA", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
 	} else if (modifier_flags.substr(0, 3) == "SN+") {
-		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("SNEAK", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("SNEAK", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("SNEAK", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("SNEAK", event) + " **+{}**: {}"), modifier_flags.substr(3), rv);
 	} else if (modifier_flags.substr(0, 2) == "W+") {
-		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("WEAPON", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("WEAPON", event) + " **+{}**: {}"), modifier_flags.substr(2), rv);
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("WEAPON", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("WEAPON", event) + " **+{}**: {}"), modifier_flags.substr(2), rv);
 	} else if (modifier_flags.substr(0, 2) == "A+") {
-		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("ARMOUR", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("ARMOUR", event) + " **+{}**: {}"), modifier_flags.substr(2), rv);
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("ARMOUR", event) + "\033[0m \033[2;34m+{}\033[0m: {}" : tr("ARMOUR", event) + " **+{}**: {}"), modifier_flags.substr(2), rv);
 	} else if (!modifier_flags.empty() && modifier_flags[0] == 'W') {
-		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("WEAPON", event) + "\033[0m \033[2;34m{}\033[0m: {}" : tr("WEAPON", event) + " **{}**: {}"),modifier_flags.substr(1), rv);
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("WEAPON", event) + "\033[0m \033[2;34m{}\033[0m: {}" : tr("WEAPON", event) + " **{}**: {}"),modifier_flags.substr(1), rv);
 	} else if (!modifier_flags.empty() && modifier_flags[0] == 'A') {
-		return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("ARMOUR", event) + "\033[0m \033[2;34m{}\033[0m: {}" : tr("ARMOUR", event) + " **{}**: {}"),modifier_flags.substr(1), rv);
+		co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("ARMOUR", event) + "\033[0m \033[2;34m{}\033[0m: {}" : tr("ARMOUR", event) + " **{}**: {}"),modifier_flags.substr(1), rv);
 	} else {
-		auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {name});
+		auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {name});
 		if (!effect.empty()) {
-			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("CONSUMABLE", event) + "\033[0m: {}" : tr("CONSUMABLE", event) + ": {}"), rv);
+			co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("CONSUMABLE", event) + "\033[0m: {}" : tr("CONSUMABLE", event) + ": {}"), rv);
 		}
-		auto food = db::query("SELECT * FROM food WHERE name = ?", {name});
+		auto food = co_await db::co_query("SELECT * FROM food WHERE name = ?", {name});
 		if (!food.empty()) {
 			i = tr(item{ .name = food[0].at("name"), .flags = "" }, food[0].at("description"), event);
-			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("FOOD", event) + "\033[0m: {}" : tr("FOOD", event) + ": {}"), ellipsis(i.description, max_desc_len));
+			co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("FOOD", event) + "\033[0m: {}" : tr("FOOD", event) + ": {}"), ellipsis(i.description, max_desc_len));
 		}
-		auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
+		auto ingredient = co_await db::co_query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
 		if (!ingredient.empty()) {
-			return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("INGREDIENT", event) + "\033[0m: {}" : tr("INGREDIENT", event) + ": {}"), tr("COOK_ME", event));
+			co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("INGREDIENT", event) + "\033[0m: {}" : tr("INGREDIENT", event) + ": {}"), tr("COOK_ME", event));
 		}
 	}
-	return rv;
+	co_return rv;
 }
 
 void premium_required(const dpp::interaction_create_t& event) {

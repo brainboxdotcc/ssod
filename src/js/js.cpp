@@ -26,7 +26,6 @@
 #include "duktape.h"
 #include <ssod/paragraph.h>
 #include <ssod/database.h>
-#include <ssod/achievement.h>
 #include <ssod/thread_pool.h>
 
 namespace js {
@@ -137,7 +136,7 @@ static duk_ret_t js_exit(duk_context *cx) {
 	throw exit_exception();
 }
 
-void init(dpp::cluster& _bot, int thread_pool_size) {
+void init(dpp::cluster& _bot, size_t thread_pool_size) {
 	bot = &_bot;
 	pool = std::make_unique<thread_pool>(thread_pool_size);
 }

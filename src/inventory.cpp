@@ -151,7 +151,7 @@ dpp::task<void> inventory(const dpp::interaction_create_t& event, player p) {
 
 	std::set<std::string> dup;
 	for (const auto& inv : possessions) {
-		sale_info value = get_sale_info(inv.name);
+		sale_info value = co_await get_sale_info(inv.name);
 		dpp::emoji e = co_await get_emoji(inv.name, inv.flags);
 		auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {inv.name});
 		auto food = co_await db::co_query("SELECT * FROM food WHERE name = ?", {inv.name});
@@ -185,7 +185,7 @@ dpp::task<void> inventory(const dpp::interaction_create_t& event, player p) {
 		size_t c{content.str().length()};
 		for (const auto &inv: possessions) {
 			std::string emoji = (co_await get_emoji(inv.name, inv.flags)).format();
-			std::string description{"```ansi\n" + describe_item(inv.flags, inv.name, event, true, 80) + "\n"};
+			std::string description{"```ansi\n" + (co_await describe_item(inv.flags, inv.name, event, true, 80)) + "\n"};
 			if (p.armour.name == inv.name && !equip_a) {
 				description += "\033[2;31m🫱🏼 " + tr("EQUIPPED", event) + "\033[0m ";
 				equip_a = true;
@@ -193,7 +193,7 @@ dpp::task<void> inventory(const dpp::interaction_create_t& event, player p) {
 				description += "\033[2;31m🫱🏼 " + tr("EQUIPPED", event) + "\033[0m ";
 				equip_w = true;
 			}
-			sale_info value = get_sale_info(inv.name);
+			sale_info value = co_await get_sale_info(inv.name);
 			if (value.quest_item) {
 				description += "\033[2;32m❗ " + tr("QUESTITEM", event) + "\033[0m ";
 			}

@@ -316,7 +316,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 	} else if (custom_id == "drop_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() >= 1 && p.has_possession(parts[0])) {
-			sale_info si = get_sale_info(parts[0]);
+			sale_info si = co_await get_sale_info(parts[0]);
 			if (dpp::lowercase(parts[0]) != "scroll" && !si.quest_item) {
 				/* Can't drop a scroll (is quest item) */
 				p.drop_possession(item{.name = parts[0], .flags = ""});
@@ -480,7 +480,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		claimed = true;
 	} else if (custom_id == "sell" && !p.in_inventory && !p.in_bank && !event.values.empty() && !p.in_combat) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
-		sale_info s = get_sale_info(parts[0]);
+		sale_info s = co_await get_sale_info(parts[0]);
 		if (p.has_possession(parts[0]) && s.sellable && !s.quest_item && dpp::lowercase(parts[0]) != "scroll") {
 			if (p.armour.name == parts[0]) {
 				p.armour.name = tr("NO_ARMOUR", event) + " 👙";
@@ -1153,7 +1153,7 @@ dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 	size_t index{0};
 	std::set<std::string> ds;
 	for (const auto& inv : p.possessions) {
-		sale_info si = get_sale_info(inv.name);
+		sale_info si = co_await get_sale_info(inv.name);
 		auto i = tr(inv, "", event);
 		if (si.quest_item || dpp::lowercase(inv.name) == "scroll") {
 			/* Can't bank a scroll! */
@@ -1446,7 +1446,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		size_t index2{0};
 		std::set<std::string> ds;
 		for (const auto& inv : p.possessions) {
-			sale_info s = get_sale_info(inv.name);
+			sale_info s = co_await get_sale_info(inv.name);
 			if (!s.sellable || s.quest_item || dpp::lowercase(inv.name) == "scroll") {
 				continue;
 			}
@@ -1455,7 +1455,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 				if (sell_menu.options.size() < 25) {
 					auto i = tr(inv, "", event);
 					sell_menu.add_select_option(
-						dpp::select_option(i.name, inv.name + ";" + inv.flags, tr("VALUE", event) + " " + std::to_string(s.value) + " - " + describe_item(inv.flags, inv.name, event).substr(0, 80))
+						dpp::select_option(i.name, inv.name + ";" + inv.flags, tr("VALUE", event) + " " + std::to_string(s.value) + " - " + (co_await describe_item(inv.flags, inv.name, event)).substr(0, 80))
 							.set_emoji(e.name, e.id)
 					);
 					ds.insert(inv.name);

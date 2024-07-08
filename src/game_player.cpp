@@ -729,7 +729,7 @@ dpp::task<void> player::drop_everything() {
 	/* Drop everything to floor */
 	for (const auto& i : possessions) {
 		/* We don't drop quest items */
-		sale_info value = get_sale_info(i.name);
+		sale_info value = co_await get_sale_info(i.name);
 		if (!value.quest_item && dpp::lowercase(i.name) != "scroll") {
 			for (long qty = 0; qty < i.qty; ++qty) {
 				/* BUG: g++14.1 ICE: Can't pass members of `this` to an initialiser list within a coroutine */
