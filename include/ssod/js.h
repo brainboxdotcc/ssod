@@ -27,6 +27,13 @@
 #include <ssod/paragraph.h>
 #include <ssod/game_player.h>
 
+/**
+ * @brief This namespace contains functions which relate to the duktape javascript
+ * interpreter. The duktape interpreter is wrapped with an asynchronous thread pool
+ * which means you can co_await js::co_run and it will resume later when the script
+ * has finished within the thread pool. The thread pool size can be set via js::init
+ * and will default to the same size a there are logical cores.
+ */
 namespace js {
 
 	/**
