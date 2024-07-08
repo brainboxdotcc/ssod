@@ -110,8 +110,8 @@ namespace db {
 	 * @brief Cached query result parameters
 	 */
 	struct cached_query_results {
-		const std::string format;
-		const paramlist parameters;
+		std::string format;
+		paramlist parameters;
 		sql_query_callback callback;
 	};
 
@@ -124,8 +124,8 @@ namespace db {
 	};
 
 #ifdef DPP_CORO
-	std::vector<cached_query_results> sql_query_queue;
-	std::shared_mutex query_queue_mtx;
+	std::queue<cached_query_results> sql_query_queue;
+	std::mutex query_queue_mtx;
 #endif
 
 	template<class> inline constexpr bool always_false_v = false;
@@ -217,8 +217,8 @@ namespace db {
 #ifdef DPP_CORO
 	void query_callback(const std::string &format, const paramlist &parameters, const sql_query_callback& cb) {
 		{
-			std::unique_lock queue_lock(query_queue_mtx);
-			sql_query_queue.push_back(cached_query_results{.format = format, .parameters = parameters, .callback = cb});
+			std::unique_lock<std::mutex> queue_lock(query_queue_mtx);
+			sql_query_queue.emplace(std::move(cached_query_results{.format = format, .parameters = parameters, .callback = cb}));
 		}
 		sql_worker_cv.notify_one();
 	}
@@ -238,27 +238,22 @@ namespace db {
 #ifdef DPP_CORO
 		std::thread([&]() {
 			dpp::utility::set_thread_name("sql/coro");
-			std::vector<cached_query_results> to_process;
 			while (true) {
+				cached_query_results qr;
 				{
-					std::mutex mtx;
-					std::unique_lock<std::mutex> lock{mtx};
-					sql_worker_cv.wait_for(lock, std::chrono::microseconds(500));
-					{
-						std::unique_lock queue_lock(query_queue_mtx);
-						to_process.clear();
-						to_process.reserve(sql_query_queue.size());
-						for (const auto &i: sql_query_queue) {
-							to_process.push_back(i);
-						}
-						sql_query_queue.clear();
+					std::unique_lock<std::mutex> queue_lock(query_queue_mtx);
+					sql_worker_cv.wait(queue_lock, [] {
+						return !sql_query_queue.empty();
+					});
+					if (sql_query_queue.empty()) {
+						continue;
 					}
+					qr = std::move(sql_query_queue.front());
+					sql_query_queue.pop();
 				}
-				for (const auto& qr : to_process) {
-					auto results = query(qr.format, qr.parameters);
-					if (qr.callback) {
-						qr.callback(results);
-					}
+				auto results = query(qr.format, qr.parameters);
+				if (qr.callback) {
+					qr.callback(results);
 				}
 			}
 		}).detach();
