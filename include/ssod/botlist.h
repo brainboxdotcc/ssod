@@ -69,11 +69,11 @@ protected:
 	 * 
 	 * @param bot cluster reference
 	 * @param key configuration key name
-	 * @param url bot list url formatter
+	 * @param api_url bot list api_url formatter
 	 * @param count_field count field in postdata
 	 * @param shards_field shards field in postdata
 	 */
-	static dpp::task<void> run(dpp::cluster& bot, const std::string_view key, const std::string_view url, const std::string_view count_field, const std::string_view shards_field);
+	static dpp::task<void> run(dpp::cluster& bot, const std::string_view key, const std::string_view api_url, const std::string_view count_field, const std::string_view shards_field);
 };
 
 /**
