@@ -33,7 +33,7 @@ dpp::slashcommand premium_command::register_command(dpp::cluster& bot)
 dpp::task<void> premium_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
-	auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
+	auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
 	bool has_premium = !rs.empty();
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")

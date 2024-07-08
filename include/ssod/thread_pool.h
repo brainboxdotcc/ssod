@@ -1,5 +1,5 @@
 /************************************************************************************
- * 
+ *
  * The Seven Spells Of Destruction
  *
  * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
@@ -17,21 +17,24 @@
  * limitations under the License.
  *
  ************************************************************************************/
-#include <ssod/parser.h>
-#include <ssod/database.h>
+#pragma once
+#include <dpp/dpp.h>
+#include <queue>
+#include <vector>
+#include <condition_variable>
+#include <mutex>
+#include <functional>
 
-struct expire_tag : public tag {
-	expire_tag() { register_tag<expire_tag>(); }
-	static constexpr std::string_view tags[]{"<expire"};
-	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		// set a state-flag
-		paragraph_content >> p_text;
-		p_text = dpp::lowercase(remove_last_char(p_text));
-		co_await db::co_query("DELETE FROM timed_flags  WHERE user_id = ? AND flag = ?", {
-			current_player.event.command.usr.id, p_text
-		});
-		co_return;
-	}
+using thread_pool_task = std::function<void()>;
+
+struct thread_pool {
+	std::vector<std::thread> threads;
+	std::queue<thread_pool_task> tasks;
+	std::mutex queue_mutex;
+	std::condition_variable cv;
+	bool stop = false;
+
+	explicit thread_pool(size_t num_threads = std::thread::hardware_concurrency());
+	~thread_pool();
+	void enqueue(thread_pool_task task);
 };
-
-static expire_tag self_init;

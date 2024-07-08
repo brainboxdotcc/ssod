@@ -48,26 +48,26 @@ dpp::task<uint64_t> get_guild_id(const player& p);
 
 dpp::task<void> send_chat(dpp::snowflake user_id, uint32_t paragraph, const std::string& message, const std::string& type, uint64_t guild_id) {
 	if (guild_id) {
-		db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message, guild_id) VALUES(?,?,?,?,?)",
+		co_await db::co_query("INSERT INTO game_chat_events (event_type, user_id, location_id, message, guild_id) VALUES(?,?,?,?,?)",
 			  {type, user_id, paragraph, dpp::utility::utf8substr(message, 0, 140), guild_id});
 
 	} else {
-		db::query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)",
+		co_await db::co_query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)",
 			  {type, user_id, paragraph, dpp::utility::utf8substr(message, 0, 140)});
 	}
 	co_return;
 }
 
-void do_toasts(player &p, component_builder& cb) {
+dpp::task<void> do_toasts(player &p, component_builder& cb) {
 	/* Only announce two achievements at a time to stop overload of toasts */
-	auto achievements = db::query(
+	auto achievements = co_await db::co_query(
 		"SELECT achievements.* FROM achievements_unlocked JOIN achievements ON achievement_id = achievements.id "
 		"WHERE announced = 0 and user_id = ? ORDER BY achievements_unlocked.created_at LIMIT 2",
 		{ p.event.command.usr.id }
 	);
 	for (const auto& achievement : achievements) {
 		unlock_achievement(p, achievement);
-		db::query("UPDATE achievements_unlocked SET announced = 1 WHERE user_id = ? AND achievement_id = ?", {p.event.command.usr.id, achievement.at("id")});
+		co_await db::co_query("UPDATE achievements_unlocked SET announced = 1 WHERE user_id = ? AND achievement_id = ?", {p.event.command.usr.id, achievement.at("id")});
 	}
 	/* Display and clear toasts */
 	std::vector<toast> toasts = p.get_toasts();
@@ -196,7 +196,7 @@ dpp::task<void> add_chat(std::string& text, const dpp::interaction_create_t& eve
 }
 
 dpp::task<void> game_input(const dpp::form_submit_t & event) {
-	if (!player_is_live(event)) {
+	if (!(co_await player_is_live(event))) {
 		co_return;
 	}
 	player p = get_live_player(event);
@@ -251,7 +251,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 		claimed = true;
 	} else if (custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
-		auto bank_amount = db::query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
+		auto bank_amount = co_await db::co_query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 		long balance_amount = atol(bank_amount[0].at("gold"));
 		/* Can't withdraw more than is in the bank, or more than you can carry */
 		amount = std::min(amount, balance_amount);
@@ -259,10 +259,8 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 		if (balance_amount > 0 && amount > 0) {
 			p.add_gold(amount);
 			/* Coalesce gold in bank to one row */
-			db::transaction();
-			db::query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = '__GOLD__'", {event.command.usr.id});
-			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, balance_amount - amount});
-			db::commit();
+			co_await db::co_query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = '__GOLD__'", {event.command.usr.id});
+			co_await db::co_query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, balance_amount - amount});
 			co_await achievement_check("BANK_WITHDRAW_GOLD", event, p, {{"amount", std::to_string(amount)}});
 		}
 	}
@@ -276,7 +274,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 }
 
 dpp::task<void> game_select(const dpp::select_click_t &event) {
-	if (!player_is_live(event)) {
+	if (!(co_await player_is_live(event))) {
 		co_return;
 	}
 	bool claimed{false};
@@ -293,9 +291,9 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			parts.emplace_back("[none]");
 		}
 		db::transaction();
-		auto rs = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {event.command.usr.id, parts[0], parts[1]});
+		auto rs = co_await db::co_query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {event.command.usr.id, parts[0], parts[1]});
 		if (!rs.empty()) {
-			db::query("DELETE FROM game_bank WHERE id = ?", { rs[0].at("id") });
+			co_await db::co_query("DELETE FROM game_bank WHERE id = ?", { rs[0].at("id") });
 			p.pickup_possession(stacked_item{.name = parts[0], .flags = parts[1], .qty = 1 });
 			p.inv_change = true;
 			co_await achievement_check("BANK_WITHDRAW_ITEM", event, p, {{"item", parts[0]}, {"flags", parts[1]}});
@@ -304,18 +302,16 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		claimed = true;
 	} else if (custom_id == "deposit" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
-		db::transaction();
 		std::string flags = "";
 		if (parts.size() >= 2) {
 			flags = parts[1];
 		}
 		if (p.has_possession(parts[0])) {
-			db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,?,?)", {event.command.usr.id, parts[0], flags});
+			co_await db::co_query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,?,?)", {event.command.usr.id, parts[0], flags});
 			p.drop_possession(item{.name = parts[0], .flags = flags});
 			p.inv_change = true;
 			co_await achievement_check("BANK_DEPOSIT_ITEM", event, p, {{"item", parts[0]}, {"flags", flags}});
 		}
-		db::commit();
 		claimed = true;
 	} else if (custom_id == "drop_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
@@ -334,7 +330,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 					co_await achievement_check("BARE_FISTED", event, p, {});
 				}
 				/* Drop to floor */
-				db::query(
+				co_await db::co_query(
 					"INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)",
 					{p.paragraph, parts[0], parts.size() >= 2 ? parts[1] : ""});
 				co_await send_chat(event.command.usr.id, p.paragraph, parts[0], "drop");
@@ -347,7 +343,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		spell_info si = get_spell_info(parts[0]);
 		if (!parts.empty() && p.has_spell(parts[0]) && p.has_component_herb(parts[0]) && p.mana >= si.mana_cost) {
 			p.add_mana(-si.mana_cost);
-			auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Spell' AND requirements = ?", {parts[0]});
+			auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Spell' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
 				trigger_effect(bot, event, p, "Spell", parts[0]);
 			}
@@ -359,7 +355,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (!parts.empty()) {
 			bot.log(dpp::ll_debug, event.command.usr.id.str() + ": attempting to cook: '" + parts[0] + "'");
-			auto recipe = db::query(
+			auto recipe = co_await db::co_query(
 				"SELECT food.id, food.name, food.description, GROUP_CONCAT(ingredient_name ORDER BY ingredient_name) AS ingredients, "
 				"stamina_change, skill_change, luck_change, speed_change, value FROM food JOIN ingredients ON food_id = food.id "
 				"WHERE food.name = ? GROUP BY food.id, food.name, food.description",
@@ -370,7 +366,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 				bot.log(dpp::ll_debug, event.command.usr.id.str() + ": invalid recipe name: '" + parts[0] + "'");
 				co_return;
 			}
-			auto ingredients = db::query(
+			auto ingredients = co_await db::co_query(
 				"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ?"
 				" UNION "
 				"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN food ON item_desc = food.name WHERE user_id = ?",
@@ -378,7 +374,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			);
 			if (dpp::lowercase(parts[0]).find("rations") != std::string::npos) {
 				/* Find any meat item */
-				auto meat = db::query(
+				auto meat = co_await db::co_query(
 					"SELECT DISTINCT game_owned_items.id, item_desc FROM game_owned_items JOIN ingredients ON item_desc = ingredient_name WHERE user_id = ? AND ingredient_name LIKE '%meat%' ORDER BY RAND()",
 					{event.command.usr.id}
 				);
@@ -424,12 +420,12 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		if (parts.size() >= 2 && p.has_possession(parts[0])) {
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
 			co_await achievement_check("USE_ITEM", event, p, {{"name", parts[0]},{"flags", parts[1]}});
-			auto effect = db::query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {parts[0]});
+			auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
 				trigger_effect(bot, event, p, "Consumable", parts[0]);
 				co_await achievement_check("USE_CONSUMABLE", event, p, {{"name", parts[0]}});
 			}
-			auto food = db::query("SELECT * FROM food WHERE name = ?", {parts[0]});
+			auto food = co_await db::co_query("SELECT * FROM food WHERE name = ?", {parts[0]});
 			if (!food.empty()) {
 				co_await achievement_check("EAT_FOOD", event, p, {{"name", parts[0]},{"food", food[0]}});
 				p.add_stamina(atol(food[0].at("stamina_change")));
@@ -517,7 +513,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 }
 
 dpp::task<void> game_nav(const dpp::button_click_t& event) {
-	if (!player_is_live(event)) {
+	if (!(co_await player_is_live(event))) {
 		co_return;
 	}
 	dpp::cluster& bot = *(event.from->creator);
@@ -554,7 +550,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			co_await send_chat(event.command.usr.id, atoi(parts[1]), "", "join");
 		}
 		long dest = atol(parts[1]);
-		if (paragraph::valid_next(p.paragraph, dest)) {
+		if (co_await paragraph::valid_next(p.paragraph, dest)) {
 			p.paragraph = dest;
 			p.g_dice = 0;
 		} else {
@@ -596,19 +592,19 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 					p.gold -= cost;
 					try {
 						if (flags == "CUREALL") {
-							db::query("DELETE FROM kv_store WHERE user_id = ? AND (kv_key LIKE 'gamestate_lungrasp%' OR kv_key LIKE 'gamestate_blood_plague%' OR kv_key LIKE 'gamestate_bubonic_plague%' OR kv_key LIKE 'gamestate_green_rot%')", {event.command.usr.id});
+							co_await db::co_query("DELETE FROM kv_store WHERE user_id = ? AND (kv_key LIKE 'gamestate_lungrasp%' OR kv_key LIKE 'gamestate_blood_plague%' OR kv_key LIKE 'gamestate_bubonic_plague%' OR kv_key LIKE 'gamestate_green_rot%')", {event.command.usr.id});
 							p.add_toast({ .message = tr("CURE_ALL", event), .image = "cure.png" });
 						} else if (flags == "CURERASP") {
-							db::query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE 'gamestate_lungrasp%'", {event.command.usr.id});
+							co_await db::co_query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE 'gamestate_lungrasp%'", {event.command.usr.id});
 							p.add_toast({ .message = tr("CURE_RASP", event), .image = "cure.png" });
 						} else if (flags == "CUREROT") {
-							db::query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE 'gamestate_green_rot%'", {event.command.usr.id});
+							co_await db::co_query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE 'gamestate_green_rot%'", {event.command.usr.id});
 							p.add_toast({ .message = tr("CURE_ROT", event), .image = "cure.png" });
 						} else if (flags == "CUREBLOOD") {
-							db::query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE 'gamestate_blood_plague%'", {event.command.usr.id});
+							co_await db::co_query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE 'gamestate_blood_plague%'", {event.command.usr.id});
 							p.add_toast({ .message = tr("CURE_BLOOD", event), .image = "cure.png" });
 						} else if (flags == "CUREPLAGUE") {
-							db::query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE 'gamestate_bubonic_plague%'", {event.command.usr.id});
+							co_await db::co_query("DELETE FROM kv_store WHERE user_id = ? AND kv_key LIKE 'gamestate_bubonic_plague%'", {event.command.usr.id});
 							p.add_toast({ .message = tr("CURE_PLAGUE", event), .image = "cure.png" });
 						}
 					}
@@ -673,7 +669,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		}
 		std::string monster_name{parts[2]};
 		if (p.event.command.locale != "en") {
-			auto translation = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
+			auto translation = co_await db::co_query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col = ?", {
 				0, p.event.command.locale.substr(0, 2), monster_name
 			});
 			if (!translation.empty()) {
@@ -771,7 +767,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		}
 		claimed = true;
 	} else if (parts[0] == "respawn") {
-		p.drop_everything();
+		co_await p.drop_everything();
 		/* Load backup of player and save over the current */
 		player new_p = player(event.command.usr.id, true);
 		/* Keep experience points only (HARDCORE!!!) */
@@ -790,9 +786,9 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		new_p.death_xp_loss();
 		new_p.reset_to_spawn_point();
 		new_p.event = event;
-		db::query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
-		db::query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
-		db::query("DELETE FROM criticals WHERE user_id = ?", { event.command.usr.id });
+		co_await db::co_query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
+		co_await db::co_query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
+		co_await db::co_query("DELETE FROM criticals WHERE user_id = ?", { event.command.usr.id });
 		update_live_player(event, new_p);
 		new_p.save(event.command.usr.id);
 		co_await achievement_check("RESPAWN", event, p, {});
@@ -800,7 +796,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "resurrect") {
 		time_t when = RESURRECT_SECS;
-		auto rs = db::query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
+		auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
 		if (!event.command.entitlements.empty() || !rs.empty()) {
 			when = RESURRECT_SECS_PREMIUM;
 		}
@@ -850,7 +846,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		if (p.possessions.size() >= p.max_inventory_slots()) {
 			co_return;
 		}
-		auto rs = db::query("SELECT * FROM game_locations WHERE id = ?", {parts[1]});
+		auto rs = co_await db::co_query("SELECT * FROM game_locations WHERE id = ?", {parts[1]});
 		if (rs.empty()) {
 			co_return;
 		}
@@ -865,7 +861,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			 * time of it.
 			 */
 			double find_chance = (double)d_random(0, 100) * (double)(p.profession == prof_woodsman ? 0.7 : 0.6);
-			auto bias = db::query("SELECT COUNT(*) AS current_ingredient_items FROM game_owned_items WHERE ((SELECT COUNT(*) FROM ingredients WHERE ingredient_name = item_desc LIMIT 1) > 0 OR (SELECT COUNT(*) FROM food WHERE food.name = item_desc LIMIT 1) > 0) AND user_id = ?", {event.command.usr.id});
+			auto bias = co_await db::co_query("SELECT COUNT(*) AS current_ingredient_items FROM game_owned_items WHERE ((SELECT COUNT(*) FROM ingredients WHERE ingredient_name = item_desc LIMIT 1) > 0 OR (SELECT COUNT(*) FROM food WHERE food.name = item_desc LIMIT 1) > 0) AND user_id = ?", {event.command.usr.id});
 			uint64_t current_ingredient_items = atol(bias[0].at("current_ingredient_items")), bias_factor{0};
 			/* As you carry more and more ingredient items your probability of finding game animals decreases.
 			 * This is a bias factor to prevent the user continually farming game animals all day long. There
@@ -917,7 +913,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 						animal_name = animals[i].first;
 						english_name = animal_name;
 						if (event.command.locale.substr(0, 2) != "en") {
-							auto t = db::query("SELECT * FROM translations WHERE row_id = 0 AND table_col = ? AND language = ?", {animal_name, event.command.locale.substr(0, 2)});
+							auto t = co_await db::co_query("SELECT * FROM translations WHERE row_id = 0 AND table_col = ? AND language = ?", {animal_name, event.command.locale.substr(0, 2)});
 							if (!t.empty()) {
 								animal_name = t[0].at("translation");
 							}
@@ -975,11 +971,11 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		size_t max = p.max_inventory_slots();
 		if (p.possessions.size() < max - 1) {
 			db::transaction();
-			auto rs = db::query(
+			auto rs = co_await db::co_query(
 				"SELECT * FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
 				{paragraph, name, flags});
 			if (!rs.empty()) {
-				db::query(
+				co_await db::co_query(
 					"DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
 					{paragraph, name, flags});
 				stacked_item i{.name = name, .flags = flags, .qty = 1 };
@@ -1069,15 +1065,15 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	co_return;
 };
 
-dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
+dpp::task<dpp::emoji> get_emoji(const std::string& name, const std::string& flags) {
 	dpp::emoji emoji = sprite::backpack;
-	auto food = db::query("SELECT * FROM food WHERE name = ?", {name});
+	auto food = co_await db::co_query("SELECT * FROM food WHERE name = ?", {name});
 	if (!food.empty()) {
-		return sprite::cheese;
+		co_return sprite::cheese;
 	}
-	auto ingredient = db::query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
+	auto ingredient = co_await db::co_query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
 	if (!ingredient.empty()) {
-		return sprite::rawmeat;
+		co_return sprite::rawmeat;
 	}
 	if (flags.length() && flags[0] == 'W') {
 		if (dpp::lowercase(name).find("bow") != std::string::npos) {
@@ -1106,7 +1102,7 @@ dpp::emoji get_emoji(const std::string& name, const std::string& flags) {
 	} else if (name.find("potion") != std::string::npos) {
 		emoji = sprite::orange03;
 	}
-	return emoji;
+	co_return emoji;
 }
 
 dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
@@ -1164,7 +1160,7 @@ dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 			continue;
 		}
 		if (ds.find(inv.name) == ds.end()) {
-			dpp::emoji e = get_emoji(inv.name, inv.flags);
+			dpp::emoji e = co_await get_emoji(inv.name, inv.flags);
 			if (deposit_menu.options.size() < 25) {
 				deposit_menu.add_select_option(
 					dpp::select_option(i.name, inv.name + ";" + inv.flags)
@@ -1183,7 +1179,7 @@ dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 	std::set<std::string> dup_set;
 	for (const auto& bank_item : bank_items) {
 		if (dup_set.find(bank_item.at("item_desc")) == dup_set.end()) {
-			dpp::emoji e = get_emoji(bank_item.at("item_desc"), bank_item.at("item_flags"));
+			dpp::emoji e = co_await get_emoji(bank_item.at("item_desc"), bank_item.at("item_flags"));
 			auto i = tr(item{ .name = bank_item.at("item_desc"), .flags = bank_item.at("item_flags") }, "", event);
 			if (withdraw_menu.options.size() < 25) {
 				withdraw_menu.add_select_option(
@@ -1324,7 +1320,7 @@ dpp::task<void> pvp_picker(const dpp::interaction_create_t& event, player p) {
 }
 
 dpp::task<uint64_t> get_guild_id(const player& p) {
-	auto rs = db::query("SELECT guild_id FROM guild_members WHERE user_id = ?", { p.event.command.usr.id });
+	auto rs = co_await db::co_query("SELECT guild_id FROM guild_members WHERE user_id = ?", { p.event.command.usr.id });
 	if (!rs.empty()) {
 		co_return atoll(rs[0].at("guild_id"));
 	}
@@ -1455,7 +1451,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 				continue;
 			}
 			if (ds.find(inv.name) == ds.end()) {
-				dpp::emoji e = get_emoji(inv.name, inv.flags);
+				dpp::emoji e = co_await get_emoji(inv.name, inv.flags);
 				if (sell_menu.options.size() < 25) {
 					auto i = tr(inv, "", event);
 					sell_menu.add_select_option(
@@ -1554,7 +1550,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		death(p, cb);
 	}
 
-	do_toasts(p, cb);
+	co_await do_toasts(p, cb);
 
 	p.save(event.command.usr.id);
 	update_live_player(event, p);

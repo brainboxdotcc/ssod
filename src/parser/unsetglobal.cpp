@@ -26,7 +26,7 @@ struct unsetglobal_tag : public tag {
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		paragraph_content >> p_text;
 		p_text = dpp::lowercase(remove_last_char(p_text));
-		db::query("DELETE FROM game_global_flags WHERE flag = ?", {p_text});
+		co_await db::co_query("DELETE FROM game_global_flags WHERE flag = ?", {p_text});
 		co_return;
 	}
 };

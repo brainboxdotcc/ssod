@@ -334,7 +334,7 @@ struct player {
 	bool drop_possession(const item& i);
 	void pickup_possession(item i);
 	void pickup_possession(stacked_item i);
-	void drop_everything();
+	dpp::task<void> drop_everything();
 	bool drop_spell(const item& i);
 	bool drop_herb(const item& i);
 
@@ -343,8 +343,8 @@ struct player {
 	double get_percent_of_current_level();
 	long xp_worth();
 
-	dpp::message get_registration_message(class dpp::cluster& cluster, const dpp::interaction_create_t &event);
-	dpp::message get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event);
+	dpp::task<dpp::message> get_registration_message(class dpp::cluster& cluster, const dpp::interaction_create_t &event);
+	dpp::task<dpp::message> get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event);
 
 	bool convert_rations(const item& i);
 };
@@ -356,11 +356,11 @@ uint64_t get_active_player_count();
 player get_registering_player(const dpp::interaction_create_t& event);
 void update_registering_player(const dpp::interaction_create_t& event, player p);
 void move_from_registering_to_live(const dpp::interaction_create_t& event, player p);
-bool player_is_live(const dpp::interaction_create_t& event);
+dpp::task<bool> player_is_live(const dpp::interaction_create_t& event);
 player get_live_player(const dpp::interaction_create_t& event, bool update_event = true);
 void update_live_player(const dpp::interaction_create_t& event, player p);
-void delete_live_player(const dpp::interaction_create_t& event);
-void cleanup_idle_live_players();
+dpp::task<void> delete_live_player(const dpp::interaction_create_t& event);
+dpp::task<void> cleanup_idle_live_players();
 void cleanup_idle_reg_players();
 void unload_live_player(uint64_t id);
 

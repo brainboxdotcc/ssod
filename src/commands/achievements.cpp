@@ -40,7 +40,7 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 	player p;
 	bool self{false};
 	if (param.index() == 0) {
-		if (player_is_live(event)) {
+		if (co_await player_is_live(event)) {
 			p = get_live_player(event);
 			user = p.name;
 			self = true;
@@ -48,7 +48,7 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 	} else {
 		user = std::get<std::string>(param);
 	}
-	auto rs = db::query("SELECT * FROM game_users WHERE name = ?", {user});
+	auto rs = co_await db::co_query("SELECT * FROM game_users WHERE name = ?", {user});
 	if (rs.empty()) {
 		event.reply(dpp::message(tr(self ? "NOPROFILE" : "NOSUCHUSER", event)).set_flags(dpp::m_ephemeral));
 		co_return;
@@ -62,7 +62,7 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 	 * User can view all non-secret achievements, or secret achievements they have unlocked in common with the target user.
 	 * Achievements are listed in reverse date order.
 	 */
-	auto ach = db::query(
+	auto ach = co_await db::co_query(
 		"SELECT achievements.*, DATE_FORMAT(FROM_UNIXTIME(achievements_unlocked.created_at), '%D %b %Y, %H:%i') AS unlock_date FROM `achievements_unlocked`"
 		"JOIN achievements ON achievement_id = achievements.id AND achievements_unlocked.user_id = ? WHERE "
 		"(achievements.secret = 0 OR (SELECT COUNT(*) FROM achievements_unlocked self WHERE self.achievement_id = achievements_unlocked.achievement_id AND self.user_id = ?) > 0) "
@@ -74,7 +74,7 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 	for (const auto& achievement : ach) {
 		std::string achievement_name{achievement.at("name")}, description{achievement.at("description")};
 		if (event.command.locale.substr(0, 2) != "en") {
-			auto translations = db::query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col IN ('achievements/description', 'achievements/name') ORDER BY table_col", {achievement.at("id"), event.command.locale.substr(0, 2)});
+			auto translations = co_await db::co_query("SELECT * FROM translations WHERE row_id = ? AND language = ? AND table_col IN ('achievements/description', 'achievements/name') ORDER BY table_col", {achievement.at("id"), event.command.locale.substr(0, 2)});
 			if (translations.size() == 2) {
 				description = translations[0].at("translation");
 				achievement_name = translations[1].at("translation");

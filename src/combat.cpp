@@ -288,7 +288,7 @@ dpp::task<dpp::message> get_pvp_round(const dpp::interaction_create_t& event) {
 			size_t index = 0;
 			for (const auto & inv :  p.possessions) {
 				if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
-					dpp::emoji e = get_emoji(inv.name, inv.flags);
+					dpp::emoji e = co_await get_emoji(inv.name, inv.flags);
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
 						.set_id(security::encrypt("pvp_attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
@@ -381,7 +381,7 @@ dpp::task<dpp::message> get_pvp_round(const dpp::interaction_create_t& event) {
 	m = cb.get_message();
 	m.add_embed(embed);
 
-	do_toasts(p, cb);
+	co_await do_toasts(p, cb);
 
 	co_return m;
 }
@@ -659,15 +659,14 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 
 	output << "__" << tr("COMBAT", event) << "__: **" << p.name << "** vs. **" << p.combatant.name << "**\n\n";
 
-	db::transaction();
-	auto r = db::query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
+	auto r = co_await db::co_query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
 	long banked{0};
 	bool critical{};
 	if (!r.empty()) {
 		long counter = atol(r[0].at("critical_counter"));
 		banked = atol(r[0].at("banked_criticals"));
 		if (banked > 0 && p.next_crit) {
-			db::query("UPDATE criticals SET banked_criticals = banked_criticals - 1 WHERE user_id = ?", {event.command.usr.id});
+			co_await db::co_query("UPDATE criticals SET banked_criticals = banked_criticals - 1 WHERE user_id = ?", {event.command.usr.id});
 			critical = true;
 			p.next_crit = false;
 			banked--;
@@ -681,7 +680,6 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 		output << " (" + std::to_string(percent) + "%)\n";
 		output << tr("CRITICALS", event) << ": " << std::max(banked, 0L) << "/" << p.max_crits();
  	}
-	db::commit();
 
 	if (EStamina <= 0) {
 		output << tr("HES_DEAD_JIM", event) << "\n\n";
@@ -761,20 +759,18 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 				 * If critical meter reaches max, you gain a critical hit, that you
 				 * can spend on an overwhelming attack.
 				 */
-				db::transaction();
-				db::query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, p.luck + 1});
-				auto r = db::query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
+				co_await db::co_query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, p.luck + 1});
+				auto r = co_await db::co_query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
 				long counter = atol(r[0].at("critical_counter"));
 				if (counter > 1000 + (p.get_level() * 4)) {
 					/* User gains a new banked critical */
 					long new_banked = atol(r[0].at("banked_criticals")) + 1;
 					if (new_banked <= p.max_crits()) {
-						db::query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
+						co_await db::co_query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
 					} else {
-						db::query("UPDATE criticals SET critical_counter = 0 WHERE user_id = ?", {event.command.usr.id});
+						co_await db::co_query("UPDATE criticals SET critical_counter = 0 WHERE user_id = ?", {event.command.usr.id});
 					}
 				}
-				db::commit();
 
 				if (EStance == DEFENSIVE) {
 					output << tr("ATKBONUS", event);
@@ -962,7 +958,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 			size_t index = 0;
 			for (const auto & inv :  p.possessions) {
 				if (inv.flags.length() >= 2 && inv.flags[0] == 'W' && isdigit(inv.flags[1])) {
-					dpp::emoji e = get_emoji(inv.name, inv.flags);
+					dpp::emoji e = co_await get_emoji(inv.name, inv.flags);
 					cb.add_component(dpp::component()
 						.set_type(dpp::cot_button)
 						.set_id(security::encrypt("attack;" + inv.name + ";" + inv.flags.substr(1, inv.flags.length() - 1) + ";" + std::to_string(++index)))
@@ -1028,7 +1024,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 	p.save(event.command.usr.id);
 	update_live_player(event, p);
 	cb.add_embed(embed);
-	do_toasts(p, cb);
+	co_await do_toasts(p, cb);
 	m = cb.get_message();
 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, m, p](const auto& cc) {

@@ -29,7 +29,7 @@ using namespace i18n;
 dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 {
 	bot.on_button_click([&bot](const dpp::button_click_t& event) -> dpp::task<void> {
-		if (!player_is_live(event)) {
+		if (!(co_await player_is_live(event))) {
 			co_return;
 		}
 		player p = get_live_player(event);
@@ -58,7 +58,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 				.set_flags(dpp::m_ephemeral)
 			);
 
-			delete_live_player(event);
+			co_await delete_live_player(event);
 		}
 	});
 	return tr(dpp::slashcommand("cmd_reset", "reset_desc", bot.me.id).set_dm_permission(true));

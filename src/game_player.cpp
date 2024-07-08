@@ -94,15 +94,15 @@ uint64_t get_active_player_count() {
 	return count;
 }
 
-bool player_is_live(const dpp::interaction_create_t& event) {
+dpp::task<bool> player_is_live(const dpp::interaction_create_t& event) {
 	{
 		std::lock_guard<std::mutex> l(live_list_lock);
 		auto f = live_players.find(event.command.usr.id);
 		if (f != live_players.end()) {
-			return true;
+			co_return true;
 		}
 	}
-	auto rs = db::query("SELECT * FROM game_users WHERE user_id = ?", { event.command.usr.id });
+	auto rs = co_await db::co_query("SELECT * FROM game_users WHERE user_id = ?", { event.command.usr.id });
 	if (!rs.empty()) {
 		/* Load the player into cache */
 		player p(event.command.usr.id);
@@ -112,9 +112,9 @@ bool player_is_live(const dpp::interaction_create_t& event) {
 			std::lock_guard<std::mutex> l(live_list_lock);
 			live_players[event.command.usr.id] = p;
 		}
-		return true;
+		co_return true;
 	}
-	return false;
+	co_return false;
 }
 
 player get_registering_player(const dpp::interaction_create_t& event) {
@@ -129,13 +129,13 @@ player get_registering_player(const dpp::interaction_create_t& event) {
 	return p;
 }
 
-void cleanup_idle_live_players() {
+dpp::task<void> cleanup_idle_live_players() {
 	/**
 	 * These functions remove players from the list who havent interacted with the bot in 10 mins.
 	 * This just ensures they are removed from local cache,they still exist in the database. Also
 	 * serves to rehash the unordered maps saving memory.
 	 */
-	auto rs = db::query("SELECT * FROM cache_purge_queue ORDER BY id");
+	auto rs = co_await db::co_query("SELECT * FROM cache_purge_queue ORDER BY id");
 	std::lock_guard<std::mutex> l(live_list_lock);
 	if (!rs.empty()) {
 		for (const auto &row : rs) {
@@ -144,7 +144,7 @@ void cleanup_idle_live_players() {
 				p->second.last_use = 0;
 			}
 		}
-		db::query("DELETE FROM cache_purge_queue");
+		co_await db::co_query("DELETE FROM cache_purge_queue");
 	}
 	player_list copy;
 	time_t ten_mins_ago = time(nullptr) - 3600;
@@ -200,7 +200,7 @@ void move_from_registering_to_live(const dpp::interaction_create_t& event, playe
 	live_list_lock.unlock();
 }
 
-void delete_live_player(const dpp::interaction_create_t& event) {
+dpp::task<void> delete_live_player(const dpp::interaction_create_t& event) {
 	{
 		std::lock_guard<std::mutex> l(live_list_lock);
 		auto f = live_players.find(event.command.usr.id);
@@ -208,14 +208,14 @@ void delete_live_player(const dpp::interaction_create_t& event) {
 			live_players.erase(f);
 		}
 	}
-	db::query("DELETE FROM game_users WHERE user_id = ?", { event.command.usr.id });
-	db::query("DELETE FROM game_default_users WHERE user_id = ?", { event.command.usr.id });
-	db::query("DELETE FROM game_default_spells WHERE user_id = ?", { event.command.usr.id });
-	db::query("DELETE FROM game_bank WHERE owner_id = ?", { event.command.usr.id });
-	db::query("DELETE FROM game_owned_items WHERE user_id = ?", { event.command.usr.id });
-	db::query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
-	db::query("DELETE FROM potion_drops WHERE user_id = ?", { event.command.usr.id });
-	db::query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM game_users WHERE user_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM game_default_users WHERE user_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM game_default_spells WHERE user_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM game_bank WHERE owner_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM game_owned_items WHERE user_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM potion_drops WHERE user_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
 }
 
 player get_live_player(const dpp::interaction_create_t& event, bool update_event) {
@@ -275,7 +275,7 @@ double player::get_percent_of_current_level() {
 	}
 }
 
-dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
+dpp::task<dpp::message> player::get_registration_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
 
 	std::string file = matrix_image(race, profession, gender == "male");
 	dpp::embed embed = dpp::embed()
@@ -338,7 +338,7 @@ dpp::message player::get_registration_message(dpp::cluster& cluster, const dpp::
 			.add_select_option(dpp::select_option(tr("male", event), "male").set_default(gender == "male"))
 			.add_select_option(dpp::select_option(tr("female", event), "female").set_default(gender == "female"));
 
-	return dpp::message()
+	co_return dpp::message()
 		.add_embed(embed)
 		.add_component(dpp::component()
 			.add_component(race_select_menu)
@@ -470,7 +470,7 @@ bool player::has_component_herb(const std::string& spell) {
 }
 
 
-dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
+dpp::task<dpp::message> player::get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
 	size_t max_spells = (profession == prof_wizard ? 5 : 2);
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -506,7 +506,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 		.set_id(security::encrypt("select_player_spells"));
 	/* Fill spell select menu only with spells applicable to the chosen herbs up to a max of 25 choices */
 	std::vector<dpp::select_option> all_spells;
-	auto rs = db::query("SELECT * FROM spells WHERE in_grimoire = 1 ORDER BY name");
+	auto rs = co_await db::co_query("SELECT * FROM spells WHERE in_grimoire = 1 ORDER BY name");
 	for (const auto& row : rs) {
 		all_spells.emplace_back(tr(dpp::uppercase(row.at("name")), event), row.at("name"), tr(dpp::uppercase(row.at("name")) + "D", event));
 	}
@@ -529,7 +529,7 @@ dpp::message player::get_magic_selection_message(dpp::cluster& cluster, const dp
 		}
 	}
 
-	return dpp::message()
+	co_return dpp::message()
 		.add_embed(embed)
 		.add_component(dpp::component()
 			.add_component(herb_select_menu)
@@ -725,14 +725,16 @@ void player::tick_mana() {
 	mana = std::min(max_mana(), mana);
 }
 
-void player::drop_everything() {
+dpp::task<void> player::drop_everything() {
 	/* Drop everything to floor */
 	for (const auto& i : possessions) {
 		/* We don't drop quest items */
 		sale_info value = get_sale_info(i.name);
 		if (!value.quest_item && dpp::lowercase(i.name) != "scroll") {
 			for (long qty = 0; qty < i.qty; ++qty) {
-				db::query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {paragraph, i.name, i.flags});
+				/* BUG: g++14.1 ICE: Can't pass members of `this` to an initialiser list within a coroutine */
+				int32_t p = paragraph;
+				co_await db::co_query("INSERT INTO game_dropped_items (location_id, item_desc, item_flags) VALUES(?,?,?)", {p, i.name, i.flags});
 			}
 		}
 	}
@@ -743,7 +745,6 @@ void player::drop_everything() {
 bool player::save(dpp::snowflake user_id, bool put_backup)
 {
 	if (user_id.empty()) {
-		std::cout << "EMPTY snowflake on user " << this->name << "\n";
 		return false;
 	}
 	tick_mana();

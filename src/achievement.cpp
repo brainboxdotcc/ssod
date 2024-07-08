@@ -28,8 +28,9 @@
 
 using namespace i18n;
 
-void achievement_loop(auto achievements, const paragraph& para, player& p, std::map<std::string, json>& variables)
-{
+void blocking_achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables, const paragraph& para) {
+	/* Trigger all achievement events of this event type, but only if the player has not yet unlocked the achievement they are attached to */
+	auto achievements = db::query("SELECT * FROM achievements WHERE enabled = 1 AND event_type = ? AND check_event IS NOT NULL AND (SELECT COUNT(*) FROM achievements_unlocked WHERE user_id = ? AND achievement_id = achievements.id) = 0", {event_type, event.command.usr.id});
 	for (const auto& achievement : achievements) {
 		if (para.id == 0) {
 			paragraph blank;
@@ -41,16 +42,19 @@ void achievement_loop(auto achievements, const paragraph& para, player& p, std::
 	}
 }
 
-void blocking_achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables, const paragraph& para) {
-	/* Trigger all achievement events of this event type, but only if the player has not yet unlocked the achievement they are attached to */
-	auto achievements = db::query("SELECT * FROM achievements WHERE enabled = 1 AND event_type = ? AND check_event IS NOT NULL AND (SELECT COUNT(*) FROM achievements_unlocked WHERE user_id = ? AND achievement_id = achievements.id) = 0", {event_type, event.command.usr.id});
-	achievement_loop(achievements, para, p, variables);
-}
-
 dpp::task<void> achievement_check(const std::string& event_type, const dpp::interaction_create_t& event, player p, std::map<std::string, json> variables, const paragraph& para) {
 	/* Trigger all achievement events of this event type, but only if the player has not yet unlocked the achievement they are attached to */
 	auto achievements = co_await db::co_query("SELECT * FROM achievements WHERE enabled = 1 AND event_type = ? AND check_event IS NOT NULL AND (SELECT COUNT(*) FROM achievements_unlocked WHERE user_id = ? AND achievement_id = achievements.id) = 0", {event_type, event.command.usr.id});
-	achievement_loop(achievements, para, p, variables);
+	for (const auto& achievement : achievements) {
+		js::script_result r{};
+		if (para.id == 0) {
+			paragraph blank;
+			blank.cur_player = &p;
+			r = co_await js::co_run(achievement.at("check_event"), blank, p, variables);
+		} else {
+			r = co_await js::co_run(achievement.at("check_event"), (paragraph &) para, p, variables);
+		}
+	}
 	co_return;
 }
 

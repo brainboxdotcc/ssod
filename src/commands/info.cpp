@@ -53,7 +53,7 @@ int64_t rss() {
 dpp::task<void> info_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.from->creator;
-	auto rs = db::query("SELECT COUNT(id) AS guild_count, SUM(user_count) AS user_count FROM guild_cache");
+	auto rs = co_await db::co_query("SELECT COUNT(id) AS guild_count, SUM(user_count) AS user_count FROM guild_cache");
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title(tr("SSOD", event))

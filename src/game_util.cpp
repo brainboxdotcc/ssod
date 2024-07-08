@@ -133,18 +133,18 @@ void premium_required(const dpp::interaction_create_t& event) {
 	);
 }
 
-void trigger_effect(dpp::cluster& bot, const dpp::interaction_create_t& event, player& player, const std::string& type, const std::string& requirements) {
+dpp::task<void> trigger_effect(dpp::cluster& bot, const dpp::interaction_create_t& event, player& player, const std::string& type, const std::string& requirements) {
 	uint64_t effect_id{0};
-	auto eff_type = db::query("SELECT * FROM passive_effect_types WHERE type = ? AND requirements = ?", { type, requirements });
+	auto eff_type = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = ? AND requirements = ?", { type, requirements });
 	if (type.empty()) {
-		return;
+		co_return;
 	}
 	effect_id = atol(eff_type[0].at("id"));
-	auto status = db::query("SELECT * FROM passive_effect_status WHERE user_id = ? AND passive_effect_id = ?", { event.command.usr.id, effect_id });
+	auto status = co_await db::co_query("SELECT * FROM passive_effect_status WHERE user_id = ? AND passive_effect_id = ?", { event.command.usr.id, effect_id });
 	if (!status.empty()) {
-		return;
+		co_return;
 	}
-	db::query(
+	co_await db::co_query(
 		"INSERT INTO passive_effect_status (user_id, passive_effect_id, current_state, last_transition_time) VALUES(?, ?, 'active', UNIX_TIMESTAMP())",
 		{ event.command.usr.id, effect_id }
 	);
@@ -152,15 +152,17 @@ void trigger_effect(dpp::cluster& bot, const dpp::interaction_create_t& event, p
 	paragraph p;
 	p.cur_player = &player;
 	p.id = player.paragraph;
-	js::run(eff_type[0].at("on_start"), p, player, {});
+	auto v = co_await js::co_run(eff_type[0].at("on_start"), p, player, {});
+	player = *v.p.cur_player;
+	co_return;
 }
 
-void check_effects(dpp::cluster& bot) {
-	auto rs = db::query("SELECT passive_effect_status.*, on_end, on_after, type, requirements, duration, withdrawl FROM `passive_effect_status` join passive_effect_types on passive_effect_id = passive_effect_types.id where UNIX_TIMESTAMP() > last_transition_time + IF(current_state = 'active', duration, withdrawl)");
+dpp::task<void> check_effects(dpp::cluster& bot) {
+	auto rs = co_await db::co_query("SELECT passive_effect_status.*, on_end, on_after, type, requirements, duration, withdrawl FROM `passive_effect_status` join passive_effect_types on passive_effect_id = passive_effect_types.id where UNIX_TIMESTAMP() > last_transition_time + IF(current_state = 'active', duration, withdrawl)");
 	for (const auto& row : rs) {
 		dpp::interaction_create_t event;
 		event.command.usr.id = atoll(row.at("user_id"));
-		if (player_is_live(event)) {
+		if (!(co_await player_is_live(event))) {
 			player player = get_live_player(event);
 			/* Initialise this paragraph 'empty' as we don't want to parse it and trigger any changes within */
 			paragraph p;
@@ -171,23 +173,26 @@ void check_effects(dpp::cluster& bot) {
 			p.id = player.paragraph;
 			if (row.at("current_state") == "active") {
 				if (!row.at("on_end").empty()) {
-					js::run(row.at("on_end"), p, player, {});
+					auto v = co_await js::co_run(row.at("on_end"), p, player, {});
+					p = v.p;
 					update_live_player(event, player);
 					player.save(event.command.usr.id);
 				}
-				db::query("UPDATE passive_effect_status SET current_state = 'withdrawl', last_transition_time = UNIX_TIMESTAMP() WHERE id = ?", {row.at("id")});
+				co_await db::co_query("UPDATE passive_effect_status SET current_state = 'withdrawl', last_transition_time = UNIX_TIMESTAMP() WHERE id = ?", {row.at("id")});
 				bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on player " + event.command.usr.id.str() + " moved to state 'withdrawl'");
 			} else if (row.at("current_state") == "withdrawl") {
 				if (!row.at("on_after").empty()) {
-					js::run(row.at("on_after"), p, player, {});
+					auto v = co_await js::co_run(row.at("on_after"), p, player, {});
+					player = *v.p.cur_player;
 					update_live_player(event, player);
 					player.save(event.command.usr.id);
 				}
-				db::query("DELETE FROM passive_effect_status WHERE id = ?", {row.at("id")});
+				co_await db::co_query("DELETE FROM passive_effect_status WHERE id = ?", {row.at("id")});
 				bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on player " + event.command.usr.id.str() + " ended");
 			}
 		}
 	}
+	co_return;
 }
 
 std::string human_readable_spell_name(const std::string& spell, const dpp::interaction_create_t& event) {

@@ -216,8 +216,10 @@ namespace db {
 
 #ifdef DPP_CORO
 	void query_callback(const std::string &format, const paramlist &parameters, const sql_query_callback& cb) {
-		std::unique_lock queue_lock(query_queue_mtx);
-		sql_query_queue.push_back(cached_query_results{ .format = format, .parameters = parameters, .callback = cb });
+		{
+			std::unique_lock queue_lock(query_queue_mtx);
+			sql_query_queue.push_back(cached_query_results{.format = format, .parameters = parameters, .callback = cb});
+		}
 		sql_worker_cv.notify_one();
 	}
 
@@ -228,7 +230,7 @@ namespace db {
 
 	void init (dpp::cluster& bot) {
 		creator = &bot;
-		const json& dbconf = config::get("database");
+		const json dbconf = config::get("database");
 		if (!db::connect(dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"], dbconf.contains("socket") ? dbconf["socket"] : "")) {
 			creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"], mysql_error(&connection)));
 			exit(2);
@@ -236,28 +238,27 @@ namespace db {
 #ifdef DPP_CORO
 		std::thread([&]() {
 			dpp::utility::set_thread_name("sql/coro");
+			std::vector<cached_query_results> to_process;
 			while (true) {
-				std::mutex mtx;
-				std::unique_lock<std::mutex> lock{ mtx };
-				sql_worker_cv.wait_for(lock, std::chrono::seconds(60));
-				std::vector<cached_query_results> to_process;
 				{
-					std::unique_lock queue_lock(query_queue_mtx);
-					to_process.clear();
-					to_process.reserve(sql_query_queue.size());
-					for (const auto& i : sql_query_queue) {
-						to_process.push_back(i);
+					std::mutex mtx;
+					std::unique_lock<std::mutex> lock{mtx};
+					sql_worker_cv.wait_for(lock, std::chrono::microseconds(500));
+					{
+						std::unique_lock queue_lock(query_queue_mtx);
+						to_process.clear();
+						to_process.reserve(sql_query_queue.size());
+						for (const auto &i: sql_query_queue) {
+							to_process.push_back(i);
+						}
+						sql_query_queue.clear();
 					}
-					sql_query_queue.clear();
 				}
 				for (const auto& qr : to_process) {
 					auto results = query(qr.format, qr.parameters);
 					if (qr.callback) {
 						qr.callback(results);
 					}
-				}
-				if (to_process.empty()) {
-					std::this_thread::yield();
 				}
 			}
 		}).detach();
@@ -359,7 +360,7 @@ namespace db {
 				delete[] cc.second.lengths;
 			}
 			cached_queries = {};
-			const json& dbconf = config::get("database");
+			const json dbconf = config::get("database");
 			if (!db::unsafe_connect(dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"], dbconf.contains("socket") ? dbconf["socket"] : "")) {
 				creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"], mysql_error(&connection)));
 				return rv;

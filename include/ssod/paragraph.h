@@ -117,7 +117,7 @@ struct paragraph {
 	paragraph(const std::string& data, player& current);
 	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id);
 
-	static bool valid_next(long Current, long Next);
+	static dpp::task<bool> valid_next(long current, long next);
 
 	dpp::task<void> parse(player& current_player, dpp::snowflake user_id);
 };
@@ -126,9 +126,9 @@ std::string extract_value(const std::string& p_text);
 
 long extract_value_number(const std::string& p_text);
 
-bool global_set(const std::string& flag);
+dpp::task<bool> global_set(const std::string& flag);
 
-bool timed_set(dpp::interaction_create_t& event, const std::string& flag);
+dpp::task<bool> timed_set(dpp::interaction_create_t& event, const std::string& flag);
 
 void extract_to_quote(std::string& p_text, std::stringstream& content, char end = '>');
 
