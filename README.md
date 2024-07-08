@@ -42,6 +42,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 	"token": "token goes here", 
 	"log": "log path goes here",
 	"shards": 1,
+	"js_thread_pool_size": 32,
 	"database": {
 		"host": "localhost",
 		"username": "mysql username",
@@ -67,11 +68,12 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 
 ## Software Dependencies
 
-* [D++](https://github.com/brainboxdotcc/dpp) v10.0.29 or later
+* [D++](https://github.com/brainboxdotcc/dpp) v10.0.30 or later
+* * D++ must be built with `-DDPP_CORO=ON`
 * libcrypto/libssl
 * libmysqlclient 8.x
 * zlib
-* g++ 11.4 or later
+* g++ 14.1 or later
 * cmake
 * fmtlib
 * PCRE
