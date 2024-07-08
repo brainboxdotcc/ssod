@@ -57,49 +57,110 @@ inline std::string trim(std::string s)
 	return ltrim(rtrim(s));
 }
 
-std::string sha256(const std::string &buffer);
-
+/**
+ * String to long
+ * @param str
+ * @return
+ */
 inline long atol(const std::string& str) {
 	if (str.empty()) return 0;
 	return atol(str.c_str());
 }
 
+/**
+ * String to long long
+ * @param str
+ * @return
+ */
 inline long long atoll(const std::string& str) {
 	if (str.empty()) return 0;
 	return atoll(str.c_str());
 }
 
+/**
+ * String to int
+ * @param str
+ * @return
+ */
 inline int atoi(const std::string& str) {
 	if (str.empty()) return 0;
 	return atoi(str.c_str());
 }
 
+/**
+ * Represents the description of an item.
+ */
 struct item_desc {
 	std::string name{};
 	std::string description{};
 };
 
+/**
+ * Represents a singular item on the ground, in the bank, or in the
+ * player's inventory.
+ */
 struct item {
 	std::string name{};
 	std::string flags{};
 };
 
-
+/**
+ * Represents a stack of identical items, on the ground, in the bank
+ * or in the player's inventory
+ */
 struct stacked_item {
 	std::string name{};
 	std::string flags{};
 	long qty{1};
 };
 
+/**
+ * Internationalisation functions
+ */
 namespace i18n {
 
+	/**
+	 * Fetch translation with a given key name, using the language of an interaction's user
+	 * @param k translation key
+	 * @param interaction user interaction
+	 * @return translated text
+	 */
 	std::string tr(const std::string& k, const dpp::interaction_create_t& interaction);
 
+	/**
+	 * Translate a slash command into all possible languages
+	 * @param cmd slash command
+	 * @return translated slash command
+	 */
 	dpp::slashcommand tr(dpp::slashcommand cmd);
 
+	/**
+	 * Translate name and description of an item into the language of an interaction's user
+	 * @param i item
+	 * @param description item description
+	 * @param event user interaction
+	 * @return translated item
+	 */
 	item_desc tr(const item& i, const std::string &description, const dpp::interaction_create_t& event);
+
+	/**
+	 * Translate name and description of an item stack into the language of an interaction's user
+	 * @param i item stack
+	 * @param description item description
+	 * @param event user interaction
+	 * @return translated item
+	 */
 	item_desc tr(const stacked_item& i, const std::string &description, const dpp::interaction_create_t& event);
 
+	/**
+	 * Fetch translation with a given key name, using the language of an interaction's user. Accepts optional
+	 * fmt::format arguments.
+	 * @tparam T variadic type names for argument list
+	 * @param k translation key
+	 * @param interaction user interaction
+	 * @param args variadic argument list
+	 * @return translated string
+	 */
 	template<typename... T>
 	std::string tr(const std::string& key, const dpp::interaction_create_t& interaction, T &&... args) {
 		try {

@@ -69,7 +69,7 @@ namespace js {
 	 * @param _bot dpp cluster instance
 	 * @param thread_pool_size size of thread pool, defaults to same as number of cores
 	 */
-	void init(class dpp::cluster& _bot, int thread_pool_size = std::thread::hardware_concurrency());
+	void init(class dpp::cluster& _bot, size_t thread_pool_size = std::thread::hardware_concurrency());
 
 	/**
 	 * @brief Execute blocking js script

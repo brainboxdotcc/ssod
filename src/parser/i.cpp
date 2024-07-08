@@ -71,7 +71,7 @@ struct i_tag : public tag {
 				output << " ✅ [Owned]";
 			}
 		}
-		output << "** (*" << Cost << " gold*) - " << describe_item(Value, ItemName, current_player.event) << "\n";
+		output << "** (*" << Cost << " gold*) - " << (co_await describe_item(Value, ItemName, current_player.event)) << "\n";
 		p.words++;
 
 		p.links++;

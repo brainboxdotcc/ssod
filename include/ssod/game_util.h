@@ -38,10 +38,10 @@ struct spell_info {
 	long mana_cost{0};
 };
 
-std::string describe_item(const std::string& modifier_flags, const std::string& name, const dpp::interaction_create_t& event, bool ansi = false, size_t max_desc_len = 250);
+dpp::task<std::string> describe_item(const std::string& modifier_flags, const std::string& name, const dpp::interaction_create_t& event, bool ansi = false, size_t max_desc_len = 250);
 dpp::component help_button(const dpp::interaction_create_t& event);
 void premium_required(const dpp::interaction_create_t& event);
-sale_info get_sale_info(const std::string& name);
+dpp::task<sale_info> get_sale_info(const std::string& name);
 std::string human_readable_spell_name(const std::string& spell, const dpp::interaction_create_t& event);
 std::string human_readable_herb_name(const std::string& herb, const dpp::interaction_create_t& event);
 spell_info get_spell_info(const std::string& name);

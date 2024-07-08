@@ -25,14 +25,21 @@
 #include <mutex>
 #include <functional>
 
+/**
+ * A task within a thread pool. A simple lambda that accepts no parameters and returns void.
+ */
 using thread_pool_task = std::function<void()>;
 
+/**
+ * @brief A thread pool contains 1 or more worker threads which accept thread_pool_task lambadas
+ * into a queue, which is processed in-order by whichever thread is free.
+ */
 struct thread_pool {
 	std::vector<std::thread> threads;
 	std::queue<thread_pool_task> tasks;
 	std::mutex queue_mutex;
 	std::condition_variable cv;
-	bool stop = false;
+	bool stop{false};
 
 	explicit thread_pool(size_t num_threads = std::thread::hardware_concurrency());
 	~thread_pool();
