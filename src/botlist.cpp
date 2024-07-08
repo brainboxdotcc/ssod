@@ -39,12 +39,12 @@ dpp::task<void> post_botlists(dpp::cluster &bot) {
 	}
 }
 
-dpp::task<void> botlist::run(dpp::cluster& bot, const std::string_view key, const std::string_view url, const std::string_view count_field, const std::string_view shards_field) {
-	const json& list_config = config::get("botlists");
+dpp::task<void> botlist::run(dpp::cluster& bot, const std::string_view key, const std::string_view api_url, const std::string_view count_field, const std::string_view shards_field) {
+	const json list_config = config::get("botlists");
 	auto rs = co_await db::co_query("SELECT COUNT(id) AS count FROM guild_cache");
 	if (list_config.contains(key.data())) {
-		const json& topgg_config = list_config.at(key.data());
-		std::string token = topgg_config.at("token");
+		const json this_bot_list_config = list_config.at(key.data());
+		std::string token = this_bot_list_config.at("token");
 		json j;
 		if (!shards_field.empty()) {
 			j[shards_field.data()] = bot.numshards;
@@ -52,7 +52,7 @@ dpp::task<void> botlist::run(dpp::cluster& bot, const std::string_view key, cons
 		if (!count_field.empty() && !rs.empty()) {
 			j[count_field.data()] = atoi(rs[0].at("count").c_str());
 		}
-		std::string post_url = replace_string(url.data(), "{}", bot.me.id.str());
+		std::string post_url = replace_string(api_url.data(), "{}", bot.me.id.str());
 		auto cc = co_await bot.co_request(post_url, dpp::m_post, j.dump(), "application/json", {{"Authorization", token}});
 		if (cc.status >= 400) {
 			bot.log(dpp::ll_warning, std::string(key) + " returned: " + cc.body);
