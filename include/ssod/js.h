@@ -29,18 +29,73 @@
 
 namespace js {
 
+	/**
+	 * @brief A list of variables to instantiate in the javascript environment
+	 */
 	using var_list = std::map<std::string, json>;
 
+	/**
+	 * @brief The result of a javascript execution, new player and paragraph content
+	 */
 	struct script_result {
+		/**
+		 * @brief True if script didn't error
+		 */
 		bool success{};
+		/**
+		 * @brief New player data, may be mutated by script
+		 */
 		player current_player;
+		/**
+		 * @brief New paragraph data, may be mutated by script
+		 */
 		paragraph p;
 	};
 
+	/**
+	 * @brief A javascript execution callback, for asynchronous execution of js scripts
+	 */
 	using js_callback = std::function<void(script_result)>;
 
-	void init(class dpp::cluster& _bot);
+	/**
+	 * @brief Initialise duktape interpreter, and thread pool
+	 * @param _bot dpp cluster instance
+	 * @param thread_pool_size size of thread pool, defaults to same as number of cores
+	 */
+	void init(class dpp::cluster& _bot, int thread_pool_size = std::thread::hardware_concurrency());
+
+	/**
+	 * @brief Execute blocking js script
+	 *
+	 * @param script Script body
+	 * @param p current paragraph
+	 * @param current_player current player
+	 * @param vars variables to create in the instance
+	 * @return true on success
+	 */
 	bool run(const std::string& script, paragraph& p, player& current_player, const var_list &vars);
+
+	/**
+	 * @brief Execute async js script with callback on completion, placing the execution into
+	 * the thread pool.
+	 *
+	 * @param script Script body
+	 * @param p current paragraph
+	 * @param current_player current player
+	 * @param vars variables to create in the instance
+	 * @param callback Callback on completion of js script
+	 */
 	void run(const std::string& script, paragraph& p, player& current_player, const var_list &vars, const js_callback& callback);
-	dpp::async<script_result> co_run(const std::string& script, paragraph& p, player& current_player, const std::map<std::string, json> &vars);
+
+	/**
+	 * @brief Execute async js script with callback on completion, placing the execution into
+	 * the thread pool. As this returns dpp::task<> it may be co_awaited for a script_result.
+	 *
+	 * @param script Script body
+	 * @param p current paragraph
+	 * @param current_player current player
+	 * @param vars variables to create in the instance
+	 * @return dpp::async to be co_awaited for script completion. co_await for script_result.
+	 */
+	dpp::async<script_result> co_run(const std::string& script, paragraph& p, player& current_player, const var_list& vars);
 }
