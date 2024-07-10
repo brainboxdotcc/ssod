@@ -19,7 +19,6 @@
  ************************************************************************************/
 #include <ssod/ssod.h>
 #include <ssod/commands/help.h>
-#include <fmt/format.h>
 
 using namespace i18n;
 
