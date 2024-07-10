@@ -22,7 +22,6 @@
 #include <ssod/commands/info.h>
 #include <ssod/game_date.h>
 #include <ssod/game_player.h>
-#include <fmt/format.h>
 
 using namespace i18n;
 

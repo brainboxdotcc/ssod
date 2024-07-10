@@ -38,6 +38,10 @@ dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
 			.add_option(dpp::command_option(dpp::co_string, "opt_name", "G_JOIN_NAME_DESC", true))
 		)
 		.add_option(
+			dpp::command_option(dpp::co_sub_command, "opt_rename", "G_RENAME_DESC")
+			.add_option(dpp::command_option(dpp::co_string, "opt_name", "G_RENAME_NAME_DESC", true))
+		)
+		.add_option(
 			dpp::command_option(dpp::co_sub_command, "cmd_info", "G_INFO_DESC")
 			.add_option(dpp::command_option(dpp::co_string, "opt_name", "G_INFO_NAME_DESC", true))
 		)
@@ -73,7 +77,6 @@ dpp::task<void> guild_command::route(const dpp::slashcommand_t &event)
 			bot.log(dpp::ll_warning, "Potty-mouth guild name " + guild_name + " censored for id " + event.command.usr.id.str());
 			guild_name = swear_filter.censored_content;
 		}
-		db::transaction();
 		auto g = co_await db::co_query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", { event.command.usr.id });
 		if (g.empty()) {
 			auto rs = co_await db::co_query("SELECT id FROM guilds WHERE name = ?", { guild_name });
@@ -88,12 +91,10 @@ dpp::task<void> guild_command::route(const dpp::slashcommand_t &event)
 		} else {
 			embed.set_description(tr("GUILD_ALREADY_MEMBER", event) + "\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
 		}
-		db::commit();
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	} else if (subcommand.name == "join") {
 		auto param = subcommand.options[0].value;
             	std::string guild_name = std::get<std::string>(param);
-		db::transaction();
 		auto g = co_await db::co_query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", { event.command.usr.id });
 		if (g.empty()) {
 			auto rs = co_await db::co_query("SELECT id FROM guilds WHERE name = ?", { guild_name });
@@ -106,7 +107,6 @@ dpp::task<void> guild_command::route(const dpp::slashcommand_t &event)
 		} else {
 			embed.set_description(tr("GUILD_ALREADY_MEMBER", event) + "\n\n" + dpp::utility::markdown_escape(g[0].at("name")));
 		}
-		db::commit();
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	} else if (subcommand.name == "info") {
 		auto param = subcommand.options[0].value;
@@ -130,6 +130,34 @@ dpp::task<void> guild_command::route(const dpp::slashcommand_t &event)
 		} else {
 			co_await db::co_query("DELETE FROM guild_members WHERE user_id = ?", { event.command.usr.id });
 			embed.set_description(tr("LEFT_GUILD", event) + " " + dpp::utility::markdown_escape(g[0].at("name")));
+		}
+		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
+	} else if (subcommand.name == "rename") {
+		auto param = subcommand.options[0].value;
+		std::string guild_name = std::get<std::string>(param);
+		embed.set_title(tr("RENAME_GUILD", event));
+		auto g = co_await db::co_query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", { event.command.usr.id });
+		if (g.empty()) {
+			embed.set_description(tr("NOT_A_GUILD_MEMBER", event));
+			co_return;
+		} else {
+			if (g[0].at("owner_id") != event.command.usr.id.str()) {
+				embed.set_description(tr("NOT_THE_GUILD_OWNER", event));
+			} else {
+				neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
+				swear_filter_t swear_filter = co_await swear_check.co_contains_bad_word(guild_name);
+				if (!swear_filter.clean) {
+					bot.log(dpp::ll_warning, "Potty-mouth guild name " + guild_name + " censored for id " + event.command.usr.id.str());
+					guild_name = swear_filter.censored_content;
+				}
+				auto exists = co_await db::co_query("SELECT id FROM guilds WHERE name = ?", {guild_name});
+				if (!exists.empty()) {
+					embed.set_description(tr("GUILD_EXISTS", event));
+				} else {
+					co_await db::co_query("UPDATE guilds SET name = ? WHERE id = ?", {g[0].at("guild_id")});
+					embed.set_description(tr("RENAMED_GUILD_TO", event, dpp::utility::markdown_escape(g[0].at("name"))));
+				}
+			}
 		}
 		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	}
