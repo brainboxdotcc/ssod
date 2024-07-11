@@ -26,7 +26,7 @@ struct effect_tag : public tag {
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		paragraph_content >> p_text;
 		std::string effect_name = remove_last_char(p_text);
-		trigger_effect(*(current_player.event.from->creator), current_player.event, current_player, "Environmental", effect_name);
+		co_await trigger_effect(*(current_player.event.from->creator), current_player.event, current_player, "Environmental", effect_name);
 		p.words++;
 		co_return;
 	}

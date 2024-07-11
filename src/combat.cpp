@@ -155,8 +155,8 @@ dpp::task<void> update_opponent_message(const dpp::interaction_create_t& event, 
 					opponent.save(event.command.usr.id);
 					update_live_player(event, p);
 					update_save_opponent(event, opponent);
-					update_opponent_message(event, co_await get_pvp_round(opponent.event), std::stringstream(tr("TIMEOUT", event, opponent.name)));
-					update_opponent_message(opponent.event, co_await get_pvp_round(event), std::stringstream(tr("TIMEOUT", event, opponent.name)));
+					co_await update_opponent_message(event, co_await get_pvp_round(opponent.event), std::stringstream(tr("TIMEOUT", event, opponent.name)));
+					co_await update_opponent_message(opponent.event, co_await get_pvp_round(event), std::stringstream(tr("TIMEOUT", event, opponent.name)));
 					p = end_pvp_combat(event);
 					/* To the victor go the spoils */
 					co_await p.add_experience(opponent.xp_worth());
@@ -252,8 +252,8 @@ dpp::task<void> end_abandoned_pvp() {
 				p.save(event.command.usr.id);
 				update_live_player(event, p);
 				update_save_opponent(event, opponent);
-				update_opponent_message(event, co_await get_pvp_round(opponent.event), std::stringstream(tr("TIMEOUT5", event, p.name)));
-				update_opponent_message(opponent.event, co_await get_pvp_round(event), std::stringstream(tr("TIMEOUT5", event, p.name)));
+				co_await update_opponent_message(event, co_await get_pvp_round(opponent.event), std::stringstream(tr("TIMEOUT5", event, p.name)));
+				co_await update_opponent_message(opponent.event, co_await get_pvp_round(event), std::stringstream(tr("TIMEOUT5", event, p.name)));
 				p = end_pvp_combat(event);
 				/* To the victor go the spoils */
 				co_await opponent.add_experience(p.xp_worth());
@@ -334,7 +334,7 @@ dpp::task<dpp::message> get_pvp_round(const dpp::interaction_create_t& event) {
 	}
 
 	if (p.stamina < 1) {
-		death(p, cb);
+		co_await death(p, cb);
 		co_await achievement_check("PVP_LOSE", event, p, {});
 		p.save(event.command.usr.id);
 		update_live_player(event, p);
@@ -565,8 +565,8 @@ dpp::task<bool> pvp_combat_nav(const dpp::button_click_t& event, player p, const
 		p.save(event.command.usr.id);
 		update_live_player(event, p);
 		update_save_opponent(event, opponent);
-		update_opponent_message(event, co_await get_pvp_round(opponent.event), output2);
-		continue_pvp_combat(event, p, output1);
+		co_await update_opponent_message(event, co_await get_pvp_round(opponent.event), output2);
+		co_await continue_pvp_combat(event, p, output1);
 		if (p.stamina < 1 || opponent.stamina < 1) {
 			p = end_pvp_combat(event);
 			/* To the victor go the spoils */
@@ -620,7 +620,7 @@ dpp::task<bool> combat_nav(const dpp::button_click_t& event, player p, const std
 	}
 
 	if (claimed) {
-		continue_combat(event, p);
+		co_await continue_combat(event, p);
 		co_return true;
 	}
 	co_return false;
@@ -924,7 +924,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 		bool CombatEnded = false;
 		if (p.stamina < 1) {
 			co_await achievement_check("COMBAT_PLAYER_DEAD", event, p, {{"enemy", p.combatant.name}});
-			death(p, cb);
+			co_await death(p, cb);
 			p.save(event.command.usr.id);
 			update_live_player(event, p);
 			CombatEnded = true;
