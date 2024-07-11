@@ -247,7 +247,7 @@ namespace listeners {
 				co_return;
 			}, 30);
 			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
-				end_abandoned_pvp();
+				co_await end_abandoned_pvp();
 				co_return;
 			}, 10);
 			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {

@@ -8464,7 +8464,7 @@
     },
     "RENAMED_GUILD_TO": {
         "en": "Your guild has been renamed to: **{}**",
-        "fr": "Votre guilde a été renommée : **{}**",
+        "fr": "Votre guilde a été renommée: **{}**",
         "pt": "Sua guilda foi renomeada para: **{}**",
         "tr": "Loncanızın adı şu şekilde değiştirildi: **{}**",
         "es": "Tu gremio ha sido renombrado a: **{}**",
@@ -9179,7 +9179,7 @@
         "en": "rename",
         "fr": "renommer",
         "pt": "renomear",
-        "tr": "yenidenisimlendirmek",
+        "tr": "yenidenisimlendir",
         "es": "rebautizar",
         "de": "umbenennen",
         "hi": "नामबदलने",

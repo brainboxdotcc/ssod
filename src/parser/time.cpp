@@ -27,7 +27,7 @@ struct time_tag : public tag {
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		if (!p.didntmove) {
 			current_player.eat_ration();
-			achievement_check("TIME", current_player.event, current_player);
+			co_await achievement_check("TIME", current_player.event, current_player);
 		}
 		co_return;
 	}

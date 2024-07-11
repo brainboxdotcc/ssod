@@ -345,7 +345,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			p.add_mana(-si.mana_cost);
 			auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Spell' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
-				trigger_effect(bot, event, p, "Spell", parts[0]);
+				co_await trigger_effect(bot, event, p, "Spell", parts[0]);
 			}
 		}
 		co_await achievement_check("CAST_SPELL", event, p, {{"spell", parts[0]}});
@@ -422,7 +422,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			co_await achievement_check("USE_ITEM", event, p, {{"name", parts[0]},{"flags", parts[1]}});
 			auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
-				trigger_effect(bot, event, p, "Consumable", parts[0]);
+				co_await trigger_effect(bot, event, p, "Consumable", parts[0]);
 				co_await achievement_check("USE_CONSUMABLE", event, p, {{"name", parts[0]}});
 			}
 			auto food = co_await db::co_query("SELECT * FROM food WHERE name = ?", {parts[0]});
@@ -1034,11 +1034,11 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "pvp_accept" && p.stamina > 0) {
 		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
-		accept_pvp(event.command.usr.id, opponent);
+		co_await accept_pvp(event.command.usr.id, opponent);
 		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
 		p.in_pvp_picker = false;
 		p = set_in_pvp_combat(event);
-		update_opponent_message(event, co_await get_pvp_round(p2.event), std::stringstream());
+		co_await update_opponent_message(event, co_await get_pvp_round(p2.event), std::stringstream());
 		co_await achievement_check("PVP_ACCEPT", event, p, {{"opponent", opponent.str()}});
 		claimed = true;
 	} else if (parts[0] == "chat" && p.stamina > 0) {
@@ -1330,9 +1330,9 @@ dpp::task<uint64_t> get_guild_id(const player& p) {
 dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) {
 	if (p.in_combat) {
 		if (has_active_pvp(event.command.usr.id)) {
-			continue_pvp_combat(event, p, std::stringstream());
+			co_await continue_pvp_combat(event, p, std::stringstream());
 		} else {
-			continue_combat(event, p);
+			co_await continue_combat(event, p);
 		}
 		co_return;
 	} else if (p.in_pvp_picker) {
@@ -1510,7 +1510,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 				enabled_links++;
 				break;
 			case nav_type_respawn:
-				death(p, cb);
+				co_await death(p, cb);
 				p.save(event.command.usr.id);
 				update_live_player(event, p);
 				respawn_button_shown = true;
@@ -1545,9 +1545,9 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		}
 	}
 	if (enabled_links == 0 && !respawn_button_shown) {
-		death(p, cb);
+		co_await death(p, cb);
 	} else if (p.stamina < 1) {
-		death(p, cb);
+		co_await death(p, cb);
 	}
 
 	co_await do_toasts(p, cb);
