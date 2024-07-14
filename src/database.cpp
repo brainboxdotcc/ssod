@@ -24,6 +24,7 @@
 #include <fmt/format.h>
 #include <unordered_map>
 #include <mutex>
+#include <chrono>
 
 #ifdef MARIADB_VERSION_ID
 	#define CONNECT_STRING "SET @@SESSION.max_statement_time=3000"
@@ -32,6 +33,8 @@
 #endif
 
 namespace db {
+
+	using namespace std::literals::chrono_literals;
 
 	/**
 	 * @brief Represents a cached prepared statement.
@@ -95,6 +98,10 @@ namespace db {
 	 * @brief Creating D++ cluster, used for logging
 	 */
 	dpp::cluster* creator{nullptr};
+
+	std::atomic<bool> transaction_in_progress = false;
+	std::function<void()> transaction_function = {};
+	thread_local bool holds_transaction_lock = false;
 
 	/**
 	 * @brief Query cache, a map of cached_query
@@ -254,6 +261,20 @@ namespace db {
 				if (qr.callback) {
 					qr.callback(results);
 				}
+				/**
+				 * If a transaction is waiting to be executed, fit it atomically into
+				 * the queue here. The holds_transaction_lock is a thread_local variable
+				 * which can only EVER be true on this thread at this time. Only threads
+				 * where this is set to true may issue db::query() calls whilst the
+				 * transaction_in_progress atomic bool is true. This prevents other threads
+				 * running queries that end up inside the transaction.
+				 */
+				if (transaction_in_progress.load() && transaction_function) {
+					holds_transaction_lock = true;
+					transaction_function();
+					holds_transaction_lock = false;
+					transaction_function = {};
+				}
 			}
 		}).detach();
 #endif
@@ -274,7 +295,7 @@ namespace db {
 		return mysql_real_query(&connection, query.c_str(), query.length()) == 0;
 	}
 
-	bool transaction() {
+	bool start_transaction() {
 		return raw_query("START TRANSACTION");
 	}
 
@@ -284,6 +305,46 @@ namespace db {
 
 	bool rollback() {
 		return raw_query("ROLLBACK");
+	}
+
+	void transaction(std::function<bool()> closure) {
+
+		if (transaction_in_progress.load()) {
+			throw std::runtime_error("Transaction already in progress");
+		}
+
+		/**
+		 * Set up transaction function, this is called when the queue is empty
+		 * and the atomic bool transaction_in_progress is set.
+		 */
+		transaction_function = [closure](){
+			try {
+				start_transaction();
+				bool should_commit{false};
+				if (closure) {
+					should_commit = closure();
+				}
+				if (should_commit) {
+					commit();
+				} else {
+					rollback();
+				}
+			}
+			catch (...) {
+				rollback();
+			}
+			/**
+			 * Re-enable the SQL queue so that queries can happen again
+			 */
+			transaction_in_progress.exchange(false, std::memory_order_relaxed);
+		};
+
+		/**
+		 * Set the atomic bool that indicates a transaction should be executed.
+		 * The transaction is inserted into the stream of SQL queries inside the
+		 * SQL thread as one atomic operation.
+		 */
+		transaction_in_progress.exchange(true, std::memory_order_relaxed);
 	}
 
 	bool close() {
@@ -338,6 +399,14 @@ namespace db {
 	}
 
 	resultset query(const std::string &format, const paramlist &parameters) {
+
+		/**
+		 * If any thread except the queue thread attempts to run a synchronous query whilst
+		 * a transaction is running, it must wait until the transaction completes.
+		 */
+		while (!transaction_in_progress.load() && !holds_transaction_lock) {
+			std::this_thread::sleep_for(1ms);
+		}
 
 		/**
 		 * One DB handle can't query the database from multiple threads at the same time.

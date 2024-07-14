@@ -182,24 +182,22 @@ namespace db {
 	size_t query_count();
 
 	/**
-	 * @brief Start a transaction
-	 * 
-	 * @return true if transaction was started
+	 * @brief Start an SQL transaction.
+	 * SQL transactions are atomic in nature, ALL other queries will be forced
+	 * to wait. The transaction will be inserted into the queue to run as one atomic
+	 * operation, meaning that db::co_query cannot disrupt it or insert queries in
+	 * the middle of it, and db::query function calls that are not within the closure
+	 * will be forced to wait.
+	 *
+	 * @param closure The transactional code to execute.
+	 *
+	 * @note The closure should only ever execute queries using db::query(),
+	 * it should NOT use async queries/co_query() as these cannot be executed
+	 * atomically.
+	 * Returning false from the closure, or throwing any exception at all
+	 * will roll back the transaction, else it will be committed when the
+	 * closure ends.
 	 */
-	bool transaction();
-
-	/**
-	 * @brief Commit a previously started transaction
-	 * 
-	 * @return true if transaction was committed
-	 */
-	bool commit();
-
-	/**
-	 * @brief Roll back a previously started transaction
-	 * 
-	 * @return true if transaction was rolled back
-	 */
-	bool rollback();
+	void transaction(std::function<bool()> closure);
 
 };
