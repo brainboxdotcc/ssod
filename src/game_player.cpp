@@ -748,7 +748,6 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 		return false;
 	}
 	tick_mana();
-	db::transaction();
 
 	if (inv_change) {
 		db::query("DELETE FROM game_owned_items WHERE user_id = ?", {user_id});
@@ -792,8 +791,6 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 		name, race, profession, stamina, skill, luck, sneak, speed, silver, gold, rations, experience, notoriety, days, scrolls, paragraph,
 		armour.name, weapon.name, armour.rating, weapon.rating, last_use, last_strike, pinned, muted, mana, mana_tick, gender, crumbs.dump(), last_resurrect}
 	);
-
-	db::commit();
 
 	if (put_backup) {
 		save(user_id, false);
