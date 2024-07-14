@@ -290,7 +290,6 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		if (parts.size() < 2) {
 			parts.emplace_back("[none]");
 		}
-		db::transaction();
 		auto rs = co_await db::co_query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {event.command.usr.id, parts[0], parts[1]});
 		if (!rs.empty()) {
 			co_await db::co_query("DELETE FROM game_bank WHERE id = ?", { rs[0].at("id") });
@@ -298,7 +297,6 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			p.inv_change = true;
 			co_await achievement_check("BANK_WITHDRAW_ITEM", event, p, {{"item", parts[0]}, {"flags", parts[1]}});
 		}
-		db::commit();
 		claimed = true;
 	} else if (custom_id == "deposit" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
@@ -970,7 +968,6 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		std::string flags = parts.size() >= 4 ? parts[3] : "";
 		size_t max = p.max_inventory_slots();
 		if (p.possessions.size() < max - 1) {
-			db::transaction();
 			auto rs = co_await db::co_query(
 				"SELECT * FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
 				{paragraph, name, flags});
@@ -985,7 +982,6 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 				p.inv_change = true;
 				co_await send_chat(event.command.usr.id, p.paragraph, name, "pickup");
 			}
-			db::commit();
 			co_await achievement_check("PICKUP_FLOOR_ITEM", event, p, {{"name", name}, {"flags", flags}});
 		}
 		claimed = true;
