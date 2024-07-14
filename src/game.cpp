@@ -1063,7 +1063,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		co_await continue_game(event, p);
 	}
 	co_return;
-};
+}
 
 dpp::task<dpp::emoji> get_emoji(const std::string& name, const std::string& flags) {
 	dpp::emoji emoji = sprite::backpack;
