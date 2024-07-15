@@ -159,28 +159,27 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id)
 	/* BUG: g++14.1 ICE: Can't pass members of `this` to an initialiser list within a coroutine */
 	uint32_t paragraph_id{id};
 	auto location = co_await db::co_query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});
-	if (location.empty()) {
-		throw dpp::logic_exception("Invalid location, internal error");
-	}
-	/* Check for a translation for the user's locale, if there is one */
-	if (current_player.event.command.locale.substr(0, 2) != "en") {
-		auto translated_text = co_await db::co_query("SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ?", {"game_locations/data", paragraph_id, current_player.event.command.locale.substr(0, 2)});
-		if (!translated_text.empty()) {
-			text = translated_text[0].at("translation");
+	if (!location.empty()) {
+		/* Check for a translation for the user's locale, if there is one */
+		if (current_player.event.command.locale.substr(0, 2) != "en") {
+			auto translated_text = co_await db::co_query("SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ?", {"game_locations/data", paragraph_id, current_player.event.command.locale.substr(0, 2)});
+			if (!translated_text.empty()) {
+				text = translated_text[0].at("translation");
+			} else {
+				text = location[0].at("data");
+			}
 		} else {
 			text = location[0].at("data");
 		}
-	} else {
-		text = location[0].at("data");
-	}
-	secure_id = location[0].at("secure_id");
-	combat_disabled = location[0].at("combat_disabled") == "1";
-	magic_disabled = location[0].at("magic_disabled") == "1";
-	theft_disabled = location[0].at("theft_disabled") == "1";
-	chat_disabled = location[0].at("chat_disabled") == "1";
-	auto dropped = co_await db::co_query("SELECT item_desc, item_flags, count(item_desc) as stack_count FROM game_dropped_items WHERE location_id = ? GROUP BY item_desc, item_flags ORDER BY item_desc, item_flags LIMIT 50", {paragraph_id});
-	for (const auto& dropped_item : dropped) {
-		dropped_items.push_back(stacked_item{ .name = dropped_item.at("item_desc"), .flags = dropped_item.at("item_flags"), .qty = atol(dropped_item.at("stack_count")) });
+		secure_id = location[0].at("secure_id");
+		combat_disabled = location[0].at("combat_disabled") == "1";
+		magic_disabled = location[0].at("magic_disabled") == "1";
+		theft_disabled = location[0].at("theft_disabled") == "1";
+		chat_disabled = location[0].at("chat_disabled") == "1";
+		auto dropped = co_await db::co_query("SELECT item_desc, item_flags, count(item_desc) as stack_count FROM game_dropped_items WHERE location_id = ? GROUP BY item_desc, item_flags ORDER BY item_desc, item_flags LIMIT 50", {paragraph_id});
+		for (const auto &dropped_item: dropped) {
+			dropped_items.push_back(stacked_item{.name = dropped_item.at("item_desc"), .flags = dropped_item.at("item_flags"), .qty = atol(dropped_item.at("stack_count"))});
+		}
 	}
 
 	std::stringstream paragraph_content(replace_string(text, "><", "> <") + "\r\n<br>\r\n");
