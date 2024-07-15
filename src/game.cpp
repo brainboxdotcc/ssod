@@ -160,7 +160,7 @@ dpp::task<void> add_chat(std::string& text, const dpp::interaction_create_t& eve
 		text += std::string(80, ' ') + "\n";
 	}
 	if (!rs.empty()) {
-		std::reverse(rs.begin(), rs.end());
+		std::reverse(rs.rows.begin(), rs.rows.end());
 	}
 	for (const auto& row : rs) {
 		if (row.at("event_type") == "chat") {
