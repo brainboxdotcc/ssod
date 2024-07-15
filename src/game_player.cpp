@@ -208,14 +208,18 @@ dpp::task<void> delete_live_player(const dpp::interaction_create_t& event) {
 			live_players.erase(f);
 		}
 	}
-	co_await db::co_query("DELETE FROM game_users WHERE user_id = ?", { event.command.usr.id });
-	co_await db::co_query("DELETE FROM game_default_users WHERE user_id = ?", { event.command.usr.id });
-	co_await db::co_query("DELETE FROM game_default_spells WHERE user_id = ?", { event.command.usr.id });
-	co_await db::co_query("DELETE FROM game_bank WHERE owner_id = ?", { event.command.usr.id });
-	co_await db::co_query("DELETE FROM game_owned_items WHERE user_id = ?", { event.command.usr.id });
-	co_await db::co_query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
-	co_await db::co_query("DELETE FROM potion_drops WHERE user_id = ?", { event.command.usr.id });
-	co_await db::co_query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
+	db::transaction([event]() -> bool {
+		db::query("DELETE FROM game_users WHERE user_id = ?", { event.command.usr.id });
+		db::query("DELETE FROM game_default_users WHERE user_id = ?", { event.command.usr.id });
+		db::query("DELETE FROM game_default_spells WHERE user_id = ?", { event.command.usr.id });
+		db::query("DELETE FROM game_bank WHERE owner_id = ?", { event.command.usr.id });
+		db::query("DELETE FROM game_owned_items WHERE user_id = ?", { event.command.usr.id });
+		db::query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
+		db::query("DELETE FROM potion_drops WHERE user_id = ?", { event.command.usr.id });
+		db::query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
+		return true;
+	});
+	co_return;
 }
 
 player get_live_player(const dpp::interaction_create_t& event, bool update_event) {
