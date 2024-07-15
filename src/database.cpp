@@ -257,9 +257,11 @@ namespace db {
 					qr = std::move(sql_query_queue.front());
 					sql_query_queue.pop();
 				}
-				auto results = query(qr.format, qr.parameters);
-				if (qr.callback) {
-					qr.callback(results);
+				if (!qr.format.empty()) {
+					auto results = query(qr.format, qr.parameters);
+					if (qr.callback) {
+						qr.callback(results);
+					}
 				}
 				/**
 				 * If a transaction is waiting to be executed, fit it atomically into
@@ -269,7 +271,7 @@ namespace db {
 				 * transaction_in_progress atomic bool is true. This prevents other threads
 				 * running queries that end up inside the transaction.
 				 */
-				if (transaction_in_progress.load() && transaction_function) {
+				if (transaction_in_progress && transaction_function) {
 					holds_transaction_lock = true;
 					transaction_function();
 					holds_transaction_lock = false;
@@ -309,7 +311,7 @@ namespace db {
 
 	void transaction(std::function<bool()> closure) {
 
-		if (transaction_in_progress.load()) {
+		if (transaction_in_progress) {
 			throw std::runtime_error("Transaction already in progress");
 		}
 
@@ -336,15 +338,17 @@ namespace db {
 			/**
 			 * Re-enable the SQL queue so that queries can happen again
 			 */
-			transaction_in_progress.exchange(false, std::memory_order_relaxed);
+			transaction_in_progress = false;
 		};
 
 		/**
 		 * Set the atomic bool that indicates a transaction should be executed.
 		 * The transaction is inserted into the stream of SQL queries inside the
-		 * SQL thread as one atomic operation.
+		 * SQL thread as one atomic operation. We also have to send a blank callback
+		 * query to signal the condition variable and make the SQL queue advance.
 		 */
-		transaction_in_progress.exchange(true, std::memory_order_relaxed);
+		transaction_in_progress = true;
+		query_callback("", {}, [](auto){});
 	}
 
 	bool close() {
@@ -404,7 +408,7 @@ namespace db {
 		 * If any thread except the queue thread attempts to run a synchronous query whilst
 		 * a transaction is running, it must wait until the transaction completes.
 		 */
-		while (transaction_in_progress.load() && !holds_transaction_lock) {
+		while (transaction_in_progress && !holds_transaction_lock) {
 			std::this_thread::sleep_for(1ms);
 		}
 
