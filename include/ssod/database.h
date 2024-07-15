@@ -36,9 +36,86 @@ namespace db {
 	using row = std::map<std::string, std::string>;
 
 	/**
-	 * @brief Definition of a result set, a vector of maps
+	 * @brief Definition of a result set. Supports iteration and accessing its
+	 * rows via operator[] and at(). You can also insert new rows with emplace_back
+	 * and push_back().
 	 */
-	using resultset = std::vector<row>;
+	struct resultset {
+		/**
+		 * Row values
+		 */
+		std::vector<row> rows;
+		/**
+		 * Error message of last query or an empty string on success
+		 */
+		std::string error;
+		/**
+		 * Number of affected rows, if an UPDATE, DELETE, INSERT
+		 */
+		size_t affected_rows{};
+
+		/**
+		 * Get a row by index
+		 * @param index row to retrieve
+		 * @return row
+		 */
+		[[nodiscard]] inline const row& operator[] (size_t index) const {
+			return rows[index];
+		}
+
+		/**
+		 * Get a row by index with range checking
+		 * @param index row to rerieve
+		 * @return row
+		 */
+		[[nodiscard]] inline const row& at(size_t index) const {
+			return rows.at(index);
+		}
+
+		/**
+		 * Emplace a new row
+		 * @param r row
+		 */
+		inline void emplace_back(const row& r) {
+			rows.emplace_back(r);
+		}
+
+		/**
+		 * Push back a new row
+		 * @param r row
+		 */
+		inline void push_back(const row& r) {
+			rows.push_back(r);
+		}
+
+		/**
+		 * Get the start iterator of the container,
+		 * for iteration
+		 * @return beginning of container
+		 */
+		[[nodiscard]] inline auto begin() const {
+			return rows.begin();
+		}
+
+		/**
+		 * Get the end iterator of the container,
+		 * for iteration
+		 * @return end of container
+		 */
+		[[nodiscard]] inline auto end() const {
+			return rows.end();
+		}
+
+		[[nodiscard]] inline bool empty() const {
+			return rows.empty();
+		}
+
+		[[nodiscard]] inline size_t size() const {
+			return rows.size();
+		}
+	};
+
+
 
 	/**
 	 * @brief Possible parameter types for SQL parameters
