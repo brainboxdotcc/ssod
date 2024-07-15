@@ -404,7 +404,7 @@ namespace db {
 		 * If any thread except the queue thread attempts to run a synchronous query whilst
 		 * a transaction is running, it must wait until the transaction completes.
 		 */
-		while (!transaction_in_progress.load() && !holds_transaction_lock) {
+		while (transaction_in_progress.load() && !holds_transaction_lock) {
 			std::this_thread::sleep_for(1ms);
 		}
 
