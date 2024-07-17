@@ -208,7 +208,7 @@ dpp::task<void> delete_live_player(const dpp::interaction_create_t& event) {
 			live_players.erase(f);
 		}
 	}
-	db::transaction([event]() -> bool {
+	co_await db::co_transaction([event]() -> bool {
 		db::query("DELETE FROM game_users WHERE user_id = ?", { event.command.usr.id });
 		db::query("DELETE FROM game_default_users WHERE user_id = ?", { event.command.usr.id });
 		db::query("DELETE FROM game_default_spells WHERE user_id = ?", { event.command.usr.id });
@@ -716,7 +716,7 @@ long player::max_rations() {
 	return 16 + (get_level() * 4);
 }
 
-long player::max_crits() {
+long player::max_crits() const {
 	return floor(get_level() / 6) + 1 + (profession == prof_assassin ? 1 : 0);
 }
 

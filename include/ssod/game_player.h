@@ -314,7 +314,7 @@ struct player {
 	long max_silver();
 	long max_mana();
 	long max_rations();
-	long max_crits();
+	long max_crits() const;
 
 	void tick_mana();
 
