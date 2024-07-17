@@ -108,8 +108,6 @@ namespace db {
 	 */
 	std::map<std::string, cached_query> cached_queries;
 
-	using sql_query_callback = std::function<void(const resultset&)>;
-
 	std::condition_variable sql_worker_cv;
 
 	/**
@@ -129,10 +127,8 @@ namespace db {
 		const double expiry;
 	};
 
-#ifdef DPP_CORO
 	std::queue<cached_query_results> sql_query_queue;
 	std::mutex query_queue_mtx;
-#endif
 
 	template<class> inline constexpr bool always_false_v = false;
 
@@ -220,7 +216,6 @@ namespace db {
 		return unsafe_connect(host, user, pass, db, port, socket);
 	}
 
-#ifdef DPP_CORO
 	void query_callback(const std::string &format, const paramlist &parameters, const sql_query_callback& cb) {
 		{
 			std::unique_lock<std::mutex> queue_lock(query_queue_mtx);
@@ -229,6 +224,7 @@ namespace db {
 		sql_worker_cv.notify_one();
 	}
 
+#ifdef DPP_CORO
 	dpp::async<resultset> co_query(const std::string &format, const paramlist &parameters) {
 		return dpp::async<resultset>{ [format, parameters] <typename C> (C &&cc) { return query_callback(format, parameters, std::forward<C>(cc)); }};
 	}
@@ -241,7 +237,6 @@ namespace db {
 			creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"], mysql_error(&connection)));
 			exit(2);
 		}
-#ifdef DPP_CORO
 		std::thread([&]() {
 			dpp::utility::set_thread_name("sql/coro");
 			while (true) {
@@ -257,12 +252,6 @@ namespace db {
 					qr = std::move(sql_query_queue.front());
 					sql_query_queue.pop();
 				}
-				if (!qr.format.empty()) {
-					auto results = query(qr.format, qr.parameters);
-					if (qr.callback) {
-						qr.callback(results);
-					}
-				}
 				/**
 				 * If a transaction is waiting to be executed, fit it atomically into
 				 * the queue here. The holds_transaction_lock is a thread_local variable
@@ -277,9 +266,15 @@ namespace db {
 					holds_transaction_lock = false;
 					transaction_function = {};
 				}
+				resultset results{};
+				if (!qr.format.empty()) {
+					results = query(qr.format, qr.parameters);
+				}
+				if (qr.callback) {
+					qr.callback(results);
+				}
 			}
 		}).detach();
-#endif
 		creator->log(dpp::ll_info, fmt::format("Connected to database: {}", dbconf["database"]));
 	}
 
@@ -309,7 +304,7 @@ namespace db {
 		return raw_query("ROLLBACK");
 	}
 
-	void transaction(std::function<bool()> closure) {
+	void transaction(std::function<bool()> closure, sql_query_callback callback) {
 
 		if (transaction_in_progress) {
 			throw std::runtime_error("Transaction already in progress");
@@ -348,8 +343,14 @@ namespace db {
 		 * query to signal the condition variable and make the SQL queue advance.
 		 */
 		transaction_in_progress = true;
-		query_callback("", {}, [](auto){});
+		query_callback("", {}, callback);
 	}
+
+#ifdef DPP_CORO
+	dpp::async<resultset> co_transaction(std::function<bool()> closure) {
+		return dpp::async<resultset>{ [closure] <typename C> (C &&cc) { return transaction(closure, std::forward<C>(cc)); }};
+	}
+#endif
 
 	bool close() {
 		std::lock_guard<std::mutex> db_lock(db_mutex);
