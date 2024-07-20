@@ -394,7 +394,7 @@ dpp::task<void> continue_pvp_combat(const dpp::interaction_create_t& event, play
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, m, p](const auto& cc) {
 		if (cc.is_error()) {
 			//bot.log(dpp::ll_error, "Internal error displaying PvP combat location " + std::to_string(p.paragraph) + ": " + cc.http_info.body);
-			event.reply(dpp::message("Internal error displaying Pvp combat location " + std::to_string(p.paragraph) + ":\nPlease report to developers via 'Get Help' button").set_flags(dpp::m_ephemeral));
+			event.reply(dpp::message("Internal error displaying Pvp combat location " + std::to_string(p.paragraph) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
 	co_return;
@@ -659,30 +659,27 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 
 	output << "__" << tr("COMBAT", event) << "__: **" << p.name << "** vs. **" << p.combatant.name << "**\n\n";
 
+	auto r = co_await db::co_query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
 	long banked{0};
 	bool critical{};
-	co_await db::co_transaction([event, &output, &p, &critical, &banked]() -> bool {
-		auto r = db::query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
-		if (!r.empty()) {
-			long counter = atol(r[0].at("critical_counter"));
-			banked = atol(r[0].at("banked_criticals"));
-			if (banked > 0 && p.next_crit) {
-				db::query("UPDATE criticals SET banked_criticals = banked_criticals - 1 WHERE user_id = ?", {event.command.usr.id});
-				critical = true;
-				p.next_crit = false;
-				banked--;
-			}
-			long next = 1000 + (p.get_level() * 4);
-			int percent = (double)counter / (double)next * 100.0f;
-			output << tr("CRITICAL_METER", event) << ": ";
-			for (int x = 0; x < 100; x += 10) {
-				output << (x < percent ? sprite::bar_green.get_mention() : sprite::bar_red.get_mention());
-			}
-			output << " (" + std::to_string(percent) + "%)\n";
-			output << tr("CRITICALS", event) << ": " << std::max(banked, 0L) << "/" << p.max_crits();
+	if (!r.empty()) {
+		long counter = atol(r[0].at("critical_counter"));
+		banked = atol(r[0].at("banked_criticals"));
+		if (banked > 0 && p.next_crit) {
+			co_await db::co_query("UPDATE criticals SET banked_criticals = banked_criticals - 1 WHERE user_id = ?", {event.command.usr.id});
+			critical = true;
+			p.next_crit = false;
+			banked--;
 		}
-		return true;
-	});
+		long next = 1000 + (p.get_level() * 4);
+		int percent = (double)counter / (double)next * 100.0f;
+		output << tr("CRITICAL_METER", event) << ": ";
+		for (int x = 0; x < 100; x += 10) {
+			output << (x < percent ? sprite::bar_green.get_mention() : sprite::bar_red.get_mention());
+		}
+		output << " (" + std::to_string(percent) + "%)\n";
+		output << tr("CRITICALS", event) << ": " << std::max(banked, 0L) << "/" << p.max_crits();
+ 	}
 
 	if (EStamina <= 0) {
 		output << tr("HES_DEAD_JIM", event) << "\n\n";
@@ -758,25 +755,22 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 			} else {
 				output << "__**" << tr("YOUHITENEMY", event) << "**__.";
 
-				co_await db::co_transaction([p, event]() -> bool {
-					/* If you hit enemy, critical meter ticks up based on your luck.
-					 * If critical meter reaches max, you gain a critical hit, that you
-					 * can spend on an overwhelming attack.
-					 */
-					db::query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, p.luck + 1});
-					auto r = db::query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
-					long counter = atol(r[0].at("critical_counter"));
-					if (counter > 1000 + (p.get_level() * 4)) {
-						/* User gains a new banked critical */
-						long new_banked = atol(r[0].at("banked_criticals")) + 1;
-						if (new_banked <= p.max_crits()) {
-							db::query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
-						} else {
-							db::query("UPDATE criticals SET critical_counter = 0 WHERE user_id = ?", {event.command.usr.id});
-						}
+				/* If you hit enemy, critical meter ticks up based on your luck.
+				 * If critical meter reaches max, you gain a critical hit, that you
+				 * can spend on an overwhelming attack.
+				 */
+				co_await db::co_query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, p.luck + 1});
+				auto r = co_await db::co_query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
+				long counter = atol(r[0].at("critical_counter"));
+				if (counter > 1000 + (p.get_level() * 4)) {
+					/* User gains a new banked critical */
+					long new_banked = atol(r[0].at("banked_criticals")) + 1;
+					if (new_banked <= p.max_crits()) {
+						co_await db::co_query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
+					} else {
+						co_await db::co_query("UPDATE criticals SET critical_counter = 0 WHERE user_id = ?", {event.command.usr.id});
 					}
-					return true;
-				});
+				}
 
 				if (EStance == DEFENSIVE) {
 					output << tr("ATKBONUS", event);
@@ -1036,7 +1030,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, m, p](const auto& cc) {
 		if (cc.is_error()) {
 			bot.log(dpp::ll_error, "Internal error displaying PvE combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ": " + cc.http_info.body + " -- " + m.build_json());
-			event.reply(dpp::message("Internal error displaying PvE combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ":\nPlease report to developers via 'Get Help' button").set_flags(dpp::m_ephemeral));
+			event.reply(dpp::message("Internal error displaying PvE combat " + std::to_string(p.after_fragment) + " location " + std::to_string(p.paragraph) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
 
