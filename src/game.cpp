@@ -259,11 +259,8 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 		if (balance_amount > 0 && amount > 0) {
 			p.add_gold(amount);
 			/* Coalesce gold in bank to one row */
-			co_await db::co_transaction([amount, balance_amount, event]() -> bool {
-				db::query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = '__GOLD__'", {event.command.usr.id});
-				db::query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, balance_amount - amount});
-				return true;
-			});
+			co_await db::co_query("DELETE FROM game_bank WHERE owner_id = ? AND item_desc = '__GOLD__'", {event.command.usr.id});
+			co_await db::co_query("INSERT INTO game_bank (owner_id, item_desc, item_flags) VALUES(?,'__GOLD__',?)", {event.command.usr.id, balance_amount - amount});
 			co_await achievement_check("BANK_WITHDRAW_GOLD", event, p, {{"amount", std::to_string(amount)}});
 		}
 	}
@@ -293,19 +290,14 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		if (parts.size() < 2) {
 			parts.emplace_back("[none]");
 		}
-		co_await db::co_transaction([event, parts, &p, &claimed]() -> bool {
-			auto rs = db::query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {event.command.usr.id, parts[0], parts[1]});
-			if (!rs.empty()) {
-				db::query("DELETE FROM game_bank WHERE id = ?", {rs[0].at("id")});
-				p.pickup_possession(stacked_item{.name = parts[0], .flags = parts[1], .qty = 1 });
-				p.inv_change = true;
-				claimed = true;
-			}
-			return true;
-		});
-		if (claimed) {
+		auto rs = co_await db::co_query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1", {event.command.usr.id, parts[0], parts[1]});
+		if (!rs.empty()) {
+			co_await db::co_query("DELETE FROM game_bank WHERE id = ?", { rs[0].at("id") });
+			p.pickup_possession(stacked_item{.name = parts[0], .flags = parts[1], .qty = 1 });
+			p.inv_change = true;
 			co_await achievement_check("BANK_WITHDRAW_ITEM", event, p, {{"item", parts[0]}, {"flags", parts[1]}});
 		}
+		claimed = true;
 	} else if (custom_id == "deposit" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		std::string flags = "";
@@ -974,25 +966,20 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		std::string flags = parts.size() >= 4 ? parts[3] : "";
 		size_t max = p.max_inventory_slots();
 		if (p.possessions.size() < max - 1) {
-			co_await db::co_transaction([paragraph, name, flags, &p]() -> bool {
-				auto rs = db::query(
-					"SELECT * FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
-					{paragraph, name, flags}
-				);
-				if (!rs.empty()) {
-					db::query(
-						"DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
-						{paragraph, name, flags}
-					);
-					stacked_item i{.name = name, .flags = flags, .qty = 1 };
-					if (!p.convert_rations({.name = name, .flags = flags})) {
-						p.pickup_possession(i);
-					}
-					p.inv_change = true;
+			auto rs = co_await db::co_query(
+				"SELECT * FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
+				{paragraph, name, flags});
+			if (!rs.empty()) {
+				co_await db::co_query(
+					"DELETE FROM game_dropped_items WHERE location_id = ? AND item_desc = ? AND item_flags = ? LIMIT 1",
+					{paragraph, name, flags});
+				stacked_item i{.name = name, .flags = flags, .qty = 1 };
+				if (!p.convert_rations({.name = name, .flags = flags})) {
+					p.pickup_possession(i);
 				}
-				return true;
-			});
-			co_await send_chat(event.command.usr.id, p.paragraph, name, "pickup");
+				p.inv_change = true;
+				co_await send_chat(event.command.usr.id, p.paragraph, name, "pickup");
+			}
 			co_await achievement_check("PICKUP_FLOOR_ITEM", event, p, {{"name", name}, {"flags", flags}});
 		}
 		claimed = true;
@@ -1239,7 +1226,7 @@ dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 	event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
 		if (cc.is_error()) {
 			bot.log(dpp::ll_error, "Internal error displaying bank: " + cc.http_info.body + " Message: " + m.build_json());
-			event.reply(dpp::message("Internal error displaying bank:\nPlease report to developers via 'Get Help' button").set_flags(dpp::m_ephemeral));
+			event.reply(dpp::message("Internal error displaying bank:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}
 	});
 }
@@ -1653,7 +1640,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
 		if (cc.is_error()) {{
 			bot.log(dpp::ll_error, "Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
-			event.reply(dpp::message("Internal error displaying location " + std::to_string(location.id) + ":\nPlease report to developers via 'Get Help' button").set_flags(dpp::m_ephemeral));
+			event.reply(dpp::message("Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```").set_flags(dpp::m_ephemeral));
 		}}
 	});
 }
