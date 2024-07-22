@@ -216,6 +216,7 @@ dpp::task<void> delete_live_player(const dpp::interaction_create_t& event) {
 	co_await db::co_query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
 	co_await db::co_query("DELETE FROM potion_drops WHERE user_id = ?", { event.command.usr.id });
 	co_await db::co_query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
+	co_await db::co_query("DELETE FROM passive_effect_status WHERE user_id = ?", { event.command.usr.id });
 	co_return;
 }
 
