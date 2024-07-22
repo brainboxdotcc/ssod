@@ -191,6 +191,10 @@ dpp::task<void> check_effects(dpp::cluster& bot) {
 				co_await db::co_query("DELETE FROM passive_effect_status WHERE id = ?", {row.at("id")});
 				bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on player " + event.command.usr.id.str() + " ended");
 			}
+		} else {
+			/* If the player /reset's and abandons the game, while still having passive effects active, this clears their passive effects */
+			co_await db::co_query("DELETE FROM passive_effect_status WHERE id = ?", {row.at("id")});
+			bot.log(dpp::ll_debug, "Passive effect " + row.at("type") + "/" + row.at("requirements") + " on deleted player " + event.command.usr.id.str());
 		}
 	}
 	co_return;

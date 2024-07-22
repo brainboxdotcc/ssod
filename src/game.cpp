@@ -785,6 +785,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		co_await db::co_query("DELETE FROM timed_flags WHERE user_id = ?", { event.command.usr.id });
 		co_await db::co_query("DELETE FROM kv_store WHERE user_id = ?", { event.command.usr.id });
 		co_await db::co_query("DELETE FROM criticals WHERE user_id = ?", { event.command.usr.id });
+		co_await db::co_query("DELETE FROM passive_effect_status WHERE user_id = ?", { event.command.usr.id });
 		update_live_player(event, new_p);
 		new_p.save(event.command.usr.id);
 		co_await achievement_check("RESPAWN", event, p, {});
