@@ -163,7 +163,7 @@ dpp::task<void> check_effects(dpp::cluster& bot) {
 	for (const auto& row : rs) {
 		dpp::interaction_create_t event;
 		event.command.usr.id = atoll(row.at("user_id"));
-		if (!(co_await player_is_live(event))) {
+		if (co_await player_is_live(event)) {
 			player player = get_live_player(event);
 			/* Initialise this paragraph 'empty' as we don't want to parse it and trigger any changes within */
 			paragraph p;
