@@ -20,6 +20,7 @@
 #include <ssod/game_date.h>
 #include <fmt/format.h>
 #include <array>
+#include <ctime>
 
 const std::array<std::string, 5> day{
 	"Lunae",
