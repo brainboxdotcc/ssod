@@ -169,7 +169,7 @@ namespace sentry {
 				return;
 			}
 		}
-		sentry_transaction = start_transaction(sentry::register_transaction_type(command.c_str(), "db"));
+		sentry_transaction = start_transaction(sentry::register_transaction_type(command.c_str(), "interaction.response.create"));
 	}
 
 	void end_user_transaction() {
