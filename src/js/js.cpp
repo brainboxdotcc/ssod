@@ -27,6 +27,7 @@
 #include <ssod/paragraph.h>
 #include <ssod/database.h>
 #include <ssod/thread_pool.h>
+#include <ssod/sentry.h>
 
 namespace js {
 

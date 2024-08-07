@@ -25,8 +25,6 @@
 
 namespace fs = std::filesystem;
 
-#define SSOD_VERSION "ssod@4.0.0"
-
 using json = dpp::json;
 
 #define EMBED_COLOUR 0xd5b994
