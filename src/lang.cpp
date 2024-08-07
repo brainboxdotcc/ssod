@@ -23,6 +23,7 @@
 #include <fmt/format.h>
 #include <dpp/dpp.h>
 #include <ssod/database.h>
+#include <ssod/sentry.h>
 
 namespace i18n {
 
@@ -56,6 +57,7 @@ namespace i18n {
 			}
 			catch (const std::exception &e) {
 				bot.log(dpp::ll_error, fmt::format("Error in lang.json: ", e.what()));
+				sentry::log_catch(typeid(e).name(), e.what());
 				delete new_lang;
 			}
 		}
@@ -85,7 +87,7 @@ namespace i18n {
 			}
 		}
 		catch (const std::exception &e) {
-			std::cout << "i18n error on " << k << " " << lang_name << ": " << e.what() << "\n";
+			sentry::log_catch(typeid(e).name(), e.what());
 		}
 		return k;
 	}

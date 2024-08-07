@@ -28,6 +28,7 @@
 #include <ssod/emojis.h>
 #include <ssod/config.h>
 #include <ssod/neutrino_api.h>
+#include <ssod/sentry.h>
 
 using namespace i18n;
 
@@ -44,6 +45,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		}
 		dpp::cluster& bot = *(event.from->creator);
 		bot.log(dpp::ll_debug, event.command.locale + " " + event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
+		sentry::make_new_transaction("component/button/" + custom_id);
 		if (custom_id == "player_reroll" && p_old.state == state_roll_stats) {
 			event.reply();
 			player p_new(true);
@@ -80,6 +82,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		} else {
 			event.reply(dpp::message(tr("EXPIRED", event, sprite::skull.get_mention())).set_flags(dpp::m_ephemeral));
 		}
+		sentry::end_user_transaction();
 		co_return;
 	});
 	
@@ -94,6 +97,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			co_return;
 		}
 		dpp::cluster& bot = *(event.from->creator);
+		sentry::make_new_transaction("component/select/" + custom_id);
 		if (custom_id == "select_player_race" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.race = (player_race)atoi(event.values[0]);
 			update_registering_player(event, p_old);
@@ -125,6 +129,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		} else {
 			event.reply(dpp::message(tr("EXPIRED", event, sprite::skull.get_mention())).set_flags(dpp::m_ephemeral));
 		}
+		sentry::end_user_transaction();
 		co_return;
 	});
 
@@ -137,6 +142,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id.empty()) {
 			co_return;
 		}
+		sentry::make_new_transaction("component/form/" + custom_id);
 		if (custom_id == "name_character" && p_old.state == state_name_player) {
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
 			neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
@@ -151,6 +157,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 				dpp::message m = co_await p_old.get_magic_selection_message(bot, event);
 				m.embeds[0].description += "\n\n## " + tr("EXISTS", event);
 				p_old.event.edit_original_response(m);
+				sentry::end_user_transaction();
 				co_return;
 			}
 			p_old.event.delete_original_response();
@@ -166,6 +173,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			co_await continue_game(event, p_old);
 			bot.log(dpp::ll_info, "New player creation: " + name + " for id: " + event.command.usr.id.str());
 		}
+		sentry::end_user_transaction();
 		co_return;
 	});
 	return tr(dpp::slashcommand("cmd_start", "start_desc", bot.me.id).set_dm_permission(true));

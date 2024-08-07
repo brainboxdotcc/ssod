@@ -14,7 +14,7 @@ aux_source_directory("src/parser" coresrc)
 aux_source_directory("src/js" coresrc)
 add_executable(${BOT_NAME} ${coresrc})
 
-target_precompile_headers(${BOT_NAME} INTERFACE "/usr/include/fmt/format.h")
+target_precompile_headers(${BOT_NAME} INTERFACE "/usr/local/include/fmt/format.h")
 
 string(ASCII 27 Esc)
 
@@ -52,11 +52,12 @@ target_link_libraries(${BOT_NAME}
 	ssl
 	z
 	pcre
+	sentry
 	${CMAKE_THREAD_LIBS_INIT}
 	${DPP_LIBRARIES}
 )
 
-#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#	WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-#	COMMAND "../sentry-symbols.sh"
-#)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+	WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+	COMMAND "../sentry-symbols.sh"
+)

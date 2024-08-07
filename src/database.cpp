@@ -25,6 +25,7 @@
 #include <unordered_map>
 #include <mutex>
 #include <chrono>
+#include <ssod/sentry.h>
 
 #ifdef MARIADB_VERSION_ID
 	#define CONNECT_STRING "SET @@SESSION.max_statement_time=3000"
@@ -526,6 +527,8 @@ namespace db {
 		}
 
 		int result{0};
+		void *qlog = sentry::get_user_transaction();
+		void* qspan = sentry::span(qlog, format);
 
 		if (!cc.expects_results) {
 			/**
@@ -535,8 +538,10 @@ namespace db {
 			if (result) {
 				log_error(format, mysql_stmt_error(cc.st));
 				rv.error = mysql_stmt_error(cc.st);
+				sentry::set_span_status(qspan, sentry::STATUS_INVALID_ARGUMENT);
 			} else {
 				rv.affected_rows = rows_affected = mysql_stmt_affected_rows(cc.st);
+				sentry::set_span_status(qspan, sentry::STATUS_OK);
 			}
 		} else {
 			/**
@@ -575,6 +580,7 @@ namespace db {
 						delete[] string_buffers[i];
 					}
 					mysql_free_result(a_res);
+					sentry::end_span(qspan);
 					return rv;
 				}
 
@@ -611,11 +617,15 @@ namespace db {
 				for (unsigned long i = 0; i < field_count; ++i) {
 					delete[] string_buffers[i];
 				}
+				sentry::set_span_status(qspan, sentry::STATUS_OK);
 			} else {
 				log_error(format, mysql_stmt_error(cc.st));
 				rv.error = mysql_stmt_error(cc.st);
+				sentry::set_span_status(qspan, sentry::STATUS_INVALID_ARGUMENT);
 			}
 		}
+
+		sentry::end_span(qspan);
 
 		return rv;
 	}

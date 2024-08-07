@@ -27,6 +27,7 @@
 #include <ssod/aes.h>
 #include <ssod/commandline.h>
 #include <ssod/lang.h>
+#include <ssod/sentry.h>
 
 int main(int argc, char const *argv[]) {
 	std::setlocale(LC_ALL, "en_GB.UTF-8");
@@ -45,6 +46,7 @@ int main(int argc, char const *argv[]) {
 		dpp::cache_policy::cpol_none
 	);
 
+	sentry::init(bot);
 	i18n::load_lang(bot);
 
 	if (cli.display_commands) {
