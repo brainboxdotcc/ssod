@@ -93,6 +93,9 @@ namespace sentry {
 
 	void* http_span(void* tx, const std::string& url, const std::string& method) {
 		void* s = span(tx, method + " " + url, "http.client");
+		if (s) {
+			sentry_transaction_set_data((sentry_transaction_t*)s, "http.request.method", sentry_value_new_string(method.c_str()));
+		}
 		return s;
 	}
 
