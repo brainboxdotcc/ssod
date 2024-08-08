@@ -146,6 +146,7 @@ namespace sentry {
 				}
 				break;
 		}
+		sentry_transaction_set_data((sentry_transaction_t*)spn, "http.response.status_code", sentry_value_new_int32(s));
 		set_span_status(spn, status);
 		end_span(spn);
 	}
