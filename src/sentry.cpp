@@ -83,12 +83,68 @@ namespace sentry {
 		);
 	}
 
-	void *span(void *tx, const std::string &query) {
+	void *span(void *tx, const std::string &query, const std::string& op) {
 		if (tx) {
 			std::lock_guard<std::mutex> lock(sentry_mutex);
-			return sentry_transaction_start_child((sentry_transaction_t *) tx, "db.sql.query", query.c_str());
+			return sentry_transaction_start_child((sentry_transaction_t *) tx, op.c_str(), query.c_str());
 		}
 		return nullptr;
+	}
+
+	void* http_span(void* tx, const std::string& url, const std::string& method) {
+		void* s = span(tx, method + " " + url, "http.client");
+		return s;
+	}
+
+	void end_http_span(void* spn, uint16_t s) {
+		/*
+		 * data: http.query -> uri after ?
+		 * http.fragment -> uri after #
+		 * http.request.method
+		 * http.request.body.size
+		 * origin: DPP
+		 */
+		sentry_status status{};
+		case (s) {
+			switch 401:
+				status = STATUS_UNAUTHENTICATED;
+				break;
+			switch 403:
+				status = STATUS_PERMISSION_DENIED;
+				break;
+			switch 404:
+				status = STATUS_NOT_FOUND;
+				break;
+			switch 409:
+				status = STATUS_ALREADY_EXISTS;
+				break;
+			switch 413:
+				status = STATUS_FAILED_PRECONDITION;
+				break;
+			switch 429:
+				status = STATUS_RESOURCE_EXHAUSTED;
+				break;
+			switch 501:
+				status = STATUS_UNIMPLEMENTED;
+				break;
+			switch 503:
+				status = STATUS_UNAVAILABLE;
+				break;
+			switch 504:
+				status = STATUS_DEADLINE_EXCEEDED;
+				break;
+			default:
+				if (s < 400) {
+					status = STATUS_OK;
+				} else if (s < 600) {
+					status = STATUS_INTERNAL_ERROR;
+				} else {
+					status = STATUS_UNKNOWN;
+				}
+				break;
+		}
+		set_span_status(spn, status);
+		end_span(spn);
 	}
 
 	void set_span_status(void *tx, sentry_status s) {
