@@ -2,6 +2,7 @@
 require 'vendor/autoload.php';
 $config = json_decode(file_get_contents("config.json"));
 
+/* Retrieve all sentry envelopes written to temp directory, and post each one in turn to the API */
 $files = glob("/tmp/.sentry_envelope_*.json");
 sort($files);
 
@@ -20,5 +21,8 @@ foreach ($files as $envelope) {
     curl_setopt($curlHandle, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     $curlResponse = curl_exec($curlHandle);
     curl_close($curlHandle);
-    unlink($envelope);
+    if (json_decode($curlResponse) !== null) {
+           /* Successful posting results in json response. On success, delete the posted envelope */
+           unlink($envelope);
+    }
 }
