@@ -105,32 +105,32 @@ namespace sentry {
 		 * origin: DPP
 		 */
 		sentry_status status{};
-		case (s) {
-			switch 401:
+		switch (s) {
+			case 401:
 				status = STATUS_UNAUTHENTICATED;
 				break;
-			switch 403:
+			case 403:
 				status = STATUS_PERMISSION_DENIED;
 				break;
-			switch 404:
+			case 404:
 				status = STATUS_NOT_FOUND;
 				break;
-			switch 409:
+			case 409:
 				status = STATUS_ALREADY_EXISTS;
 				break;
-			switch 413:
+			case 413:
 				status = STATUS_FAILED_PRECONDITION;
 				break;
-			switch 429:
+			case 429:
 				status = STATUS_RESOURCE_EXHAUSTED;
 				break;
-			switch 501:
+			case 501:
 				status = STATUS_UNIMPLEMENTED;
 				break;
-			switch 503:
+			case 503:
 				status = STATUS_UNAVAILABLE;
 				break;
-			switch 504:
+			case 504:
 				status = STATUS_DEADLINE_EXCEEDED;
 				break;
 			default:
