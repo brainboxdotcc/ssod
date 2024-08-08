@@ -79,6 +79,7 @@ __NOTE__: It is __EXTREMELY IMPORTANT__ to create secure IV/key values for the e
 * PCRE
 * spdlog
 * screen
+* sentry-native
 
 ## Starting the bot
 
