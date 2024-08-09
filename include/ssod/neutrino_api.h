@@ -20,6 +20,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <functional>
 #include <dpp/dpp.h>
 
@@ -50,6 +51,10 @@ typedef std::function<void(const swear_filter_t&)> swear_filter_event_t;
  */
 class neutrino
 {
+	/**
+	 * @brief Endpoint URL for API
+	 */
+	static constexpr std::string_view endpoint{"https://neutrinoapi.net/bad-word-filter"};
         /**
          * @brief D++ cluster
          */

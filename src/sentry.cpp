@@ -19,10 +19,8 @@
  ************************************************************************************/
 
 #include <mutex>
-#include <deque>
 #include <chrono>
 #include <dpp/dpp.h>
-#include <ssod/ssod.h>
 #include <ssod/sentry.h>
 #include <ssod/config.h>
 #include <fmt/format.h>
@@ -146,8 +144,10 @@ namespace sentry {
 				}
 				break;
 		}
-		sentry_transaction_set_data((sentry_transaction_t*)spn, "http.response.status_code", sentry_value_new_int32(s));
-		set_span_status(spn, status);
+		if (spn) {
+			sentry_transaction_set_data((sentry_transaction_t *) spn, "http.response.status_code", sentry_value_new_int32(s));
+			set_span_status(spn, status);
+		}
 		end_span(spn);
 	}
 

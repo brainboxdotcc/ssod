@@ -86,40 +86,35 @@ dpp::task<void> rename_command::route(const dpp::slashcommand_t &event)
 		co_return;
 	}
 	neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
-	swear_check.contains_bad_word(newname, [player_v = p, &bot, oldname, nn_v = newname, event](const swear_filter_t& swear_filter) {
-		player p{player_v};
-		std::string newname{nn_v};
-		if (!swear_filter.clean) {
-			newname = swear_filter.censored_content;
-			bot.log(dpp::ll_warning, "Potty-mouth item name: " + nn_v + " censored for id: " + event.command.usr.id.str());
-		}
-		dpp::embed embed;
-		embed.set_url("https://ssod.org/")
-			.set_title(tr("RENAME", event))
-			.set_footer(dpp::embed_footer{
-				.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
-				.icon_url = bot.me.get_avatar_url(),
-				.proxy_url = "",
-			})
-			.set_colour(EMBED_COLOUR)
-			.set_description(tr("RENAMED", event, oldname, newname));
+	swear_filter_t swear_filter = co_await swear_check.co_contains_bad_word(newname);
+	if (!swear_filter.clean) {
+		bot.log(dpp::ll_warning, "Potty-mouth item name: " + newname + " censored for id: " + event.command.usr.id.str());
+		newname = swear_filter.censored_content;
+	}
+	dpp::embed embed;
+	embed.set_url("https://ssod.org/")
+		.set_title(tr("RENAME", event))
+		.set_footer(dpp::embed_footer{
+			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
+			.icon_url = bot.me.get_avatar_url(),
+			.proxy_url = "",
+		})
+		.set_colour(EMBED_COLOUR)
+		.set_description(tr("RENAMED", event, oldname, newname));
 
-		for (stacked_item& i : p.possessions) {
-			if (dpp::lowercase(i.name) == dpp::lowercase(oldname) && i.flags.length() >= 2 && (i.flags[0] == 'W' || i.flags[0] == 'A') && isdigit(i.flags[1])) {
-				i.name = newname;
-				if (dpp::lowercase(p.weapon.name) == dpp::lowercase(oldname)) {
-					p.weapon.name = newname;
-				} else if (dpp::lowercase(p.armour.name) == dpp::lowercase(oldname)) {
-					p.armour.name = newname;
-				}
-				p.inv_change = true;
+	for (stacked_item& i : p.possessions) {
+		if (dpp::lowercase(i.name) == dpp::lowercase(oldname) && i.flags.length() >= 2 && (i.flags[0] == 'W' || i.flags[0] == 'A') && isdigit(i.flags[1])) {
+			i.name = newname;
+			if (dpp::lowercase(p.weapon.name) == dpp::lowercase(oldname)) {
+				p.weapon.name = newname;
+			} else if (dpp::lowercase(p.armour.name) == dpp::lowercase(oldname)) {
+				p.armour.name = newname;
 			}
+			p.inv_change = true;
 		}
-		update_live_player(event, p);
-		p.save(event.command.usr.id);
-
-		event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
-		return;
-	});
+	}
+	update_live_player(event, p);
+	p.save(event.command.usr.id);
+	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
 	co_return;
 }
