@@ -32,8 +32,8 @@ void neutrino::contains_bad_word(const std::string& text, swear_filter_event_t c
 		{ "output-format", "JSON" },
 	}).dump();
 	void* tx = sentry::get_user_transaction();
-	void* span = sentry::http_span(tx, "https://neutrinoapi.net/bad-word-filter", "POST");
-	this->cluster->request("https://neutrinoapi.net/bad-word-filter", dpp::m_post, [this, text, callback, span](const auto& rv) {
+	void* span = sentry::http_span(tx, neutrino::endpoint.data(), "POST");
+	this->cluster->request(neutrino::endpoint.data(), dpp::m_post, [this, text, callback, span](const auto& rv) {
 			swear_filter_t sf;
 			nlohmann::json j;
 			sf.clean = true;
