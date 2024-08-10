@@ -528,7 +528,7 @@ namespace db {
 
 		int result{0};
 		void *qlog = sentry::get_user_transaction();
-		void* qspan = sentry::span(qlog, format);
+		void* qspan = sentry::db_span(qlog, format, cc.bufs);
 
 		if (!cc.expects_results) {
 			/**
