@@ -56,6 +56,7 @@ namespace sentry {
 		std::string env = config::get("environment");
 		double sample_rate = config::get("sentry_sample_rate").get<double>();
 		sentry_options_t *options = sentry_options_new();
+		sentry_options_set_handler_path(options, "/usr/local/bin/crashpad_handler");
 		sentry_options_set_dsn(options, dsn.c_str());
 		sentry_options_set_database_path(options, ".sentry-native");
 		sentry_options_set_release(options, SSOD_VERSION.data());
