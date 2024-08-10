@@ -104,7 +104,7 @@ namespace sentry {
 			for (const auto& p : parameters) {
 				sentry_value_append(list, sentry_value_new_string(p.c_str()));
 			}
-			sentry_transaction_set_data((sentry_transaction_t*)s, "db.sql.bindings", list);
+			sentry_transaction_set_data((sentry_transaction_t*)s, "bindings", list);
 		}
 		return s;
 	}
