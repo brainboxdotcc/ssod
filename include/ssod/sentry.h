@@ -109,7 +109,7 @@ namespace sentry {
 	 * @param query Query to log against the span, e.g. an SQL query
 	 * @return void* Opaque pointer to sentry span
 	 */
-	void* span(void* tx, const std::string& query, const std::string& op = "db.sql.query");
+	void* span(void* tx, const std::string& query, const std::string& op);
 	
 	/**
 	 * @brief Set the span status
@@ -177,12 +177,24 @@ namespace sentry {
 	 */
 	void unset_user();
 
+	/**
+	 * Make a new global transaction
+	 * @param command
+	 */
 	void make_new_transaction(const std::string& command);
 
+	/**
+	 * Get the current global transaction
+	 * @return
+	 */
 	void* get_user_transaction();
 
+	/**
+	 * End the current global transaction
+	 */
 	void end_user_transaction();
 
 	void* http_span(void* tx, const std::string& url, const std::string& method = "GET");
 	void end_http_span(void* spn, uint16_t s = 200);
+	void* db_span(void* tx, const std::string& query, const std::vector<std::string> &parameters = {});
 };

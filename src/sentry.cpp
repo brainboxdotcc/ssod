@@ -97,6 +97,18 @@ namespace sentry {
 		return s;
 	}
 
+	void* db_span(void* tx, const std::string& query, const std::vector<std::string> &parameters) {
+		void* s = span(tx, query, "db.sql.query");
+		if (s) {
+			sentry_value_t list = sentry_value_new_list();
+			for (const auto& p : parameters) {
+				sentry_value_append(list, sentry_value_new_string(p.c_str()));
+			}
+			sentry_transaction_set_data((sentry_transaction_t*)s, "db.sql.bindings", list);
+		}
+		return s;
+	}
+
 	void end_http_span(void* spn, uint16_t s) {
 		/*
 		 * data: http.query -> uri after ?
