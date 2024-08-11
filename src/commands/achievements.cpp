@@ -23,19 +23,26 @@
 #include <ssod/game_player.h>
 #include <ssod/emojis.h>
 #include <fmt/format.h>
+#include <ssod/aes.h>
 
 using namespace i18n;
+
+constexpr uint32_t page_size{6};
 
 dpp::slashcommand achievements_command::register_command(dpp::cluster& bot) {
 	return tr(dpp::slashcommand("cmd_achievements", "achievements_desc", bot.me.id)
 		.set_dm_permission(true)
-		.add_option(dpp::command_option(dpp::co_string, "opt_user", "user_achievements_desc", false)));
+		.add_option(dpp::command_option(dpp::co_string, "opt_user", "user_achievements_desc", false))
+		.add_option(dpp::command_option(dpp::co_integer, "opt_page", "user_achievements_page_desc", false))
+	);
 }
 
 dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.from->creator;
 	auto param = event.get_parameter("user");
+	auto page_p = event.get_parameter("page");
+	uint32_t page{1};
 	std::string user;
 	player p;
 	bool self{false};
@@ -48,6 +55,9 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 	} else {
 		user = std::get<std::string>(param);
 	}
+	if (page_p.index() != 0) {
+		page = std::get<int64_t>(page_p);
+	}
 	auto rs = co_await db::co_query("SELECT * FROM game_users WHERE name = ?", {user});
 	if (rs.empty()) {
 		event.reply(dpp::message(tr(self ? "NOPROFILE" : "NOSUCHUSER", event)).set_flags(dpp::m_ephemeral));
@@ -58,6 +68,17 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 
 	content << "## " + tr("ACHIEVEMENTS", event) +  "\n\n";
 
+	auto page_check = co_await db::co_query(
+		"SELECT CEIL(COUNT(*) / ?) as page_count FROM `achievements_unlocked`"
+		"JOIN achievements ON achievement_id = achievements.id AND achievements_unlocked.user_id = ? WHERE "
+		"(achievements.secret = 0 OR (SELECT COUNT(*) FROM achievements_unlocked self WHERE self.achievement_id = achievements_unlocked.achievement_id AND self.user_id = ?) > 0) "
+		"ORDER BY achievements_unlocked.created_at DESC",
+		{ page_size, rs[0].at("user_id"), event.command.usr.id }
+	);
+
+	uint32_t max_pages = atoi(page_check.empty() ? "1" : page_check[0].at("page_count"));
+	page = std::max(1U, std::min(page, max_pages));
+
 	/**
 	 * User can view all non-secret achievements, or secret achievements they have unlocked in common with the target user.
 	 * Achievements are listed in reverse date order.
@@ -66,8 +87,9 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 		"SELECT achievements.*, DATE_FORMAT(FROM_UNIXTIME(achievements_unlocked.created_at), '%D %b %Y, %H:%i') AS unlock_date FROM `achievements_unlocked`"
 		"JOIN achievements ON achievement_id = achievements.id AND achievements_unlocked.user_id = ? WHERE "
 		"(achievements.secret = 0 OR (SELECT COUNT(*) FROM achievements_unlocked self WHERE self.achievement_id = achievements_unlocked.achievement_id AND self.user_id = ?) > 0) "
-		"ORDER BY achievements_unlocked.created_at DESC",
-		{ rs[0].at("user_id"), event.command.usr.id }
+		"ORDER BY achievements_unlocked.created_at DESC "
+		"LIMIT ?,?",
+		{ rs[0].at("user_id"), event.command.usr.id, (page - 1) * page_size, page_size }
 	);
 
 	size_t c{};
@@ -97,7 +119,7 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 		content << tr("UNLOCKED", event) << " " << achievement.at("unlock_date") << "\n\n";
 		++c;
 
-		if (content.str().length() > 5700) {
+		if (content.str().length() > 5500) {
 			content << "(and " << (ach.size() - c) << " more...)";
 			break;
 		}
@@ -107,7 +129,7 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 		.set_url("https://ssod.org/")
 		.set_title(tr("ACHIEVEMENTS_LIST", event) + ": " + dpp::utility::markdown_escape(user))
 		.set_footer(dpp::embed_footer{ 
-			.text = tr("REQUESTED_BY", event, event.command.usr.format_username()),
+			.text = tr("ACH_FOOTER", event, dpp::utility::markdown_escape(user), page, max_pages),
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
