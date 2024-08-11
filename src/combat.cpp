@@ -687,7 +687,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 			.set_style(dpp::cos_primary)
 			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
 		);
-		co_await achievement_check("COMBAT_WIN", event, p, {});
+		co_await achievement_check("COMBAT_WIN", event, p, {{"enemy", {{"name", p.combatant.name}, {"stamina", p.combatant.stamina}, {"skill", p.combatant.skill}, {"armour", p.combatant.armour}, {"weapon", p.combatant.weapon}}}});
 		output1 << "\n\n```ansi\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("SKILL", event), p.skill) << "\n";
 		output1 << fmt::format(fmt::runtime("\033[2;31m{0}\033[0m: \033[2;33m{1:2d}\033[0m"), tr("STAMINA", event), p.stamina) << "\n";
