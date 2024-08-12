@@ -669,7 +669,7 @@ player::player(dpp::snowflake user_id, bool get_backup) : player() {
 		}
 	}
 
-	auto res = db::query("SELECT item_desc, item_flags, COUNT(item_desc) AS qty FROM game_owned_items WHERE user_id = ? GROUP BY item_desc, item_flags", {user_id});
+	auto res = db::query("SELECT item_desc, item_flags, SUM(qty) AS qty FROM game_owned_items WHERE user_id = ? GROUP BY item_desc, item_flags", {user_id});
 	for (const auto& item_row : res) {
 		const std::string& item_desc = item_row.at("item_desc");
 		const std::string& item_flags = item_row.at("item_flags");
@@ -756,19 +756,17 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 		
 		for (const stacked_item& possession : possessions) {
 			if (possession.name != "[none]") {
-				for (long amount = 0; amount < possession.qty; ++amount) {
-					db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, possession.name, possession.flags});
-				}
+				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES(?,?,?,?)", {user_id, possession.name, possession.flags, possession.qty});
 			}
 		}
 		for (const item& herb : herbs) {
 			if (herb.name != "[none]") {
-				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, herb.name, herb.flags});
+				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES(?,?,?,?)", {user_id, herb.name, herb.flags, 1});
 			}
 		}
 		for (const item& spell : spells) {
 			if (spell.name != "[none]") {
-				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags) VALUES(?,?,?)", {user_id, spell.name, spell.flags});
+				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES(?,?,?,?)", {user_id, spell.name, spell.flags, 1});
 			}
 		}
 
