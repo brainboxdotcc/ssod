@@ -758,10 +758,8 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 		db::paramlist p;
 		for (const stacked_item& possession : possessions) {
 			if (possession.name != "[none]") {
-				p.emplace_back(user_id);
-				p.emplace_back(possession.name);
-				p.emplace_back(possession.flags);
-				p.emplace_back(possession.qty);
+				db::paramlist item{user_id, possession.name, possession.flags, possession.qty};
+				p.insert(std::end(p), std::begin(item), std::end(item));
 				query += "(?,?,?,?),";
 			}
 		}
@@ -773,10 +771,8 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 		query = "INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES";
 		for (const item& herb : herbs) {
 			if (herb.name != "[none]") {
-				p.emplace_back(user_id);
-				p.emplace_back(herb.name);
-				p.emplace_back(herb.flags);
-				p.emplace_back(1);
+				db::paramlist item{user_id, herb.name, herb.flags, 1};
+				p.insert(std::end(p), std::begin(item), std::end(item));
 				query += "(?,?,?,?),";
 			}
 		}
@@ -788,10 +784,8 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 		query = "INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES";
 		for (const item& spell : spells) {
 			if (spell.name != "[none]") {
-				p.emplace_back(user_id);
-				p.emplace_back(spell.name);
-				p.emplace_back(spell.flags);
-				p.emplace_back(1);
+				db::paramlist item{user_id, spell.name, spell.flags, 1};
+				p.insert(std::end(p), std::begin(item), std::end(item));
 				query += "(?,?,?,?),";
 			}
 		}
