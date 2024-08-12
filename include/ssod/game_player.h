@@ -24,6 +24,7 @@
 #include <dpp/dpp.h>
 #include <ssod/game_enums.h>
 #include <ssod/ssod.h>
+#include <ssod/database.h>
 
 struct rated_item {
 	std::string name{};
@@ -347,6 +348,11 @@ struct player {
 	dpp::task<dpp::message> get_magic_selection_message(dpp::cluster& cluster, const dpp::interaction_create_t &event);
 
 	bool convert_rations(const item& i);
+
+	void run_inventory_insert_query(std::string &query, const std::vector<db::parameter_type> &p);
+
+	void insert_owned_list(dpp::snowflake user_id, const std::vector<item>& items);
+	void insert_owned_list(dpp::snowflake user_id, const std::vector<stacked_item>& items);
 };
 
 using player_list = std::unordered_map<dpp::snowflake, player>;
