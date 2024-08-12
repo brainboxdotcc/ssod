@@ -753,21 +753,51 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 
 	if (inv_change) {
 		db::query("DELETE FROM game_owned_items WHERE user_id = ?", {user_id});
-		
+
+		std::string query{"INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES"};
+		db::paramlist p;
 		for (const stacked_item& possession : possessions) {
 			if (possession.name != "[none]") {
-				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES(?,?,?,?)", {user_id, possession.name, possession.flags, possession.qty});
+				p.emplace_back(user_id);
+				p.emplace_back(possession.name);
+				p.emplace_back(possession.flags);
+				p.emplace_back(possession.qty);
+				query += "(?,?,?,?),";
 			}
 		}
+		if (!possessions.empty()) {
+			query = query.substr(0, query.length() - 1);
+			db::query(query, p);
+		}
+		p = {};
+		query = "INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES";
 		for (const item& herb : herbs) {
 			if (herb.name != "[none]") {
-				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES(?,?,?,?)", {user_id, herb.name, herb.flags, 1});
+				p.emplace_back(user_id);
+				p.emplace_back(herb.name);
+				p.emplace_back(herb.flags);
+				p.emplace_back(1);
+				query += "(?,?,?,?),";
 			}
 		}
+		if (!herbs.empty()) {
+			query = query.substr(0, query.length() - 1);
+			db::query(query, p);
+		}
+		p = {};
+		query = "INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES";
 		for (const item& spell : spells) {
 			if (spell.name != "[none]") {
-				db::query("INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES(?,?,?,?)", {user_id, spell.name, spell.flags, 1});
+				p.emplace_back(user_id);
+				p.emplace_back(spell.name);
+				p.emplace_back(spell.flags);
+				p.emplace_back(1);
+				query += "(?,?,?,?),";
 			}
+		}
+		if (!spells.empty()) {
+			query = query.substr(0, query.length() - 1);
+			db::query(query, p);
 		}
 
 		inv_change = false;
