@@ -753,47 +753,9 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 
 	if (inv_change) {
 		db::query("DELETE FROM game_owned_items WHERE user_id = ?", {user_id});
-
-		std::string query{"INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES"};
-		db::paramlist p;
-		for (const stacked_item& possession : possessions) {
-			if (possession.name != "[none]") {
-				db::paramlist item{user_id, possession.name, possession.flags, possession.qty};
-				p.insert(std::end(p), std::begin(item), std::end(item));
-				query += "(?,?,?,?),";
-			}
-		}
-		if (!possessions.empty()) {
-			query = query.substr(0, query.length() - 1);
-			db::query(query, p);
-		}
-		p = {};
-		query = "INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES";
-		for (const item& herb : herbs) {
-			if (herb.name != "[none]") {
-				db::paramlist item{user_id, herb.name, herb.flags, 1};
-				p.insert(std::end(p), std::begin(item), std::end(item));
-				query += "(?,?,?,?),";
-			}
-		}
-		if (!herbs.empty()) {
-			query = query.substr(0, query.length() - 1);
-			db::query(query, p);
-		}
-		p = {};
-		query = "INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES";
-		for (const item& spell : spells) {
-			if (spell.name != "[none]") {
-				db::paramlist item{user_id, spell.name, spell.flags, 1};
-				p.insert(std::end(p), std::begin(item), std::end(item));
-				query += "(?,?,?,?),";
-			}
-		}
-		if (!spells.empty()) {
-			query = query.substr(0, query.length() - 1);
-			db::query(query, p);
-		}
-
+		insert_owned_list(user_id, possessions);
+		insert_owned_list(user_id, herbs);
+		insert_owned_list(user_id, spells);
 		inv_change = false;
 	}
 	last_use = time(nullptr);
@@ -821,6 +783,40 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 	}
 
 	return true;
+}
+
+void player::insert_owned_list(dpp::snowflake user_id, const std::vector<item>& items) {
+	db::paramlist p;
+	std::string query{"INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES"};
+	for (const item& item : items) {
+		if (item.name != "[none]") {
+			db::paramlist new_item{user_id, item.name, item.flags, 1};
+			p.insert(std::end(p), std::begin(new_item), std::end(new_item));
+			query += "(?,?,?,?),";
+		}
+	}
+	run_inventory_insert_query(query, p);
+}
+
+void player::insert_owned_list(dpp::snowflake user_id, const std::vector<stacked_item>& items) {
+	db::paramlist p;
+	std::string query{"INSERT INTO game_owned_items (user_id, item_desc, item_flags, qty) VALUES"};
+	for (const stacked_item& item : items) {
+		if (item.name != "[none]") {
+			db::paramlist new_item{user_id, item.name, item.flags, item.qty};
+			p.insert(std::end(p), std::begin(new_item), std::end(new_item));
+			query += "(?,?,?,?),";
+		}
+	}
+	run_inventory_insert_query(query, p);
+}
+
+void player::run_inventory_insert_query(std::string &query, const db::paramlist &p) {
+	if (p.empty()) {
+		return;
+	}
+	query.pop_back();
+	db::query(query, p);
 }
 
 void player::add_flag(const std::string flag, long paragraph) {
