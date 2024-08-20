@@ -1358,7 +1358,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 	 * These link pages are old data and not relavent to gameplay. Basically just a paragraph
 	 * that says "Turn to X" which were an anti-cheat holdover from book-form content.
 	 */
-	while (location.words == 0 && location.navigation_links.size() > 0 && (location.navigation_links[0].type == nav_type_autolink || location.navigation_links[0].type == nav_type_link)) {
+	while (location.words == 0 && !location.navigation_links.empty() && (location.navigation_links[0].type == nav_type_autolink || location.navigation_links[0].type == nav_type_link)) {
 		location = co_await paragraph::create(location.navigation_links[0].paragraph, p, event.command.usr.id);
 		p.paragraph = location.id;
 	}
