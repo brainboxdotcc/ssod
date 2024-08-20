@@ -27,9 +27,7 @@
 
 using namespace i18n;
 
-paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id) {
-	id = paragraph_id;
-	cur_player = &current;
+paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id) : id(paragraph_id), cur_player(&current) {
 	display.push_back(true);
 }
 
@@ -45,12 +43,7 @@ dpp::task<paragraph> paragraph::create(const std::string& data, player& current)
 	co_return new_paragraph;
 }
 
-paragraph::paragraph(const std::string& data, player& current) {
-	id = 0;
-	text = data;
-	secure_id = "";
-	combat_disabled = magic_disabled = theft_disabled = chat_disabled = false;
-	cur_player = &current;
+paragraph::paragraph(const std::string& data, player& current) : id(0), text(data), combat_disabled(false), magic_disabled(false), theft_disabled(false), chat_disabled(false), cur_player(&current) {
 }
 
 // extracts from any NAME=Value pair
