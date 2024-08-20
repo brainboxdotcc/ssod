@@ -33,6 +33,18 @@ paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user
 	display.push_back(true);
 }
 
+dpp::task<paragraph> paragraph::create(uint32_t paragraph_id, player& current, dpp::snowflake user_id) {
+	paragraph new_paragraph(paragraph_id, current, user_id);
+	co_await new_paragraph.parse(current, user_id);
+	co_return new_paragraph;
+}
+
+dpp::task<paragraph> paragraph::create(const std::string& data, player& current) {
+	paragraph new_paragraph(data, current);
+	co_await new_paragraph.parse(current, current.event.command.usr.id);
+	co_return new_paragraph;
+}
+
 paragraph::paragraph(const std::string& data, player& current) {
 	id = 0;
 	text = data;
