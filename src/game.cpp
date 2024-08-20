@@ -1353,8 +1353,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		co_await bank(event, p);
 		co_return;
 	}
-	paragraph location(p.paragraph, p, event.command.usr.id);
-	co_await location.parse(p, event.command.usr.id);
+	paragraph location = co_await paragraph::create(p.paragraph, p, event.command.usr.id);
 	/* If the current paragraph is an empty page with nothing but a link, skip over it.
 	 * These link pages are old data and not relavent to gameplay. Basically just a paragraph
 	 * that says "Turn to X" which were an anti-cheat holdover from book-form content.

@@ -760,7 +760,7 @@ bool player::save(dpp::snowflake user_id, bool put_backup)
 	}
 	last_use = time(nullptr);
 
-	json crumbs = json::array();;
+	json crumbs = json::array();
 	if (!put_backup) {
 		for (long p : breadcrumb_trail) {
 			crumbs.push_back(p);
