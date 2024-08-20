@@ -232,23 +232,6 @@ struct paragraph {
 	~paragraph() = default;
 
 	/**
-	 * Construct a paragraph with existing data.
-	 * @note Does not parse the content, this is done asynchronously via the parse method.
-	 * @param data Paragraph content
-	 * @param current Current player
-	 */
-	paragraph(const std::string& data, player& current);
-
-	/**
-	 * Construct a paragraph from paragraph id
-	 * @note Does not parse the content, this is done asynchronously via the parse method.
-	 * @param paragraph_id Paragraph id in database
-	 * @param current Current player
-	 * @param user_id Discord user id
-	 */
-	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id);
-
-	/**
 	 * Given a current paragraph id, return true if the next id is a valid move,
 	 * or false if it isn't. Used as a double check against cheating.
 	 * @param current current id
@@ -273,6 +256,24 @@ struct paragraph {
 	 * @return awaitable which will return paragraph when fulfilled
 	 */
 	static dpp::task<paragraph> create(const std::string& data, player& current);
+
+protected:
+	/**
+	 * Construct a paragraph with existing data.
+	 * @note Does not parse the content, this is done asynchronously via the parse method.
+	 * @param data Paragraph content
+	 * @param current Current player
+	 */
+	paragraph(const std::string& data, player& current);
+
+	/**
+	 * Construct a paragraph from paragraph id
+	 * @note Does not parse the content, this is done asynchronously via the parse method.
+	 * @param paragraph_id Paragraph id in database
+	 * @param current Current player
+	 * @param user_id Discord user id
+	 */
+	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id);
 
 	/**
 	 * Parse paragraph content, this may take some time to complete as it has to interpret the content
