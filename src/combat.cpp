@@ -752,9 +752,11 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 
 				/* If you hit enemy, critical meter ticks up based on your luck.
 				 * If critical meter reaches max, you gain a critical hit, that you
-				 * can spend on an overwhelming attack.
+				 * can spend on an overwhelming attack. The increment can never be
+				 * less than 1 or more than 12.
 				 */
-				co_await db::co_query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, p.luck + 1});
+				long increment = std::min(std::max(1L, p.luck + 1), 12L);
+				co_await db::co_query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, increment});
 				auto r = co_await db::co_query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
 				long counter = atol(r[0].at("critical_counter"));
 				if (counter > 1000 + (p.get_level() * 4)) {
