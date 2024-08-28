@@ -11,3 +11,4 @@ uploads/*.gif
 uploads/*.jpg
 uploads/*.jpeg
 uploads/*.webm
+include/gen

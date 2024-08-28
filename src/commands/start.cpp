@@ -25,7 +25,7 @@
 #include <ssod/game_player.h>
 #include <ssod/game.h>
 #include <ssod/aes.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <ssod/config.h>
 #include <ssod/neutrino_api.h>
 #include <ssod/sentry.h>

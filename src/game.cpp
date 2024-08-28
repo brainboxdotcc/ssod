@@ -28,7 +28,7 @@
 #include <ssod/paragraph.h>
 #include <ssod/game_util.h>
 #include <ssod/component_builder.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <ssod/combat.h>
 #include <ssod/aes.h>
 #include <ssod/wildcard.h>
@@ -114,7 +114,7 @@ dpp::task<void> death(player& p, component_builder& cb) {
 			.set_id(security::encrypt("resurrect"))
 			.set_label(tr("RESURRECT_ME", p.event))
 			.set_style(dpp::cos_success)
-			.set_emoji(sprite::health_heart.name, sprite::health_heart.id)
+			.set_emoji(sprite::heart.name, sprite::heart.id)
 		);
 	} else {
 		toast += tr("RESURRECT_NOT_AVAILABLE", p.event, dpp::utility::timestamp(p.last_resurrect + when, dpp::utility::tf_relative_time));
@@ -234,7 +234,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 			p.paragraph = atol(parts[1]);
 			co_await achievement_check("ANSWER_RIDDLE_CORRECT", event, p);
 		} else {
-			p.add_toast({ .message = "### " + sprite::inv_drop.get_mention() + " " + tr("INCORRECT_RIDDLE", event), .image = "confused.png" });
+			p.add_toast({ .message = "### " + sprite::x_.get_mention() + " " + tr("INCORRECT_RIDDLE", event), .image = "confused.png" });
 			co_await achievement_check("ANSWER_RIDDLE_INCORRECT", event, p);
 		}
 		bot.log(dpp::ll_debug, "Answered: " + entered_answer);
@@ -1140,8 +1140,8 @@ dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 			.icon_url = bot.me.get_avatar_url(), 
 			.proxy_url = "",
 		})
-		.add_field(tr("YOUR_BALANCE", event), std::to_string(amount) + " " + tr("GOLD", event) + " " + sprite::gold_coin.get_mention(), true)
-		.add_field(tr("COIN_PURSE", event), std::to_string(p.gold) + " " + tr("GOLD", event) + " " + sprite::gold_coin.get_mention(), true)
+		.add_field(tr("YOUR_BALANCE", event), std::to_string(amount) + " " + tr("GOLD", event) + " " + sprite::goldcoin.get_mention(), true)
+		.add_field(tr("COIN_PURSE", event), std::to_string(p.gold) + " " + tr("GOLD", event) + " " + sprite::goldcoin.get_mention(), true)
 		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
 	
@@ -1217,7 +1217,7 @@ dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 			.set_id(security::encrypt("deposit_gold"))
 			.set_label(tr("DEPOSIT_GOLD", event))
 			.set_style(dpp::cos_primary)
-			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
+			.set_emoji(sprite::goldcoin.name, sprite::goldcoin.id)
 			.set_disabled(p.gold == 0)
 		)
 		.add_component(dpp::component()
@@ -1225,7 +1225,7 @@ dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 			.set_id(security::encrypt("withdraw_gold"))
 			.set_label(tr("WITHDRAW_GOLD", event))
 			.set_style(dpp::cos_primary)
-			.set_emoji(sprite::gold_coin.name, sprite::gold_coin.id)
+			.set_emoji(sprite::goldcoin.name, sprite::goldcoin.id)
 			.set_disabled(amount == 0)
 		)
 		.add_component(help_button(event))
@@ -1536,7 +1536,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		if (n.type == nav_type_respawn) {
 			comp.set_emoji(sprite::skull.name, sprite::skull.id);
 		} else if (n.type == nav_type_bank) {
-			comp.set_emoji(sprite::gold_bar.name, sprite::gold_bar.id);
+			comp.set_emoji(sprite::goldbar.name, sprite::goldbar.id);
 		} else if (n.type == nav_type_modal) {
 			comp.set_emoji("❓");
 		}
@@ -1592,7 +1592,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 						.set_id(security::encrypt("campfire"))
 						.set_label(tr("COOK", event))
 						.set_style(dpp::cos_secondary)
-						.set_emoji(sprite::cooked_meat.name, sprite::cooked_meat.id)
+						.set_emoji(sprite::meat.name, sprite::meat.id)
 					);
 				}
 			}

@@ -21,7 +21,7 @@
 #include <ssod/database.h>
 #include <ssod/commands/achievements.h>
 #include <ssod/game_player.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <fmt/format.h>
 #include <ssod/aes.h>
 
@@ -108,11 +108,11 @@ dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 		 * Gold: 100+ XP award achievement
 		 */
 		long xp = atol(achievement.at("xp"));
-		std::string trophy{sprite::bronze_coin.format()};
+		std::string trophy{sprite::bronzecoin.format()};
 		if (xp > 10 && xp < 100) {
-			trophy = sprite::silver_coin.format();
+			trophy = sprite::silvercoin.format();
 		} else if (xp >= 100) {
-			trophy = sprite::gold_coin.format();
+			trophy = sprite::goldcoin.format();
 		}
 		content << "<:" << trophy << "> __**" << achievement_name << "**__\n";
 		content << "[" << description << "](https://images.ssod.org/resource/achievements/" << achievement.at("emoji") << ")\n";

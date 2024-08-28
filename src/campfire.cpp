@@ -24,7 +24,7 @@
 #include <ssod/game_player.h>
 #include <ssod/game_util.h>
 #include <ssod/component_builder.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <ssod/aes.h>
 #include <ssod/database.h>
 
@@ -160,8 +160,8 @@ dpp::task<void> campfire(const dpp::interaction_create_t& event, player p) {
 				}
 			}
 		}
-		cook_menu.add_select_option(dpp::select_option(tr("COOK_FOOD", event, name), cookable.at("name") + ";" + std::to_string(++index)).set_emoji(sprite::cooked_meat.name, sprite::cooked_meat.id));
-		content << sprite::cooked_meat.get_mention() << " ";
+		cook_menu.add_select_option(dpp::select_option(tr("COOK_FOOD", event, name), cookable.at("name") + ";" + std::to_string(++index)).set_emoji(sprite::meat.name, sprite::meat.id));
+		content << sprite::meat.get_mention() << " ";
 		content << "__**" << name << "**__\n";
 		content << "*" << description << "*\n";
 		content << "**" << tr("INGREDIENTS", event) << "** " << ingredients_list << "\n";

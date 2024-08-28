@@ -24,7 +24,7 @@
 #include <ssod/game_player.h>
 #include <ssod/game_util.h>
 #include <ssod/component_builder.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <ssod/aes.h>
 #include <ssod/database.h>
 
