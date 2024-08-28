@@ -16,6 +16,10 @@ add_executable(${BOT_NAME} ${coresrc})
 
 target_precompile_headers(${BOT_NAME} INTERFACE "/usr/local/include/fmt/format.h")
 
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include/gen/emoji.h)
+	message(FATAL_ERROR "include/gen/emoji.h missing - You need to generate the list of emojis first from the admin website via `php artisan app:upload-sprites`")
+endif()
+
 string(ASCII 27 Esc)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
