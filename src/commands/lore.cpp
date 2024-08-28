@@ -21,7 +21,7 @@
 #include <ssod/commands/lore.h>
 #include <ssod/game_date.h>
 #include <ssod/component_builder.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <ssod/aes.h>
 #include <filesystem>
 #include <set>

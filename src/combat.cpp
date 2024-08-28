@@ -23,7 +23,7 @@
 #include <ssod/game_util.h>
 #include <ssod/game_dice.h>
 #include <ssod/ssod.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <ssod/aes.h>
 #include <fmt/format.h>
 #include <ssod/game.h>
@@ -346,7 +346,7 @@ dpp::task<dpp::message> get_pvp_round(const dpp::interaction_create_t& event) {
 			.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
 			.set_label(tr("VICTORY", event))
 			.set_style(dpp::cos_primary)
-			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
+			.set_emoji(sprite::sword18.name, sprite::sword18.id)
 		);
 		co_await achievement_check("PVP_WIN", event, p, {});
 	}
@@ -685,7 +685,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 			.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
 			.set_label(tr("VICTORY", event))
 			.set_style(dpp::cos_primary)
-			.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
+			.set_emoji(sprite::sword18.name, sprite::sword18.id)
 		);
 		co_await achievement_check("COMBAT_WIN", event, p, {{"enemy", {{"name", p.combatant.name}, {"stamina", p.combatant.stamina}, {"skill", p.combatant.skill}, {"armour", p.combatant.armour}, {"weapon", p.combatant.weapon}}}});
 		output1 << "\n\n```ansi\n";
@@ -934,7 +934,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 				.set_id(security::encrypt("follow_nav;" + std::to_string(p.paragraph) + ";" + std::to_string(p.paragraph)))
 				.set_label(tr("VICTORY", event))
 				.set_style(dpp::cos_primary)
-				.set_emoji(sprite::sword_box_green.name, sprite::sword_box_green.id)
+				.set_emoji(sprite::sword18.name, sprite::sword18.id)
 			);
 			CombatEnded = true;
 		}

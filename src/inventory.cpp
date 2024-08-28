@@ -25,7 +25,7 @@
 #include <ssod/game_player.h>
 #include <ssod/game_util.h>
 #include <ssod/component_builder.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <ssod/aes.h>
 #include <ssod/database.h>
 
@@ -44,16 +44,16 @@ dpp::task<void> inventory(const dpp::interaction_create_t& event, player p) {
 	std::vector<dpp::embed_field> fields;
 
 	content << "__**" << tr("Stats", event) << "**__\n";
-	content << "<:" << sprite::health_heart.format() << "> " << tr("STAMINA", event) << ": __" << p.stamina << "__";
+	content << "<:" << sprite::heart.format() << "> " << tr("STAMINA", event) << ": __" << p.stamina << "__";
 	content << " <:" << sprite::book07.format() << "> " << tr("SKILL", event) << ": __" << p.skill << "__";
 	content << " <:" << sprite::clover.format() << "> " << tr("LUCK", event) << ": __" << p.luck << "__";
-	content << " <:" << sprite::medal01.format() << "> XP: __" << p.experience << "__ (" << tr("LEVEL", event) << ": __" << p.get_level() << "__)\n";
+	content << " <:" << sprite::ac_medal01.format() << "> XP: __" << p.experience << "__ (" << tr("LEVEL", event) << ": __" << p.get_level() << "__)\n";
 	content << " <:" << sprite::shoes03.format() << "> " << tr("SPEED", event) << ": __" << p.speed << "__";
 	if (p.gold > 0) {
-		content << " <:" << sprite::gold_coin.format() << "> " << tr("GOLD", event) << ": __" << p.gold << "__";
+		content << " <:" << sprite::goldcoin.format() << "> " << tr("GOLD", event) << ": __" << p.gold << "__";
 	}
 	if (p.silver > 0) {
-		content << " <:" << sprite::silver_coin.format() << "> " << tr("SILVER", event) << ": __" << p.silver << "__";
+		content << " <:" << sprite::silvercoin.format() << "> " << tr("SILVER", event) << ": __" << p.silver << "__";
 	}
 
 	content << "\n";

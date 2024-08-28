@@ -20,7 +20,7 @@
 #include <ssod/ssod.h>
 #include <ssod/commands/reset.h>
 #include <ssod/aes.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <ssod/game_player.h>
 #include <fmt/format.h>
 

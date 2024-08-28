@@ -21,7 +21,7 @@
 #include <ssod/database.h>
 #include <ssod/commands/profile.h>
 #include <ssod/game_player.h>
-#include <ssod/emojis.h>
+#include <gen/emoji.h>
 #include <fmt/format.h>
 
 using namespace i18n;
@@ -97,17 +97,17 @@ dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 		.set_colour(EMBED_COLOUR)
 		.set_description(content)
 		.set_image(file)
-		.add_field(tr("STAMINA", event), sprite::health_heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)
+		.add_field(tr("STAMINA", event), sprite::heart.get_mention() + " " + rs[0].at("stamina") + "/" + std::to_string(p2.max_stamina()), true)
 		.add_field(tr("SKILL", event), sprite::book07.get_mention() + " " + rs[0].at("skill") + "/" + std::to_string(p2.max_skill()), true)
 		.add_field(tr("LUCK", event), sprite::clover.get_mention() + " " + rs[0].at("luck") + "/" + std::to_string(p2.max_luck()), true)
-		.add_field("XP", sprite::medal01.get_mention() + " " + rs[0].at("experience"), true)
+		.add_field("XP", sprite::ac_medal01.get_mention() + " " + rs[0].at("experience"), true)
 		.add_field(tr("SPEED", event), sprite::shoes03.get_mention() + " " + rs[0].at("speed") + "/" + std::to_string(p2.max_speed()), true)
 		.add_field(tr("SNEAK", event), sprite::throw05.get_mention() + " " + rs[0].at("sneak") + "/" + std::to_string(p2.max_sneak()), true)
-		.add_field(tr("GOLD", event), sprite::gold_coin.get_mention() + " " + rs[0].at("gold") + "/" + std::to_string(p2.max_gold()), true)
+		.add_field(tr("GOLD", event), sprite::goldcoin.get_mention() + " " + rs[0].at("gold") + "/" + std::to_string(p2.max_gold()), true)
 		.add_field(tr("MANA", event), sprite::hat02.get_mention() + " " + rs[0].at("mana") + "/" + std::to_string(p2.max_mana()), true)
-		.add_field(tr("ARMOUR", event), sprite::helm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
+		.add_field(tr("ARMOUR", event), sprite::elm03.get_mention() + " " + rs[0].at("armour_rating") + " (" + rs[0].at("armour") + ")", true)
 		.add_field(tr("WEAPON", event), sprite::axe013.get_mention() + " " + rs[0].at("weapon_rating") + " (" + rs[0].at("weapon") + ")", true)
-		.add_field(tr("NOTORIETY", event), sprite::helm01.get_mention() + " " + rs[0].at("notoriety"), true)
+		.add_field(tr("NOTORIETY", event), sprite::elm01.get_mention() + " " + rs[0].at("notoriety"), true)
 		.add_field(tr("RATIONS", event), sprite::cheese.get_mention() + " " + rs[0].at("rations") + "/" + std::to_string(p2.max_rations()), true)
 		.add_field(tr("SCROLLS", event), sprite::scroll.get_mention() + " " + rs[0].at("scrolls"), true)
 	;
