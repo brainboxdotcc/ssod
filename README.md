@@ -24,11 +24,16 @@ This game has quite a long history.
 
 ## Compilation
 
+First run `php artisan app:upload-sprites` from the admin web root to upload all sprite emojis to the application emojis section in the discord developer panel,
+and generate `include/gen/emoji.h`. This is required to compile the bot and is unique to the application ID.
+
+Next:
+
 ```bash
 mkdir build
 cd build
 cmake ..
-make -j
+make -j${NPROC}
 ```
 
 ## Configuring the bot
