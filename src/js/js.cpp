@@ -340,6 +340,18 @@ static duk_ret_t js_get_paragraph(duk_context *cx) {
 	return 1;
 }
 
+static duk_ret_t js_get_parent(duk_context *cx) {
+	int argc = duk_get_top(cx);
+	if (argc != 0) {
+		bot->log(dpp::ll_warning, "JS get_parent: incorrect number of parameters: " +std::to_string(argc));
+		return 0;
+	}
+	paragraph& p = duk_get_udata(cx);
+	duk_push_number(cx,(duk_double_t)p.parent);
+	return 1;
+}
+
+
 static duk_ret_t js_get_armour(duk_context *cx) {
 	int argc = duk_get_top(cx);
 	if (argc != 0) {
@@ -1214,6 +1226,7 @@ bool run(const std::string& script, paragraph& p, player& current_player, const 
 	define_func(ctx, "get_days", js_get_days, 0);
 	define_func(ctx, "get_scrolls", js_get_scrolls, 0);
 	define_func(ctx, "get_paragraph", js_get_paragraph, 0);
+	define_func(ctx, "get_parent", js_get_parent, 0);
 	define_func(ctx, "get_armour", js_get_armour, 0);
 	define_func(ctx, "get_weapon", js_get_weapon, 0);
 	define_func(ctx, "get_last_use", js_get_last_use, 0);

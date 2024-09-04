@@ -222,6 +222,11 @@ struct paragraph {
 	player* cur_player{nullptr};
 
 	/**
+	 * Parent paragraph ID for macros, zero otherwise
+	 */
+	uint32_t parent{};
+
+	/**
 	 * Default constructor
 	 */
 	paragraph() = default;
@@ -245,9 +250,10 @@ struct paragraph {
 	 * @param paragraph_id Paragraph ID to construct and parse
 	 * @param current Current player
 	 * @param user_id Discord user id
+	 * @param parent_id parent paragraph ID for macros
 	 * @return awaitable which will return paragraph when fulfilled
 	 */
-	static dpp::task<paragraph> create(uint32_t paragraph_id, player& current, dpp::snowflake user_id);
+	static dpp::task<paragraph> create(uint32_t paragraph_id, player& current, dpp::snowflake user_id, uint32_t parent_id = 0);
 
 	/**
 	 * @brief Factory function to create a new paragraph instance with existing content and a player
@@ -272,8 +278,9 @@ protected:
 	 * @param paragraph_id Paragraph id in database
 	 * @param current Current player
 	 * @param user_id Discord user id
+	 * @param parent_id parent paragraph ID for macros
 	 */
-	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id);
+	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id, uint32_t parent_id = 0);
 
 	/**
 	 * Parse paragraph content, this may take some time to complete as it has to interpret the content
