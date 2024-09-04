@@ -27,12 +27,12 @@
 
 using namespace i18n;
 
-paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id) : id(paragraph_id), cur_player(&current) {
+paragraph::paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id, uint32_t parent_id) : id(paragraph_id), cur_player(&current), parent(parent_id) {
 	display.push_back(true);
 }
 
-dpp::task<paragraph> paragraph::create(uint32_t paragraph_id, player& current, dpp::snowflake user_id) {
-	paragraph new_paragraph(paragraph_id, current, user_id);
+dpp::task<paragraph> paragraph::create(uint32_t paragraph_id, player& current, dpp::snowflake user_id, uint32_t parent_id) {
+	paragraph new_paragraph(paragraph_id, current, user_id, parent_id);
 	co_await new_paragraph.parse(current, user_id);
 	co_return new_paragraph;
 }

@@ -25,7 +25,7 @@ struct macro_tag : public tag {
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		long macro_id{};
 		paragraph_content >> macro_id;
-		paragraph macro_p = co_await paragraph::create(macro_id, current_player, current_player.event.command.usr.id);
+		paragraph macro_p = co_await paragraph::create(macro_id, current_player, current_player.event.command.usr.id, p.id);
 		output << macro_p.text;
 		p.navigation_links.insert(p.navigation_links.end(), macro_p.navigation_links.begin(), macro_p.navigation_links.end());
 		co_return;

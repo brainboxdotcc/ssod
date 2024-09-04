@@ -21,8 +21,14 @@
 
 struct push_tag : public tag {
 	push_tag() { register_tag<push_tag>(); }
-	static constexpr std::string_view tags[]{"<push>"};
+	static constexpr std::string_view tags[]{"<push"};
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+		/* Add a jump to location type, which stores current location and jumps to the given location
+		 * <pop> adds a return button that back to that stored location
+		 */
+		long dest_id{};
+		paragraph_content >> dest_id;
+
 		co_return;
 	}
 };
