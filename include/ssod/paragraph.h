@@ -81,6 +81,7 @@ enum nav_link_type {
 	nav_type_bank,
 	nav_type_respawn,
 	nav_type_pick_one,
+	nav_type_pop,
 };
 
 /**
