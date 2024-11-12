@@ -1521,6 +1521,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 				id = "answer;" + std::to_string(n.paragraph) + ";" + n.prompt + ";" + n.answer + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
+			case nav_type_pop:
 			default:
 				id = "follow_nav;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(++unique);
 				label = n.label;

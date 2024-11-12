@@ -1,4 +1,7 @@
 {
+  "RETURN": {
+    "en": "Exit guild hall"
+  },
     "opt_page": {
         "en": "page",
         "fr": "page",

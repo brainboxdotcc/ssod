@@ -1,0 +1,5 @@
+*.c linguist-language=C++
+*.sh linguist-detectable=false
+*.md.* linguist-language=Markdown
+*.html linguist-detectable=false
+*.h linguist-language=C++
