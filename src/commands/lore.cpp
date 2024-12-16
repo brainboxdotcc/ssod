@@ -62,7 +62,7 @@ std::string remove_lead(const std::string& in) {
 void page(const dpp::interaction_create_t& event, bool document, std::string path = "") {
 	bool top = path.empty();
 	path = "../resource/lore/" + path;
-	dpp::cluster* bot = event.from->creator;
+	dpp::cluster* bot = event.owner;
 	fs::path fullpath(path);
 	size_t pages = 1;
 	std::string label = fullpath.filename();

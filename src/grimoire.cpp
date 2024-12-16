@@ -50,7 +50,7 @@ std::string pretty_duration(uint64_t diff) {
 }
 
 dpp::task<void> grimoire(const dpp::interaction_create_t& event, player p) {
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	std::stringstream content;
 
 	std::vector<dpp::embed_field> fields;

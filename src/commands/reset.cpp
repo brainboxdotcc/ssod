@@ -41,7 +41,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 			co_return;
        		}
 		if (custom_id == "player_reset") {
-			dpp::cluster* bot = event.from->creator;
+			dpp::cluster* bot = event.owner;
 			dpp::embed embed = dpp::embed()
 				.set_url("https://ssod.org/")
 				.set_title(tr("RESETCOMPLETE", event))
@@ -66,7 +66,7 @@ dpp::slashcommand reset_command::register_command(dpp::cluster& bot)
 
 dpp::task<void> reset_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster* bot = event.from->creator;
+	dpp::cluster* bot = event.owner;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title(tr("SSOD", event))

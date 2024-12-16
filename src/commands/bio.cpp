@@ -43,7 +43,7 @@ dpp::slashcommand bio_command::register_command(dpp::cluster& bot) {
 
 dpp::task<void> bio_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster& bot = *event.from->creator;
+	dpp::cluster& bot = *event.owner;
 
 	dpp::command_interaction cmd_data = event.command.get_command_interaction();
 	auto subcommand = cmd_data.options[0];
@@ -65,7 +65,7 @@ dpp::task<void> bio_command::route(const dpp::slashcommand_t &event)
 	} else  if (subcommand.name == "text") {
 		auto param = subcommand.options[0].value;
 		std::string text = std::get<std::string>(param);
-		neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
+		neutrino swear_check(event.owner, config::get("neutrino_user"), config::get("neutrino_password"));
 		swear_filter_t swear_filter = co_await swear_check.co_contains_bad_word(text);
 		if (!swear_filter.clean) {
 			bot.log(dpp::ll_warning, "Potty-mouth bio: " + text + " censored for id: " + event.command.usr.id.str());

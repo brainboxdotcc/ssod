@@ -64,7 +64,7 @@ dpp::slashcommand rename_command::register_command(dpp::cluster& bot) {
 
 dpp::task<void> rename_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster& bot = *event.from->creator;
+	dpp::cluster& bot = *event.owner;
 	auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { event.command.usr.id });
 	if (event.command.entitlements.empty() && rs.empty()) {
 		premium_required(event);
@@ -85,7 +85,7 @@ dpp::task<void> rename_command::route(const dpp::slashcommand_t &event)
 		event.reply(dpp::message(tr("INVALIDRENAME", event, oldname, newname)).set_flags(dpp::m_ephemeral));
 		co_return;
 	}
-	neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
+	neutrino swear_check(event.owner, config::get("neutrino_user"), config::get("neutrino_password"));
 	swear_filter_t swear_filter = co_await swear_check.co_contains_bad_word(newname);
 	if (!swear_filter.clean) {
 		bot.log(dpp::ll_warning, "Potty-mouth item name: " + newname + " censored for id: " + event.command.usr.id.str());

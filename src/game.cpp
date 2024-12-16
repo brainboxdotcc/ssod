@@ -201,7 +201,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 		co_return;
 	}
 	player p = get_live_player(event);
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	bool claimed{true};
 	std::string custom_id = security::decrypt(event.custom_id);
 	if (custom_id.empty()) {
@@ -282,7 +282,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 	}
 	bool claimed{false};
 	player p = get_live_player(event);
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	std::string custom_id = security::decrypt(event.custom_id);
 	if (custom_id.empty()) {
 		co_return;
@@ -519,7 +519,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	if (!(co_await player_is_live(event))) {
 		co_return;
 	}
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	player p = get_live_player(event);
 	bool claimed = false;
 	if (p.state != state_play || event.custom_id.empty()) {
@@ -529,7 +529,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	if (custom_id.empty()) {
 		co_return;
 	}
-	event.from->log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
+	event.owner->log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
 	if (p.in_combat) {
 		if (co_await combat_nav(event, p, parts)) {
@@ -1013,7 +1013,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		claimed = true;
 	} else if (parts[0] == "pvp_reject" && p.stamina > 0) {
 		p.in_pvp_picker = false;
-		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
+		player p2 = get_pvp_opponent(event.command.usr.id, event.from());
 		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
 		dpp::message m = dpp::message(tr("PVP_REJECTED", event, "<@" + opponent.str() +  ">",  p.name)).set_allowed_mentions(true, false, false, false, {}, {});
 		m.channel_id = p2.event.command.channel_id;
@@ -1029,7 +1029,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			)
 		);
 		p = end_pvp_combat(event);
-		if (p2.event.from) {
+		if (p2.event.from()) {
 			p2.event.edit_original_response(m);
 		}
 		co_await achievement_check("PVP_ACCEPT", event, p, {{"opponent", opponent.str()}});
@@ -1037,7 +1037,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	} else if (parts[0] == "pvp_accept" && p.stamina > 0) {
 		dpp::snowflake opponent = get_pvp_opponent_id(event.command.usr.id);
 		co_await accept_pvp(event.command.usr.id, opponent);
-		player p2 = get_pvp_opponent(event.command.usr.id, event.from);
+		player p2 = get_pvp_opponent(event.command.usr.id, event.from());
 		p.in_pvp_picker = false;
 		p = set_in_pvp_combat(event);
 		co_await update_opponent_message(event, co_await get_pvp_round(p2.event), std::stringstream());
@@ -1109,7 +1109,7 @@ dpp::task<dpp::emoji> get_emoji(const std::string& name, const std::string& flag
 }
 
 dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	std::stringstream content;
 
 	auto bank_amount = co_await db::co_query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
@@ -1240,7 +1240,7 @@ dpp::task<void> bank(const dpp::interaction_create_t& event, player p) {
 }
 
 dpp::task<void> pvp_picker(const dpp::interaction_create_t& event, player p) {
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	std::stringstream content;
 
 	int64_t t = time(nullptr) - 600;
@@ -1370,7 +1370,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		}
 	}
 
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{ 

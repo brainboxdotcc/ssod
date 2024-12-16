@@ -31,7 +31,7 @@
 using namespace i18n;
 
 dpp::task<void> campfire(const dpp::interaction_create_t& event, player p) {
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	std::stringstream content;
 
 	std::vector<dpp::embed_field> fields;
