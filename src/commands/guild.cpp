@@ -52,7 +52,7 @@ dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
 
 dpp::task<void> guild_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster& bot = *event.from->creator;
+	dpp::cluster& bot = *event.owner;
 
 	dpp::command_interaction cmd_data = event.command.get_command_interaction();
 	auto subcommand = cmd_data.options[0];
@@ -71,7 +71,7 @@ dpp::task<void> guild_command::route(const dpp::slashcommand_t &event)
 	if (subcommand.name == "create") {
 		auto param = subcommand.options[0].value;
 		std::string guild_name = std::get<std::string>(param);
-		neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
+		neutrino swear_check(event.owner, config::get("neutrino_user"), config::get("neutrino_password"));
 		swear_filter_t swear_filter = co_await swear_check.co_contains_bad_word(guild_name);
 		if (!swear_filter.clean) {
 			bot.log(dpp::ll_warning, "Potty-mouth guild name " + guild_name + " censored for id " + event.command.usr.id.str());
@@ -144,7 +144,7 @@ dpp::task<void> guild_command::route(const dpp::slashcommand_t &event)
 			if (g[0].at("owner_id") != event.command.usr.id.str()) {
 				embed.set_description(tr("NOT_THE_GUILD_OWNER", event));
 			} else {
-				neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
+				neutrino swear_check(event.owner, config::get("neutrino_user"), config::get("neutrino_password"));
 				swear_filter_t swear_filter = co_await swear_check.co_contains_bad_word(guild_name);
 				if (!swear_filter.clean) {
 					bot.log(dpp::ll_warning, "Potty-mouth guild name " + guild_name + " censored for id " + event.command.usr.id.str());

@@ -39,7 +39,7 @@ dpp::slashcommand achievements_command::register_command(dpp::cluster& bot) {
 
 dpp::task<void> achievements_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster& bot = *event.from->creator;
+	dpp::cluster& bot = *event.owner;
 	auto param = event.get_parameter("user");
 	auto page_p = event.get_parameter("page");
 	uint32_t page{1};

@@ -37,7 +37,7 @@ dpp::slashcommand gender_command::register_command(dpp::cluster& bot) {
 
 dpp::task<void> gender_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster& bot = *event.from->creator;
+	dpp::cluster& bot = *event.owner;
 	auto param = event.get_parameter("gender");
 	std::string new_gender = std::get<std::string>(param);
 	if (co_await player_is_live(event)) {

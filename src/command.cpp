@@ -40,7 +40,7 @@ dpp::task<void> route_command(const dpp::slashcommand_t &event)
 		co_await (*ptr)(event);
 		sentry::end_user_transaction();
 	} else {
-		event.from->creator->log(dpp::ll_error, "Unable to route command: " + event.command.get_command_name());
+		event.owner->log(dpp::ll_error, "Unable to route command: " + event.command.get_command_name());
 	}
 	co_return;
 }

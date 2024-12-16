@@ -32,7 +32,7 @@
 using namespace i18n;
 
 dpp::task<void> inventory(const dpp::interaction_create_t& event, player p) {
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	std::stringstream content;
 	bool equip_w{false}, equip_a{false};
 

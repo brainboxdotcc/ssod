@@ -29,7 +29,7 @@ dpp::slashcommand help_command::register_command(dpp::cluster& bot)
 
 dpp::task<void> help_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster* bot = event.from->creator;
+	dpp::cluster* bot = event.owner;
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title(tr("HELP_TITLE", event))

@@ -215,7 +215,7 @@ namespace listeners {
 	}
 
 	dpp::task<void> on_ready(const dpp::ready_t& event) {
-		dpp::cluster& bot = *event.from->creator;
+		dpp::cluster& bot = *(event.owner);
 		if (dpp::run_once<struct register_bot_commands>()) {
 			if (bot.cluster_id == 0) {
 				bot.global_bulk_command_create(get_commands(bot),
@@ -236,36 +236,29 @@ namespace listeners {
 				co_return;
 			};
 
-			bot.start_timer([set_presence](dpp::timer t) -> dpp::task<void> {
-				co_await set_presence();
-				co_return;
+			bot.start_timer([set_presence](dpp::timer t) {
+				set_presence().sync_wait();
 			}, 240);
-			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
-				co_await post_botlists(bot);
-				co_return;
+			bot.start_timer([&bot](dpp::timer t) {
+				post_botlists(bot).sync_wait();
 			}, 60 * 15);
-			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
-				co_await welcome_new_guilds(bot);
-				co_return;
+			bot.start_timer([&bot](dpp::timer t) {
+				welcome_new_guilds(bot).sync_wait();
 			}, 30);
-			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
-				co_await end_abandoned_pvp();
-				co_return;
+			bot.start_timer([&bot](dpp::timer t) {
+				end_abandoned_pvp().sync_wait();
 			}, 10);
-			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
-				co_await process_potion_drops(bot);
-				co_await cleanup_idle_live_players();
+			bot.start_timer([&bot](dpp::timer t) {
+				process_potion_drops(bot).sync_wait();
+				cleanup_idle_live_players().sync_wait();
 				i18n::check_lang_reload(bot);
-				co_return;
 			}, 60);
-			bot.start_timer([](dpp::timer t) -> dpp::task<void> {
+			bot.start_timer([](dpp::timer t) {
 				/* Garbage collect free memory by consolidating free malloc() blocks */
 				malloc_trim(0);
-				co_return;
 			}, 600);
-			bot.start_timer([&bot](dpp::timer t) -> dpp::task<void> {
-				co_await check_effects(bot);
-				co_return;
+			bot.start_timer([&bot](dpp::timer t) {
+				check_effects(bot).sync_wait();
 			}, 1);
 
 			co_await set_presence();
@@ -285,16 +278,16 @@ namespace listeners {
 	}
 
 	dpp::task<void> on_guild_create(const dpp::guild_create_t &event) {
-		if (event.created->is_unavailable()) {
+		if (event.created.is_unavailable()) {
 			co_return;
 		}
-		co_await db::co_query("INSERT INTO guild_cache (id, owner_id, name, user_count) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE owner_id = ?, name = ?, user_count = ?", { event.created->id, event.created->owner_id, event.created->name, event.created->member_count, event.created->owner_id, event.created->name, event.created->member_count });
+		co_await db::co_query("INSERT INTO guild_cache (id, owner_id, name, user_count) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE owner_id = ?, name = ?, user_count = ?", { event.created.id, event.created.owner_id, event.created.name, event.created.member_count, event.created.owner_id, event.created.name, event.created.member_count });
 	}
 
 	dpp::task<void> on_guild_delete(const dpp::guild_delete_t &event) {
 		if (!event.deleted.is_unavailable()) {
 			co_await db::co_query("DELETE FROM guild_cache WHERE id = ?", { event.deleted.id });
-			event.from->creator->log(dpp::ll_info, "Removed from guild: " + event.deleted.id.str());
+			event.owner->log(dpp::ll_info, "Removed from guild: " + event.deleted.id.str());
 		}
 		co_return;
 	}
@@ -302,7 +295,7 @@ namespace listeners {
 	dpp::task<void> on_slashcommand(const dpp::slashcommand_t &event) {
 		double start = dpp::utility::time_f();
 		co_await route_command(event);
-		event.from->creator->log(
+		event.owner->log(
 			dpp::ll_info,
 			fmt::format(
 				"COMMAND: {} by {} ({} Guild: {}) Locale: {}, msecs: {:.02f}",

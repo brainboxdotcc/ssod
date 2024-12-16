@@ -43,7 +43,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id.empty()) {
 			co_return;
 		}
-		dpp::cluster& bot = *(event.from->creator);
+		dpp::cluster& bot = *(event.owner);
 		bot.log(dpp::ll_debug, event.command.locale + " " + event.command.usr.id.str() + " button click: state: " + std::to_string(p_old.state) + " id: " + custom_id);
 		sentry::make_new_transaction("component/button/" + custom_id);
 		if (custom_id == "player_reroll" && p_old.state == state_roll_stats) {
@@ -96,7 +96,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		if (custom_id.empty()) {
 			co_return;
 		}
-		dpp::cluster& bot = *(event.from->creator);
+		dpp::cluster& bot = *(event.owner);
 		sentry::make_new_transaction("component/select/" + custom_id);
 		if (custom_id == "select_player_race" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.race = (player_race)atoi(event.values[0]);
@@ -145,7 +145,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		sentry::make_new_transaction("component/form/" + custom_id);
 		if (custom_id == "name_character" && p_old.state == state_name_player) {
 			std::string name = std::get<std::string>(event.components[0].components[0].value);
-			neutrino swear_check(event.from->creator, config::get("neutrino_user"), config::get("neutrino_password"));
+			neutrino swear_check(event.owner, config::get("neutrino_user"), config::get("neutrino_password"));
 			auto swear_filter = co_await swear_check.co_contains_bad_word(name);
 			if (!swear_filter.clean) {
 				bot.log(dpp::ll_warning, "Potty-mouth player name: " + name + " censored for id: " + event.command.usr.id.str());
@@ -181,7 +181,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 
 dpp::task<void> start_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster* bot = event.from->creator;
+	dpp::cluster* bot = event.owner;
 
 	if (config::exists("dev") && config::get("dev") == true) {
 		auto admin_rs = co_await db::co_query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});

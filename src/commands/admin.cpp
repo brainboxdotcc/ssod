@@ -88,7 +88,7 @@ dpp::slashcommand admin_command::register_command(dpp::cluster& bot) {
 
 dpp::task<void> admin_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster& bot = *event.from->creator;
+	dpp::cluster& bot = *event.owner;
 	auto admin_rs = co_await db::co_query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
 	if (admin_rs.empty()) {
 		event.reply("This command is for game admins only");

@@ -51,7 +51,7 @@ int64_t rss() {
 
 dpp::task<void> info_command::route(const dpp::slashcommand_t &event)
 {
-	dpp::cluster* bot = event.from->creator;
+	dpp::cluster* bot = event.owner;
 	auto rs = co_await db::co_query("SELECT COUNT(id) AS guild_count, SUM(user_count) AS user_count FROM guild_cache");
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
@@ -69,7 +69,7 @@ dpp::task<void> info_command::route(const dpp::slashcommand_t &event)
 		.add_field(tr("PLAYERS", event), std::to_string(get_active_player_count()), true)
 		.add_field(tr("USERS", event), rs[0].at("user_count"), true)
 		.add_field(tr("CLUSTER", event), std::to_string(bot->cluster_id) + "/" + std::to_string(bot->maxclusters), true)
-		.add_field(tr("SHARD", event), std::to_string(event.from->shard_id) + "/" + std::to_string(bot->get_shards().size()), true)
+		.add_field(tr("SHARD", event), std::to_string(event.shard) + "/" + std::to_string(bot->get_shards().size()), true)
 		.add_field(tr("CACHESZ", event), std::to_string(db::cache_size()), true)
 		.add_field(tr("CACHECOUNT", event), std::to_string(db::query_count()), true)
 		.add_field(tr("TIME", event), game_date(), false)

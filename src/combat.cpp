@@ -53,7 +53,7 @@ player get_pvp_opponent(const dpp::snowflake id, dpp::discord_client* shard) {
 	std::lock_guard<std::mutex> l(pvp_list_lock);
 	auto p1 = pvp_list.find(id);
 	if (p1 != pvp_list.end()) {
-		dpp::interaction_create_t tmp(shard, "");
+		dpp::interaction_create_t tmp(shard->creator, shard->shard_id, "");
 		tmp.command.usr.id = p1->second.opponent;
 		return get_live_player(tmp, false);
 	}
@@ -77,7 +77,7 @@ dpp::task<void> challenge_pvp(const dpp::interaction_create_t& event, const dpp:
 			.last_updated = time(nullptr),
 		};
 	}
-	player p2 = get_pvp_opponent(event.command.usr.id, event.from);
+	player p2 = get_pvp_opponent(event.command.usr.id, event.from());
 	co_await send_chat(event.command.usr.id, p.paragraph, p2.name, "combat");
 	dpp::message m = dpp::message(tr("CHALLENGE_PVP", event, opponent.str(), p.name)).set_allowed_mentions(true, false, false, false, {}, {});
 	m.channel_id = p2.event.command.channel_id;
@@ -101,7 +101,7 @@ dpp::task<void> challenge_pvp(const dpp::interaction_create_t& event, const dpp:
 	);
 	
 	//event.from->creator->message_create(m);
-	if (p2.event.from) {
+	if (p2.event.from()) {
 		p2.event.edit_original_response(m);
 	}
 }
@@ -117,7 +117,7 @@ dpp::snowflake get_pvp_opponent_id(const dpp::snowflake id) {
 
 void update_save_opponent(const dpp::interaction_create_t& event, player p) {
 	dpp::snowflake o = get_pvp_opponent_id(event.command.usr.id);
-	dpp::interaction_create_t tmp(event.from, "");
+	dpp::interaction_create_t tmp(event.owner, event.from()->shard_id, "");
 	tmp.command.usr.id = o;
 	update_live_player(tmp, p);
 	if (!o.empty()) {
@@ -128,9 +128,9 @@ void update_save_opponent(const dpp::interaction_create_t& event, player p) {
 player set_in_pvp_combat(const dpp::interaction_create_t& event) {
 	player p1 = get_live_player(event, false);
 	p1.in_combat = true;
-	player p2 = get_pvp_opponent(event.command.usr.id, event.from);
+	player p2 = get_pvp_opponent(event.command.usr.id, event.from());
 	dpp::snowflake oid = get_pvp_opponent_id(event.command.usr.id);
-	dpp::interaction_create_t tmp(event.from, "");
+	dpp::interaction_create_t tmp(event.owner, event.from()->shard_id, "");
 	tmp.command.usr.id = oid;
 	p2.in_combat = true;
 	p1.challenged_by = oid;
@@ -143,8 +143,8 @@ player set_in_pvp_combat(const dpp::interaction_create_t& event) {
 dpp::task<void> update_opponent_message(const dpp::interaction_create_t& event, dpp::message m, const std::stringstream& output) {
 	m.embeds[0].description += output.str();
 	if (has_active_pvp(event.command.usr.id)) {
-		player opponent = get_pvp_opponent(event.command.usr.id, event.from);
-		if (opponent.event.from) {
+		player opponent = get_pvp_opponent(event.command.usr.id, event.from());
+		if (opponent.event.from()) {
 			auto cc = co_await opponent.event.co_edit_original_response(m);
 			if (cc.is_error()) {
 				player p = get_live_player(event, false);
@@ -192,9 +192,9 @@ player end_pvp_combat(const dpp::interaction_create_t& event) {
 	player p1 = get_live_player(event, false);
 	p1.in_combat = false;
 	p1.challenged_by = 0;
-	player p2 = get_pvp_opponent(event.command.usr.id, event.from);
+	player p2 = get_pvp_opponent(event.command.usr.id, event.from());
 	dpp::snowflake oid = get_pvp_opponent_id(event.command.usr.id);
-	dpp::interaction_create_t tmp(event.from, "");
+	dpp::interaction_create_t tmp(event.owner, event.from()->shard_id, "");
 	tmp.command.usr.id = oid;
 	p2.in_combat = false;
 	p2.challenged_by = 0;
@@ -240,11 +240,12 @@ dpp::task<void> end_abandoned_pvp() {
 	for (const auto& [id, pvp] : pvp_list_copy) {
 		if (now - pvp.last_updated > combat_timeout && pvp.my_turn && pvp.accepted) {
 			/* Five minutes without action, PvP is forfeit to the other player */
-			dpp::interaction_create_t event(nullptr, "");
+			dpp::interaction_create_t event(event.owner, 0, "");
 			event.command.usr.id = id;
 			player p = get_live_player(event, false);
-			event.from = p.event.from;
-			player opponent = get_pvp_opponent(event.command.usr.id, event.from);
+			event.shard = p.event.shard;
+			event.owner = p.event.owner;
+			player opponent = get_pvp_opponent(event.command.usr.id, event.from());
 			if (opponent.stamina > 0 && p.stamina > 0) {
 				p.stamina = 0;
 				p.in_pvp_picker = false;
@@ -276,7 +277,7 @@ dpp::task<dpp::message> get_pvp_round(const dpp::interaction_create_t& event) {
 	dpp::message m;
 	component_builder cb(m);
 	std::stringstream output;
-	player opponent = get_pvp_opponent(event.command.usr.id, event.from);
+	player opponent = get_pvp_opponent(event.command.usr.id, event.from());
 	player p = get_live_player(event, false);
 	bool turn = is_my_pvp_turn(event.command.usr.id);
 
@@ -400,7 +401,7 @@ dpp::task<bool> pvp_combat_nav(const dpp::button_click_t& event, player p, const
 		co_return false;
 	}
 	bool claimed{false};
-	player opponent = get_pvp_opponent(event.command.usr.id, event.from);
+	player opponent = get_pvp_opponent(event.command.usr.id, event.from());
 	dpp::snowflake oid = get_pvp_opponent_id(event.command.usr.id);
 	std::stringstream output1, output2;
 
@@ -623,7 +624,7 @@ dpp::task<bool> combat_nav(const dpp::button_click_t& event, player p, const std
 
 
 dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p) {
-	dpp::cluster& bot = *(event.from->creator);
+	dpp::cluster& bot = *(event.owner);
 	dpp::message m;
 	component_builder cb(m);
 	std::stringstream output1, output2;
