@@ -23,6 +23,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <dpp/dpp.h>
+#include <atomic>
 
 namespace logger {
 
@@ -31,10 +32,13 @@ namespace logger {
 	constexpr int max_log_size = 1024 * 1024 * 5;
 
 	static std::shared_ptr<spdlog::logger> async_logger;
+	std::atomic_int thread_number = 0;
 
 	void init(const std::string& log_file) {
 		/* Set up spdlog logger */
-		spdlog::init_thread_pool(8192, 2);
+		spdlog::init_thread_pool(8192, 2, []{
+			dpp::utility::set_thread_name("spdlog/logger/" + std::to_string(thread_number++));
+		});
 		std::vector<spdlog::sink_ptr> sinks = {
 			std::make_shared<spdlog::sinks::stdout_color_sink_mt >(),
 			std::make_shared<spdlog::sinks::rotating_file_sink_mt>(log_file, max_log_size, 10)
