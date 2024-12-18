@@ -223,6 +223,8 @@ namespace listeners {
 						if (cc.is_error()) {
 							bot.log(dpp::ll_error, cc.http_info.body);
 						}
+						auto slashcommands = std::get<dpp::slashcommand_map>(cc.value);
+						bot.log(dpp::ll_info, "Registered " + std::to_string(slashcommands.size()) + " application commands");
 					}
 				);
 				bot.guild_bulk_command_create({
