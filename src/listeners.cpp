@@ -247,7 +247,7 @@ namespace listeners {
 			bot.start_timer([&bot](dpp::timer t) {
 				welcome_new_guilds(bot).sync_wait();
 			}, 30);
-			bot.start_timer([&bot](dpp::timer t) {
+			bot.start_timer([](dpp::timer t) {
 				end_abandoned_pvp().sync_wait();
 			}, 10);
 			bot.start_timer([&bot](dpp::timer t) {
