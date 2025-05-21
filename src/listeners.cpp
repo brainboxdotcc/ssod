@@ -232,14 +232,13 @@ namespace listeners {
 				}, 537746810471448576);
 			}
 
-			auto set_presence = [&bot]() -> dpp::task<void> {
-				auto rs = co_await db::co_query("SELECT (SELECT COUNT(id) FROM guild_cache) AS guild_count, (SELECT SUM(user_count) FROM guild_cache) AS discord_user_count, (SELECT COUNT(user_id) FROM game_users) AS game_user_count");
+			auto set_presence = [&bot]() {
+				auto rs =db::query("SELECT (SELECT COUNT(id) FROM guild_cache) AS guild_count, (SELECT SUM(user_count) FROM guild_cache) AS discord_user_count, (SELECT COUNT(user_id) FROM game_users) AS game_user_count");
 				bot.set_presence(dpp::presence(dpp::ps_online, dpp::at_game, fmt::format("on {} servers with {} active players and {} users", rs[0].at("guild_count"), rs[0].at("game_user_count"), rs[0].at("discord_user_count"))));
-				co_return;
 			};
 
 			bot.start_timer([set_presence](dpp::timer t) {
-				set_presence().sync_wait();
+				set_presence();
 			}, 240);
 			bot.start_timer([&bot](dpp::timer t) {
 				post_botlists(bot).sync_wait();
@@ -263,7 +262,7 @@ namespace listeners {
 				check_effects(bot).sync_wait();
 			}, 1);
 
-			co_await set_presence();
+			set_presence();
 			co_await welcome_new_guilds(bot);
 			co_await process_potion_drops(bot);
 
