@@ -1505,6 +1505,11 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 				id = "bank;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
+			case nav_type_book:
+				label = tr("TAKE_BOOK", event, n.prompt);
+				id = "book;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(n.cost) + ";" + std::to_string(++unique);
+				enabled_links++;
+				break;
 			case nav_type_combat:
 				label = tr("FIGHT", event, n.monster.name);
 				id = "combat;" + std::to_string(n.paragraph) + ";" + n.monster.name + ";" + std::to_string(n.monster.stamina) + ";" + std::to_string(n.monster.skill) + ";" + std::to_string(n.monster.armour) + ";" + std::to_string(n.monster.weapon) + ";" + std::to_string(n.monster.xp_value) + ";" + std::to_string(++unique);
@@ -1538,6 +1543,8 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 			comp.set_emoji(sprite::skull.name, sprite::skull.id);
 		} else if (n.type == nav_type_bank) {
 			comp.set_emoji(sprite::goldbar.name, sprite::goldbar.id);
+		} else if (n.type == nav_type_book) {
+			comp.set_emoji(sprite::book.name, sprite::book.id);
 		} else if (n.type == nav_type_modal) {
 			comp.set_emoji("❓");
 		}

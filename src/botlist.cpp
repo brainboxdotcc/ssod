@@ -53,10 +53,11 @@ dpp::task<void> botlist::run(dpp::cluster& bot, const std::string_view key, cons
 			j[count_field.data()] = atoi(rs[0].at("count").c_str());
 		}
 		std::string post_url = replace_string(api_url.data(), "{}", bot.me.id.str());
-		auto cc = co_await bot.co_request(post_url, dpp::m_post, j.dump(), "application/json", {{"Authorization", token}});
-		if (cc.status >= 400) {
-			bot.log(dpp::ll_warning, std::string(key) + " returned: " + cc.body);
-		}
+		bot.request(post_url, dpp::m_post, [&bot, key](const auto cc) {
+			if (cc.status >= 400) {
+				bot.log(dpp::ll_warning, std::string(key) + " returned: " + cc.body);
+			}
+		}, j.dump(), "application/json", {{"Authorization", token}});
 	}
 	co_return;
 }
