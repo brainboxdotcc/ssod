@@ -1,5 +1,18 @@
 <?php
 
+/* Context aware LLM based language translation.
+ *
+ * This script will translate multiple languages at once in one call,
+ * while not messing with contextual data such as format specifiers,
+ * placeholders, Discord emojis, etc. Google Translate on the other hand
+ * has no idea of instruction, and just blindly translates text and messes
+ * with metadata in the text. For example it will randomly remove colons
+ * or insert spaces before or after them.
+ *
+ * This solves that problem, at the cost of expense. It costs a few pence
+ * each time this is run.
+ */
+
 $config = json_decode(file_get_contents("config.json"));
 $apiKey = $config->gptkey;
 $inputFile = "lang.json";
@@ -24,16 +37,11 @@ foreach ($data as $entry) {
 $allLanguages = array_unique($allLanguages);
 sort($allLanguages);
 
-// Step 2: Identify keys with only 'en'
 $toTranslate = [];
 foreach ($data as $key => $entry) {
     if (is_array($entry) && count($entry) === 1 && isset($entry['en'])) {
         $toTranslate[$key] = $entry['en'];
     }
-}
-
-function isUntranslatableToken($text) {
-    return preg_match('/<[@#&]?\d+>|:\w+:|https?:\/\/\S+/', $text);
 }
 
 function callChatGPT($apiKey, $prompt) {
