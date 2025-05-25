@@ -20,6 +20,7 @@
 #include <ssod/ssod.h>
 #include <ssod/parser.h>
 #include <ssod/achievement.h>
+#include <gen/emoji.h>
 
 using namespace i18n;
 
@@ -38,17 +39,36 @@ struct book_tag : public tag {
 		auto book = rs[0];
 		std::string book_title = book.at("title");
 		std::string book_author = book.at("author");
-		json book_tags = json(book.at("title"));
+		std::string book_tags = book.at("tags");
 		if (current_player.event.command.locale.substr(0, 2) != "en") {
-			auto translated_text = co_await db::co_query("SELECT * FROM translations WHERE table_col IN (?,?) AND row_id = ? AND language = ? ORDER BY table_col", {"books/title", "books/author", book_id, current_player.event.command.locale.substr(0, 2)});
+			auto translated_text = co_await db::co_query(
+				"SELECT * FROM translations WHERE table_col IN (?,?) AND row_id = ? AND language = ? ORDER BY table_col",
+				{"books/title", "books/author", book_id, current_player.event.command.locale.substr(0, 2)}
+			);
 			// fixed order: author, title
 			if (translated_text.size() == 2) {
 				book_author = translated_text[0].at("translation");
 				book_title = translated_text[1].at("translation");
 			}
 		}
+		/* Select one random flavour text whose JSON tags overlap the JSON tags of the book */
+		auto flavour = co_await db::co_query("SELECT * FROM book_flavour_text WHERE JSON_OVERLAPS(matched_canonical_tags, ?) ORDER BY RAND() LIMIT 1", { book_tags });
+		if (flavour.empty()) {
+			flavour = co_await db::co_query("SELECT * FROM book_flavour_text ORDER BY RAND() LIMIT 1");
+		}
+		std::string flavour_text = flavour.at(0).at("flavour_text");
+		if (current_player.event.command.locale.substr(0, 2) != "en") {
+			auto translated_text = co_await db::co_query(
+				"SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ?",
+				{"book_flavour_text/flavour_text", flavour.at(0).at("id"), current_player.event.command.locale.substr(0, 2)}
+			);
+			// fixed order: author, title
+			if (!translated_text.empty()) {
+				flavour_text = translated_text[0].at("translation");
+			}
+		}
 
-		output << "BOOK:\n" << book_title << "\n" << book_author << "\n";
+		output << flavour_text + "\n**" << sprite::book.get_mention() << " " << book_title << "**\nBy " << book_author << "\n\n";
 
 		p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_book, .cost = book_id, .monster = {}, .buyable = {}, .prompt = book_author, .answer = book_title, .label = "" });
 		p.words++;

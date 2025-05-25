@@ -746,7 +746,12 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 					SaveRoll -= dice();
 				}
 				if (SaveRoll <= PArmour) {
-					Saved = true;
+					if (d_random(1, 100) > 5) {
+						Saved = true;
+					} else {
+						Saved = false;
+						output << tr("ENEMY_LUCKY_BLOW", event);
+					}
 				}
 			} else {
 				output << "__**" << tr("YOUHITENEMY", event) << "**__.";
@@ -775,7 +780,12 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 					SaveRoll -= dice();
 				}
 				if (SaveRoll <= EArmour) {
-					Saved = true;
+					if (d_random(1, 100) > 5) {
+						Saved = true;
+					} else {
+						Saved = false;
+						output << tr("LUCKY_BLOW", event);
+					}
 				}
 			}
 
