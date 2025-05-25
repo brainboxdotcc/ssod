@@ -1506,7 +1506,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 				enabled_links++;
 				break;
 			case nav_type_book:
-				label = tr("TAKE_BOOK", event, n.prompt);
+				label = tr("TAKE_BOOK", event, n.answer);
 				id = "book;" + std::to_string(n.paragraph) + ";" + std::to_string(p.paragraph) + ";" + std::to_string(n.cost) + ";" + std::to_string(++unique);
 				enabled_links++;
 				break;
