@@ -1,23 +1,35 @@
-It is not often that an adventurer such as yourself is summoned to the Wizard’s Keep, especially at such short notice. You have received urgent news from a close friend in the keep, informing you that they need people such as yourself to protect the place. It is obvious some kind of delivery has taken place, obviously the items being moved have significant value.
+It is a rare thing indeed for an adventurer such as yourself to be summoned to the Wizard’s Keep—especially with so little warning. Word arrived only days ago from a trusted friend within those ancient walls. They did not speak plainly, only that something was stirring—something *wrong*. Whispers of unease. Odd behaviour. Strange movements in the lower levels. They asked for help. For witnesses. For protectors.
 
-It is mid-summer, but the whole area is embroiled in a snowstorm. Snow and ice are whipped up into sheets that roll across the view outside your window, descending from the Deathdrop Mountains some distance away, snaking about the buttresses of the keep like the cold hand of death itself. Something is not quite right here. The keep is within ten miles of the Desert of Skulls, there should not be snow here, and most certainly not a blizzard. Letting your over-active imagination rest for a while, and blaming the weather upon the wizards, you get into bed and attempt to settle, falling into a disturbed sleep, tired from your journey to the keep.
+And so, you came.
 
-A single chime from the keep’s bell signals the start of a new and forlorn day… It is midnight. The sheets of snow continue to assail the ancient building, ricocheting off its sides like tiny slivers of glass. Far off into the distance, a lone man hobbles towards that place. Bent double over his oak walking stick, he strains his eyes in the darkness, his lantern useless in this weather. A few minutes later, he reaches the gate.
+It is mid-summer, yet a fierce snowstorm claws at the land. Snow and ice churn in sweeping sheets beyond your window, descending in violent flurries from the Deathdrop Mountains far to the north, coiling around the Keep’s buttresses like the fingers of some spectral hand. The Desert of Skulls lies less than ten miles away—this should not be happening. A blizzard here is an impossibility. You blame the wizards. Who else? Letting your overactive imagination rest, you climb into bed, wearied by the journey. But sleep offers little comfort. It is uneasy, filled with flickers of shadow and whispers in your dreams.
 
-A loud voice rings out from the lantern light of the gatehouse, barely audible above the raging storm.
+A single chime from the bell tower breaks the night. It is midnight.
 
-“Stop! In the name of the magical protectorate, who goes there?”
+The storm has not abated. Shards of snow lash the Keep’s stonework like flecks of shattered glass. Far in the distance, a solitary figure trudges toward the gates—hunched over an oaken walking stick, his lantern little more than a dim flicker in the gale. His pace is slow, deliberate. Minutes pass before he reaches the gate.
 
-The old man looks towards the lantern light, and in a voice that sounds strained and lost, replies,
+A voice rises from the light of the gatehouse—barely audible above the howling wind.
 
-“I am in desperate need of shelter… will you please help me? All I ask is a bed for the night…”
+“Stop! In the name of the Magical Protectorate, who goes there?”
 
-There is a response from inside the gatehouse, mumbles, stifled complaint enquiring as to if the visitor is aware of what the hour is, as the locks click open with a loud, dull thunk and the man is ushered inside. Several silent minutes later, all that remains of the gatekeeper is a small pool of blood and powdered bone, blowing around the floor of the gatehouse in the wind.
+The old man peers toward the source, voice cracking with age and frost.
 
-Something silent moves down the corridor that connects the gatehouse to the castle interior. Systematically, it searches every room, one by one. It brushes past you in your sleep, seemingly through you…causing dark and terrible nightmares as it passes, and your sleep to be ever more restless.
-Much later, the Something has found its way to the keep’s depths. Many floors below the surface, down a long corridor covered in runes, it stands before a huge oak and gold door, guarded by two guards, highly trained in the magical arts, alert and ready to repel attack.
-The thing brushes past the first guard, still not visible, but leaving a feeling of dread and despair wherever it goes.
-“Deran? Is that you?”
-The first guard looks sideways, hearing a voice, seemingly from nowhere, whispering and muttering in the gloom. Before he knows what is happening, the Thing has sucked his soul into the realm of magic. The two seconds of distraction are all that is needed to achieve the task.
-“Hey, pay attention! We are supposed to be watching…”
-The second sentinel drops his guard for a fraction of a second to glance at the first guard. What he sees in the place of the guard fills him with dread and terror. Standing before him is a Thing, composed of shadows and darkness, almost humanoid in form, but translucent like black murky water. Thousands of impossibly white teeth jut from a mouth like ebony, set below two eyes, glowing red like the pits of hell themselves, swirling maelstroms of hate and suffering ready and hungry to devour. The guard has chance to utter the first split-second of a single, terrified horrific scream as a hundred scintillating tentacles emerge from the ravenous maw, pulling him face-first into the mouth of the Creature, and drain him of his very essence, and consuming in the most painful, terrible and horrific way for any mortal creature to end its life…
+“I beg you… shelter. Just for the night. A bed, no more.”
+
+The gatekeeper’s reply is little more than a muffled complaint. Locks clunk open with the dull weight of obligation. The gate creaks ajar. The stranger steps inside.
+
+Moments later, only a swirl of powdered bone and blood remains where the gatekeeper once stood—scattered like ash across the stone.
+
+Something silent slithers down the corridor leading inward. Room by room, it searches—methodical, unseen. It passes through your chamber while you sleep, slipping through you like a cold mist. Your dreams darken. Nightmares coil around your mind. You toss and turn, unaware of the terror that shares your breath.
+
+Far below, in the lowest levels of the Keep, the Thing descends. It follows a corridor etched with ancient runes, drawn toward a grand door of oak and gold. Two guards stand sentinel before it—seasoned mages trained to repel magical threats, alert and tense.
+
+The Thing passes the first, still invisible, leaving only a void of dread in its wake.
+
+“Deran? That you?” the first guard mutters, hearing something, a whisper, a breathless murmur in the gloom. But it’s already too late. A phantom pull tears his soul from his body, dragging it into the arcane void. The guard crumples without sound.
+
+“Hey, eyes up! We’re supposed to be watch—” the second sentinel turns too late.
+
+Where his comrade once stood now looms a Thing of shadows and despair. Vaguely humanoid, its form ripples like smoke in black water. Thousands of jagged white teeth grin from an abyssal maw, beneath two crimson eyes—vortices of hatred and hunger. The creature opens its mouth wider, and with a wet, slithering sound, a mass of iridescent tendrils lashes out.
+
+The guard has time for a fraction of a scream before the Thing pulls him into the abyss of its mouth—devouring flesh, soul, and sanity in a torment no mortal should ever endure.
