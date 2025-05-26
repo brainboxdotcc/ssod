@@ -1,0 +1,80 @@
+<svg width="1100" height="540" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" font-size="13">
+  <style>
+    .headerCell { fill: #1abc9c; stroke: #ecf0f1; }
+    .headerText { fill: white; font-weight: bold; }
+    .labelCell { fill: #bdc3c7; stroke: #ecf0f1; }
+    .labelText { font-weight: bold; fill: #2c3e50; }
+    .cellLight { fill: #ecf0f1; stroke: #dcdcdc; }
+    .cellDark { fill: #d6eaf8; stroke: #dcdcdc; }
+    .na { fill: #f5c6cb; font-style: italic; }
+    .sys-text { fill: #2c3e50; }
+  </style>
+
+  <!-- Column Headers -->
+  <rect x="200" y="0" width="200" height="30" class="headerCell"/>
+  <rect x="400" y="0" width="200" height="30" class="headerCell"/>
+  <rect x="600" y="0" width="200" height="30" class="headerCell"/>
+  <rect x="800" y="0" width="200" height="30" class="headerCell"/>
+  <text x="300" y="20" text-anchor="middle" class="headerText">SSOD</text>
+  <text x="500" y="20" text-anchor="middle" class="headerText">Evennia</text>
+  <text x="700" y="20" text-anchor="middle" class="headerText">uMMORPG</text>
+  <text x="900" y="20" text-anchor="middle" class="headerText">Twine</text>
+
+  <!-- Define rows -->
+  <!-- Row labels and alternating cells -->
+  <!-- Row 1 -->
+  <rect x="0" y="30" width="200" height="40" class="labelCell"/>
+  <text x="10" y="55" class="labelText">Interface</text>
+  <rect x="200" y="30" width="200" height="40" class="cellLight"/><text x="210" y="55" class="sys-text">Discord Bot (text)</text>
+  <rect x="400" y="30" width="200" height="40" class="cellLight"/><text x="410" y="55" class="sys-text">Telnet / Web client</text>
+  <rect x="600" y="30" width="200" height="40" class="cellLight"/><text x="610" y="55" class="sys-text">Unity 3D client</text>
+  <rect x="800" y="30" width="200" height="40" class="cellLight"/><text x="810" y="55" class="sys-text">Web / HTML interface</text>
+
+  <!-- Row 2 -->
+  <rect x="0" y="70" width="200" height="40" class="labelCell"/>
+  <text x="10" y="95" class="labelText">Frontend GUI</text>
+  <rect x="200" y="70" width="200" height="40" class="na"/><text x="270" y="95">N/A</text>
+  <rect x="400" y="70" width="200" height="40" class="na"/><text x="470" y="95">N/A</text>
+  <rect x="600" y="70" width="200" height="40" class="cellDark"/><text x="610" y="95" class="sys-text">Unity GUI</text>
+  <rect x="800" y="70" width="200" height="40" class="cellDark"/><text x="810" y="95" class="sys-text">CSS/JS optional</text>
+
+  <!-- Row 3 -->
+  <rect x="0" y="110" width="200" height="40" class="labelCell"/>
+  <text x="10" y="135" class="labelText">Scripting Layer</text>
+  <rect x="200" y="110" width="200" height="40" class="cellLight"/><text x="210" y="135" class="sys-text">JavaScript ES5 (dev-only)</text>
+  <rect x="400" y="110" width="200" height="40" class="cellLight"/><text x="410" y="135" class="sys-text">Python (all logic)</text>
+  <rect x="600" y="110" width="200" height="40" class="cellLight"/><text x="610" y="135" class="sys-text">C#, Lua (optional)</text>
+  <rect x="800" y="110" width="200" height="40" class="na"/><text x="870" y="135">N/A</text>
+
+  <!-- Row 4 -->
+  <rect x="0" y="150" width="200" height="40" class="labelCell"/>
+  <text x="10" y="175" class="labelText">Game Logic</text>
+  <rect x="200" y="150" width="200" height="40" class="cellDark"/><text x="210" y="175" class="sys-text">Tag-based (HTML-like)</text>
+  <rect x="400" y="150" width="200" height="40" class="cellDark"/><text x="410" y="175" class="sys-text">Python rules &amp; triggers</text>
+  <rect x="600" y="150" width="200" height="40" class="cellDark"/><text x="610" y="175" class="sys-text">Unity component logic</text>
+  <rect x="800" y="150" width="200" height="40" class="cellDark"/><text x="810" y="175" class="sys-text">Twine scripting syntax</text>
+
+  <!-- Row 5 -->
+  <rect x="0" y="190" width="200" height="40" class="labelCell"/>
+  <text x="10" y="215" class="labelText">Persistence</text>
+  <rect x="200" y="190" width="200" height="40" class="cellLight"/><text x="210" y="215" class="sys-text">MySQL</text>
+  <rect x="400" y="190" width="200" height="40" class="cellLight"/><text x="410" y="215" class="sys-text">Django ORM</text>
+  <rect x="600" y="190" width="200" height="40" class="cellLight"/><text x="610" y="215" class="sys-text">Unity Save/SQL</text>
+  <rect x="800" y="190" width="200" height="40" class="cellLight"/><text x="810" y="215" class="sys-text">None (static HTML)</text>
+
+  <!-- Row 6 -->
+  <rect x="0" y="230" width="200" height="40" class="labelCell"/>
+  <text x="10" y="255" class="labelText">Asset System</text>
+  <rect x="200" y="230" width="200" height="40" class="na"/><text x="270" y="255">N/A</text>
+  <rect x="400" y="230" width="200" height="40" class="na"/><text x="470" y="255">N/A</text>
+  <rect x="600" y="230" width="200" height="40" class="cellDark"/><text x="610" y="255" class="sys-text">3D assets + audio</text>
+  <rect x="800" y="230" width="200" height="40" class="cellDark"/><text x="810" y="255" class="sys-text">Optional images/audio</text>
+
+  <!-- Row 7 -->
+  <rect x="0" y="270" width="200" height="40" class="labelCell"/>
+  <text x="10" y="295" class="labelText">Deployment Target</text>
+  <rect x="200" y="270" width="200" height="40" class="cellLight"/><text x="210" y="295" class="sys-text">Discord bot runtime</text>
+  <rect x="400" y="270" width="200" height="40" class="cellLight"/><text x="410" y="295" class="sys-text">Self-hosted server</text>
+  <rect x="600" y="270" width="200" height="40" class="cellLight"/><text x="610" y="295" class="sys-text">Windows / Standalone</text>
+  <rect x="800" y="270" width="200" height="40" class="cellLight"/><text x="810" y="295" class="sys-text">Web browser export</text>
+</svg>
