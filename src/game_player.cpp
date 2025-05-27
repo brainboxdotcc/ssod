@@ -566,7 +566,7 @@ std::vector<stacked_item> player::possessions_page(size_t page_number) {
 }
 
 size_t player::max_inventory_slots() {
-	int pages_max = 1;
+	int pages_max = 2;
 	if (has_flag("horse")) {
 		pages_max++;
 	}

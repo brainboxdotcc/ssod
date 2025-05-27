@@ -145,44 +145,100 @@ namespace i18n {
 		return opt;
 	}
 
-	item_desc tr(const item &i, const std::string &description, const dpp::interaction_create_t &event) {
-		if (event.command.locale.substr(0, 2) == "en") {
-			return {.name = i.name, .description = description};
+	db::resultset fetch_translations(const std::vector<std::string>& table_cols, const std::string& row_id, const std::string& lang) {
+		if (table_cols.size() == 1) {
+			return db::query(
+				"SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ? ORDER BY table_col",
+				{table_cols[0], row_id, lang}
+			);
 		}
+		return db::query(
+			"SELECT * FROM translations WHERE (table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col",
+			{table_cols[0], table_cols[1], row_id, lang}
+		);
+	}
+
+
+	std::optional<item_desc> try_translate_item_desc(const item& i, const std::string& lang) {
 		auto res = db::query("SELECT id FROM game_item_descs WHERE name = ?", {i.name});
-		if (res.empty()) {
-			/* Not an item desc */
-			res = db::query("SELECT id FROM food WHERE name = ?", {i.name});
-			if (res.empty()) {
-				/* Not food */
-				res = db::query("SELECT id FROM ingredients WHERE ingredient_name = ?", {i.name});
-				if (!res.empty()) {
-					auto translated_text = db::query("SELECT * FROM translations WHERE table_col = ? AND row_id = ? AND language = ? ORDER BY table_col", {
-						"ingredients/ingredient_name", res[0].at("id"), event.command.locale.substr(0, 2)
-					});
-					if (!translated_text.empty()) {
-						return {.name = translated_text[0].at("translation"), .description = tr("COOK_ME", event)};
-					}
-				}
-				return {.name = i.name, .description = description};
-			}
-			/* Is food */
-			auto translated_text = db::query("SELECT * FROM translations WHERE (table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col", {
-				"food/name", "food/description", res[0].at("id"), event.command.locale.substr(0, 2)
-			});
-			if (translated_text.size() == 2) {
-				return {.name = translated_text[1].at("translation"), .description = translated_text[0].at("translation")};
-			}
+		if (res.empty()) return std::nullopt;
+
+		auto translated = fetch_translations({"game_item_descs/name", "game_item_descs/idesc"}, res[0].at("id"), lang);
+
+		if (translated.size() == 2) {
+			return item_desc{
+				.name = translated[1].at("translation"),
+				.description = translated[0].at("translation")
+			};
+		}
+
+		return std::nullopt;
+	}
+
+
+	std::optional<item_desc> try_translate_food(const item& i, const std::string& lang) {
+		auto res = db::query("SELECT id FROM food WHERE name = ?", {i.name});
+		if (res.empty()) return std::nullopt;
+
+		auto translated = fetch_translations({"food/name", "food/description"}, res[0].at("id"), lang);
+
+		if (translated.size() == 2) {
+			return item_desc{
+				.name = translated[1].at("translation"),
+				.description = translated[0].at("translation")
+			};
+		}
+
+		return std::nullopt;
+	}
+
+
+	std::optional<item_desc> try_translate_ingredient(const item& i, const std::string& lang, const dpp::interaction_create_t& event) {
+		auto res = db::query("SELECT id FROM ingredients WHERE ingredient_name = ?", {i.name});
+		if (res.empty()) return std::nullopt;
+
+		auto translated = fetch_translations({"ingredients/ingredient_name"}, res[0].at("id"), lang);
+
+		if (!translated.empty()) {
+			return item_desc{
+				.name = translated[0].at("translation"),
+				.description = tr("COOK_ME", event)
+			};
+		}
+
+		return std::nullopt;
+	}
+
+	std::optional<item_desc> try_translate_book(const item& i, const std::string& lang) {
+		auto res = db::query("SELECT id, author FROM books WHERE title = ?", {i.name});
+		if (res.empty()) return std::nullopt;
+
+		auto translated = fetch_translations({"books/title"}, res[0].at("id"), lang);
+
+		if (!translated.empty()) {
+			return item_desc{
+				.name = translated[0].at("translation"),
+				.description = res[0].at("author")
+			};
+		}
+
+		return std::nullopt;
+	}
+
+
+	item_desc tr(const item &i, const std::string &description, const dpp::interaction_create_t &event) {
+		const std::string language = event.command.locale.substr(0, 2);
+
+		if (language == "en") {
 			return {.name = i.name, .description = description};
 		}
-		/* Is item desc */
-		auto translated_text = db::query("SELECT * FROM translations WHERE (table_col = ? OR table_col = ?) AND row_id = ? AND language = ? ORDER BY table_col", {
-			"game_item_descs/name", "game_item_descs/idesc", res[0].at("id"), event.command.locale.substr(0, 2)
-		});
-		if (translated_text.size() != 2) {
-			return {.name = i.name, .description = description};
-		}
-		return {.name = translated_text[1].at("translation"), .description = translated_text[0].at("translation")};
+
+		if (auto result = try_translate_item_desc(i, language)) return *result;
+		if (auto result = try_translate_food(i, language)) return *result;
+		if (auto result = try_translate_ingredient(i, language, event)) return *result;
+		if (auto result = try_translate_book(i, language)) return *result;
+
+		return {.name = i.name, .description = description};
 	}
 
 	item_desc tr(const stacked_item &i, const std::string &description, const dpp::interaction_create_t &event) {

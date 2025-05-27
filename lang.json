@@ -2758,6 +2758,15 @@
         "uk": "Екіпірувати предмет",
         "th": "สวมใส่ไอเทม"
     },
+    "READ": {
+        "en": "Read"
+    },
+    "BOOK": {
+        "en": "Book"
+    },
+    "AUTHOR": {
+        "en": "Author: {}"
+    },
     "USE": {
         "en": "Use",
         "fr": "Utiliser",

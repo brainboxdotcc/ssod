@@ -40,6 +40,14 @@ struct book_tag : public tag {
 		std::string book_title = book.at("title");
 		std::string book_author = book.at("author");
 		std::string book_tags = book.at("tags");
+		/* We can only see up books we don't have in our inventory or in the bank */
+		auto bank_check = co_await db::co_query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ?", {current_player.event.command.usr.id, book_title, "B" + std::to_string(book_id)});
+		if (!bank_check.empty()) {
+			co_return;
+		}
+		if (current_player.has_possession(book_title)) {
+			co_return;
+		}
 		if (current_player.event.command.locale.substr(0, 2) != "en") {
 			auto translated_text = co_await db::co_query(
 				"SELECT * FROM translations WHERE table_col IN (?,?) AND row_id = ? AND language = ? ORDER BY table_col",

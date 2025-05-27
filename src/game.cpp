@@ -864,7 +864,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			 * meaning if your job is not to hunt in the wilderness, you're going to have a harder
 			 * time of it.
 			 */
-			double find_chance = (double)d_random(0, 100) * (double)(p.profession == prof_woodsman ? 0.7 : 0.6);
+			double find_chance = (double) d_random(0, 100) * (double) (p.profession == prof_woodsman ? 0.7 : 0.6);
 			auto bias = co_await db::co_query("SELECT COUNT(*) AS current_ingredient_items FROM game_owned_items WHERE ((SELECT COUNT(*) FROM ingredients WHERE ingredient_name = item_desc LIMIT 1) > 0 OR (SELECT COUNT(*) FROM food WHERE food.name = item_desc LIMIT 1) > 0) AND user_id = ?", {event.command.usr.id});
 			uint64_t current_ingredient_items = atol(bias[0].at("current_ingredient_items")), bias_factor{0};
 			/* As you carry more and more ingredient items your probability of finding game animals decreases.
@@ -932,18 +932,21 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 				 */
 				uint64_t random_animal_part = d_random(0, animal.size() - 1);
 				std::string part = animal[random_animal_part].get<std::string>();
-				auto i = tr(item{ .name = part, .flags = "" }, std::string{}, event);
+				auto i = tr(item{.name = part, .flags = ""}, std::string{}, event);
 				ss << "* 1x __" << i.name << "__\n";
-				p.possessions.emplace_back(stacked_item{ .name = part, .flags = "[none]", .qty = 1 });
+				p.possessions.emplace_back(stacked_item{.name = part, .flags = "[none]", .qty = 1});
 				if (d12() == d12() && animal.size() > 1) {
 					/* 1/12 chance of getting a second animal part, if the animal has more than one part */
 					random_animal_part = d_random(0, animal.size() - 1);
 					part = animal[random_animal_part].get<std::string>();
-					i = tr(item{ .name = part, .flags = "" }, std::string{}, event);
+					i = tr(item{.name = part, .flags = ""}, std::string{}, event);
 					ss << "* 1x __" << i.name << "__\n";
-					p.possessions.emplace_back(stacked_item{ .name = part, .flags = "[none]", .qty = 1 });
+					p.possessions.emplace_back(stacked_item{.name = part, .flags = "[none]", .qty = 1});
 				}
-				co_await achievement_check("HUNT_SUCCESS", event, p, {{"name", part}, {"animal", english_name}, {"localised_name", i.name}, {"localised_animal", animal_name}});
+				co_await achievement_check("HUNT_SUCCESS", event, p, {{"name",             part},
+										      {"animal",           english_name},
+										      {"localised_name",   i.name},
+										      {"localised_animal", animal_name}});
 				p.inv_change = true;
 			} else {
 				ss << tr("FAILED_HUNT", event) << "\n";
@@ -952,7 +955,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			}
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
 		}
-		catch (const std::exception& e) {
+		catch (const std::exception &e) {
 			/* We end up here if the hunting_json is invalid or empty */
 			ss << "## " << tr("HUNT_ATTEMPT", event) << "\n\n" << "*" << tr("NOTHING_HUNT", event) << "*\n\n" << tr("FAILED_HUNT", event) << "\n";
 			p.add_toast(toast{.message = ss.str(), .image = "hunting.png"});
@@ -961,6 +964,34 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			if (!rs[0].at("hunting_json").empty()) {
 				bot.log(dpp::ll_error, "Error in hunting, location " + std::to_string(p.paragraph) + ": " + std::string(e.what()));
 			}
+		}
+		claimed = true;
+	} else if (parts[0] == "book" && parts.size() >= 4 && !p.in_inventory && p.stamina > 0) {
+		/* Pick up a book */
+		if (p.paragraph != atol(parts[1])) {
+			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID BOOK PICKUP FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
+			co_return;
+		}
+		long book_id = atol(parts[3]);
+		auto rs = co_await db::co_query("SELECT * FROM books WHERE id = ?", { book_id });
+		if (rs.empty()) {
+			co_return;
+		}
+		auto book = rs[0];
+		std::string book_title = book.at("title");
+		std::string book_author = book.at("author");
+		size_t max = p.max_inventory_slots();
+		/* We can only pick up books we don't have in our inventory or in the bank, and only if our inventory is not full */
+		auto bank_check = co_await db::co_query("SELECT * FROM game_bank WHERE owner_id = ? AND item_desc = ? AND item_flags = ?", {event.command.usr.id, book_title, "B" + std::to_string(book_id)});
+		if (!bank_check.empty()) {
+			co_return;
+		}
+		if (p.possessions.size() < max - 1 && !p.has_possession(book_title)) {
+			stacked_item i{.name = book_title, .flags = "B" + std::to_string(book_id), .qty = 1 };
+			p.pickup_possession(i);
+			p.inv_change = true;
+			co_await send_chat(event.command.usr.id, p.paragraph, book_title, "pickup");
+			co_await achievement_check("PICKUP_BOOK", event, p, {{"book_id", book_id}, {"title", book_title}, {"book_author", book_author}});
 		}
 		claimed = true;
 	} else if (parts[0] == "pick" && parts.size() >= 3 && !p.in_inventory && p.stamina > 0) {
@@ -1084,6 +1115,8 @@ dpp::task<dpp::emoji> get_emoji(const std::string& name, const std::string& flag
 		} else {
 			emoji = sprite::sword008;
 		}
+	} else if (flags.length() && flags[0] == 'B') {
+		emoji = sprite::book;
 	} else if (name.find("rrow") != std::string::npos) {
 		emoji = sprite::bow08;
 	} else if (name.find("scroll") != std::string::npos) {
