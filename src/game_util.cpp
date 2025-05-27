@@ -44,8 +44,13 @@ dpp::task<sale_info> get_sale_info(const std::string& name) {
 	bool sellable{false}, qi{false};
 	std::string flags;
 	if (res.empty()) {
+		auto book = co_await db::co_query("SELECT * FROM books WHERE title = ?", {name});
 		auto food = co_await db::co_query("SELECT * FROM food WHERE name = ?", {name});
-		if (!food.empty()) {
+		if (!book.empty()) {
+			value = 0;
+			sellable = false;
+			qi = false;
+		} else if (!food.empty()) {
 			value = atol(food[0].at("value"));
 			sellable = true;
 		} else {
@@ -112,6 +117,10 @@ dpp::task<std::string> describe_item(const std::string& modifier_flags, const st
 		auto ingredient = co_await db::co_query("SELECT * FROM ingredients WHERE ingredient_name = ?", {name});
 		if (!ingredient.empty()) {
 			co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("INGREDIENT", event) + "\033[0m: {}" : tr("INGREDIENT", event) + ": {}"), tr("COOK_ME", event));
+		}
+		auto book = co_await db::co_query("SELECT * FROM books WHERE id = ?", {modifier_flags.substr(1, modifier_flags.length() - 1)});
+		if (!book.empty()) {
+			co_return fmt::format(fmt::runtime(ansi ? "\033[2;36m" + tr("BOOK", event) + "\033[0m: {}" : tr("BOOK", event) + ": {}"), tr("AUTHOR", event, book.at(0).at("author")));
 		}
 	}
 	co_return rv;

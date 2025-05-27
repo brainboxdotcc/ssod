@@ -162,6 +162,9 @@ dpp::task<void> inventory(const dpp::interaction_create_t& event, player p) {
 		if (!food.empty() || !effect.empty() || inv.flags.find('+') != std::string::npos || inv.flags.find('-') != std::string::npos) {
 			auto i = tr(inv, "", event);
 			use_menu.add_select_option(dpp::select_option(tr("USE", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
+		} else if (inv.flags.substr(0, 1) == "B") {
+			auto i = tr(inv, "", event);
+			use_menu.add_select_option(dpp::select_option(tr("READ", event) + " " + i.name, "*;" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
 		} else if (!inv.flags.empty() && (inv.flags[0] == 'A' || inv.flags[0] == 'W')) {
 			auto i = tr(inv, "", event);
 			equip_menu.add_select_option(dpp::select_option(tr("EQUIP", event) + " " + i.name, inv.name + ";" + inv.flags + ";" + std::to_string(++index)).set_emoji(e.name, e.id));
