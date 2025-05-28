@@ -20,7 +20,7 @@ The door creaks open. A young apprentice enters, pale and anxious.
 
 “I’m sorry, Grandmaster… but we have a serious problem.”
 
-The wizard narrows his eyes. “Then speak plainly. You’re a wizard, not a halfling courtier.”
+The wizard narrows his eyes. “Then speak plainly. You’re a wizard, not a courtier.”
 
 The apprentice gulps and begins recounting the night’s events—his voice shaking. The tale is unbelievable. But the evidence is not.
 
