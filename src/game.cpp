@@ -433,9 +433,6 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			p.in_inventory = false;
 			p.reading_book_id = atol(book_id);
 			p.book_page = 0;
-			claimed = true;
-			co_await book_nav(event, p, parts);
-			co_return;
 		} else if (parts.size() >= 2 && p.has_possession(parts[0])) {
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
 			co_await achievement_check("USE_ITEM", event, p, {{"name", parts[0]},{"flags", parts[1]}});
@@ -553,14 +550,13 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			co_return;
 		}
 	}
-	if (p.reading_book_id != 0) {
-		if (co_await book_nav(event, p, parts)) {
-			co_return;
-		}
-		claimed = true;
-	}
 	sentry::make_new_transaction("component/button/" + parts[0]);
-	if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay" || parts[0] == "follow_nav_win") && parts.size() >= 3) {
+	if (p.reading_book_id != 0) {
+		bot.log(dpp::ll_debug, "CURRENT BOOK ID " + std::to_string(p.reading_book_id));
+		if (co_await book_nav(event, p, parts)) {
+			claimed = true;
+		}
+	} else if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay" || parts[0] == "follow_nav_win") && parts.size() >= 3) {
 		if (parts[0] == "follow_nav_pay" && parts.size() >= 4) {
 			long link_cost = atol(parts[3]);
 			if (p.gold < link_cost) {
@@ -1386,6 +1382,8 @@ dpp::task<uint64_t> get_guild_id(const player& p) {
 }
 
 dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) {
+	dpp::cluster& bot = *(event.owner);
+
 	if (p.in_combat) {
 		if (has_active_pvp(event.command.usr.id)) {
 			co_await continue_pvp_combat(event, p, std::stringstream());
@@ -1395,6 +1393,10 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		co_return;
 	} else if (p.in_pvp_picker) {
 		co_await pvp_picker(event, p);
+		co_return;
+	} else if (p.reading_book_id) {
+		bot.log(dpp::ll_debug, "continue_book() id " + std::to_string(p.reading_book_id));
+		co_await continue_book(event, p);
 		co_return;
 	} else if (p.in_inventory) {
 		co_await inventory(event, p);
@@ -1426,7 +1428,6 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		}
 	}
 
-	dpp::cluster& bot = *(event.owner);
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_footer(dpp::embed_footer{ 
