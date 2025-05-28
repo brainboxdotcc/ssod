@@ -384,6 +384,8 @@ namespace db {
 
 		++query_total;
 
+		double start = dpp::utility::time_f();
+
 		/**
 		 * Check for a cached query in the query cache, if one is found, we can use it,
 		 * and we don't need to call mysql_stmt_init() and mysql_stmt_prepare().
@@ -561,6 +563,10 @@ namespace db {
 				rv.error = mysql_stmt_error(cc.st);
 				sentry::set_span_status(qspan, sentry::STATUS_INVALID_ARGUMENT);
 			}
+		}
+
+		if (dpp::utility::time_f() - start > 0.75) {
+			creator->log(dpp::ll_warning, "Query took > 0.75 seconds: " + format);
 		}
 
 		sentry::end_span(qspan);

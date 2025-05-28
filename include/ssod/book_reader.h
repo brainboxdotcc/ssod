@@ -21,4 +21,6 @@
 #include <dpp/dpp.h>
 #include <ssod/game_player.h>
 
-dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player p, const std::vector<std::string>& parts);
+dpp::task<void> continue_book(const dpp::interaction_create_t& event, player &p);
+
+dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player &p, const std::vector<std::string>& parts);

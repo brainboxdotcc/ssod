@@ -28,19 +28,9 @@
 
 using namespace i18n;
 
-dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player p, const std::vector<std::string>& parts) {
-
+dpp::task<void> continue_book(const dpp::interaction_create_t& event, player &p) {
 	dpp::cluster& bot = *(event.owner);
 	std::stringstream content;
-
-	if (parts[0] == "exit_book" && parts.size() == 1) {
-		p.reading_book_id = 0;
-		bot.log(dpp::ll_debug, "CLOSE BOOK");
-		co_return false;
-	} else if (parts[0] == "book_page" && parts.size() == 2) {
-		p.book_page = atol(parts[1]);
-		bot.log(dpp::ll_debug, "BOOK PAGE " + parts[1]);
-	}
 
 	auto book = co_await db::co_query("SELECT * FROM books WHERE id = ?", {p.reading_book_id});
 	auto page = co_await db::co_query("SELECT * FROM book_pages WHERE book_id = ? AND page_index = ?", {p.reading_book_id, p.book_page});
@@ -49,7 +39,7 @@ dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player p, const
 	if (book.empty() || page.empty()) {
 		/* Invalid book ID or page number */
 		bot.log(dpp::ll_debug, event.command.usr.id.str() + ": invalid book id " + std::to_string(p.reading_book_id) + " or missing page; bug, or hack attempt");
-		co_return false;
+		co_return;
 	}
 
 	long max_page = atol(max_page_query.at(0).at("max_page"));
@@ -77,7 +67,7 @@ dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player p, const
 			.icon_url = bot.me.get_avatar_url(),
 			.proxy_url = "",
 		})
-		.set_thumbnail("https://images.ssod.org/resource/book" + std::to_string(p.reading_book_id % 6) + ".png");
+		.set_thumbnail("https://images.ssod.org/resource/book" + std::to_string(p.reading_book_id % 6) + ".png")
 		.set_colour(EMBED_COLOUR)
 		.set_description(content.str());
 
@@ -85,11 +75,11 @@ dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player p, const
 	component_builder cb(m);
 
 	cb.add_component(dpp::component()
-		.set_type(dpp::cot_button)
-		.set_id(security::encrypt("exit_book"))
-		.set_label(tr("BACK", event))
-		.set_style(dpp::cos_primary)
-		.set_emoji(sprite::magic05.name, sprite::magic05.id)
+		 .set_type(dpp::cot_button)
+		 .set_id(security::encrypt("exit_book"))
+		 .set_label(tr("BACK", event))
+		 .set_style(dpp::cos_primary)
+		 .set_emoji(sprite::magic05.name, sprite::magic05.id)
 	);
 	cb.add_component(dpp::component()
 		 .set_type(dpp::cot_button)
@@ -115,7 +105,24 @@ dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player p, const
 		}
 	});
 
-	p.event = event;
-	update_live_player(event, p);
-	co_return true;
+	co_return;
+}
+
+
+dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player &p, const std::vector<std::string>& parts) {
+
+	dpp::cluster& bot = *(event.owner);
+
+	if (parts[0] == "exit_book" && parts.size() == 1) {
+		p.reading_book_id = 0;
+		bot.log(dpp::ll_debug, "CLOSE BOOK");
+		co_return true;
+	} else if (parts[0] == "book_page" && parts.size() == 2) {
+		p.book_page = atol(parts[1]);
+		bot.log(dpp::ll_debug, "BOOK PAGE " + parts[1]);
+		co_return true;
+	}
+
+	co_return false;
+
 }
