@@ -131,7 +131,7 @@ dpp::task<void> inventory(const dpp::interaction_create_t& event, player p) {
 
 	m = cb.get_message();
 
-	dpp::component use_menu, drop_menu, equip_menu/*, examine_menu*/;
+	dpp::component use_menu, drop_menu, equip_menu;
 
 	use_menu.set_type(dpp::cot_selectmenu)
 		.set_min_values(0)

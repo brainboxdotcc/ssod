@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dpp/dpp.h>
+#include <optional>
 
 namespace i18n {
 
@@ -31,4 +32,11 @@ namespace i18n {
 
 	void check_lang_reload(dpp::cluster &bot);
 
+	std::optional<item_desc> try_translate_book(const item& i, const std::string& lang);
+
+	std::optional<item_desc> try_translate_food(const item& i, const std::string& lang);
+
+	std::optional<item_desc> try_translate_ingredient(const item& i, const std::string& lang);
+
+	std::optional<item_desc> try_translate_item_desc(const item& i, const std::string& lang);
 }

@@ -185,6 +185,9 @@
         "uk": "Досягнення {0} (стор. {1} з {2})",
         "th": "ความสำเร็จของ {0} (หน้า {1} จาก {2})"
     },
+    "PAGE_NAV": {
+        "en": "Page {0} of {1}"
+    },
     "user_achievements_page_desc": {
         "en": "Page number",
         "fr": "Numéro de page",
