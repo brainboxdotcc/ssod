@@ -1,5 +1,5 @@
 /************************************************************************************
- *
+ * 
  * The Seven Spells Of Destruction
  *
  * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
@@ -18,25 +18,7 @@
  *
  ************************************************************************************/
 #pragma once
-
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <dpp/dpp.h>
-#include <optional>
+#include <ssod/game_player.h>
 
-namespace i18n {
-
-	time_t get_mtime(const char *path);
-
-	void load_lang(dpp::cluster &bot);
-
-	void check_lang_reload(dpp::cluster &bot);
-
-	std::optional<item_desc> try_translate_book(const item& i, const std::string& lang);
-
-	std::optional<item_desc> try_translate_food(const item& i, const std::string& lang);
-
-	std::optional<item_desc> try_translate_ingredient(const item& i, const std::string& lang);
-
-	std::optional<item_desc> try_translate_item_desc(const item& i, const std::string& lang);
-}
+dpp::task<bool> book_nav(const dpp::interaction_create_t& event, player p, const std::vector<std::string>& parts);

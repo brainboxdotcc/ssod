@@ -39,6 +39,7 @@
 #include <ssod/game_dice.h>
 #include <ssod/achievement.h>
 #include <ssod/sentry.h>
+#include <ssod/book_reader.h>
 
 using namespace i18n;
 
@@ -315,7 +316,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			co_await achievement_check("BANK_DEPOSIT_ITEM", event, p, {{"item", parts[0]}, {"flags", flags}});
 		}
 		claimed = true;
-	} else if (custom_id == "drop_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
+	} else if (custom_id == "drop_item" && !event.values.empty() && p.in_inventory && !p.in_combat && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() >= 1 && p.has_possession(parts[0])) {
 			sale_info si = co_await get_sale_info(parts[0]);
@@ -340,7 +341,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			}
 		}
 		claimed = true;
-	} else if (custom_id == "cast" && !event.values.empty() && p.in_grimoire && p.stamina > 0) {
+	} else if (custom_id == "cast" && !event.values.empty() && p.in_grimoire && !p.in_combat && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		spell_info si = get_spell_info(parts[0]);
 		if (!parts.empty() && p.has_spell(parts[0]) && p.has_component_herb(parts[0]) && p.mana >= si.mana_cost) {
@@ -353,7 +354,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		co_await achievement_check("CAST_SPELL", event, p, {{"spell", parts[0]}});
 		p.in_grimoire = false;
 		claimed = true;
-	} else if (custom_id == "cook" && !event.values.empty() && p.in_campfire && p.stamina > 0) {
+	} else if (custom_id == "cook" && !event.values.empty() && p.in_campfire && !p.in_combat && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (!parts.empty()) {
 			bot.log(dpp::ll_debug, event.command.usr.id.str() + ": attempting to cook: '" + parts[0] + "'");
@@ -417,9 +418,25 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 			p.inv_change = true;
 		}
 		claimed = true;
-	} else if (custom_id == "use_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
+	} else if (custom_id == "use_item" && !event.values.empty() && p.in_inventory && !p.in_combat && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
-		if (parts.size() >= 2 && p.has_possession(parts[0])) {
+		if (parts.size() >= 2 && parts[1].substr(0, 1) == "B") {
+			/* Is a book */
+			std::string book_id = parts[1].substr(1, parts[1].length() - 1);
+			auto book = co_await db::co_query("SELECT * FROM books WHERE id = ?", {book_id});
+			if (book.empty()) {
+				/* Invalid book ID */
+				bot.log(dpp::ll_debug, event.command.usr.id.str() + ": invalid book id '" + book_id + "'; bug, or hack attempt");
+				co_return;
+			}
+			bot.log(dpp::ll_debug, event.command.usr.id.str() + ": READ " + book_id);
+			p.in_inventory = false;
+			p.reading_book_id = atol(book_id);
+			p.book_page = 0;
+			claimed = true;
+			co_await book_nav(event, p, parts);
+			co_return;
+		} else if (parts.size() >= 2 && p.has_possession(parts[0])) {
 			p.drop_possession(item{.name = parts[0], .flags = parts[1]});
 			co_await achievement_check("USE_ITEM", event, p, {{"name", parts[0]},{"flags", parts[1]}});
 			auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Consumable' AND requirements = ?", {parts[0]});
@@ -535,6 +552,12 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		if (co_await combat_nav(event, p, parts)) {
 			co_return;
 		}
+	}
+	if (p.reading_book_id != 0) {
+		if (co_await book_nav(event, p, parts)) {
+			co_return;
+		}
+		claimed = true;
 	}
 	sentry::make_new_transaction("component/button/" + parts[0]);
 	if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay" || parts[0] == "follow_nav_win") && parts.size() >= 3) {

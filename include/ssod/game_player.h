@@ -112,6 +112,14 @@ struct player {
 	 */
 	bool inv_change{};
 	/**
+	 * Book we are currently reading, or 0 if not reading a book
+	 */
+	long reading_book_id{};
+	/**
+	 * Book page index if reading a book, zero based
+	 */
+	long book_page{};
+	/**
 	 * @brief True if next hit in pve combat is to be a critical
 	 */
 	bool next_crit{};
