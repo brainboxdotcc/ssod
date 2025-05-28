@@ -296,6 +296,7 @@ namespace listeners {
 	dpp::task<void> on_slashcommand(const dpp::slashcommand_t &event) {
 		double start = dpp::utility::time_f();
 		co_await route_command(event);
+		double secs = dpp::utility::time_f() - start;
 		event.owner->log(
 			dpp::ll_info,
 			fmt::format(
@@ -305,9 +306,12 @@ namespace listeners {
 				event.command.usr.id,
 				event.command.guild_id,
 				event.command.locale,
-				(dpp::utility::time_f() - start) * 1000
+				secs * 1000
 			)
 		);
+		if (secs > 3.0) {
+			event.owner->log(dpp::ll_warning, "Command response took > 3 seconds!");
+		}
 		co_return;
 	}
 }
