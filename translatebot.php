@@ -78,9 +78,10 @@ foreach ($toTranslate as $key => $english) {
     echo "Translating: $key\n";
     $prompt = "Translate the following English string into all of these languages: "
             . implode(', ', array_diff($allLanguages, ['en'])) . ".\n"
-            . "Preserve placeholders like {0}, and do not translate tokens like <@12345> or :emoji:.\n\n"
-            . "String: \"$english\"\n\n"
-            . "Respond in JSON format mapping language codes to translations.";
+            . "Preserve placeholders like {0}, and do not translate tokens like <@12345> or :emoji:.\n"
+            . "Respond in VALID JSON format mapping language codes to translations. Escape strings. ONLY return the json, no wrapped code block. No explainations."
+	    . "\nEnsure newlines are properly converted to \\n\n\n"
+            . "String:\n$english\n\n";
 
     $response = callChatGPT($apiKey, $prompt);
     if (!$response) {
