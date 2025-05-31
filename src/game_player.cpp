@@ -405,6 +405,18 @@ bool player::has_possession(std::string name) {
 	return false;
 }
 
+int player::count_item(const std::string& name) {
+	size_t n{};
+	if (has_possession(name)) {
+		for (const auto& item : possessions) {
+			if (dpp::lowercase(item.name) == dpp::lowercase(name)) {
+				n += item.qty;
+			}
+		}
+	}
+	return n;
+}
+
 bool player::drop_possession(const item& i) {
 	for (auto inv = possessions.begin(); inv != possessions.end(); ++inv) {
 		if (dpp::lowercase(inv->name) == dpp::lowercase(i.name)) {

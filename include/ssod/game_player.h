@@ -337,6 +337,7 @@ struct player {
 	bool has_component_herb(const std::string& spell);
 	bool has_spell(std::string spell_name);
 	bool has_possession(std::string name);
+	int count_item(const std::string& name);
 	std::vector<stacked_item> possessions_page(size_t page_number);
 	size_t max_inventory_slots();
 
