@@ -69,7 +69,7 @@ namespace quests {
 				auto [title, total_steps] = co_await get_quest_metadata(quest_id);
 				p.add_toast({
 					.message = tr("QUEST_STARTED", event, title),
-					.image = "quest-start.png"
+					.image = "quest-started.png"
 				});
 			}
 		}
@@ -100,7 +100,7 @@ namespace quests {
 					);
 					p.add_toast({
 						.message = tr("QUEST_COMPLETE", event, meta.title),
-						.image = "quest-complete.png"
+						.image = "quest-completed.png"
 					});
 				} else {
 					// Just move to the next step
@@ -118,7 +118,7 @@ namespace quests {
 					}
 					p.add_toast({
 						.message = tr("QUEST_ADVANCE", event, meta.title, success_text),
-						.image = "quest-advance.png"
+						.image = "quest-advanced.png"
 					});
 				}
 			}
