@@ -25,6 +25,7 @@
 #include <ssod/game_util.h>
 #include <ssod/aes.h>
 #include <ssod/achievement.h>
+#include <ssod/wildcard.h>
 #include <span>
 
 using namespace i18n;
@@ -280,6 +281,8 @@ double player::get_percent_of_current_level() {
 dpp::task<dpp::message> player::get_registration_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
 
 	std::string file = matrix_image(race, profession, gender == "male");
+	std::string lower_race = replace_string(dpp::lowercase(std::string(::race(race))), " ", "_");
+	std::string lower_prof = dpp::lowercase(std::string(::profession(profession)));
 	dpp::embed embed = dpp::embed()
 		.set_url("https://ssod.org/")
 		.set_title(tr("NEWCHAR", event))
@@ -301,6 +304,7 @@ dpp::task<dpp::message> player::get_registration_message(dpp::cluster& cluster, 
 		.add_field(tr("NOTORIETY", event), std::to_string(notoriety), true)
 		.add_field(tr("ARMOUR", event), fmt::format("{} ({} {})", armour.name, tr("RATING", event), armour.rating), true)
 		.add_field(tr("WEAPON", event), fmt::format("{} ({} {})", weapon.name, tr("RATING", event), weapon.rating), true)
+		.add_field(tr("BACKSTORY", event), tr("backstory_" + lower_race + "_" + lower_prof, event).substr(0, 1024), false)
 		.set_image(file);
 
 		dpp::component race_select_menu, profession_select_menu, gender_select_menu;
