@@ -29,6 +29,7 @@ using namespace i18n;
 dpp::slashcommand guild_command::register_command(dpp::cluster& bot) {
 	return tr(dpp::slashcommand("cmd_guild", "HELP_GUILD_DESC", bot.me.id)
 		.set_dm_permission(true)
+		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel})
 		.add_option(
 			dpp::command_option(dpp::co_sub_command, "opt_create", "G_CREATE_DESC")
 			.add_option(dpp::command_option(dpp::co_string, "opt_name", "G_NAME_DESC", true))

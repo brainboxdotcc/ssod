@@ -213,7 +213,9 @@ dpp::slashcommand lore_command::register_command(dpp::cluster& bot) {
 			page(event, parts[0] == "lore-read", parts.size() >= 2 ? parts[1] : "");
 		}
 	});
-	return tr(dpp::slashcommand("cmd_lore", "lore_desc", bot.me.id).set_dm_permission(true));
+	return tr(dpp::slashcommand("cmd_lore", "lore_desc", bot.me.id)
+		.set_dm_permission(true)
+		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel}));
 }
 
 dpp::task<void> lore_command::route(const dpp::slashcommand_t &event) {

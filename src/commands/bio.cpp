@@ -30,6 +30,7 @@ using namespace i18n;
 dpp::slashcommand bio_command::register_command(dpp::cluster& bot) {
 	return tr(dpp::slashcommand("cmd_bio", "update_bio", bot.me.id)
 		.set_dm_permission(true)
+		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel})
                 .add_option(
 			dpp::command_option(dpp::co_sub_command, "opt_picture", "set_bio_picture")
 			.add_option(dpp::command_option(dpp::co_attachment, "opt_image", "image_to_upload", true))

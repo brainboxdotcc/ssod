@@ -28,6 +28,7 @@ using namespace i18n;
 dpp::slashcommand gender_command::register_command(dpp::cluster& bot) {
 	return tr(dpp::slashcommand("gender", "Set player's in-game gender for their profile image (male or female)", bot.me.id)
 		.set_dm_permission(true)
+		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel})
 		.add_option(
 			dpp::command_option(dpp::co_string, "gender", "Gender to set", true)
 			.add_choice(dpp::command_option_choice("male", "male"))
