@@ -19,7 +19,12 @@
  ************************************************************************************/
 #include <ssod/ssod.h>
 #include <ssod/game_player.h>
+#include <ssod/game_util.h>
 #include <ssod/database.h>
+#include <ssod/aes.h>
+#include <ssod/component_builder.h>
+#include <gen/emoji.h>
+#include <ssod/lang.h>
 #include <ssod/wildcard.h>
 #include <ssod/quest.h>
 
@@ -85,6 +90,7 @@ namespace quests {
 			{ user_id }
 		);
 
+
 		for (const auto& row : rows) {
 			long quest_id = atol(row.at("quest_id"));
 			long step_index = atol(row.at("step_index"));
@@ -129,6 +135,7 @@ namespace quests {
 
 
 	dpp::task<bool> step_is_complete(player& p, long quest_id, long step_index) {
+
 		auto step_rows = co_await db::co_query(
 			"SELECT id FROM quest_steps WHERE quest_id = ? AND step_order = ?",
 			{ quest_id, step_index }
@@ -187,14 +194,153 @@ namespace quests {
 		// Match against stat names in the player if they have at least that amount
 		// (scrolls, gold, notoriety, exp, skl, day, level etc)
 		auto check_score = scorename_map.find(val);
-		if (check_score != scorename_map.end() && check_score->second >= amount) return true;
+		if (check_score != scorename_map.end() && check_score->second >= amount) {
+			return true;
+		}
 		
 		// Flag match
-		if (p.has_flag(val)) return true;
+		if (p.has_flag(val)) {
+			return true;
+		}
 		// Inventory item match
-		if (p.count_item(val) >= amount) return true;
+		if (p.count_item(val) >= amount) {
+			return true;
+		}
 
 		return false;
+	}
+
+	dpp::task<void> continue_quest_log(const dpp::interaction_create_t& event, player &p) {
+		dpp::cluster& bot = *(event.owner);
+		std::stringstream content;
+		long max_page{0}, active{0}, total_quests{0};
+		std::string lang = event.command.locale.substr(0, 2);
+
+		auto quest_count = co_await db::co_query(
+			"SELECT COUNT(*) AS total_quests, SUM(IF(status = 'in_progress', 1, 0)) AS active_quests FROM quest_progress JOIN quests ON quest_id = quests.id WHERE user_id = ? AND status IN ('in_progress', 'completed')",
+			{event.command.usr.id}
+		);
+		total_quests = atol(quest_count.at(0).at("total_quests"));
+		max_page = ceil(static_cast<double>(total_quests) / 4.0f);
+		active = atol(quest_count.at(0).at("active_quests"));
+
+		auto rs = co_await db::co_query(
+			"SELECT quests.id, quest_progress.step_index, quests.category, status, title, description FROM quest_progress JOIN quests ON quest_id = quests.id WHERE user_id = ? AND status IN ('in_progress', 'completed') ORDER BY quest_progress.updated_at DESC LIMIT ?, 4",
+			{event.command.usr.id, p.quests_page * 4}
+		);
+
+		content << "## " << tr("QUEST_LOG", event) << "\n" << tr("QUEST", event, active, total_quests - active) << "\n\n";
+
+		for (const auto& quest : rs) {
+			auto quest_steps = co_await db::co_query(
+				"SELECT * FROM quest_steps JOIN quest_progress ON quest_steps.quest_id = quest_progress.quest_id AND user_id = ? AND quest_steps.quest_id = ? WHERE step_index = step_order ORDER BY step_order",
+				{event.command.usr.id, quest.at("id")}
+			);
+			std::string description = quest.at("description"), title = quest.at("title");
+			if (lang != "en") {
+				auto translated = fetch_translations({"quests/description", "quests/title"}, quest.at("id"), lang);
+				if (!translated.empty()) {
+					description = translated.at(0).at("translation");
+					title = translated.at(1).at("translation");
+				}
+			}
+			content << "**" << title << "**";
+			bool completed{false}, failed{false};
+			if (quest.at("status") == "completed") {
+				content << " *" << tr("COMPLETED", event) << "*";
+				completed = true;
+			} else if (quest.at("status") == "failed") {
+				content << " *" << tr("FAILED", event) << "*";
+				failed = true;
+			}
+			content << "\n```ansi\n";
+			content << fmt::format(
+				fmt::runtime("\033[2;31m[{0}]\033[0m \033[2;36m{1}\033[0m"),
+				tr("quest_type_" + quest.at("category"), event),
+				description
+			);
+			content << "\n```\n";
+			for (const auto& step : quest_steps) {
+				std::string failure{step.at("failure_text")}, success{step.at("success_text")}, progress{step.at("step_text")};
+				if (lang != "en") {
+					auto translated = fetch_translations({"quest_steps/failure_text", "quest_steps/step_text"}, quest.at("id"), lang);
+					if (!translated.empty()) {
+						failure = translated.at(0).at("translation");
+						progress = translated.at(1).at("translation");
+					}
+					translated = fetch_translations({"quest_steps/success_text"}, quest.at("id"), lang);
+					if (!translated.empty()) success = translated.at(0).at("translation");
+				}
+				content << "- " << (!completed ? progress : (failed ? failure : success));
+				content << " *" << tr(completed ? "COMPLETED" : "IN_PROGRESS", event) << "*" << "\n";
+			}
+			content << "\n";
+		}
+
+		dpp::embed embed = dpp::embed()
+			.set_url("https://ssod.org/")
+			.set_footer(dpp::embed_footer{
+				.text = tr("PAGE_NAV", event, p.quests_page + 1, max_page),
+				.icon_url = bot.me.get_avatar_url(),
+				.proxy_url = "",
+			})
+			.set_colour(EMBED_COLOUR)
+			.set_description(content.str());
+
+		dpp::message m;
+		component_builder cb(m);
+
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("exit_quests"))
+			.set_label(tr("BACK", event))
+			.set_style(dpp::cos_primary)
+			.set_emoji(sprite::magic05.name, sprite::magic05.id)
+		);
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("quests_page;" + std::to_string(p.quests_page - 1)))
+			.set_style(dpp::cos_secondary)
+			.set_emoji("◀\uFE0F")
+			.set_disabled(p.book_page <= 0)
+		);
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("quests_page;" + std::to_string(p.quests_page + 1)))
+			.set_style(dpp::cos_secondary)
+			.set_emoji("▶")
+			.set_disabled(p.quests_page >= max_page - 1)
+		);
+		cb.add_component(help_button(event));
+		m = cb.get_message();
+		m.embeds = { embed };
+
+		event.reply(event.command.type == dpp::it_application_command ? dpp::ir_channel_message_with_source : dpp::ir_update_message, m.set_flags(dpp::m_ephemeral), [event, &bot, m](const auto& cc) {
+			if (cc.is_error()) {
+				bot.log(dpp::ll_error, "Internal error displaying quest log:\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+			}
+		});
+
+		co_return;
+	}
+
+
+	dpp::task<bool> quest_log_nav(const dpp::interaction_create_t& event, player &p, const std::vector<std::string>& parts) {
+
+		dpp::cluster& bot = *(event.owner);
+
+		if (parts[0] == "exit_quests" && parts.size() == 1) {
+			p.in_quest_log = false;
+			bot.log(dpp::ll_debug, "CLOSE QUEST LOG");
+			co_return true;
+		} else if (parts[0] == "quests_page" && parts.size() == 2) {
+			p.quests_page = atol(parts[1]);
+			bot.log(dpp::ll_debug, "QUESTS PAGE " + parts[1]);
+			co_return true;
+		}
+
+		co_return false;
+
 	}
 
 }

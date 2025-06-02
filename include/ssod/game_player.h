@@ -120,6 +120,14 @@ struct player {
 	 */
 	long book_page{};
 	/**
+	 * @brief Is in quest log
+	 */
+	bool in_quest_log{};
+	/**
+	 * @brief Quest log page index if in the quest log, zero based
+	 */
+	long quests_page{};
+	/**
 	 * @brief True if next hit in pve combat is to be a critical
 	 */
 	bool next_crit{};

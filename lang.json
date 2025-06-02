@@ -1,4 +1,34 @@
 {
+    "QUEST_LOG": {
+        "en": "Quest Log"
+    },
+    "quest_type_main": {
+        "en": "MAIN QUEST"
+    },
+    "quest_type_side": {
+        "en": "SIDE QUEST"
+    },
+    "quest_type_faction": {
+        "en": "FACTION QUEST"
+    },
+    "quest_type_hidden": {
+        "en": "HIDDEN QUEST"
+    },
+    "IN_PROGRESS": {
+        "en": "(In Progress)"
+    },
+    "COMPLETED": {
+        "en": "(Completed!)"
+    },
+    "FAILED":{
+        "en": "(Failed!)"
+    },
+    "OPTIONAL": {
+        "en": "(Optional)"
+    },
+    "QUEST":{
+        "en": "{} active quests, {} completed quests"
+    },
     "QUEST_STARTED": {
         "en": "New quest started: {0}",
         "bg": "Започнато е ново приключение: {0}",

@@ -177,7 +177,6 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		co_return;
 	});
 	return tr(dpp::slashcommand("cmd_start", "start_desc", bot.me.id)
-		.set_dm_permission(true)
 		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel}));
 }
 

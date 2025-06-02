@@ -95,4 +95,8 @@ namespace quests {
 	 */
 	bool goal_met(player& p, const std::string& val, long amount);
 
+	dpp::task<void> continue_quest_log(const dpp::interaction_create_t& event, player &p);
+
+	dpp::task<bool> quest_log_nav(const dpp::interaction_create_t& event, player &p, const std::vector<std::string>& parts);
+
 }

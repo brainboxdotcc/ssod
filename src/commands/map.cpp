@@ -26,7 +26,6 @@ using namespace i18n;
 dpp::slashcommand map_command::register_command(dpp::cluster& bot)
 {
 	return tr(dpp::slashcommand("cmd_map", "map_desc", bot.me.id)
-		.set_dm_permission(true)
 		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel}));
 }
 
