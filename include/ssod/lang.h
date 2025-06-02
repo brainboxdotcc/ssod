@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <dpp/dpp.h>
 #include <optional>
+#include <ssod/database.h>
 
 namespace i18n {
 
@@ -39,4 +40,6 @@ namespace i18n {
 	std::optional<item_desc> try_translate_ingredient(const item& i, const std::string& lang);
 
 	std::optional<item_desc> try_translate_item_desc(const item& i, const std::string& lang);
+
+	db::resultset fetch_translations(const std::vector<std::string>& table_cols, const std::string& row_id, const std::string& lang);
 }

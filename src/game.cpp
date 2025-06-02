@@ -40,6 +40,7 @@
 #include <ssod/achievement.h>
 #include <ssod/sentry.h>
 #include <ssod/book_reader.h>
+#include <ssod/quest.h>
 
 using namespace i18n;
 
@@ -556,6 +557,10 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		if (co_await book_nav(event, p, parts)) {
 			claimed = true;
 		}
+	} else if (p.in_quest_log) {
+		if (co_await quests::quest_log_nav(event, p, parts)) {
+			claimed = true;
+		}
 	} else if ((parts[0] == "follow_nav" || parts[0] == "follow_nav_pay" || parts[0] == "follow_nav_win") && parts.size() >= 3) {
 		if (parts[0] == "follow_nav_pay" && parts.size() >= 4) {
 			long link_cost = atol(parts[3]);
@@ -857,6 +862,10 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		p.in_grimoire = true;
 		claimed = true;
 		co_await achievement_check("ENTER_GRIMOIRE", event, p, {});
+	} else if (parts[0] == "quest_log" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
+		p.in_quest_log = true;
+		claimed = true;
+		co_await achievement_check("ENTER_QUEST_LOG", event, p, {});
 	} else if (parts[0] == "campfire" && parts.size() >= 1 && !p.in_combat && p.stamina > 0) {
 		p.in_campfire = true;
 		claimed = true;
@@ -1110,6 +1119,8 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	}
 	if (claimed) {
 		p.event = event;
+		co_await quests::autostart_if_needed(p, event);
+		co_await quests::evaluate_all(p, event);
 		update_live_player(event, p);
 		p.save(event.command.usr.id);
 		co_await continue_game(event, p);
@@ -1398,6 +1409,9 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		bot.log(dpp::ll_debug, "continue_book() id " + std::to_string(p.reading_book_id));
 		co_await continue_book(event, p);
 		co_return;
+	} else if (p.in_quest_log) {
+		co_await quests::continue_quest_log(event, p);
+		co_return;
 	} else if (p.in_inventory) {
 		co_await inventory(event, p);
 		co_return;
@@ -1645,6 +1659,14 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 			.set_style(dpp::cos_secondary)
 			.set_emoji("🦌")
 			.set_disabled(p.possessions.size() >= p.max_inventory_slots())
+		);
+
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("quest_log"))
+			.set_label(tr("QUEST_LOG", event))
+			.set_style(dpp::cos_secondary)
+			.set_emoji(sprite::scroll02.name, sprite::scroll02.id)
 		);
 
 		auto r = co_await db::co_query("SELECT hunting_json FROM game_locations WHERE id = ?", {p.paragraph});

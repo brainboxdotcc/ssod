@@ -57,7 +57,6 @@ dpp::slashcommand rename_command::register_command(dpp::cluster& bot) {
 	});
 
 	return tr(dpp::slashcommand("cmd_rename", "rename_desc", bot.me.id)
-		.set_dm_permission(true)
 		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel})
 		.add_option(dpp::command_option(dpp::co_string, "opt_item", "rename_item_desc", true).set_auto_complete(true))
 		.add_option(dpp::command_option(dpp::co_string, "opt_name", "rename_name_desc", true).set_max_value(20)));

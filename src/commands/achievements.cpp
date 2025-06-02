@@ -31,7 +31,6 @@ constexpr uint32_t page_size{6};
 
 dpp::slashcommand achievements_command::register_command(dpp::cluster& bot) {
 	return tr(dpp::slashcommand("cmd_achievements", "achievements_desc", bot.me.id)
-		.set_dm_permission(true)
 		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel})
 		.add_option(dpp::command_option(dpp::co_string, "opt_user", "user_achievements_desc", false))
 		.add_option(dpp::command_option(dpp::co_integer, "opt_page", "user_achievements_page_desc", false))
