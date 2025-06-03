@@ -18,27 +18,27 @@
  *
  ************************************************************************************/
 #include <ssod/ssod.h>
-#include <ssod/commands/gender.h>
+#include <ssod/commands/body.h>
 #include <ssod/database.h>
 #include <ssod/game_player.h>
 #include <fmt/format.h>
 
 using namespace i18n;
 
-dpp::slashcommand gender_command::register_command(dpp::cluster& bot) {
-	return tr(dpp::slashcommand("gender", "Set player's in-game gender for their profile image (male or female)", bot.me.id)
+dpp::slashcommand body_command::register_command(dpp::cluster& bot) {
+	return tr(dpp::slashcommand("body", "Set player's in-game body type for their profile image", bot.me.id)
 		.set_interaction_contexts({dpp::itc_guild, dpp::itc_bot_dm, dpp::itc_private_channel})
 		.add_option(
-			dpp::command_option(dpp::co_string, "gender", "Gender to set", true)
+			dpp::command_option(dpp::co_string, "body", "Body type to set", true)
 			.add_choice(dpp::command_option_choice("male", "male"))
 			.add_choice(dpp::command_option_choice("female", "female"))
 		));
 }
 
-dpp::task<void> gender_command::route(const dpp::slashcommand_t &event)
+dpp::task<void> body_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster& bot = *event.owner;
-	auto param = event.get_parameter("gender");
+	auto param = event.get_parameter("body");
 	std::string new_gender = std::get<std::string>(param);
 	if (co_await player_is_live(event)) {
 		event.reply(dpp::message(tr("NO_PROFILE", event)).set_flags(dpp::m_ephemeral));
