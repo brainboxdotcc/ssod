@@ -21,8 +21,8 @@
 #include <ssod/ssod.h>
 #include <ssod/command.h>
 
-struct gender_command : public command {
-	static constexpr std::string_view name{"gender"};
+struct body_command : public command {
+	static constexpr std::string_view name{"body"};
 	static dpp::slashcommand register_command(dpp::cluster& bot);
 	static dpp::task<void> route(const dpp::slashcommand_t &event);
 };

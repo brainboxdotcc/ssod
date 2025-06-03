@@ -36,7 +36,7 @@
 #include <ssod/commands/lore.h>
 #include <ssod/commands/help.h>
 #include <ssod/commands/profile.h>
-#include <ssod/commands/gender.h>
+#include <ssod/commands/body.h>
 #include <ssod/commands/vote.h>
 #include <ssod/commands/bio.h>
 #include <ssod/commands/rename.h>
@@ -192,7 +192,7 @@ namespace listeners {
 			register_command<lore_command>(bot),
 			register_command<help_command>(bot),
 			register_command<profile_command>(bot),
-			register_command<gender_command>(bot),
+			register_command<body_command>(bot),
 			register_command<vote_command>(bot),
 			register_command<bio_command>(bot),
 			register_command<rename_command>(bot),
