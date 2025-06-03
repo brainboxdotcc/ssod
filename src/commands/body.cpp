@@ -40,8 +40,7 @@ dpp::task<void> body_command::route(const dpp::slashcommand_t &event)
 	dpp::cluster& bot = *event.owner;
 	auto param = event.get_parameter("body");
 	std::string new_gender = std::get<std::string>(param);
-	static_cast<void>(get_live_player(event));
-	if (co_await player_is_live(event)) {
+	if (!co_await player_is_live(event)) {
 		event.reply(dpp::message(tr("NO_PROFILE", event)).set_flags(dpp::m_ephemeral));
 		co_return;
 	}
