@@ -117,15 +117,13 @@ dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 	}
 
 	auto premium = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { rs[0].at("user_id") });
-	if (!event.command.entitlements.empty() || !premium.empty()) {
-		auto bio = co_await db::co_query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
-		if (!bio.empty()) {
-			if (!bio[0].at("bio").empty()) {
-				embed.set_description(content + "\n### " + tr("BIOGRAPHY", event) + "\n" + dpp::utility::markdown_escape(bio[0].at("bio")) + "\n\n");
-			}
-			if (!bio[0].at("image_name").empty()) {
-				embed.set_image("https://premium.ssod.org/profiles/" + bio[0].at("image_name"));
-			}
+	auto bio = co_await db::co_query("SELECT * FROM character_bio WHERE user_id = ?", { rs[0].at("user_id") });
+	if (!bio.empty()) {
+		if (!bio[0].at("bio").empty()) {
+			embed.set_description(content + "\n### " + tr("BIOGRAPHY", event) + "\n" + dpp::utility::markdown_escape(bio[0].at("bio")) + "\n\n");
+		}
+		if (!bio[0].at("image_name").empty() && (!event.command.entitlements.empty() || !premium.empty())) {
+			embed.set_image("https://premium.ssod.org/profiles/" + bio[0].at("image_name"));
 		}
 	}
 	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
