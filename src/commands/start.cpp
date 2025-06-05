@@ -28,6 +28,7 @@
 #include <gen/emoji.h>
 #include <ssod/config.h>
 #include <ssod/neutrino_api.h>
+#include <ssod/wildcard.h>
 #include <ssod/sentry.h>
 
 using namespace i18n;
@@ -170,6 +171,10 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			move_from_registering_to_live(event, p_old);
 			co_await db::co_query("DELETE FROM game_default_spells WHERE user_id = ?", {event.command.usr.id});
 			co_await db::co_query("INSERT INTO game_default_spells (user_id, name, flags) SELECT user_id, item_desc, item_flags FROM game_owned_items WHERE user_id = ? AND item_flags in ('HERB','SPELL')", {event.command.usr.id});
+			std::string lower_race = replace_string(dpp::lowercase(std::string(::race(p_old.race))), " ", "_");
+			std::string lower_prof = dpp::lowercase(std::string(::profession(p_old.profession)));
+			std::string text = tr("backstory_" + lower_race + "_" + lower_prof, event);
+			co_await db::co_query("INSERT INTO character_bio (user_id, bio) VALUES(?, ?) ON DUPLICATE KEY UPDATE bio = ?", { event.command.usr.id, text, text });
 			co_await continue_game(event, p_old);
 			bot.log(dpp::ll_info, "New player creation: " + name + " for id: " + event.command.usr.id.str());
 		}
