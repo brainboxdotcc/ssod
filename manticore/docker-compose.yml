@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  manticore:
+    image: manticoresearch/manticore
+    container_name: manticore
+    ports:
+      - "9306:9306"
+      - "9308:9308"
+    volumes:
+      - ./manticore_data:/var/lib/manticore
+    restart: unless-stopped
+
