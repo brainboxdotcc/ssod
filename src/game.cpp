@@ -99,6 +99,28 @@ dpp::task<bool> npc_chat(const dpp::interaction_create_t& event, player& p, cons
 
 	auto& config = config::get("npc_chat");
 
+	/**
+	 * Dispatches an AI dialogue request to the NPC chat backend API.
+	 *
+	 * This function constructs a JSON payload including:
+	 *  - `message`: The player's raw input.
+	 *  - `discord_id`: Used for per-user logging and moderation tracking.
+	 *  - `npc_lore`: The vendor or NPC's static backstory (e.g. "sells armour in Larton"). Their name
+	 *    will be appended automatically.
+	 *  - `npc_rag`: Optional context retrieved dynamically via a RAG (Retrieval-Augmented Generation)
+	 *    system powered by Manticore, using full-text lore chunks tied to the current world state.
+	 *    Even if no explicit text is provided, the player's message will still be used to query
+	 *    Manticore for relevant lore snippets.
+	 *
+	 * The backend (Laravel) merges these fields into a structured prompt.
+	 *  - It then validates the output with a separate prompt acting as a strict filter to remove off-topic
+	 *    or policy-violating responses.
+	 *  - Inference is routed through a two-stage pipeline:
+	 *    → Primary: Free Cloudflare AI (LLaMA 3.1 8B) if the daily 10k neuron budget allows.
+	 *    → Fallback: Local mistral-7b-instruct via llama.cpp when Cloudflare usage is exhausted or fails.
+	 *
+	 * The returned reply is truncated to 512 characters to fit the DB field limit.
+	 */
 	bot.request(
 		config.at("url"),
 		dpp::m_post,
@@ -126,7 +148,7 @@ dpp::task<bool> npc_chat(const dpp::interaction_create_t& event, player& p, cons
 		}, json({
 			{"message", message},
 			{"discord_id", event.command.usr.id.str()},
-			{"npc_lore", selected_npc.at("backstory")},
+			{"npc_lore", selected_npc.at("backstory") + "\nNPC's Name: " + selected_npc.at("name")},
 			{"npc_rag", selected_npc.at("rag")}}
 		).dump(),
 		"application/json",
