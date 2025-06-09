@@ -1462,15 +1462,29 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 
 	m.add_embed(embed);
 	int64_t t = time(nullptr) - 600;
-	auto others = co_await db::co_query("SELECT * FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id});
+	auto others = co_await db::co_query("SELECT name, false as is_npc, lastuse FROM game_users WHERE lastuse > ? AND paragraph = ? AND user_id != ? UNION SELECT name, true as is_npc, UNIX_TIMESTAMP() AS lastuse FROM vendor_ai_lore WHERE location_id = ? ORDER BY lastuse DESC LIMIT 25", {t, p.paragraph, event.command.usr.id, p.paragraph});
+	bool has_npcs_here = false;
+	int real_people = 0;
+
 	if (others.size() > 0 || location.dropped_items.size() > 0) {
 		std::string list_others, list_dropped, text;
 		for (const auto & other : others) {
-			list_others += dpp::utility::markdown_escape(other.at("name"), true) + ", ";
+			list_others += dpp::utility::markdown_escape(other.at("name"), true);
+			if (other.at("is_npc") == "1") {
+				list_others += " *" + tr("NPC", event) + "*";
+				has_npcs_here = true;
+			} else {
+				real_people++;
+			}
+			list_others += ", ";
 		}
 		if (list_others.length()) {
 			list_others = list_others.substr(0, list_others.length() - 2);
-			text += "**__" + tr("OTHERS", event) + "__**\n" + list_others + "\n\n";
+			text += "**__" + tr("OTHERS", event) + "__**\n" + list_others + "\n";
+			if (has_npcs_here) {
+				text += "\n*" + tr("CHAT_NPC", event) + "*\n";
+			}
+			text += "\n";
 		}
 		if (!is_fight && location.dropped_items.size()) {
 			for (const auto & dropped : location.dropped_items) {
@@ -1688,7 +1702,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 	}
 
 	if (enabled_links > 0 && p.stamina > 0 && p.after_fragment == 0) {
-		if (!others.empty()) {
+		if (real_people > 0) {
 			/* Can fight other players, present option */
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
