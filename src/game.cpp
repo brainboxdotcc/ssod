@@ -139,7 +139,6 @@ dpp::task<bool> npc_chat(const dpp::interaction_create_t& event, player& p, cons
 					{"chat", selected_npc.at("id"), p.paragraph, dpp::utility::utf8substr(npc_reply, 0, 512)}
 				);
 				bot.log(dpp::ll_info, "NPC reply: " + selected_npc.at("name") + " -> " + npc_reply);
-				std::cout << "CG 4\n";
 				continue_game(event, p, true).sync_wait();
 			}
 			catch (const std::exception& e) {
