@@ -41,6 +41,7 @@
 #include <ssod/sentry.h>
 #include <ssod/book_reader.h>
 #include <ssod/quest.h>
+#include <ssod/config.h>
 
 using namespace i18n;
 
@@ -59,6 +60,80 @@ dpp::task<void> send_chat(dpp::snowflake user_id, uint32_t paragraph, const std:
 			  {type, user_id, paragraph, dpp::utility::utf8substr(message, 0, 140)});
 	}
 	co_return;
+}
+
+dpp::task<bool> npc_chat(const dpp::interaction_create_t& event, player& p, const std::string& message, dpp::cluster& bot) {
+	auto npcs = co_await db::co_query("SELECT * FROM vendor_ai_lore WHERE location_id = ?", {p.paragraph});
+	if (npcs.empty()) {
+		co_return false;
+	}
+
+	db::row selected_npc;
+	bool chosen = true;
+	for (const auto& npc : npcs) {
+		std::string npc_flags = npc.at("flags");
+		if (npc_flags.empty()) {
+			selected_npc = npc;
+			chosen = true;
+			break;
+		}
+		auto flags = dpp::utility::tokenize(npc_flags, ",");
+		bool skip = false;
+		for (const auto& flag : flags) {
+			if (flag.substr(0, 1) == "!" && p.has_flag(flag.substr(1, flag.length() - 1))) {
+				skip = true;
+			}
+			if (flag.substr(0, 1) != "!" && !p.has_flag(flag)) {
+				skip = true;
+			}
+		}
+		if (!skip) {
+			selected_npc = npc;
+			chosen = true;
+			break;
+		}
+	}
+	if (!chosen) {
+		co_return false;
+	}
+
+	auto& config = config::get("npc_chat");
+
+	bot.request(
+		config.at("url"),
+		dpp::m_post,
+		[&bot, p, event, selected_npc](const auto& response) {
+			try {
+				const json reply = json::parse(response.body);
+
+				if (!reply.contains("reply")) {
+					std::string error = reply.at("message");
+					bot.log(dpp::ll_warning, "NPC Chat API error: " + error);
+					return;
+				}
+				std::string npc_reply = reply.at("reply");
+				db::query(
+					"INSERT INTO game_chat_events (event_type, npc_id, location_id, message) VALUES(?,?,?,?)",
+					{"chat", selected_npc.at("id"), p.paragraph, dpp::utility::utf8substr(npc_reply, 0, 512)}
+				);
+				bot.log(dpp::ll_info, "NPC reply: " + selected_npc.at("name") + " -> " + npc_reply);
+				std::cout << "CG 4\n";
+				continue_game(event, p, true).sync_wait();
+			}
+			catch (const std::exception& e) {
+				bot.log(dpp::ll_warning, "NPC Chat API error: " + std::string(e.what()) + ": status=" + std::to_string(response.status) + ": " + response.body);
+			}
+		}, json({
+			{"message", message},
+			{"discord_id", event.command.usr.id.str()},
+			{"npc_lore", selected_npc.at("backstory")},
+			{"npc_rag", selected_npc.at("rag")}}
+		).dump(),
+		"application/json",
+		{{ "X-API-Key", config.at("key")}}
+	);
+
+	co_return true;
 }
 
 dpp::task<void> do_toasts(player &p, component_builder& cb) {
@@ -158,7 +233,14 @@ dpp::task<void> death(player& p, component_builder& cb) {
 
 dpp::task<void> add_chat(std::string& text, const dpp::interaction_create_t& event, long paragraph_id, uint64_t guild_id) {
 	text += "\n__**" + tr("CHAT", event) + "**__\n```ansi\n";
-	auto rs = co_await db::co_query("SELECT *, TIME(sent) AS message_time FROM game_chat_events JOIN game_users ON game_chat_events.user_id = game_users.user_id WHERE sent > now() - 6000 AND (location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) ORDER BY sent DESC, id DESC LIMIT 5", {paragraph_id, guild_id});
+	auto rs = co_await db::co_query(
+		"SELECT game_chat_events.*, TIME(sent) AS message_time, game_users.name as player_name, vendor_ai_lore.name as npc_name FROM game_chat_events\n"
+		"LEFT JOIN game_users ON game_chat_events.user_id = game_users.user_id "
+		"LEFT JOIN vendor_ai_lore ON game_chat_events.npc_id = vendor_ai_lore.id "
+		"WHERE sent > now() - 6000 AND (game_chat_events.location_id = ? OR (guild_id = ? AND guild_id IS NOT NULL and event_type = 'chat')) "
+		"ORDER BY sent DESC, game_chat_events.id DESC LIMIT 5",
+		{paragraph_id, guild_id}
+	);
 	for (size_t x = 0; x < 5 - rs.size(); ++x) {
 		text += std::string(80, ' ') + "\n";
 	}
@@ -169,30 +251,32 @@ dpp::task<void> add_chat(std::string& text, const dpp::interaction_create_t& eve
 		if (row.at("event_type") == "chat") {
 			if (row.at("location_id") == std::to_string(paragraph_id) || row.at("guild_id").empty()) {
 				text += fmt::format("\033[2;31m[{}]\033[0m <\033[2;34m{}\033[0m> {}\n",
-						    row.at("message_time"),
-						    dpp::utility::markdown_escape(row.at("name")),
-						    dpp::utility::markdown_escape(row.at("message")));
+					row.at("message_time"),
+					!row.at("player_name").empty() ? dpp::utility::markdown_escape(row.at("player_name")) : row.at("npc_name") + " \033[0m\033[41;15m" + tr("NPC", event) + "\033[2;31m",
+					dpp::utility::markdown_escape(row.at("message"))
+				);
 			} else if (row.at("guild_id") == std::to_string(guild_id)) {
 				text += fmt::format("\033[2;31m[{}]\033[0m \033[2;35m[G]\033[0m <\033[2;34m{}\033[0m> {}\n",
-						    row.at("message_time"),
-						    dpp::utility::markdown_escape(row.at("name")),
-						    dpp::utility::markdown_escape(row.at("message")));
+					row.at("message_time"),
+					!row.at("player_name").empty() ? dpp::utility::markdown_escape(row.at("player_name")) : row.at("npc_name") + " \033[0m\033[41;15m" + tr("NPC", event) + "\033[2;31m",
+					dpp::utility::markdown_escape(row.at("message"))
+				);
 			}
 		} else if (row.at("event_type") == "join") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), tr("WANDERS_IN", event));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("player_name")), tr("WANDERS_IN", event));
 		} else  if (row.at("event_type") == "part") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), tr("LEAVES", event));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("player_name")), tr("LEAVES", event));
 		} else  if (row.at("event_type") == "drop") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("name"), tr("DROPS", event), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("player_name"), tr("DROPS", event), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
 		} else  if (row.at("event_type") == "pickup") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m picks up {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m picks up {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("player_name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
 		} else  if (row.at("event_type") == "combat") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} \033[2;34m{}\033[0m to combat!\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), tr("CHALLENGES", event), dpp::utility::markdown_escape(row.at("message")), tr("TO_COMBAT", event));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} \033[2;34m{}\033[0m to combat!\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("player_name")), tr("CHALLENGES", event), dpp::utility::markdown_escape(row.at("message")), tr("TO_COMBAT", event));
 		} else  if (row.at("event_type") == "death") {
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}{}...\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("name")), tr("DIED", event), row.at("message").empty() ? "" : tr("FIGHTING", event) + " \033[2;34m" + dpp::utility::markdown_escape(row.at("message")) + "\033[0m");
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}{}...\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("player_name")), tr("DIED", event), row.at("message").empty() ? "" : tr("FIGHTING", event) + " \033[2;34m" + dpp::utility::markdown_escape(row.at("message")) + "\033[0m");
 		}
 	}
 	text += "```\n";
@@ -251,8 +335,16 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 			bot.log(dpp::ll_info, p.event.command.locale + " " + " Chat: [L(" + std::to_string(p.paragraph) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
 			co_await send_chat(event.command.usr.id, p.paragraph, message);
 		}
+		bool is_npc = co_await npc_chat(event, p, message, bot);
 		co_await achievement_check("SEND_CHAT", event, p, {{"message", message}});
-		claimed = true;
+		if (is_npc) {
+			event.thinking(true);
+			p.event = event;
+			update_live_player(event, p);
+			claimed = false;
+		} else {
+			claimed = true;
+		}
 	} else if (custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
 		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
 		auto bank_amount = co_await db::co_query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
@@ -1119,8 +1211,6 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	}
 	if (claimed) {
 		p.event = event;
-		co_await quests::autostart_if_needed(p, event);
-		co_await quests::evaluate_all(p, event);
 		update_live_player(event, p);
 		p.save(event.command.usr.id);
 		co_await continue_game(event, p);
@@ -1392,7 +1482,7 @@ dpp::task<uint64_t> get_guild_id(const player& p) {
 	co_return 0;
 }
 
-dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) {
+dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, bool long_response) {
 	dpp::cluster& bot = *(event.owner);
 
 	if (p.in_combat) {
@@ -1426,6 +1516,10 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 		co_return;
 	}
 	paragraph location = co_await paragraph::create(p.paragraph, p, event.command.usr.id);
+
+	co_await quests::autostart_if_needed(p, event);
+	co_await quests::evaluate_all(p, event);
+
 	/* If the current paragraph is an empty page with nothing but a link, skip over it.
 	 * These link pages are old data and not relavent to gameplay. Basically just a paragraph
 	 * that says "Turn to X" which were an anti-cheat holdover from book-form content.
@@ -1478,7 +1572,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 			}
 			list_others += ", ";
 		}
-		if (list_others.length()) {
+		if (!list_others.empty()) {
 			list_others = list_others.substr(0, list_others.length() - 2);
 			text += "**__" + tr("OTHERS", event) + "__**\n" + list_others + "\n";
 			if (has_npcs_here) {
@@ -1745,9 +1839,13 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p) 
 	cb.add_component(help_button(event));
 	m = cb.get_message();
 
-	event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
-		if (cc.is_error()) {{
-			bot.log(dpp::ll_error, "Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
-		}}
-	});
+	if (long_response) {
+		event.edit_response(m.set_flags(dpp::m_ephemeral));
+	} else {
+		event.reply(event.command.type == dpp::it_component_button ? dpp::ir_update_message : dpp::ir_channel_message_with_source, m.set_flags(dpp::m_ephemeral), [event, &bot, location, m](const auto& cc) {
+			if (cc.is_error()) {{
+					bot.log(dpp::ll_error, "Internal error displaying location " + std::to_string(location.id) + ":\n```json\n" + cc.http_info.body + "\n```\nMessage:\n```json\n" + m.build_json() + "\n```");
+				}}
+		});
+	}
 }
