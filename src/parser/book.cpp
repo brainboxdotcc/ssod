@@ -76,7 +76,7 @@ struct book_tag : public tag {
 			}
 		}
 
-		output << flavour_text + "\n**" << sprite::book.get_mention() << " " << book_title << "**\nBy " << book_author << "\n\n";
+		output << "\n\n" << flavour_text + "\n**" << sprite::book.get_mention() << " " << book_title << "**\nBy " << book_author << "\n\n";
 
 		p.navigation_links.push_back(nav_link{ .paragraph = p.id, .type = nav_type_book, .cost = book_id, .monster = {}, .buyable = {}, .prompt = book_author, .answer = book_title, .label = "" });
 		p.words++;
