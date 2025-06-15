@@ -232,7 +232,7 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id)
 				links++;
 				*output << directions[links];
 				if (current_player.gold < atol(cost)) {
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
+					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = tr("PAYLINK", current_player.event, cost) });
 				} else {
 					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
 				}

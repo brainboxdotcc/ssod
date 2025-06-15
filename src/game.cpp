@@ -1678,6 +1678,9 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 		}
 		if (n.type == nav_type_disabled_link || (p.gold < n.cost && n.type == nav_type_paylink) || (p.gold < n.cost && n.type == nav_type_shop)) {
 			comp.set_disabled(true);
+			if (n.type == nav_type_disabled_link && !n.label.empty()) {
+				label = n.label;
+			}
 		}
 		switch (n.type) {
 			case nav_type_paylink:
