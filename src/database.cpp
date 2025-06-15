@@ -242,7 +242,7 @@ namespace db {
 			exit(2);
 		}
 #ifdef DPP_CORO
-		std::thread([]() {
+		std::thread([&bot]() {
 			dpp::utility::set_thread_name("sql/coro");
 			while (true) {
 				cached_query_results qr;
@@ -260,7 +260,12 @@ namespace db {
 				if (!qr.format.empty()) {
 					auto results = query(qr.format, qr.parameters);
 					if (qr.callback) {
-						qr.callback(results);
+						try {
+							qr.callback(results);
+						}
+						catch (const std::exception& e) {
+							bot.log(dpp::ll_warning, "Exception in SQL query callback: " + std::string(e.what()));
+						}
 					}
 				}
 			}
@@ -549,7 +554,11 @@ namespace db {
 								thisrow[a] = b;
 								s_field_count++;
 							}
-							rv.emplace_back(thisrow);
+							if (!thisrow.empty()) {
+								rv.emplace_back(thisrow);
+							} else {
+								log_error(format, "DB: Spurious empty fieldset");
+							}
 						}
 					}
 				}
