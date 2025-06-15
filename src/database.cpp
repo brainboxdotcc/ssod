@@ -551,7 +551,7 @@ namespace db {
 							while (s_field_count < mysql_num_fields(a_res)) {
 								std::string a = (fields[s_field_count].name ? fields[s_field_count].name : "");
 								std::string b = is_null[s_field_count] ? "" : std::string(string_buffers[s_field_count], lengths[s_field_count]);
-								thisrow[a] = b;
+								thisrow.emplace(a, b);
 								s_field_count++;
 							}
 							if (!thisrow.empty()) {
