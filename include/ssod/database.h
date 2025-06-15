@@ -33,7 +33,39 @@ namespace db {
 	/**
 	 * @brief Definition of a row in a result set
 	 */
-	using row = std::map<std::string, std::string>;
+	struct row {
+		std::map<std::string, std::string> fields;
+
+		[[nodiscard]] inline const std::string at(const std::string& index) const {
+			try {
+				return fields.at(index);
+			}
+			catch (const std::exception&) {
+				return "";
+			}
+		}
+
+		inline void emplace(const std::string& k, const std::string& v) {
+			fields.emplace(k, v);
+		}
+
+		[[nodiscard]] inline auto begin() const {
+			return fields.begin();
+		}
+
+		[[nodiscard]] inline auto end() const {
+			return fields.end();
+		}
+
+		[[nodiscard]] inline bool empty() const {
+			return fields.empty();
+		}
+
+		[[nodiscard]] inline size_t size() const {
+			return fields.size();
+		}
+
+	};
 
 	/**
 	 * @brief Definition of a result set. Supports iteration and accessing its
@@ -68,8 +100,13 @@ namespace db {
 		 * @param index row to rerieve
 		 * @return row
 		 */
-		[[nodiscard]] inline const row& at(size_t index) const {
-			return rows.at(index);
+		[[nodiscard]] inline const row at(size_t index) const {
+			try {
+				return rows.at(index);
+			}
+			catch (const std::exception&) {
+				return {};
+			}
 		}
 
 		/**
