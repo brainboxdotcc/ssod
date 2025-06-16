@@ -22,6 +22,7 @@
 #include <map>
 #include <string>
 #include <variant>
+#include <ssod/ssod.h>
 #include <dpp/dpp.h>
 
 /**
@@ -43,6 +44,14 @@ namespace db {
 			catch (const std::exception&) {
 				return "";
 			}
+		}
+
+		[[nodiscard]] inline long number(const std::string& index) const {
+			return atol(at(index));
+		}
+
+		[[nodiscard]] inline bool boolean(const std::string& index) const {
+			return number(index);
 		}
 
 		inline void emplace(const std::string& k, const std::string& v) {

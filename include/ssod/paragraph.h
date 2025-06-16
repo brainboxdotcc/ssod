@@ -295,23 +295,6 @@ protected:
 };
 
 /**
- * Extract the next string value from a key/value list, e.g.
- * if the string contains 'NAME="Big Monster"' this will return
- * Big Monster.
- * @param p_text text to extract from
- * @return extracted string
- */
-std::string extract_value(const std::string& p_text);
-
-/**
- * Extract the next numeric value from a key/value list, e.g.
- * if the string contains 'A="1"' this will return 1.
- * @param p_text text to extract from
- * @return extracted number
- */
-long extract_value_number(const std::string& p_text);
-
-/**
  * Returns true if a global flag is set
  * @param flag flag name
  * @return awaitable true if set

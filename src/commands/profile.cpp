@@ -53,7 +53,7 @@ dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 		event.reply(dpp::message(tr(self ? "NOPROFILE" : "NOSUCHUSER", event)).set_flags(dpp::m_ephemeral));
 		co_return;
 	}
-	p.experience = atol(rs[0].at("experience"));
+	p.experience = rs[0].number("experience");
 	auto g = co_await db::co_query("SELECT * FROM guild_members JOIN guilds ON guild_id = guilds.id WHERE user_id = ?", {rs[0].at("user_id")});
 	auto status = co_await db::co_query("SELECT passive_effect_status.*, on_end, on_after, type, requirements, duration, withdrawl FROM passive_effect_status join passive_effect_types on passive_effect_id = passive_effect_types.id where user_id = ?", {rs[0].at("user_id")});
 	std::stringstream effects;
@@ -82,7 +82,7 @@ dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 		content += "\n\n**" + tr("GUILD", event) + ":** " + dpp::utility::markdown_escape(g[0].at("name"));
 	}
 
-	player p2(atol(rs[0].at("user_id")), false);
+	player p2(rs[0].number("user_id"), false);
 
 	std::string file = matrix_image((player_race)atoi(rs[0].at("race")), (player_profession)atoi(rs[0].at("profession")), rs[0].at("gender") == "male");
 

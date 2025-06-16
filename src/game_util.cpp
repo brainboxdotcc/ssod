@@ -61,10 +61,10 @@ dpp::task<sale_info> get_sale_info(const std::string& name) {
 			}
 		}
 	} else {
-		value = atol(res[0].at("value"));
-		sellable = res[0].at("sellable") == "1";
+		value = res[0].number("value");
+		sellable = res[0].boolean("sellable");
 		flags = res[0].at("flags");
-		qi = res[0].at("quest_item") == "1";
+		qi = res[0].boolean("quest_item");
 	}
 	co_return sale_info{
 		.flags = flags,
@@ -222,5 +222,5 @@ spell_info get_spell_info(const std::string& name) {
 	if (rs.empty()) {
 		return {};
 	}
-	return { .name = rs[0].at("name"), .component_herb = rs[0].at("herb"), .combat_rating = atol(rs[0].at("combat_rating")), .mana_cost = atol(rs[0].at("mana_cost")) };
+	return { .name = rs[0].at("name"), .component_herb = rs[0].at("herb"), .combat_rating = rs[0].number("combat_rating"), .mana_cost = rs[0].number("mana_cost") };
 }

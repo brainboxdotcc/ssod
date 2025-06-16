@@ -659,8 +659,8 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 	long banked{0};
 	bool critical{};
 	if (!r.empty()) {
-		long counter = atol(r[0].at("critical_counter"));
-		banked = atol(r[0].at("banked_criticals"));
+		long counter = r[0].number("critical_counter");
+		banked = r[0].number("banked_criticals");
 		if (banked > 0 && p.next_crit) {
 			co_await db::co_query("UPDATE criticals SET banked_criticals = banked_criticals - 1 WHERE user_id = ?", {event.command.usr.id});
 			critical = true;
@@ -764,10 +764,10 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 				long increment = std::min(std::max(1L, p.luck + 1), 12L);
 				co_await db::co_query("INSERT INTO criticals (user_id, critical_counter, banked_criticals) VALUES(?,1,0) ON DUPLICATE KEY UPDATE critical_counter = critical_counter + ?", {event.command.usr.id, increment});
 				auto r = co_await db::co_query("SELECT * FROM criticals WHERE user_id = ?", {event.command.usr.id});
-				long counter = atol(r[0].at("critical_counter"));
+				long counter = r[0].number("critical_counter");
 				if (counter > 1000 + (p.get_level() * 4)) {
 					/* User gains a new banked critical */
-					long new_banked = atol(r[0].at("banked_criticals")) + 1;
+					long new_banked = r[0].number("banked_criticals") + 1;
 					if (new_banked <= p.max_crits()) {
 						co_await db::co_query("UPDATE criticals SET critical_counter = 0, banked_criticals = ? WHERE user_id = ?", {new_banked, event.command.usr.id});
 					} else {

@@ -1491,7 +1491,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 		std::string list_others, list_dropped, text;
 		for (const auto & other : others) {
 			list_others += dpp::utility::markdown_escape(other.at("name"), true);
-			if (other.at("is_npc") == "1") {
+			if (other.boolean("is_npc")) {
 				list_others += " *" + tr("NPC", event) + "*";
 				has_npcs_here = true;
 			} else {

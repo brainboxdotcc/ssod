@@ -28,26 +28,11 @@ struct i_tag : public tag {
 		p.trader = true;
 		size_t max = current_player.max_inventory_slots();
 		// purchase item tag
-		paragraph_content >> p_text; // always: NAME="ItemName"
-		std::string Value{"[none]"}, Cost;
-		std::string ItemName = extract_value(p_text);
-		paragraph_content >> p_text; // may be: VALUE="Flags" / COST="cost">
-		while (p_text.find("=") == std::string::npos) {
-			ItemName += " " + p_text;
-			paragraph_content >> p_text;
-			if (ItemName.length() && *ItemName.rbegin() == '"') {
-				ItemName = remove_last_char(ItemName);
-			}
-		}
+		auto attributes = parse_attributes(paragraph_content);
+		std::string Value = attributes["value"].empty() ? "[none]" : attributes["value"];
+		std::string ItemName = attributes["name"];
+		std::string Cost = attributes["cost"];
 
-		if (p_text.length() && *p_text.rbegin() != '>') {
-			// process VALUE token
-			Value = extract_value(p_text);
-			paragraph_content >> p_text; // read COST token that MUST now follow on
-		}
-
-		// process COST token here: COST="cost">
-		Cost = extract_value(p_text);
 		output << "\n**Buy: " << ItemName;
 		bool special{false};
 		if (current_player.has_possession(ItemName) || current_player.has_spell(ItemName) || current_player.has_herb(ItemName)) {

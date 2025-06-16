@@ -49,3 +49,52 @@ dpp::task<bool> route_tag(paragraph& p, std::string& p_text, std::stringstream& 
 	}
 	co_return false;
 }
+
+std::unordered_map<std::string, std::string> parse_attributes(std::stringstream& ss) {
+	std::unordered_map<std::string, std::string> attributes;
+	std::string token;
+
+	while (ss >> token) {
+		if (token == ">") {
+			break;
+		}
+
+		bool ends_with_gt = false;
+		if (!token.empty() && token.back() == '>') {
+			ends_with_gt = true;
+			token.pop_back(); // remove '>'
+		}
+
+		auto eq_pos = token.find('=');
+		if (eq_pos == std::string::npos) {
+			attributes[dpp::lowercase(token)] = "";
+		} else {
+			std::string key = token.substr(0, eq_pos);
+			std::string value = token.substr(eq_pos + 1);
+
+			if (!value.empty() && value[0] == '"') {
+				std::string quoted = value;
+				if (quoted.back() != '"') {
+					std::string fragment;
+					while (ss >> fragment) {
+						quoted += ' ' + fragment;
+						if (!fragment.empty() && fragment.back() == '"') {
+							break;
+						}
+					}
+				}
+				if (quoted.size() >= 2 && quoted.front() == '"' && quoted.back() == '"') {
+					value = quoted.substr(1, quoted.size() - 2);
+				}
+			}
+
+			attributes[dpp::lowercase(key)] = value;
+		}
+
+		if (ends_with_gt) {
+			break;
+		}
+	}
+
+	return attributes;
+}
