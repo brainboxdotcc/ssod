@@ -27,13 +27,12 @@ struct sneaktest_tag : public tag {
 	sneaktest_tag() { register_tag<sneaktest_tag>(); }
 	static constexpr std::string_view tags[]{"<sneaktest"};
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		paragraph_content >> p_text;
 
-		extract_to_quote(p_text, paragraph_content, '"');
+		auto attributes = parse_attributes(paragraph_content);
 
-		std::string monster_name = extract_value(p_text);
-		paragraph_content >> p_text;
-		long monster_sneak = extract_value_number(p_text);
+		std::string monster_name = attributes["name"];
+		long monster_sneak = atol(attributes["sneak"]);
+
 		output << "\n**" << monster_name << "** *" << tr("SNEAK", current_player.event) << " " << monster_sneak << "*,";
 		p.auto_test = current_player.sneak_test(monster_sneak);
 		output << (p.auto_test ? " **" + tr("PASS", current_player.event) + "**!\n" : " **" + tr("FAIL", current_player.event) + "**!\n");

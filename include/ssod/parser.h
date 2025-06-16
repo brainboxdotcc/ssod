@@ -88,3 +88,5 @@ struct parse_end_exception : public std::exception {
 };
 
 dpp::task<bool> route_tag(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player, bool display);
+
+std::unordered_map<std::string, std::string> parse_attributes(std::stringstream& ss);

@@ -45,7 +45,7 @@ namespace quests {
 
 		co_return quest_metadata{
 			.title = rows[0].at("title"),
-			.total_steps = atol(rows[0].at("total_steps"))
+			.total_steps = rows[0].number("total_steps")
 		};
 	}
 
@@ -92,8 +92,8 @@ namespace quests {
 
 
 		for (const auto& row : rows) {
-			long quest_id = atol(row.at("quest_id"));
-			long step_index = atol(row.at("step_index"));
+			long quest_id = row.number("quest_id");
+			long step_index = row.number("step_index");
 
 			if (co_await step_is_complete(p, quest_id, step_index)) {
 				auto meta = co_await get_quest_metadata(quest_id);
@@ -155,7 +155,7 @@ namespace quests {
 		for (const auto& goal : goal_rows) {
 			const std::string& value = goal.at("value");
 			int required = atol(goal.at("condition_value"));
-			bool optional = (goal.at("optional") == "1");
+			bool optional = (goal.boolean("optional"));
 
 			if (!goal_met(p, value, required) && !optional) {
 				co_return false;

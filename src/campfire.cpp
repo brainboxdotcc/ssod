@@ -83,8 +83,8 @@ dpp::task<void> campfire(const dpp::interaction_create_t& event, player p) {
 			}
 		}
 		content << sprite::rawmeat.get_mention() << " ";
-		if (stack.at("qty") != "1") {
-			content << stack.at("qty") << "x ";
+		if (stack.number("qty") != 1) {
+			content << stack.number("qty") << "x ";
 		}
 		content << item << "\n";
 	}

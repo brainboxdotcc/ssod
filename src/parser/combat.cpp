@@ -44,35 +44,25 @@ struct combat_tag : public tag {
 		// combat tag
 		p.links++;
 		p.safe = false;
-		bool leveled{};
-		paragraph_content >> p_text;
-		if (dpp::lowercase(p_text) == "leveled") {
-			leveled = true;
-			paragraph_content >> p_text;
-		}
-		extract_to_quote(p_text, paragraph_content, '"');
-		std::string monster_name = extract_value(p_text);
-		std::string english_monster_name{monster_name};
-		paragraph_content >> p_text;
-		long monster_skill = extract_value_number(p_text);
+
+		auto attributes = parse_attributes(paragraph_content);
+
+		bool leveled = attributes.contains("leveled");
+		std::string monster_name = attributes["name"];
+		std::string english_monster_name = monster_name;
+
+		long monster_skill   = atol(attributes["skill"]);
+		long monster_stamina = atol(attributes["stamina"]);
+		long monster_armour  = atol(attributes["armour"]);
+		long monster_weapon  = atol(attributes["weapon"]);
+
 		if (leveled) {
-			monster_skill += current_player.get_level() / 4;
-		}
-		paragraph_content >> p_text;
-		long monster_stamina = extract_value_number(p_text);
-		if (leveled) {
+			monster_skill   += current_player.get_level() / 4;
 			monster_stamina += current_player.get_level();
+			monster_armour   = std::min(monster_armour + current_player.get_level() / 6L, 6L);
+			monster_weapon   = std::min(monster_weapon + current_player.get_level() / 6L, 6L);
 		}
-		paragraph_content >> p_text;
-		long monster_armour = extract_value_number(p_text);
-		if (leveled) {
-			monster_armour = std::min(monster_armour + current_player.get_level() / 6L, 6L);
-		}
-		paragraph_content >> p_text;
-		long monster_weapon = extract_value_number(p_text);
-		if (leveled) {
-			monster_weapon = std::min(monster_weapon + current_player.get_level() / 6L, 6L);
-		}
+
 		if (p.current_fragment == current_player.after_fragment) {
 			// when combat link is finished it goes back to the
 			// paragraph it came from, but the next fragment of it.

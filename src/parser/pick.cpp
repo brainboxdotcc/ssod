@@ -25,11 +25,11 @@ struct pick_tag : public tag {
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		// pick up free items (one-choice)
 		size_t max = current_player.max_inventory_slots();
-		paragraph_content >> p_text;
-		extract_to_quote(p_text, paragraph_content, '"');
-		std::string ItemName = extract_value(p_text);
-		paragraph_content >> p_text;
-		std::string ItemVal = extract_value(p_text);
+		auto attributes = parse_attributes(paragraph_content);
+
+		std::string ItemName = attributes["name"];
+		std::string ItemVal = attributes["value"].empty() ? "[none]" : attributes["value"];
+
 		if (!current_player.has_flag("PICKED", p.id)) {
 			output << "\n **" << ItemName << "** ";
 			output << directions[++p.links] << "\n";

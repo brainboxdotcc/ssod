@@ -23,13 +23,13 @@ struct input_tag : public tag {
 	input_tag() { register_tag<input_tag>(); }
 	static constexpr std::string_view tags[]{"<input"};
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		paragraph_content >> p_text;
-		extract_to_quote(p_text, paragraph_content, '"');
-		std::string Prompt = extract_value(p_text);
-		paragraph_content >> p_text;
-		long destination = extract_value_number(p_text);
-		paragraph_content >> p_text;
-		std::string Correct = extract_value(p_text);
+
+		auto attributes = parse_attributes(paragraph_content);
+
+		std::string Prompt = attributes["prompt"];
+		long destination = atol(attributes["location"]);
+		std::string Correct = attributes["value"];
+
 		output << "\n### ❓ " << Prompt << "\n\n";
 		++p.links;
 		p.navigation_links.push_back(nav_link{ .paragraph = destination, .type = nav_type_modal, .cost = 0, .monster = {}, .buyable = {}, .prompt = Prompt, .answer = Correct, .label = "" });

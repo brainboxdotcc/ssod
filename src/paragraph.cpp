@@ -112,30 +112,6 @@ dpp::task<bool> paragraph::valid_next(long current, long next) {
 	co_return paralist.find(next) != paralist.end();
 }
 
-// extracts a value from any NAME="Value" pair
-std::string extract_value(const std::string& p_text) {
-	if (p_text.find("\"") == std::string::npos) {
-		return extract_without_quotes(p_text);
-	}
-	std::string item_name;
-	bool copying{false};
-	for (const char c : p_text) {
-		if (c == '"') {
-			copying = !copying;
-			continue;
-		}
-		if (copying) {
-			item_name += c;
-		}
-	}
-	return item_name;
-}
-
-long extract_value_number(const std::string& p_text)
-{
-	return atol(extract_value(p_text));
-}
-
 dpp::task<bool> global_set(const std::string& flag) {
 	co_return !(co_await db::co_query("SELECT flag FROM game_global_flags WHERE flag = ?", {flag})).empty();
 }
@@ -177,10 +153,10 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id)
 			text = location[0].at("data");
 		}
 		secure_id = location[0].at("secure_id");
-		combat_disabled = location[0].at("combat_disabled") == "1";
-		magic_disabled = location[0].at("magic_disabled") == "1";
-		theft_disabled = location[0].at("theft_disabled") == "1";
-		chat_disabled = location[0].at("chat_disabled") == "1";
+		combat_disabled = location[0].boolean("combat_disabled");
+		magic_disabled = location[0].boolean("magic_disabled");
+		theft_disabled = location[0].boolean("theft_disabled");
+		chat_disabled = location[0].boolean("chat_disabled");
 		auto dropped = co_await db::co_query("SELECT item_desc, item_flags, count(item_desc) as stack_count FROM game_dropped_items WHERE location_id = ? GROUP BY item_desc, item_flags ORDER BY item_desc, item_flags LIMIT 50", {paragraph_id});
 		for (const auto &dropped_item: dropped) {
 			dropped_items.push_back(stacked_item{.name = dropped_item.at("item_desc"), .flags = dropped_item.at("item_flags"), .qty = atol(dropped_item.at("stack_count"))});
