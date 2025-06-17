@@ -21,102 +21,81 @@
 #include <ssod/parser.h>
 #include <ssod/database.h>
 
-bool comparison(std::string condition, long C1, const std::string& C2, int g_dice) {
-	long C = C2 == "dice" ? g_dice : atol(C2);
+bool comparison(std::string condition, long c1, const std::string& c2, int g_dice) {
+	long c = c2 == "dice" ? g_dice : atol(c2.c_str());
 	condition = dpp::lowercase(condition);
-	if (condition == "eq" && C1 == C) {
-		return true;
-	} else if (condition == "gt" && C1 > C) {
-		return true;
-	} else if (condition == "gte" && C1 >= C) {
-		return true;
-	} else if (condition == "lt" && C1 < C) {
-		return true;
-	} else if (condition == "lte" && C1 <= C) {
-		return true;
-	} else if (condition == "ne" && C1 != C) {
-		return true;
-	} else {
-		return false;
-	}
+	if (condition == "eq") return c1 == c;
+	if (condition == "gt") return c1 > c;
+	if (condition == "gte") return c1 >= c;
+	if (condition == "lt") return c1 < c;
+	if (condition == "lte") return c1 <= c;
+	if (condition == "ne") return c1 != c;
+	return false;
 }
 
-struct if_tag : public tag {
-	if_tag() { register_tag<if_tag>(); }
-	static constexpr bool overrides_display{true};
-	static constexpr std::string_view tags[]{"<if"};
-	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		std::string condition;
-		paragraph_content >> p_text;
-		// -------------------------------------------------------
-		// <if item multi-word-item-name>
-		// -------------------------------------------------------
-		if (dpp::lowercase(p_text) == "item") {
-			paragraph_content >> p_text;
-			extract_to_quote(p_text, paragraph_content, '>');
-			p_text = remove_last_char(p_text);
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(current_player.has_herb(p_text) || current_player.has_spell(p_text) || current_player.has_possession(p_text));
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "!item") {
-			paragraph_content >> p_text;
-			extract_to_quote(p_text, paragraph_content, '>');
-			p_text = remove_last_char(p_text);
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(!current_player.has_herb(p_text) && !current_player.has_spell(p_text) && !current_player.has_possession(p_text));
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} if (dpp::lowercase(p_text) == "has") {
-			size_t number{};
-			paragraph_content >> number;
-			paragraph_content >> p_text;
-			extract_to_quote(p_text, paragraph_content, '>');
-			p_text = remove_last_char(p_text);
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				size_t n{};
-				if (current_player.has_possession(p_text)) {
-					for (const auto& item : current_player.possessions) {
-						if (dpp::lowercase(item.name) == dpp::lowercase(p_text)) {
-							n += item.qty;
-						}
-					}
-				}
-				p.display.push_back(n >= number);
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "flag") {
-			paragraph_content >> p_text;
-			p_text = remove_last_char(p_text);
-			std::string flag = "gamestate_" + p_text + "%";
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(!(co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag})).empty() || co_await global_set(p_text) || co_await timed_set(current_player.event, p_text));
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "!flag") {
-			paragraph_content >> p_text;
-			p_text = remove_last_char(p_text);
-			std::string flag = "gamestate_" + p_text + "%";
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back((co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {current_player.event.command.usr.id, flag})).empty() && !(co_await global_set(p_text)) && !(co_await timed_set(current_player.event, p_text)));
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
+enum token_type {
+	TOKEN_EOF,
+	TOKEN_LPAREN,
+	TOKEN_RPAREN,
+	TOKEN_AND,
+	TOKEN_OR,
+	TOKEN_NOT,
+	TOKEN_IDENTIFIER,
+	TOKEN_COMPARISON,
+	TOKEN_NUMBER
+};
+
+struct token {
+	token_type type;
+	std::string value;
+};
+
+class tokenizer {
+	std::istream& in;
+public:
+	explicit tokenizer(std::istream& stream) : in(stream) {}
+
+	token next() {
+		std::string val;
+		char ch;
+
+		while (in.get(ch) && std::isspace(ch)) {}
+		if (in.eof()) return { TOKEN_EOF, "" };
+
+		switch (ch) {
+			case '(': return { TOKEN_LPAREN, "(" };
+			case ')': return { TOKEN_RPAREN, ")" };
 		}
-		// -------------------------------------------------------
-		// <if scorename gt|lt|eq value>
-		// -------------------------------------------------------
-		std::string scorename = dpp::lowercase(p_text);
-		const std::map<std::string, long> scorename_map = {
+
+		val += ch;
+		while (in.peek() != EOF && !std::isspace(in.peek()) && in.peek() != '(' && in.peek() != ')') {
+			val += static_cast<char>(in.get());
+		}
+
+		std::string lowered = dpp::lowercase(val);
+		if (lowered == "and") return { TOKEN_AND, lowered };
+		if (lowered == "or") return { TOKEN_OR, lowered };
+		if (lowered == "not") return { TOKEN_NOT, lowered };
+		if (lowered == "eq" || lowered == "ne" || lowered == "gt" || lowered == "lt" || lowered == "gte" || lowered == "lte")
+			return { TOKEN_COMPARISON, lowered };
+		if (std::isdigit(val[0])) return { TOKEN_NUMBER, lowered };
+
+		return { TOKEN_IDENTIFIER, val };
+	}
+};
+
+class if_expression_parser {
+	tokenizer lex;
+	token current;
+	player& current_player;
+	int g_dice;
+
+	void advance() {
+		current = lex.next();
+	}
+
+	std::map<std::string, long> get_score_map() {
+		return {
 			{ "exp", current_player.experience },
 			{ "dice", current_player.g_dice },
 			{ "stm", current_player.stamina },
@@ -132,144 +111,220 @@ struct if_tag : public tag {
 			{ "notoriety", current_player.notoriety },
 			{ "gold", current_player.gold },
 			{ "silver", current_player.silver },
-			{ "rations", current_player.rations },
+			{ "rations", current_player.rations }
 		};
-		auto check = scorename_map.find(scorename);
-		if (check != scorename_map.end()) {
-			paragraph_content >> condition;
-			paragraph_content >> p_text;
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(comparison(condition, check->second, p_text, current_player.g_dice));
+	}
+
+	dpp::task<bool> parse_expression() {
+		bool result = co_await parse_term();
+		while (current.type == TOKEN_OR) {
+			advance();
+			bool right = co_await parse_term();
+			result = result || right;
+		}
+		co_return result;
+	}
+
+	dpp::task<bool> parse_term() {
+		bool result = co_await parse_factor();
+		while (current.type == TOKEN_AND) {
+			advance();
+			bool right = co_await parse_factor();
+			result = result && right;
+		}
+		co_return result;
+	}
+
+	dpp::task<bool> parse_factor() {
+		if (current.type == TOKEN_NOT) {
+			advance();
+			bool result = co_await parse_factor();
+			co_return !result;
+		} else if (current.type == TOKEN_LPAREN) {
+			advance();
+			bool result = co_await parse_expression();
+			if (current.type != TOKEN_RPAREN)
+				throw std::runtime_error("Expected ')'");
+			advance();
+			co_return result;
+		} else {
+			co_return co_await parse_atom();
+		}
+	}
+
+	dpp::task<bool> parse_atom() {
+		if (current.type != TOKEN_IDENTIFIER)
+			throw std::runtime_error("Expected identifier");
+
+		std::string lhs = dpp::lowercase(current.value);
+		advance();
+
+		if (current.type == TOKEN_COMPARISON) {
+			std::string op = current.value;
+			advance();
+			if (current.type != TOKEN_NUMBER && current.value != "dice")
+				throw std::runtime_error("Expected number or 'dice'");
+			std::string rhs = current.value;
+			advance();
+
+			auto map = get_score_map();
+			if (map.find(lhs) == map.end())
+				co_return false;
+			co_return comparison(op, map[lhs], rhs, g_dice);
+		}
+
+		std::vector<std::string> args;
+		while (current.type == TOKEN_IDENTIFIER || current.type == TOKEN_NUMBER) {
+			args.push_back(current.value);
+			advance();
+		}
+
+		co_return co_await co_evaluate_function(lhs, args);
+	}
+
+	std::string join_args(const std::vector<std::string>& input, size_t start_index = 0) {
+		std::string joined;
+		bool in_quotes = false;
+		for (size_t i = start_index; i < input.size(); ++i) {
+			const std::string& word = input[i];
+			if (!word.empty() && word.front() == '\"') {
+				in_quotes = true;
+				joined += word.substr(1);
+			} else if (!word.empty() && word.back() == '\"') {
+				joined += " " + word.substr(0, word.size() - 1);
+				break;
+			} else if (in_quotes) {
+				joined += " " + word;
 			} else {
+				joined += word;
+				if (i + 1 < input.size()) joined += " ";
+			}
+		}
+		return dpp::lowercase(joined);
+	}
+
+	dpp::task<bool> co_evaluate_function(const std::string& name, const std::vector<std::string>& args) {
+		std::string joined = join_args(args);
+
+		if (name == "item") co_return current_player.has_herb(joined) || current_player.has_spell(joined) || current_player.has_possession(joined);
+		if (name == "!item") co_return !current_player.has_herb(joined) && !current_player.has_spell(joined) && !current_player.has_possession(joined);
+		if (name == "has" && args.size() >= 2) {
+			size_t n = std::stoul(args[0]);
+			std::string item = join_args(args, 1);
+			size_t qty = 0;
+			for (const auto& i : current_player.possessions) {
+				if (dpp::lowercase(i.name) == item) qty += i.qty;
+			}
+			co_return qty >= n;
+		}
+		if (name == "race" && !args.empty()) {
+			std::string val = dpp::lowercase(args[0]);
+			co_return (val == "human" && (current_player.race == race_human || current_player.race == race_barbarian)) ||
+				  (val == "orc" && (current_player.race == race_orc || current_player.race == race_goblin)) ||
+				  (val == "elf" && (current_player.race == race_elf || current_player.race == race_dark_elf)) ||
+				  (val == "dwarf" && current_player.race == race_dwarf) ||
+				  (val == "lesserorc" && current_player.race == race_lesser_orc);
+		}
+		if (name == "raceex" && !args.empty()) {
+			std::string val = dpp::lowercase(args[0]);
+			co_return (val == "dwarf" && current_player.race == race_dwarf) ||
+				  (val == "human" && current_player.race == race_human) ||
+				  (val == "orc" && current_player.race == race_orc) ||
+				  (val == "elf" && current_player.race == race_elf) ||
+				  (val == "barbarian" && current_player.race == race_barbarian) ||
+				  (val == "goblin" && current_player.race == race_goblin) ||
+				  (val == "darkelf" && current_player.race == race_dark_elf) ||
+				  (val == "lesserorc" && current_player.race == race_lesser_orc);
+		}
+		if (name == "prof" && !args.empty()) {
+			std::string val = dpp::lowercase(args[0]);
+			co_return (val == "warrior" && (current_player.profession == prof_warrior || current_player.profession == prof_mercenary)) ||
+				  (val == "wizard" && current_player.profession == prof_wizard) ||
+				  (val == "thief" && (current_player.profession == prof_thief || current_player.profession == prof_assassin)) ||
+				  (val == "woodsman" && current_player.profession == prof_woodsman);
+		}
+		if (name == "profex" && !args.empty()) {
+			std::string val = dpp::lowercase(args[0]);
+			co_return (val == "warrior" && current_player.profession == prof_warrior) ||
+				  (val == "mercenary" && current_player.profession == prof_mercenary) ||
+				  (val == "assassin" && current_player.profession == prof_assassin) ||
+				  (val == "wizard" && current_player.profession == prof_wizard) ||
+				  (val == "thief" && current_player.profession == prof_thief) ||
+				  (val == "woodsman" && current_player.profession == prof_woodsman);
+		}
+		if (name == "mounted") co_return current_player.has_flag("horse");
+		if (name == "flag" && !args.empty()) {
+			std::string flag = args[0];
+			std::string like_key = "gamestate_" + flag + "%";
+
+			db::paramlist p = { current_player.event.command.usr.id, like_key };
+			auto rs = co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", p);
+			bool global = co_await global_set(flag);
+			bool timed = co_await timed_set(current_player.event, flag);
+			bool result = !rs.empty() || global || timed;
+			co_return result;
+		}
+		if (name == "!flag" && !args.empty()) {
+			std::string flag = args[0];
+			std::string like_key = "gamestate_" + flag + "%";
+			db::paramlist p = { current_player.event.command.usr.id, like_key };
+			auto rs = co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", p);
+			bool global = co_await global_set(flag);
+			bool timed = co_await timed_set(current_player.event, flag);
+			bool result = rs.empty() && !global && !timed;
+			co_return result;
+		}
+		if (name == "premium") {
+			bool has_entitlement = !current_player.event.command.entitlements.empty();
+			db::paramlist p = { current_player.event.command.usr.id };
+			auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", p);
+			bool result = has_entitlement || !rs.empty();
+			co_return result;
+		}
+		if (name == "water") {
+			co_return (current_player.has_spell("water") && current_player.has_component_herb("water")) ||
+				  current_player.has_possession("water canister") ||
+				  current_player.has_possession("water cannister");
+		}
+
+		co_return false;
+	}
+
+public:
+	if_expression_parser(std::istream& stream, player& p)
+		: lex(stream), current_player(p), g_dice(p.g_dice) {
+		advance();
+	}
+
+	dpp::task<bool> parse() {
+		bool result = co_await parse_expression();
+		if (current.type != TOKEN_EOF)
+			throw std::runtime_error("Unexpected input after expression");
+		co_return result;
+	}
+};
+
+struct if_tag : public tag {
+	if_tag() { register_tag<if_tag>(); }
+	static constexpr bool overrides_display{true};
+	static constexpr std::string_view tags[]{"<if"};
+
+	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+		std::string condition;
+		paragraph_content >> p_text;
+
+		if (p.display.empty() || p.display[p.display.size() - 1]) {
+			try {
+				std::string remaining;
+				std::getline(paragraph_content, remaining, '>');
+				std::stringstream ss(p_text + " " + remaining);
+				if_expression_parser parser(ss, current_player);
+				p.display.push_back(co_await parser.parse());
+			} catch (...) {
 				p.display.push_back(false);
 			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "race") {
-			// ------------------------------------------------------
-			// <if race x>
-			// ------------------------------------------------------
-			// Only covers the 5 races of the basic book version of the game,
-			// for legacy content
-			paragraph_content >> p_text;
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(
-					(dpp::lowercase(p_text) == "human>" && (current_player.race == race_human || current_player.race == race_barbarian))
-					||
-					(dpp::lowercase(p_text) == "orc>" && (current_player.race == race_orc || current_player.race == race_goblin))
-					||
-					(dpp::lowercase(p_text) == "elf>" && (current_player.race == race_elf || current_player.race == race_dark_elf))
-					||
-					(dpp::lowercase(p_text) == "dwarf>" && current_player.race == race_dwarf)
-					||
-					(dpp::lowercase(p_text) == "lesserorc>" && current_player.race == race_lesser_orc)
-				);
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "raceex") {
-			// ------------------------------------------------------
-			// <if raceex x>
-			// ------------------------------------------------------
-			// Covers all new races, for non-legacy content.
-			paragraph_content >> p_text;
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(
-					(dpp::lowercase(p_text) == "dwarf>" && current_player.race == race_dwarf)
-					||
-					(dpp::lowercase(p_text) == "human>" && current_player.race == race_human)
-					||
-					(dpp::lowercase(p_text) == "orc>" && current_player.race == race_orc)
-					||
-					(dpp::lowercase(p_text) == "elf>" && current_player.race == race_elf)
-					||
-					(dpp::lowercase(p_text) == "barbarian>" && current_player.race == race_barbarian)
-					||
-					(dpp::lowercase(p_text) == "goblin>" && current_player.race == race_goblin)
-					||
-					(dpp::lowercase(p_text) == "darkelf>" && current_player.race == race_dark_elf)
-					||
-					(dpp::lowercase(p_text) == "lesserorc>" && current_player.race == race_lesser_orc)
-				);
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "prof") {
-			// ------------------------------------------------------
-			// <if prof x>
-			// ------------------------------------------------------
-			// Only covers the 4 professions of the basic book version of the game,
-			// for legacy content
-			paragraph_content >> p_text;
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(
-					(dpp::lowercase(p_text) == "warrior>" && (current_player.profession == prof_warrior || current_player.profession == prof_mercenary))
-						||
-					(dpp::lowercase(p_text) == "wizard>" && current_player.profession == prof_wizard)
-						||
-					(dpp::lowercase(p_text) == "thief>" && (current_player.profession == prof_thief || current_player.profession == prof_assassin))
-						||
-					(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman)
-				);
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "profex") {
-			// ------------------------------------------------------
-			// <if profex x>
-			// ------------------------------------------------------
-			// Covers all new professions, for non-legacy content.
-			paragraph_content >> p_text;
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(
-					(dpp::lowercase(p_text) == "warrior>" && current_player.profession == prof_warrior)
-					||
-					(dpp::lowercase(p_text) == "mercenary>" && current_player.profession == prof_mercenary)
-					||
-					(dpp::lowercase(p_text) == "assassin>" && current_player.profession == prof_assassin)
-					||
-					(dpp::lowercase(p_text) == "wizard>" && current_player.profession == prof_wizard)
-					||
-					(dpp::lowercase(p_text) == "thief>" && current_player.profession == prof_thief)
-					||
-					(dpp::lowercase(p_text) == "woodsman>" && current_player.profession == prof_woodsman)
-				);
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "mounted>") {
-			// ------------------------------------------------------
-			// <if mounted>
-			// ------------------------------------------------------
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(current_player.has_flag("horse"));
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "premium>") {
-			// ------------------------------------------------------
-			// <if premium>
-			// ------------------------------------------------------
-			auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", { current_player.event.command.usr.id });
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(!current_player.event.command.entitlements.empty() || !rs.empty());
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
-		} else if (dpp::lowercase(p_text) == "water>") {
-			if (p.display.empty() || p.display[p.display.size() - 1]) {
-				p.display.push_back(
-					(current_player.has_spell("water") && current_player.has_component_herb("water")) ||
-					current_player.has_possession("water canister") || current_player.has_possession("water cannister"));
-			} else {
-				p.display.push_back(false);
-			}
-			co_return;
+		} else {
+			p.display.push_back(false);
 		}
 		co_return;
 	}
