@@ -29,7 +29,7 @@ This tag does not produce visible output or alter game text, but it does affect 
 You come to a rickety bridge across a dark chasm. You must roll a die to determine your fate.
 
 <dice>
-<if dice >= 4> You cross safely. <br> <else> The bridge breaks and you fall! <br> <endif>
+<if dice gte 4> You cross safely. <br> <else> The bridge breaks and you fall! <br> <endif>
 ```
 
 ## Notes

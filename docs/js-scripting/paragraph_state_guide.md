@@ -27,7 +27,8 @@ Each paragraph (location) that the player visits has some runtime state that can
 ### ✅ Check a Test Result
 
 ```html
-<test luck><script>
+<test luck>
+<script>
 if (paragraph.auto_test) {
   print("Your gamble pays off.\n");
 } else {

@@ -15,10 +15,11 @@ This guide explains what you can do with `<script>` and how to write safe, effec
     print("\nYou hand over 50 gold.");
   } else {
     print("\nYou don't have enough gold.");
-  }</script>
+  }
+</script>
 ```
 
-Scripts are placed inside a `<script>` block. Do **not** include the closing `</script>` on its own line — embed it inline with your code.
+Scripts are placed inside a `<script>` block.
 
 ---
 

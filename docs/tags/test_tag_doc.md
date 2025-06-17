@@ -45,8 +45,8 @@ Only one of the two will be enabled.
 
 ```
 <test luck>
-<AUTOLINK=1543> <!-- Success -->
-<AUTOLINK=1544> <!-- Failure -->
+Were you lucky <AUTOLINK=1543> <!-- Success -->
+Or unlucky <AUTOLINK=1544> <!-- Failure -->
 ```
 
 ---

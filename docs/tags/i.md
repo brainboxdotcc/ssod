@@ -31,8 +31,8 @@ MA+N / MA-N  → Mana
 SD+N / SD-N  → Speed
 LK+N / LK-N  → Luck
 EX+N / EX-N  → Experience
-A+N         → Armour rating
-W+N         → Weapon rating
+An         → Armour rating
+Wn         → Weapon rating
 ```
 
 **Example:**
@@ -46,11 +46,11 @@ Some keywords trigger unique behaviours:
 
 - `SPELL` → Adds the item as a spell
 - `HERB` → Adds the item as an herb
-- `[none]` or omitted → Basic backpack item with no flags or special effect
+- omitted → Basic backpack item with no flags or special effect
 
 **Examples:**
 ```html
-<I NAME="Fly" VALUE="SPELL" COST="1">
+<I NAME="FLY" VALUE="SPELL" COST="1">
 <I NAME="Healing Root" VALUE="HERB" COST="4">
 <I NAME="Pointless Junk" COST="100">
 ```

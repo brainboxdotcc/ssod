@@ -35,7 +35,7 @@ Note: `</b>` does not increment the word count.
 ## 📘 Example
 
 ```html
-<b>Danger!</b> You sense something moving in the shadows...
+<b> Danger! </b> You sense something moving in the shadows...
 ```
 
 This will display as:

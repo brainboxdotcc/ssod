@@ -7,7 +7,7 @@ The `<combat>` tag is used to initiate a combat encounter in a game paragraph. I
 ## 📌 Syntax
 
 ```text
-<combat NAME="monster name" SKILL="X" STAMINA="Y" ARMOUR="Z" WEAPON="W">
+<COMBAT NAME="monster name" SKILL="X" STAMINA="Y" ARMOUR="Z" WEAPON="W">
 ```
 
 Optional attribute:
@@ -69,11 +69,8 @@ It slumps to the ground, defeated.
 
 ## 🧪 Internal Mechanics Summary
 
-- Adds a navigation link of type `nav_type_combat`.
-- Calls a translation check for the monster name if locale ≠ "en".
 - Checks player's diseases and applies debuffs.
 - Calculates XP from monster stats using `calc_xp_worth()`.
-- Appends ANSI-style combat formatting to the output.
 
 ---
 
@@ -81,8 +78,6 @@ It slumps to the ground, defeated.
 
 This tag:
 - Ends the current visible fragment.
-- Sets `p.safe = false`.
-- Throws `parse_end_exception()` to halt further processing of the current fragment.
 
 Use this tag with care. It is one of the few tags that controls paragraph flow.
 
