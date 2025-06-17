@@ -31,7 +31,13 @@ Use these to compare numeric game state values:
     - `luck` (Luck)
     - `spd` (Speed)
     - `day` (Days passed)
-    - `scrolls`, `level`, `mana`, `notoriety`, `gold`, `silver`, `rations`
+    - `scrolls`
+    - `level`
+    - `mana`
+    - `notoriety`
+    - `gold`
+    - `silver`
+    - `rations`
   - `OP` is a comparison operator: `eq`, `ne`, `gt`, `lt`, `gte`, `lte`
   - `VALUE` is a number or the keyword `dice` (from a prior `<dice>` roll)
 
@@ -120,7 +126,7 @@ These check singular player states:
 
 **Syntax:**
 ```
-<if premium> Welcome back, patron. <endif>
+<if premium> Welcome back, thanks for subscribing! <endif>
 <if not water> You are dehydrated. <endif>
 ```
 

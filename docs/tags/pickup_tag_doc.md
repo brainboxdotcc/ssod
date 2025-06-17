@@ -8,9 +8,9 @@ The `<pickup>` tag is used to automatically award the player an item, scroll, or
 <pickup scroll>
 <pickup gold 5>
 <pickup silver 10>
-<pickup sword [none]>
+<pickup sword [W2]>
 <pickup Fireball [SPELL]>
-<pickup Healing Root [HERB]>
+<pickup Arrowroot [HERB]>
 ```
 
 ## Supported Pickups
@@ -20,10 +20,11 @@ The `<pickup>` tag is used to automatically award the player an item, scroll, or
 - **item**: Standard possessions, herbs, or spells. Inventory checks apply.
 
 ### Flags
-The flag (e.g. `[SPELL]`, `[HERB]`, `[none]`) determines what type of item is granted:
+The flag (e.g. `[SPELL]`, `[HERB]`, stat flags) determines what type of item is granted:
 - `[SPELL]` adds to the player’s known spells list.
 - `[HERB]` adds to the herbs collection.
-- `[none]` or no flag is treated as a normal item.
+- Stat flags can be enclosed as are seen in the <I> and <PICK> tags
+- no flag is treated as a normal item.
 
 ## Behaviour
 
@@ -37,9 +38,9 @@ The flag (e.g. `[SPELL]`, `[HERB]`, `[none]`) determines what type of item is gr
 
 ```
 <pickup gold 12>
-<pickup Bronze Ring [none]>
-<pickup Cure Wounds [SPELL]>
-<pickup Bitterroot [HERB]>
+<pickup Bronze Ring>
+<pickup fly [SPELL]>
+<pickup elfbane [HERB]>
 ```
 
 Each line ensures that the item is awarded when the player arrives at the paragraph, as long as they haven't already received it. You don't need to write logic to prevent multiple pickups — this is handled automatically.

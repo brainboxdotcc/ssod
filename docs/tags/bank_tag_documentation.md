@@ -26,17 +26,6 @@ When this tag is encountered:
 
 ---
 
-## ⚙️ Parser Behaviour
-
-- Sets `p.trader = true`, enabling trader-like behaviour for the paragraph.
-- Increments:
-  - `p.links` — to register the new link
-  - `p.words` — for tracking text complexity
-- Appends a `nav_link` of type `nav_type_bank` to the paragraph's list of available navigations.
-- No in-game logic is performed until the player clicks the link.
-
----
-
 ## 📘 Example
 
 ```html
@@ -50,18 +39,6 @@ Displays something like:
 ```
 
 (Actual text depends on translation.)
-
----
-
-## 🌐 Internationalisation
-
-The text displayed is pulled from the localisation system via:
-
-```cpp
-tr("USEBANK", current_player.event)
-```
-
-Ensure that the `USEBANK` key exists in all translation sets.
 
 ---
 

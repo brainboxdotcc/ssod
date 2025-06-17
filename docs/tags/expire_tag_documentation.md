@@ -32,6 +32,6 @@ When this tag is processed:
 
 ## Related Tags
 
-- [`<effect>`](./effect_tag_documentation.md): Adds a passive effect with duration and cooldown, often setting a corresponding timed flag.
-- [`<mod>`](./mod_tag_documentation.md): Modifies character stats directly.
+- [`effect`](./effect_tag_documentation.md): Adds a passive effect with duration and cooldown, often setting a corresponding timed flag.
+- [`mod`](./mod_tag_documentation.md): Modifies character stats directly.
 - Custom scripting logic (server-side) may also interact with these timed flags.

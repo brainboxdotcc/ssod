@@ -34,7 +34,7 @@ The `<AUTOLINK>` tag in Seven Spells is used to automatically create navigation 
 
 ```text
 You attempt to sneak past the guard.
-<SNEAKTEST name="City Guard" sneak="9">
+<SNEAKTEST name="City Guard" sneak=9>
 <AUTOLINK=1234>
 <AUTOLINK=5678>
 ```

@@ -2,7 +2,7 @@
 
 This quick reference expands on the basics with reusable scripting patterns you can copy and adapt. Perfect for content authors who want their locations to feel alive and responsive.
 
-> All scripts go inside a `<script>...</script>` tag. See the [Getting Started guide](../scripting-quick-reference.md) if you're new.
+> All scripts go inside a `<script>...</script>` tag. See the [Getting Started guide](scripting-quick-reference.md) if you're new.
 
 ---
 

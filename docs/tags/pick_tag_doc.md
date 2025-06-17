@@ -13,9 +13,9 @@ e.g. “You may pick one of the following.”
 ```plaintext
 You find a stash of items hidden beneath the floorboards. You may take one:
 
-<pick name="Short Sword" value="[sharp]">
-<pick name="Leather Armour" value="[light]">
-<pick name="Healing Potion" value="[strong]">
+<pick name="Short Sword" value="W3">
+<pick name="Leather Armour" value="A2">
+<pick name="Healing Potion" value="ST+5">
 ```
 
 - If the player’s inventory is full, the links will be greyed out and marked as “Inventory Full.”

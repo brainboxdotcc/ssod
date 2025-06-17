@@ -29,7 +29,7 @@ This tag does not accept any parameters or attributes.
 
 ```plaintext
 <d12>
-<if g_dice > 8> You land safely. <br> <else> You sprain your ankle and lose 2 stamina. <br> <endif>
+<if g_dice gt 8> You land safely. <br> <else> You sprain your ankle and lose 2 stamina. <br> <endif>
 ```
 
 In this example, the `<d12>` tag determines whether the player succeeds or suffers a penalty based on their roll.

@@ -132,5 +132,5 @@ You may also find these helpful:
 
 ---
 
-Return to the [JavaScript Scripting Guide](../javascript-scripting-guide.md) or view the [Paragraph State Guide](../paragraph-state-guide.md) next.
+Return to the [JavaScript Scripting Guide](javascript-scripting-guide.md) or view the [Paragraph State Guide](../paragraph-state-guide.md) next.
 

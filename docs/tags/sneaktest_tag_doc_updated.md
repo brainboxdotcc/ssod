@@ -14,7 +14,7 @@ This is a PvP-style mechanic — the sneak comparison is not against a fixed num
 ## Syntax
 
 ```
-<sneaktest name="Guard" sneak="5">
+<sneaktest name="Guard" sneak=5>
 ```
 
 - `name`: Displayed name of the opponent.
@@ -24,7 +24,7 @@ This is a PvP-style mechanic — the sneak comparison is not against a fixed num
 
 ```text
 You try to sneak past the castle guard.
-<sneaktest name="Castle Guard" sneak="4">
+<sneaktest name="Castle Guard" sneak=4>
 ```
 
 Will result in something like:

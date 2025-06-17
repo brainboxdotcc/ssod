@@ -32,15 +32,17 @@ The `<LINK>` tag is used to create a clickable choice that navigates the player 
 ```
 You stand before a fork in the road.
 
-<LINK=1024,Take the left path>
-<LINK=2048,Take the right path>
+Go left, <LINK=1024,Take the left path> or
+go right <LINK=2048,Take the right path>
 ```
 
 This renders for the player as:
 
 ```
-You stand before a fork in the road.
+Text content:
+You stand before a fork in the road. Go left ⃣  or go right  ⃣
 
+Two buttons will be added below the content:
 1️⃣ Take the left path  
 2️⃣ Take the right path
 ```
@@ -50,6 +52,7 @@ You stand before a fork in the road.
 ## Notes for Content Authors
 
 - You can use multiple `<LINK>` tags per paragraph.
+- Button text is not displayed inline, only its emoji placeholder.
 - Links are shown in the order written.
 - If no button text is provided, the system may fall back to a default or cause confusion — always include a label.
 - Ensure the destination ID exists.

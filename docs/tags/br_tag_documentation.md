@@ -35,7 +35,7 @@ Use `<br>` when you want to:
 ## 📘 Example
 
 ```html
-You drink the potion.<br>It tastes of bitter herbs.
+You drink the potion. <br> It tastes of bitter herbs.
 ```
 
 Will appear in-game as:
