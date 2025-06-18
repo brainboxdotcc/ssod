@@ -1,56 +1,58 @@
 # ✨ Introduction to the Seven Spells Scripting System
 
-Welcome to the reference documentation for **The Seven Spells of Destruction** content authoring system. This guide serves not only to teach you how to use the tools — but also to explain *why* they exist and *what* they enable.
+Welcome to the reference documentation for **The Seven Spells of Destruction** content authoring system. This guide not only teaches you how to use the tools — it also explains *why* they exist and *what* they enable.
 
 ---
 
 ## 📚 What *Is* This System?
 
-At its heart, Seven Spells is powered by a **domain-specific language (DSL)** embedded directly into the narrative content of the game, called *Paragraph*. It is a fusion of:
+At its core, Seven Spells is powered by a **domain-specific language (DSL)** called *Paragraph*, embedded directly into the game’s narrative content. It’s a fusion of:
 
 - **Choice-based narrative scripting**
 - **Tag-driven command markup**
-- **Server-executed gameplay logic**
-- **Inline JavaScript support via `SCRIPT` blocks**
+- **Server-side gameplay logic**
+- **Inline JavaScript via `SCRIPT` blocks**
 
-This system allows you — the worldbuilder, writer, designer — to craft interactive experiences that **feel alive**, without requiring you to be a professional software developer.
+This lets you — the worldbuilder, writer, or designer — create rich interactive experiences that **feel alive**, without needing to be a software engineer.
 
-It is not simply a "choose your own adventure" format, nor is it just a visual novel system. It occupies a unique middle ground: rich prose meets data-driven consequence.
+It’s not just a "choose your own adventure" tool, nor a visual novel engine. It occupies a unique space: **dynamic prose blended with consequence-driven logic**.
 
 ---
 
-## 🧠 Why Not Just Use Twine / Ink / Ren'Py?
+## 🧠 Why Not Use Twine, Ink, or Ren'Py?
 
-While powerful, many existing tools make assumptions Seven Spells does not.
+Popular tools like Twine or Ink are powerful — but they come with assumptions Seven Spells deliberately avoids.
 
 For example:
-- They assume linearity or nested branching
-- They lack persistent global state or multiplayer features
-- They don't have a concept of **shared world continuity**, or item-based interactions that persist across locations
-- They don’t natively support Discord, where Seven Spells is played
+
+- They expect linear or tree-based branching
+- They lack persistent global state and multiplayer capability
+- They don’t support **shared-world continuity** or long-term item tracking
+- They aren’t natively integrated into Discord, where Seven Spells is played
 
 Seven Spells, by contrast, is:
-- **Persistent**: The world state matters — your decisions ripple outward.
-- **Multiplayer-aware**: Choices are not always isolated; consequences can affect others.
-- **Modular**: Each location can be written independently but feels interconnected.
-- **Programmable**: JavaScript blocks can dynamically control narrative, stats, or decisions.
 
-It’s more like writing for a persistent MMORPG than a static story engine.
+- **Persistent**: Every choice has ripple effects across the world
+- **Multiplayer-aware**: Your actions can impact other players
+- **Modular**: Locations are written independently, yet feel connected
+- **Programmable**: JavaScript gives deep control over narrative and game logic
+
+It’s more like writing for a **persistent multiplayer RPG** than for a static story engine.
 
 ---
 
-## 🧩 What This Can Do
+## 🧩 What You Can Build
 
-The Seven Spells *Paragraph* language allows you to:
+Using the *Paragraph* language, you can:
 
-- Create paragraphs of descriptive prose and interlink them (`LINK`, `COMBAT`, etc.)
-- Modify player stats, inventory, and state with tags like `MOD`, `PICKUP`, `DROP`
-- Trigger game logic via inline JavaScript using `script` blocks
-- Handle one-time events, unlock achievements, or conditionally hide/show content
-- Display alternate outcomes depending on skill checks, race, profession, and more
-- Define **custom reusable logic** via passive effects and achievement scripting
+- Create richly written locations and interlink them (`LINK`, `COMBAT`, etc.)
+- Modify stats, inventory, or state with tags like `MOD`, `PICKUP`, `DROP`
+- Trigger complex logic using inline JavaScript (`SCRIPT`)
+- Define conditionals, one-time events, or hidden paths
+- Display different content based on skill, race, profession, or flags
+- Define **reusable logic** with passive effects or achievement scripting
 
-You are not just writing stories — you are building **interconnected world systems**.
+You're not just writing scenes — you’re building a **living, reactive world**.
 
 ---
 
@@ -58,128 +60,130 @@ You are not just writing stories — you are building **interconnected world sys
 
 This system is **not**:
 
-- A full programming language (though you *can* embed JavaScript)
+- A complete programming language (though JavaScript is supported)
 - A drag-and-drop visual editor
 - A no-code game engine
-- A 3D engine, or a platform for minigames, physics, or UI-heavy gameplay
+- A 3D or physics-based platform
 
-You are crafting immersive, persistent fiction where player choices **change the world** — but the medium is still **text**.
-
----
-
-## 🧭 Navigating This Reference
-
-This documentation is broken down into key categories:
-
-- **Beginner guides**: How to create locations, link them, and structure narrative
-- **Scripting tags**: Reference for every in-game tag, like `COMBAT` or `MOD`
-- **JavaScript API**: A guide to writing `script` logic, player state, and paragraph interaction
-- **Achievements and effects**: How to define one-time or time-limited behaviours
-- **Narrative style**: Writing tips for maintaining tone, tense, and cohesion
-
-You can start anywhere. Each section is self-contained — but mastery comes from seeing how they **interlock**.
+This is immersive, persistent fiction — where player decisions **matter**, and the medium remains **text**.
 
 ---
 
-## 🏁 Final Words
+## 🧭 How to Use This Guide
 
-This system is **bespoke**, **living**, and **still growing**. There isn’t really anything else like it, because it was built around the specific world of Seven Spells. It respects writers, trusts their intelligence, and empowers them with just enough technical muscle to make their stories real.
+This documentation is divided into logical sections:
 
-You are the architect of not just what players see — but what they *become*.
+- **Beginner Guides**: Start creating locations and branching stories
+- **Scripting Tags**: Learn every available tag like `COMBAT`, `MOD`, and more
+- **JavaScript API**: Write game logic, access player data, modify paragraphs
+- **Achievements & Effects**: Script one-time or time-based outcomes
+- **Narrative Style**: Best practices for prose, tone, and continuity
 
-Now pick a location, and shape the world.
+You can dive into any section independently — but real mastery comes from understanding how all the pieces **fit together**.
+
+---
+
+## 🏁 Final Thoughts
+
+This system is **bespoke**, **evolving**, and **unlike anything else**. It was designed around the needs of *Seven Spells* — a living world that trusts its writers and empowers them with just enough technical depth to **make magic real**.
+
+You’re not just shaping what players read — you're shaping **who they become**.
+
+Pick a location. Begin the world anew.
 
 ---
 
 # 📖 Index
 
-## Beginners
+## 🧒 Beginners
 
 - [Creating Game Locations](beginners/creating_game_locations.md)
 - [Narrative Style Guide](beginners/narrative_style_guide.md)
 
-## 📚 Tag Documentation Index (Grouped by Functionality)
+---
 
-Important notes about tags:
+## 🏷️ Tag Documentation Index (Grouped by Function)
 
-* Spacing between tags is essential
-* You should only ever have one space between attributes in a tag.
-* You MUST have at least one space or newline between the leading or terminating < > and any text outside the tag, e.g. `Go to <LINK=5>` and not `Go to<LINK=5>`
-* Ordering of items within a tag is important and must follow the examples in this documentation (e.g. with the `<I>` tag). This is for simplicity of the parser, and speed of parsing.
+### Important Notes on Tag Syntax:
 
-Tags are grouped by their primary purpose:
+- Spacing between tags is critical
+- Use only one space between attributes in any tag
+- Always include a space or newline between the angle brackets and any adjacent text (e.g., `Go to <LINK=5>` not `Go to<LINK=5>`)
+- Tag attribute order must follow the documented examples (e.g., `<I>`)
 
 ---
 
 ### 🧭 Navigation and Linking
 
-- [LINK](tags/link_tag_doc.md) — Link to another location with a button
-- [AUTOLINK](tags/autolink_tag_doc.md) — Conditional links based on test results
-- [PAYLINK](tags/paylink_tag_doc.md) — Requires gold to activate a link
-- [INPUT](tags/input_tag_doc.md) — Accept player text input
-- [BOOK](tags/book_tag_documentation.md) — Picks up a readable book
+- [LINK](tags/link_tag_doc.md) — Link to another location
+- [AUTOLINK](tags/autolink_tag_doc.md) — Conditional links based on player state
+- [PAYLINK](tags/paylink_tag_doc.md) — Gold-required link activation
+- [INPUT](tags/input_tag_doc.md) — Accept text input from the player
+- [BOOK](tags/book_tag_documentation.md) — Acquire and read a book
 
 ---
 
 ### 🧪 Branching, Logic, and State
 
-- [IF](tags/if.md) — Conditional branching for different content
-- [TEST](tags/test_tag_doc.md) — Performs a stat test and displays different content
-- [SET](tags/set_tag_doc.md) — Set a per-player state flag
-- [UNSET](tags/unset_tag_doc.md) — Remove a per-player state flag
-- [SETGLOBAL](tags/setglobal_tag_doc.md) — Set a global (server-wide) flag
-- [UNSETGLOBAL](tags/unsetglobal_tag_doc.md) — Remove a global (server-wide) flag
-- [TEMPSET](tags/tempset_tag_doc.md) — Temporarily set a flag for a limited time
-- [SCRIPT](tags/script_tag_doc.md) — Run a custom JavaScript script
-- [MACRO](tags/macro_tag_doc.md) — Insert shared content
+- [IF](tags/if.md) — Conditional content blocks
+- [TEST](tags/test_tag_doc.md) — Stat-based content display
+- [SET](tags/set_tag_doc.md) — Set a player-specific state flag
+- [UNSET](tags/unset_tag_doc.md) — Remove a player flag
+- [SETGLOBAL](tags/setglobal_tag_doc.md) — Set a global flag (all players)
+- [UNSETGLOBAL](tags/unsetglobal_tag_doc.md) — Remove a global flag
+- [TEMPSET](tags/tempset_tag_doc.md) — Temporary state for timed events
+- [SCRIPT](tags/script_tag_doc.md) — Run JavaScript logic inline
+- [MACRO](tags/macro_tag_doc.md) — Insert shared content dynamically
 
 ---
 
 ### ⚔️ Combat and Tests
 
-- [COMBAT](tags/combat_tag_documentation.md) — Triggers a combat encounter
-- [SNEAKTEST](tags/sneaktest_tag_doc_updated.md) — Sneak test logic
-- [D12](tags/d12_tag_documentation.md) — Roll a D12 die for randomness
-- [2D6](tags/2d6.md) — Roll two six-sided dice
-- [DICE](tags/dice_tag_documentation.md) — Generic dice roll behaviour
+- [COMBAT](tags/combat_tag_documentation.md) — Start a combat encounter
+- [SNEAKTEST](tags/sneaktest_tag_doc_updated.md) — Test sneak ability
+- [D12](tags/d12_tag_documentation.md) — Roll a 12-sided die
+- [2D6](tags/2d6.md) — Roll two 6-sided dice
+- [DICE](tags/dice_tag_documentation.md) — Generic dice behaviour
 
 ---
 
-### 📦 Inventory and Item Handling
+### 📦 Inventory and Items
 
-- [I](tags/i.md) — Let the player purchase an item from a vendor
-- [PICKUP](tags/pickup_tag_doc.md) — Silently put something in player inventory
-- [DROP](tags/drop_tag_documentation.md) — Remove item(s) from inventory
-- [PICK](tags/pick_tag_doc.md) — Allow one-time choice of a single reward
-
----
-
-### 💠 UI and Display Enhancements
-
-- [B](tags/b_tag_documentation.md) — Bold text
-- [BR](tags/br_tag_documentation.md) — Line break
-- [Comments](tags/comment_tag_documentation.md) — Leave a hidden comment in source
+- [I](tags/i.md) — Buy item from a vendor
+- [PICKUP](tags/pickup_tag_doc.md) — Add item to inventory
+- [DROP](tags/drop_tag_documentation.md) — Remove item from inventory
+- [PICK](tags/pick_tag_doc.md) — Single-choice reward selection
 
 ---
 
-### 💾 Data Persistence and Stack
+### 💠 UI and Display
 
-- [PUSH](tags/push_tag_doc.md) — Push a value onto the local stack
+- [B](tags/b_tag_documentation.md) — Bold text formatting
+- [BR](tags/br_tag_documentation.md) — Insert a line break
+- [Comments](tags/comment_tag_documentation.md) — Hidden developer notes
+
+---
+
+### 💾 Stack and State Persistence
+
+- [PUSH](tags/push_tag_doc.md) — Push a value onto a stack
 - [POP](tags/pop_tag_doc.md) — Pop a value from the stack
-- [BANK](tags/bank_tag_documentation.md) — Give the player access to the bank of Utopia
+- [BANK](tags/bank_tag_documentation.md) — Access the Utopia Bank
 
 ---
 
 ### ⏳ Time and Effects
 
-- [TIME](tags/time_tag_doc.md) — Represents a full night passing
-- [EAT](tags/eat_tag_documentation.md) — Forces the player to consume a ration
-- [EFFECT](tags/effect_tag_documentation.md) — Triggers a passive effect
-- [EXPIRE](tags/expire_tag_documentation.md) — Clears a temporary state flag
+- [TIME](tags/time_tag_doc.md) — Advance time (e.g. nightfall)
+- [EAT](tags/eat_tag_documentation.md) — Consume a ration
+- [EFFECT](tags/effect_tag_documentation.md) — Trigger a passive effect
+- [EXPIRE](tags/expire_tag_documentation.md) — Remove a temporary flag
 
-## JavaScript ES5 Scripting (Advanced)
+---
 
-- [Javascript Scripting Guide](js-scripting/javascript_scripting_guide.md)
+## 💻 JavaScript Scripting (Advanced)
+
+- [JavaScript Scripting Guide](js-scripting/javascript_scripting_guide.md)
 - [Scripting Quick Reference](js-scripting/scripting_quick_reference.md)
 - [Common Scripting Patterns](js-scripting/common_scripting_patterns.md)
 - [Player Object Guide](js-scripting/player_object_guide.md)
@@ -188,6 +192,8 @@ Tags are grouped by their primary purpose:
 - [Achievement Keys Guide](js-scripting/achievement_keys_guide.md)
 - [Toast Message Guide](js-scripting/toast-message-guide.md)
 
-## Achievement Scripting
+---
+
+## 🏆 Achievement Scripting
 
 - [Achievement Event List](js-scripting/achievement-events.md)
