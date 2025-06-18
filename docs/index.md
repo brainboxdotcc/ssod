@@ -11,7 +11,7 @@ At its heart, Seven Spells is powered by a **domain-specific language (DSL)** em
 - **Choice-based narrative scripting**
 - **Tag-driven command markup**
 - **Server-executed gameplay logic**
-- **Inline JavaScript support via `<script` blocks**
+- **Inline JavaScript support via `SCRIPT` blocks**
 
 This system allows you — the worldbuilder, writer, designer — to craft interactive experiences that **feel alive**, without requiring you to be a professional software developer.
 
