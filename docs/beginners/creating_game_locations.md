@@ -80,14 +80,6 @@ Peer review by another writer or moderator is **strongly encouraged** before con
 
 ---
 
-## 📸 Example
-
-
-
-This is a snapshot of Location 1 — showing links, prose, and structure.
-
----
-
 Once your location is stable, narratively sound, and technically clean — you can link it into the main world!
 
 Ready to build? Pick a number, and begin your story.
