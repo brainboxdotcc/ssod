@@ -97,6 +97,7 @@ Pick a location. Begin the world anew.
 
 ## 🧒 Beginners
 
+- [What is Paragraph?](beginners/paragraph_language_description.md)
 - [Creating Game Locations](beginners/creating_game_locations.md)
 - [Narrative Style Guide](beginners/narrative_style_guide.md)
 
