@@ -19,25 +19,29 @@ It’s not just a "choose your own adventure" tool, nor a visual novel engine. I
 
 ---
 
-## 🧠 Why Not Use Twine, Ink, or Ren'Py?
+## 🧠 Why Not Use an Existing Engine?
 
-Popular tools like Twine or Ink are powerful... but they come with assumptions Seven Spells deliberately avoids.
+Most interactive fiction engines and MUD frameworks were built for different goals. Tools like Twine, Ink, and Ren'Py are excellent for solo experiences or small-scale branching stories. Classic MUD engines offer deep simulation and multiplayer, but require low-level scripting and rigid data models.
 
-For example:
+**Seven Spells** takes a different path - combining the **narrative control of IF**, the **persistence of RPG systems**, and the **real-time presence of a modern multiplayer environment**, all through a **Discord-first interface**.
 
-- They expect linear or tree-based branching
-- They lack persistent global state and multiplayer capability
-- They don’t support **shared-world continuity** or long-term item tracking
-- They aren’t natively integrated into Discord, where Seven Spells is played
+---
 
-Seven Spells, by contrast, is:
+### What Makes *Paragraph* and *Seven Spells* Different?
 
-- **Persistent**: Every choice has ripple effects across the world
-- **Multiplayer-aware**: Your actions can impact other players
-- **Modular**: Locations are written independently, yet feel connected
-- **Programmable**: JavaScript gives deep control over narrative and game logic
+* **Persistent**: Choices are stored in a live database and can have world-altering consequences. A player who kills a major NPC changes the game for everyone.
+* **Multiplayer-native**: Players exist in the same world. Chat, PvP combat, party coordination, and global events are all built in.
+* **Modular and Scalable**: Locations are written as self-contained units, but interlink via a connected world graph. There’s no central script to manage or break.
+* **Scriptable**: Embedded JavaScript allows for detailed logic, dynamic effects, and conditional content far beyond what most IF engines allow.
+* **Discord-native**: The game is played directly inside Discord, making use of its chat interface, user sessions, and presence features. No extra installs, no external UI — just instant access and built-in community.
 
-It’s more like writing for a **persistent multiplayer RPG** than for a static story engine.
+---
+
+### Built for a Different Kind of Story
+
+Seven Spells isn’t a static gamebook. It’s a **living world**, where players shape the outcome together. *Paragraph* was designed to support that world - reactive, safe to write in, expressive, and scalable.
+
+It’s closer to **writing for a multiplayer RPG campaign** than building a fixed narrative tree. Writers shape locations and events. Developers control state and structure. Players explore a persistent graph that changes with them.
 
 ---
 
@@ -60,36 +64,12 @@ You're not just writing scenes - you’re building a **living, reactive world**.
 
 This system is **not**:
 
-- A complete programming language (though JavaScript is supported)
+- A complete general-purpose programming language (though JavaScript is supported)
 - A drag-and-drop visual editor
 - A no-code game engine
 - A 3D or physics-based platform
 
 This is immersive, persistent fiction, where player decisions **matter**, and the medium remains **text**.
-
----
-
-## 🧭 How to Use This Guide
-
-This documentation is divided into logical sections:
-
-- **Beginner Guides**: Start creating locations and branching stories
-- **Scripting Tags**: Learn every available tag like `COMBAT`, `MOD`, and more
-- **JavaScript API**: Write game logic, access player data, modify paragraphs
-- **Achievements & Effects**: Script one-time or time-based outcomes
-- **Narrative Style**: Best practices for prose, tone, and continuity
-
-You can dive into any section independently, but real mastery comes from understanding how all the pieces **fit together**.
-
----
-
-## 🏁 Final Thoughts
-
-This system is **bespoke**, **evolving**, and **unlike anything else**. It was designed around the needs of *Seven Spells* - a living world that trusts its writers and empowers them with just enough technical depth to **make magic real**.
-
-You’re not just shaping what players read. You're shaping **who they become**.
-
-Pick a location. Begin the world anew.
 
 ---
 
