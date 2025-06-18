@@ -21,7 +21,7 @@ It’s not just a "choose your own adventure" tool, nor a visual novel engine. I
 
 ## 🧠 Why Not Use Twine, Ink, or Ren'Py?
 
-Popular tools like Twine or Ink are powerful — but they come with assumptions Seven Spells deliberately avoids.
+Popular tools like Twine or Ink are powerful... but they come with assumptions Seven Spells deliberately avoids.
 
 For example:
 
@@ -52,7 +52,7 @@ Using the *Paragraph* language, you can:
 - Display different content based on skill, race, profession, or flags
 - Define **reusable logic** with passive effects or achievement scripting
 
-You're not just writing scenes — you’re building a **living, reactive world**.
+You're not just writing scenes - you’re building a **living, reactive world**.
 
 ---
 
@@ -65,7 +65,7 @@ This system is **not**:
 - A no-code game engine
 - A 3D or physics-based platform
 
-This is immersive, persistent fiction — where player decisions **matter**, and the medium remains **text**.
+This is immersive, persistent fiction, where player decisions **matter**, and the medium remains **text**.
 
 ---
 
@@ -87,7 +87,7 @@ You can dive into any section independently, but real mastery comes from underst
 
 This system is **bespoke**, **evolving**, and **unlike anything else**. It was designed around the needs of *Seven Spells* - a living world that trusts its writers and empowers them with just enough technical depth to **make magic real**.
 
-You’re not just shaping what players read — you're shaping **who they become**.
+You’re not just shaping what players read. You're shaping **who they become**.
 
 Pick a location. Begin the world anew.
 
