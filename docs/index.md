@@ -13,7 +13,7 @@ At its core, Seven Spells is powered by a **domain-specific language (DSL)** cal
 - **Server-side gameplay logic**
 - **Inline JavaScript via `SCRIPT` blocks**
 
-This lets you — the worldbuilder, writer, or designer — create rich interactive experiences that **feel alive**, without needing to be a software engineer.
+This lets you, the worldbuilder, writer, or designer, create rich interactive experiences that **feel alive**, without needing to be a software engineer.
 
 It’s not just a "choose your own adventure" tool, nor a visual novel engine. It occupies a unique space: **dynamic prose blended with consequence-driven logic**.
 
@@ -79,13 +79,13 @@ This documentation is divided into logical sections:
 - **Achievements & Effects**: Script one-time or time-based outcomes
 - **Narrative Style**: Best practices for prose, tone, and continuity
 
-You can dive into any section independently — but real mastery comes from understanding how all the pieces **fit together**.
+You can dive into any section independently, but real mastery comes from understanding how all the pieces **fit together**.
 
 ---
 
 ## 🏁 Final Thoughts
 
-This system is **bespoke**, **evolving**, and **unlike anything else**. It was designed around the needs of *Seven Spells* — a living world that trusts its writers and empowers them with just enough technical depth to **make magic real**.
+This system is **bespoke**, **evolving**, and **unlike anything else**. It was designed around the needs of *Seven Spells* - a living world that trusts its writers and empowers them with just enough technical depth to **make magic real**.
 
 You’re not just shaping what players read — you're shaping **who they become**.
 
