@@ -166,3 +166,34 @@ The `<else>` tag may appear once between `<if>` and `<endif>`.
 <if stm lt 5> You have low stamina. <else> You're fine. <endif>
 <if (race elf and has 2 arrows)> You fire twice. <endif>
 ```
+
+---
+
+## EBNF Definition
+
+```
+<expression>       ::= <term> { "or" <term> }
+
+<term>             ::= <factor> { "and" <factor> }
+
+<factor>           ::= "not" <factor>
+                     | "(" <expression> ")"
+                     | <atom>
+
+<atom>             ::= <comparison>
+                     | <function_call>
+
+<comparison>       ::= <identifier> <comparison_op> <number_or_dice>
+
+<comparison_op>    ::= "eq" | "ne" | "lt" | "gt" | "lte" | "gte"
+
+<number_or_dice>   ::= <number> | "dice"
+
+<function_call>    ::= <identifier> { <argument> }
+
+<argument>         ::= <identifier> | <number>
+
+<identifier>       ::= [a-zA-Z_][a-zA-Z0-9_]*
+
+<number>           ::= [0-9]+
+```
