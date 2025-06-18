@@ -117,7 +117,7 @@ Tags are grouped by their primary purpose:
 - [AUTOLINK](tags/autolink_tag_doc.md) — Conditional links based on test results
 - [PAYLINK](tags/paylink_tag_doc.md) — Requires gold to activate a link
 - [INPUT](tags/input_tag_doc.md) — Accept player text input
-- [BOOK](tags/book_tag_documentation.md) — Opens a readable book
+- [BOOK](tags/book_tag_documentation.md) — Picks up a readable book
 
 ---
 
@@ -147,8 +147,8 @@ Tags are grouped by their primary purpose:
 
 ### 📦 Inventory and Item Handling
 
-- [I](tags/i.md) — Let the player purchase an item
-- [PICKUP](tags/pickup_tag_doc.md) — Allow player to collect something
+- [I](tags/i.md) — Let the player purchase an item from a vendor
+- [PICKUP](tags/pickup_tag_doc.md) — Silently put something in player inventory
 - [DROP](tags/drop_tag_documentation.md) — Remove item(s) from inventory
 - [PICK](tags/pick_tag_doc.md) — Allow one-time choice of a single reward
 
