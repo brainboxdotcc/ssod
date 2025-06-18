@@ -1,6 +1,6 @@
 # ✨ Introduction to the Seven Spells Scripting System
 
-Welcome to the reference documentation for **The Seven Spells of Destruction** content authoring system. This guide not only teaches you how to use the tools — it also explains *why* they exist and *what* they enable.
+Welcome to the reference documentation for **The Seven Spells of Destruction** content authoring system. This guide not only teaches you how to use the tools, it also explains *why* they exist and *what* they enable.
 
 ---
 
