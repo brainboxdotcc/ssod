@@ -282,9 +282,20 @@ struct player {
 	 */
 	std::deque<long> breadcrumb_trail;
 
+	/**
+	 * @brief Last resurrection time
+	 */
 	time_t last_resurrect;
 
+	/**
+	 * @brief Last dice roll
+	 */
 	int g_dice{0};
+
+	/**
+	 * @brief Paragraph scratch registers
+	 */
+	long regs[32]{0};
 
 	/**
 	 * @brief Destroy the player object
@@ -370,6 +381,10 @@ struct player {
 
 	void insert_owned_list(dpp::snowflake user_id, const std::vector<item>& items);
 	void insert_owned_list(dpp::snowflake user_id, const std::vector<stacked_item>& items);
+
+	void set_reg(uint8_t index, long value);
+
+	long get_reg(uint8_t index);
 };
 
 using player_list = std::unordered_map<dpp::snowflake, player>;

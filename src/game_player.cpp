@@ -639,6 +639,8 @@ player::player(bool reroll) :
 		if (race == race_barbarian || race == race_orc) {
 			add_stamina(3); 
 		}
+
+		std::memset(regs, 0, sizeof(regs));
 	}
 }
 
@@ -743,6 +745,20 @@ void player::tick_mana() {
 		mana += (profession == prof_wizard ? 2 : 1);
 	}
 	mana = std::min(max_mana(), mana);
+}
+
+void player::set_reg(uint8_t index, long value) {
+	if (index > 31) {
+		return;
+	}
+	regs[index] = value;
+}
+
+long player::get_reg(uint8_t index) {
+	if (index > 31) {
+		return 0;
+	}
+	return regs[index];
 }
 
 dpp::task<void> player::drop_everything() {

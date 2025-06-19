@@ -22,7 +22,7 @@
 #include <ssod/database.h>
 
 bool comparison(std::string condition, long c1, const std::string& c2, int g_dice) {
-	long c = c2 == "dice" ? g_dice : atol(c2.c_str());
+	long c = c2 == "dice" ? g_dice : atol(c2);
 	condition = dpp::lowercase(condition);
 	if (condition == "eq") return c1 == c;
 	if (condition == "gt") return c1 > c;
@@ -35,18 +35,18 @@ bool comparison(std::string condition, long c1, const std::string& c2, int g_dic
 
 enum token_type {
 	TOKEN_EOF,
-	TOKEN_LPAREN,
-	TOKEN_RPAREN,
-	TOKEN_AND,
-	TOKEN_OR,
-	TOKEN_NOT,
-	TOKEN_IDENTIFIER,
-	TOKEN_COMPARISON,
-	TOKEN_NUMBER
+	TOKEN_LPAREN,		// (
+	TOKEN_RPAREN,		// )
+	TOKEN_AND,		// and
+	TOKEN_OR,		// or
+	TOKEN_NOT,		// not
+	TOKEN_IDENTIFIER,	// flag name quoted string, function
+	TOKEN_COMPARISON,	// lt, gt, eq, ne, gte, lte
+	TOKEN_NUMBER		// 0-9
 };
 
 struct token {
-	token_type type;
+	token_type type{TOKEN_EOF};
 	std::string value;
 };
 
@@ -57,10 +57,12 @@ public:
 
 	token next() {
 		std::string val;
-		char ch;
+		char ch{};
 
 		while (in.get(ch) && std::isspace(ch)) {}
-		if (in.eof()) return { TOKEN_EOF, "" };
+		if (in.eof()) {
+			return { TOKEN_EOF, "" };
+		}
 
 		switch (ch) {
 			case '(': return { TOKEN_LPAREN, "(" };
@@ -73,12 +75,21 @@ public:
 		}
 
 		std::string lowered = dpp::lowercase(val);
-		if (lowered == "and") return { TOKEN_AND, lowered };
-		if (lowered == "or") return { TOKEN_OR, lowered };
-		if (lowered == "not") return { TOKEN_NOT, lowered };
-		if (lowered == "eq" || lowered == "ne" || lowered == "gt" || lowered == "lt" || lowered == "gte" || lowered == "lte")
+		if (lowered == "and") {
+			return { TOKEN_AND, lowered };
+		}
+		if (lowered == "or") {
+			return { TOKEN_OR, lowered };
+		}
+		if (lowered == "not") {
+			return { TOKEN_NOT, lowered };
+		}
+		if (lowered == "eq" || lowered == "ne" || lowered == "gt" || lowered == "lt" || lowered == "gte" || lowered == "lte") {
 			return { TOKEN_COMPARISON, lowered };
-		if (std::isdigit(val[0])) return { TOKEN_NUMBER, lowered };
+		}
+		if (std::isdigit(val[0])) {
+			return { TOKEN_NUMBER, lowered };
+		}
 
 		return { TOKEN_IDENTIFIER, val };
 	}
@@ -182,7 +193,7 @@ class if_expression_parser {
 		co_return co_await co_evaluate_function(lhs, args);
 	}
 
-	std::string join_args(const std::vector<std::string>& input, size_t start_index = 0) {
+	static std::string join_args(const std::vector<std::string>& input, size_t start_index = 0) {
 		std::string joined;
 		bool in_quotes = false;
 		for (size_t i = start_index; i < input.size(); ++i) {
@@ -206,8 +217,12 @@ class if_expression_parser {
 	dpp::task<bool> co_evaluate_function(const std::string& name, const std::vector<std::string>& args) {
 		std::string joined = join_args(args);
 
-		if (name == "item") co_return current_player.has_herb(joined) || current_player.has_spell(joined) || current_player.has_possession(joined);
-		if (name == "!item") co_return !current_player.has_herb(joined) && !current_player.has_spell(joined) && !current_player.has_possession(joined);
+		if (name == "item") {
+			co_return current_player.has_herb(joined) || current_player.has_spell(joined) || current_player.has_possession(joined);
+		}
+		if (name == "!item") {
+			co_return !current_player.has_herb(joined) && !current_player.has_spell(joined) && !current_player.has_possession(joined);
+		}
 		if (name == "has" && args.size() >= 2) {
 			size_t n = std::stoul(args[0]);
 			std::string item = join_args(args, 1);
@@ -252,25 +267,22 @@ class if_expression_parser {
 				  (val == "thief" && current_player.profession == prof_thief) ||
 				  (val == "woodsman" && current_player.profession == prof_woodsman);
 		}
-		if (name == "mounted") co_return current_player.has_flag("horse");
+		if (name == "mounted") {
+			co_return current_player.has_flag("horse");
+		}
 		if (name == "flag" && !args.empty()) {
-			std::string flag = args[0];
-			std::string like_key = "gamestate_" + flag + "%";
-
-			db::paramlist p = { current_player.event.command.usr.id, like_key };
+			db::paramlist p = { current_player.event.command.usr.id, "gamestate_" + args[0] + "%" };
 			auto rs = co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", p);
-			bool global = co_await global_set(flag);
-			bool timed = co_await timed_set(current_player.event, flag);
+			bool global = co_await global_set(args[0]);
+			bool timed = co_await timed_set(current_player.event, args[0]);
 			bool result = !rs.empty() || global || timed;
 			co_return result;
 		}
 		if (name == "!flag" && !args.empty()) {
-			std::string flag = args[0];
-			std::string like_key = "gamestate_" + flag + "%";
-			db::paramlist p = { current_player.event.command.usr.id, like_key };
+			db::paramlist p = { current_player.event.command.usr.id, "gamestate_" + args[0] + "%" };
 			auto rs = co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", p);
-			bool global = co_await global_set(flag);
-			bool timed = co_await timed_set(current_player.event, flag);
+			bool global = co_await global_set(args[0]);
+			bool timed = co_await timed_set(current_player.event, args[0]);
 			bool result = rs.empty() && !global && !timed;
 			co_return result;
 		}
@@ -284,7 +296,7 @@ class if_expression_parser {
 		if (name == "water") {
 			co_return (current_player.has_spell("water") && current_player.has_component_herb("water")) ||
 				  current_player.has_possession("water canister") ||
-				  current_player.has_possession("water cannister");
+				  current_player.has_possession("water cannister"); // intentional misspelling for legacy content
 		}
 
 		co_return false;
@@ -320,7 +332,8 @@ struct if_tag : public tag {
 				std::stringstream ss(p_text + " " + remaining);
 				if_expression_parser parser(ss, current_player);
 				p.display.push_back(co_await parser.parse());
-			} catch (...) {
+			} catch (const std::exception& e) {
+				current_player.event.owner->log(dpp::ll_warning, "<IF> error on paragraph " + std::to_string(p.id) + ": " + std::string(e.what()));
 				p.display.push_back(false);
 			}
 		} else {
