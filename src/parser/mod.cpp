@@ -64,11 +64,14 @@ struct mod_tag : public tag {
 
 		paragraph_content >> mod;
 		bool assignment = false;
-		auto rhs = modifier_list.find(mod);
+		long modifier = 0;
+		mod = dpp::lowercase(mod);
+		auto rhs = modifier_list.find(remove_last_char(mod));
 		if (rhs != modifier_list.end()) {
 			assignment = true;
+		} else {
+			modifier = atol(mod);
 		}
-		long modifier = atol(mod);
 
 		std::string flag = "MOD" + lhs + std::to_string(modifier);
 
