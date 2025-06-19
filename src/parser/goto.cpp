@@ -23,6 +23,9 @@ struct goto_tag : public tag {
 	goto_tag() { register_tag<goto_tag>(); }
 	static constexpr std::string_view tags[]{"<goto"};
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+		std::string label_name;
+		paragraph_content >> label_name;
+		label_name = dpp::lowercase(remove_last_char(label_name));
 		co_return;
 	}
 };
