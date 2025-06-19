@@ -177,14 +177,19 @@ class if_expression_parser {
 		if (current.type == TOKEN_COMPARISON) {
 			std::string op = current.value;
 			advance();
-			if (current.type != TOKEN_NUMBER && current.value != "dice")
-				throw std::runtime_error("Expected number or 'dice'");
+			if (current.type != TOKEN_NUMBER && current.value != "dice" && current.type != TOKEN_IDENTIFIER)
+				throw std::runtime_error("Expected number, identifier, or 'dice'");
 			std::string rhs = current.value;
 			advance();
 
 			auto map = get_score_map();
-			if (map.find(lhs) == map.end())
+			if (map.find(lhs) == map.end()) {
 				co_return false;
+			}
+			if (map.find(rhs) != map.end()) {
+				// If the RHS is in the score map it is a scoreboard identifier
+				rhs = map[rhs];
+			}
 			co_return comparison(op, map[lhs], rhs, g_dice);
 		}
 
