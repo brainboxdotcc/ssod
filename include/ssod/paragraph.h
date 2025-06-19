@@ -198,6 +198,11 @@ struct paragraph {
 	std::vector<bool> display;
 
 	/**
+	 * Label positions
+	 */
+	std::map<std::string, std::streampos> label_positions;
+
+	/**
 	 * Current fragment. Where a paragraph has combat encounters, each section
 	 * before that encounter's combat tag to the next is known as a fragment.
 	 * We only display the current fragment, e.g. up to and including the current
