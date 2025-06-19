@@ -26,6 +26,10 @@ struct goto_tag : public tag {
 		std::string label_name;
 		paragraph_content >> label_name;
 		label_name = dpp::lowercase(remove_last_char(label_name));
+		auto label = p.label_positions.find(label_name);
+		if (label != p.label_positions.end()) {
+			paragraph_content.seekg(label->second);
+		}
 		co_return;
 	}
 };

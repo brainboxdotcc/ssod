@@ -26,6 +26,7 @@ struct label_tag : public tag {
 		std::string label_name;
 		paragraph_content >> label_name;
 		label_name = dpp::lowercase(remove_last_char(label_name));
+		p.label_positions.emplace(label_name, paragraph_content.tellg());
 		co_return;
 	}
 };
