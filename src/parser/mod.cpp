@@ -32,19 +32,18 @@ struct modifier_t {
 struct mod_tag : public tag {
 	mod_tag() { register_tag<mod_tag>(); }
 	static constexpr std::string_view tags[]{"<mod"};
-	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
+	static dpp::task<void> route(paragraph& p, std::string& lhs, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
 		std::string mod;
 		bool repeatable{false};
-		paragraph_content >> p_text;
-		if (p_text == "repeatable") {
-			paragraph_content >> p_text;
+
+		paragraph_content >> lhs;
+
+		if (lhs == "repeatable") {
+			paragraph_content >> lhs;
 			repeatable = true;
 		}
-		paragraph_content >> mod;
-		long modifier = atol(mod);
-		std::string flag = "MOD" + p_text + std::to_string(modifier);
 
-		const std::map<std::string, modifier_t> modifier_list = {
+		std::map<std::string, modifier_t> modifier_list = {
 			{"stm", {tr("STAMINA", current_player.event), &current_player.stamina, current_player.max_stamina()}},
 			{"skl", {tr("SKILL", current_player.event), &current_player.skill, current_player.max_skill()}},
 			{"luck", {tr("LUCK", current_player.event), &current_player.luck, current_player.max_luck()}},
@@ -59,8 +58,27 @@ struct mod_tag : public tag {
 			{"gold", {tr("GOLD", current_player.event), &current_player.gold, current_player.max_gold()}},
 			{"silver", {tr("SILVER", current_player.event), &current_player.silver, current_player.max_silver()}},
 		};
-		auto m = modifier_list.find(p_text);
+		for (uint8_t reg_no = 0; reg_no < 32; ++reg_no) {
+			modifier_list.emplace("reg" + std::to_string(reg_no), modifier_t{"REGISTER", &current_player.regs[reg_no], 9223372036854775807});
+		}
+
+		paragraph_content >> mod;
+		bool assignment = false;
+		auto rhs = modifier_list.find(mod);
+		if (rhs != modifier_list.end()) {
+			assignment = true;
+		}
+		long modifier = atol(mod);
+
+		std::string flag = "MOD" + lhs + std::to_string(modifier);
+
+		auto m = modifier_list.find(lhs);
 		if (m != modifier_list.end()) {
+			if (assignment) {
+				// RHS->LHS assignment, this is silent and always repeatable
+				*(m->second.score) = *(rhs->second.score);
+				co_return;
+			}
 			// No output if the player's been here before
 			if (!repeatable) {
 				if (!current_player.has_flag(flag, p.id)) {
@@ -75,19 +93,19 @@ struct mod_tag : public tag {
 			*(m->second.score) += modifier;
 			*(m->second.score) = std::min(*(m->second.score), m->second.max);
 			*(m->second.score) = std::max(*(m->second.score), 0L);
-			co_await achievement_check("MOD", current_player.event, current_player, {{"modifier", modifier}, {"stat", p_text}});
+			co_await achievement_check("MOD", current_player.event, current_player, {{"modifier", modifier}, {"stat", lhs}});
 			long new_value = current_player.get_level();
 			if (new_value > old_value && new_value > 1) {
 				current_player.add_toast({ .message = tr("LEVELUP", current_player.event, new_value), .image = "level-up.png" });
 				co_await achievement_check("LEVEL_UP", current_player.event, current_player, {{"level", new_value}});
 			}
 			p.words++;
-			if (modifier < 0 || p_text == "notoriety" || p_text == "gold" || p_text == "silver") {
+			if (modifier < 0 || lhs == "notoriety" || lhs == "gold" || lhs == "silver") {
 				/* Locations that remove stats or give gold/silver are not safe locations */
 				p.safe = false;
 			}
 		} else {
-			std::cout << "Error: Invalid MOD " << p_text << " in location " << p.id << "\n";
+			std::cout << "Error: Invalid MOD " << lhs << " in location " << p.id << "\n";
 		}
 		co_return;
 	}
