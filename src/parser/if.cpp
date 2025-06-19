@@ -106,7 +106,7 @@ class if_expression_parser {
 	}
 
 	std::map<std::string, long> get_score_map() {
-		return {
+		std::map<std::string, long> defaults = {
 			{ "exp", current_player.experience },
 			{ "dice", current_player.g_dice },
 			{ "stm", current_player.stamina },
@@ -124,6 +124,10 @@ class if_expression_parser {
 			{ "silver", current_player.silver },
 			{ "rations", current_player.rations }
 		};
+		for (uint8_t reg_no = 0; reg_no < 32; ++reg_no) {
+			defaults.emplace("reg" + std::to_string(reg_no), current_player.regs[reg_no]);
+		}
+		return defaults;
 	}
 
 	dpp::task<bool> parse_expression() {
