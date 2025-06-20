@@ -139,6 +139,7 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id)
 
 	/* BUG: g++14.1 ICE: Can't pass members of `this` to an initialiser list within a coroutine */
 	uint32_t paragraph_id{id};
+	std::memset(current_player.regs, 0, sizeof(current_player.regs));
 	auto location = co_await db::co_query("SELECT * FROM game_locations WHERE id = ?", {paragraph_id});
 	if (!location.empty()) {
 		/* Check for a translation for the user's locale, if there is one */
