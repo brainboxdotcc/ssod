@@ -64,6 +64,7 @@ struct mod_tag : public tag {
 
 		paragraph_content >> mod;
 		bool assignment = false;
+		bool silent = false;
 		long modifier = 0;
 		mod = dpp::lowercase(mod);
 		auto rhs = modifier_list.find(remove_last_char(mod));
@@ -74,6 +75,12 @@ struct mod_tag : public tag {
 		}
 
 		std::string flag = "MOD" + lhs + std::to_string(modifier);
+
+		/* Scratch registers are always repeatable */
+		if (lhs.starts_with("reg") || mod.starts_with("reg")) {
+			repeatable = true;
+			silent = true;
+		}
 
 		auto m = modifier_list.find(lhs);
 		if (m != modifier_list.end()) {
@@ -91,12 +98,16 @@ struct mod_tag : public tag {
 					co_return;
 				}
 			}
-			output << " ***" << tr(modifier < 1 ? "MODNEG" : "MODPLUS", current_player.event, abs(modifier), m->second.name) << "*** ";
+			if (!silent) {
+				output << " ***" << tr(modifier < 1 ? "MODNEG" : "MODPLUS", current_player.event, abs(modifier), m->second.name) << "*** ";
+			}
 			long old_value = current_player.get_level();
 			*(m->second.score) += modifier;
 			*(m->second.score) = std::min(*(m->second.score), m->second.max);
 			*(m->second.score) = std::max(*(m->second.score), 0L);
-			co_await achievement_check("MOD", current_player.event, current_player, {{"modifier", modifier}, {"stat", lhs}});
+			if (!silent) {
+				co_await achievement_check("MOD", current_player.event, current_player, {{"modifier", modifier}, {"stat", lhs}});
+			}
 			long new_value = current_player.get_level();
 			if (new_value > old_value && new_value > 1) {
 				current_player.add_toast({ .message = tr("LEVELUP", current_player.event, new_value), .image = "level-up.png" });
@@ -108,7 +119,7 @@ struct mod_tag : public tag {
 				p.safe = false;
 			}
 		} else {
-			std::cout << "Error: Invalid MOD " << lhs << " in location " << p.id << "\n";
+			current_player.event.owner->log(dpp::ll_warning, "Invalid MOD " + lhs + " in location " + std::to_string(p.id));
 		}
 		co_return;
 	}

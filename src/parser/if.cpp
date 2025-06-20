@@ -188,7 +188,7 @@ class if_expression_parser {
 			}
 			if (map.find(rhs) != map.end()) {
 				// If the RHS is in the score map it is a scoreboard identifier
-				rhs = map[rhs];
+				rhs = std::to_string(map[rhs]);
 			}
 			co_return comparison(op, map[lhs], rhs, g_dice);
 		}
