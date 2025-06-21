@@ -46,22 +46,6 @@ dpp::task<paragraph> paragraph::create(const std::string& data, player& current)
 paragraph::paragraph(const std::string& data, player& current) : id(0), text(data), combat_disabled(false), magic_disabled(false), theft_disabled(false), chat_disabled(false), cur_player(&current) {
 }
 
-// extracts from any NAME=Value pair
-std::string extract_without_quotes(const std::string& p_text) {
-	std::string item_name;
-	bool copying{false};
-	for (const char c : p_text) {
-		if (c == '=' || c == ' ' || c == '>') {
-			copying = !copying;
-			continue;
-		}
-		if (copying) {
-			item_name += c;
-		}
-	}
-	return item_name;
-}
-
 dpp::task<bool> paragraph::valid_next(long current, long next) {
 	std::set<long> paralist{current};
 	std::string p_text;
@@ -122,20 +106,11 @@ dpp::task<bool> timed_set(dpp::interaction_create_t& event, const std::string& f
 	co_return is_set;
 }
 
-
-void extract_to_quote(std::string& p_text, std::stringstream& content, char end) {
-	while (!content.eof() && p_text.length() && *p_text.rbegin() != end) {
-		std::string extra;
-		content >> extra;
-		p_text += " " + extra;
-	}							
-}
-
 std::string remove_last_char(const std::string& s) {
 	return dpp::utility::utf8substr(s, 0, dpp::utility::utf8len(s) - 1);
 }
 
-dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id) {
+dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id, bool step_debug) {
 
 	/* BUG: g++14.1 ICE: Can't pass members of `this` to an initialiser list within a coroutine */
 	uint32_t paragraph_id{id};
@@ -164,125 +139,30 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id)
 		}
 	}
 
-	std::stringstream paragraph_content(replace_string(text, "><", "> <") + "\r\n<br>\r\n");
-	std::string p_text, LastLink;
-	output = new std::stringstream();
+	if (!step_debug) {
+		std::stringstream paragraph_content, output;
+		paragraph_content.str(get_content());
+		paragraph_content.clear();
 
-	while (!paragraph_content.eof()) {
-		paragraph_content >> p_text;
-		std::string neat_version{p_text};
-
-		if (paragraph_content.eof()) {
-			break;
-		}
-
-		try {	
-			if (co_await route_tag(*this, p_text, paragraph_content, *this->output, current_player, display.size() ? display[display.size() - 1] : true)) {
-				continue;
+		while (!paragraph_content.eof()) {
+			auto next = co_await step(current_player, user_id, paragraph_content, output);
+			if (next == PARAGRAPH_STATE_BREAK) {
+				break;
 			}
 		}
-		catch (const parse_end_exception&) {
-			/* If a tag router throws this, it means we are to break out of the parser loop 
-			 * and end parsing the content at this tag
-			 */
-			break;
-		}
-
-		if (current_fragment < current_player.after_fragment) {
-			/* nothing should be displayed that comes before the desired fragment! */
-			continue;
-		}
-
-		if (display.size() ? display[display.size() - 1] : true) {
-			std::string tag = dpp::lowercase(dpp::utility::utf8substr(p_text, 0, 20));
-			if (tag.find("<paylink=") != std::string::npos && !last_was_link) {
-				int i{0};
-				std::string pnum, cost;
-				while (p_text[i++] != '=');
-				while (p_text[i] != ',') {
-					cost += p_text[i++];
-				}
-				i++;
-				while (p_text[i] != '>') {
-					pnum += p_text[i++];
-				}
-				links++;
-				*output << directions[links];
-				if (current_player.gold < atol(cost)) {
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = tr("PAYLINK", current_player.event, cost) });
-				} else {
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
-				}
-				*output << " ";
-			} else if (tag.find("<link=") != std::string::npos && !last_was_link) {
-				int i{0};
-				std::string pnum, label;
-				if (p_text.find(',') != std::string::npos) {
-					while (p_text[i++] != '=');
-					while (p_text[i] != ',') {
-						pnum += p_text[i++];
-					}
-					p_text = dpp::utility::utf8substr(p_text, i + 1, dpp::utility::utf8len(p_text));
-					bool bail{false};
-					do {
-						if (p_text.find('>') == std::string::npos) {
-							label += p_text + " ";
-							paragraph_content >> p_text;
-						} else {
-							label += p_text.substr(0, p_text.find('>')) + " ";
-							bail = true;
-						}
-					} while (!bail);
-				} else {
-					while (p_text[i++] != '=');
-					while (p_text[i] != '>') {
-						pnum += p_text[i++];
-					}
-					label = tr("TRAVEL", current_player.event);
-				}
-				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
-					*output << " " << tr("CANTFOLLOW", current_player.event);
-				} else {
-					links++;
-					LastLink = pnum;
-					*output << directions[links];
-					navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = label });
-				}
-				*output << " ";
-			} else if (tag.find("<autolink=") != std::string::npos && !last_was_link) {
-				int i{0};
-				std::string pnum;
-				while (p_text[i++] != '=');
-				while (p_text[i] != '>') {
-					pnum += p_text[i++];
-				}
-				/* TODO: What is this 'the' madness? Find out! Ancient fix? */
-				if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
-					navigation_links.push_back(nav_link{ .paragraph = 0, .type = nav_type_respawn, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
-				} else {
-					links++;
-					LastLink = pnum;
-					*output << directions[links];
-					if (auto_test) {
-						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_autolink, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
-					} else {
-						navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
-					}
-				}
-				auto_test = !auto_test; // invert the next autolink...
-				*output << " ";
-			}
-			else {
-				if (neat_version.find(">") == std::string::npos && !neat_version.empty() && neat_version[0] != '<') {
-					*output << neat_version << " ";
-					words++;
-				}
-			}
-		}
-
+		co_await finish(current_player, user_id, output);
 	}
-	text = output->str();
-	delete output;
+}
+
+std::string paragraph::get_content() {
+	return replace_string(text, "><", "> <") + "\r\n<br>\r\n";
+}
+
+paragraph::~paragraph() {
+}
+
+dpp::task<void> paragraph::finish(player& current_player, dpp::snowflake user_id, std::stringstream& finish_output) {
+	text = finish_output.str();
 	if (id && words && safe) {
 		if (!current_player.breadcrumb_trail.empty()) {
 			if (current_player.breadcrumb_trail[current_player.breadcrumb_trail.size() - 1] == id) {
@@ -296,3 +176,118 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id)
 	}
 	co_return;
 }
+
+dpp::task<paragraph_state> paragraph::step(player& current_player, dpp::snowflake user_id, std::stringstream& paragraph_content, std::stringstream& step_output) {
+	paragraph_content >> p_text;
+	std::string neat_version{p_text};
+	output = &step_output;
+
+	if (!output) {
+		throw std::runtime_error("Parser not initialised via parse()");
+	}
+
+	if (paragraph_content.eof()) {
+		co_return PARAGRAPH_STATE_BREAK;
+	}
+
+	try {
+		if (co_await route_tag(*this, p_text, paragraph_content, step_output, current_player, display.size() ? display[display.size() - 1] : true)) {
+			co_return PARAGRAPH_STATE_CONTINUE;
+		}
+	}
+	catch (const parse_end_exception&) {
+		/* If a tag router throws this, it means we are to break out of the parser loop
+		 * and end parsing the content at this tag
+		 */
+		co_return PARAGRAPH_STATE_BREAK;
+	}
+
+	if (current_fragment < current_player.after_fragment) {
+		/* nothing should be displayed that comes before the desired fragment! */
+		co_return PARAGRAPH_STATE_CONTINUE;
+	}
+
+	if (display.size() ? display[display.size() - 1] : true) {
+		tag = dpp::lowercase(dpp::utility::utf8substr(p_text, 0, 20));
+		if (tag.find("<paylink=") != std::string::npos && !last_was_link) {
+			int i{0};
+			std::string pnum, cost;
+			while (p_text[i++] != '=');
+			while (p_text[i] != ',') {
+				cost += p_text[i++];
+			}
+			i++;
+			while (p_text[i] != '>') {
+				pnum += p_text[i++];
+			}
+			links++;
+			step_output << directions[links];
+			if (current_player.gold < atol(cost)) {
+				navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = tr("PAYLINK", current_player.event, cost) });
+			} else {
+				navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_paylink, .cost = atol(cost), .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
+			}
+			step_output << " ";
+		} else if (tag.find("<link=") != std::string::npos && !last_was_link) {
+			int i{0};
+			std::string pnum, label;
+			if (p_text.find(',') != std::string::npos) {
+				while (p_text[i++] != '=');
+				while (p_text[i] != ',') {
+					pnum += p_text[i++];
+				}
+				p_text = dpp::utility::utf8substr(p_text, i + 1, dpp::utility::utf8len(p_text));
+				bool bail{false};
+				do {
+					if (p_text.find('>') == std::string::npos) {
+						label += p_text + " ";
+						paragraph_content >> p_text;
+					} else {
+						label += p_text.substr(0, p_text.find('>')) + " ";
+						bail = true;
+					}
+				} while (!bail);
+			} else {
+				while (p_text[i++] != '=');
+				while (p_text[i] != '>') {
+					pnum += p_text[i++];
+				}
+				label = tr("TRAVEL", current_player.event);
+			}
+			if (current_player.stamina < 1 || dpp::lowercase(pnum) == "the") {
+				step_output << " " << tr("CANTFOLLOW", current_player.event);
+			} else {
+				links++;
+				last_link = pnum;
+				step_output << directions[links];
+				navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = label });
+			}
+			step_output << " ";
+		} else if (tag.find("<autolink=") != std::string::npos && !last_was_link) {
+			int i{0};
+			std::string pnum;
+			while (p_text[i++] != '=');
+			while (p_text[i] != '>') {
+				pnum += p_text[i++];
+			}
+			links++;
+			last_link = pnum;
+			step_output << directions[links];
+			if (auto_test) {
+				navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_autolink, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
+			} else {
+				navigation_links.push_back(nav_link{ .paragraph = atol(pnum), .type = nav_type_disabled_link, .cost = 0, .monster = {}, .buyable = {}, .prompt = "", .answer = "", .label = "" });
+			}
+			auto_test = !auto_test; // invert the next autolink...
+			step_output << " ";
+		}
+		else {
+			if (neat_version.find(">") == std::string::npos && !neat_version.empty() && neat_version[0] != '<') {
+				step_output << neat_version << " ";
+				words++;
+			}
+		}
+	}
+	co_return PARAGRAPH_STATE_CONTINUE;
+}
+

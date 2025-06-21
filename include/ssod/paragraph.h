@@ -99,6 +99,11 @@ struct nav_link {
 	std::string label;
 };
 
+enum paragraph_state {
+	PARAGRAPH_STATE_CONTINUE,
+	PARAGRAPH_STATE_BREAK,
+};
+
 struct paragraph {
 	/**
 	 * Paragraph ID for accessing row in database
@@ -126,11 +131,6 @@ struct paragraph {
 	 * the player can pick up.
 	 */
 	std::vector<stacked_item> dropped_items;
-
-	/**
-	 * Output stream, contains content from database
-	 */
-	std::stringstream* output{nullptr};
 
 	/**
 	 * True if players cannot PVP here
@@ -234,14 +234,24 @@ struct paragraph {
 	uint32_t parent{};
 
 	/**
+	 * Current atom
+	 */
+	std::string p_text;
+
+	/**
+	 * Last link content
+	 */
+	std::string last_link;
+
+	/**
+	 * Only valid when parsing, points at a local copy passed into ::step()
+	 */
+	std::stringstream* output{nullptr};
+
+	/**
 	 * Default constructor
 	 */
 	paragraph() = default;
-
-	/**
-	 * Default destructor
-	 */
-	~paragraph() = default;
 
 	/**
 	 * Given a current paragraph id, return true if the next id is a valid move,
@@ -270,7 +280,35 @@ struct paragraph {
 	 */
 	static dpp::task<paragraph> create(const std::string& data, player& current);
 
-protected:
+	/**
+	 * Parse paragraph content, this may take some time to complete as it has to interpret the content
+	 * and retrieve it from the database.
+	 * @param current_player Current active player
+	 * @param user_id Discord user id
+	 * @return awaitable
+	 */
+	dpp::task<void> parse(player& current_player, dpp::snowflake user_id, bool step_debug = false);
+
+	std::string get_content();
+
+	/**
+	 * After calling parse(), this steps through the paragraph content one atom at a time
+	 * @return awaitable
+	 */
+	dpp::task<paragraph_state> step(player& current_player, dpp::snowflake user_id, std::stringstream& paragraph_content, std::stringstream& output);
+
+	dpp::task<void> finish(player& current_player, dpp::snowflake user_id, std::stringstream& output);
+
+	~paragraph();
+
+	paragraph& operator=(paragraph& other) = default;
+
+	paragraph(paragraph&& other) noexcept = default;
+
+	paragraph(const paragraph& other) noexcept = default;
+
+	paragraph& operator=(paragraph&& other) noexcept = default;
+
 	/**
 	 * Construct a paragraph with existing data.
 	 * @note Does not parse the content, this is done asynchronously via the parse method.
@@ -288,15 +326,6 @@ protected:
 	 * @param parent_id parent paragraph ID for macros
 	 */
 	paragraph(uint32_t paragraph_id, player& current, dpp::snowflake user_id, uint32_t parent_id = 0);
-
-	/**
-	 * Parse paragraph content, this may take some time to complete as it has to interpret the content
-	 * and retrieve it from the database.
-	 * @param current_player Current active player
-	 * @param user_id Discord user id
-	 * @return awaitable
-	 */
-	dpp::task<void> parse(player& current_player, dpp::snowflake user_id);
 };
 
 /**
@@ -313,14 +342,6 @@ dpp::task<bool> global_set(const std::string& flag);
  * @return awaitable true if set
  */
 dpp::task<bool> timed_set(dpp::interaction_create_t& event, const std::string& flag);
-
-/**
- * Given some text, extract all text up to but not including the end character
- * @param p_text text to extract into
- * @param content stream to extract from
- * @param end end character to stop at
- */
-void extract_to_quote(std::string& p_text, std::stringstream& content, char end = '>');
 
 /**
  * Removes the last character from a string

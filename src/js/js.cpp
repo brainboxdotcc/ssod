@@ -1,5 +1,5 @@
 /************************************************************************************
- * 
+ *
  * The Seven Spells Of Destruction
  *
  * Copyright 1993,2001,2023 Craig Edwards <brain@ssod.org>
@@ -73,7 +73,7 @@ static duk_ret_t js_print(duk_context *cx) {
 		output.append(duk_to_string(cx, i - argc)).append(" ");
 	}
 	paragraph& p = duk_get_udata(cx);
-	*(p.output) << output;
+	(*p.output) << output;
 	return 0;
 }
 
@@ -106,7 +106,7 @@ static duk_ret_t js_tag(duk_context *cx) {
 	}
 	paragraph inner = paragraph::create(output, *p.cur_player).sync_wait();
 
-	*p.output << inner.text;
+	(*p.output) << inner.text;
 	p.links += inner.links;
 	for (const auto& nav : inner.navigation_links) {
 		p.navigation_links.push_back(nav);
