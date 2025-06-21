@@ -140,17 +140,17 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id,
 	}
 
 	if (!step_debug) {
-		std::stringstream paragraph_content, output;
+		std::stringstream paragraph_content, step_output;
 		paragraph_content.str(get_content());
 		paragraph_content.clear();
 
 		while (!paragraph_content.eof()) {
-			auto next = co_await step(current_player, user_id, paragraph_content, output);
+			auto next = co_await step(current_player, user_id, paragraph_content, step_output);
 			if (next == PARAGRAPH_STATE_BREAK) {
 				break;
 			}
 		}
-		co_await finish(current_player, user_id, output);
+		co_await finish(current_player, user_id, step_output);
 	}
 }
 
