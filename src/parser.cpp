@@ -98,3 +98,53 @@ std::unordered_map<std::string, std::string> parse_attributes(std::stringstream&
 
 	return attributes;
 }
+
+bool try_parse_long(const std::string& s, long& result) {
+	try {
+		size_t idx;
+		result = std::stol(s, &idx);
+		return idx == s.size();
+	} catch (...) {
+		return false;
+	}
+}
+
+std::vector<std::string> read_tag_arguments(std::stringstream& in) {
+	std::vector<std::string> args;
+	std::string token;
+	while (in >> token) {
+		if (token.ends_with('>')) {
+			token.pop_back(); // remove '>'
+			args.push_back(token);
+			break;
+		}
+		args.push_back(token);
+	}
+	return args;
+}
+
+std::map<std::string, long> get_score_map(const player& current_player) {
+	std::map<std::string, long> defaults = {
+		{ "exp", current_player.experience },
+		{ "dice", current_player.g_dice },
+		{ "stm", current_player.stamina },
+		{ "skl", current_player.skill },
+		{ "arm", current_player.armour.rating },
+		{ "wpn", current_player.weapon.rating },
+		{ "day", current_player.days },
+		{ "spd", current_player.speed },
+		{ "luck", current_player.luck },
+		{ "scrolls", current_player.scrolls },
+		{ "level", current_player.get_level() },
+		{ "mana", current_player.mana },
+		{ "notoriety", current_player.notoriety },
+		{ "gold", current_player.gold },
+		{ "silver", current_player.silver },
+		{ "rations", current_player.rations }
+	};
+	for (uint8_t reg_no = 0; reg_no < 32; ++reg_no) {
+		defaults.emplace("reg" + std::to_string(reg_no), current_player.regs[reg_no]);
+	}
+	return defaults;
+}
+

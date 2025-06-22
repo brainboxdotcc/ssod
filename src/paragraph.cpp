@@ -154,12 +154,11 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id,
 	}
 }
 
-std::string paragraph::get_content() {
+std::string paragraph::get_content() const {
 	return replace_string(text, "><", "> <") + "\r\n<br>\r\n";
 }
 
-paragraph::~paragraph() {
-}
+paragraph::~paragraph() = default;
 
 dpp::task<void> paragraph::finish(player& current_player, dpp::snowflake user_id, std::stringstream& finish_output) {
 	text = finish_output.str();

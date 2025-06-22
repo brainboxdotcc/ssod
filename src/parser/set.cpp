@@ -23,17 +23,31 @@
 struct set_tag : public tag {
 	set_tag() { register_tag<set_tag>(); }
 	static constexpr std::string_view tags[]{"<set"};
+
 	static dpp::task<void> route(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player) {
-		// set a state-flag
-		paragraph_content >> p_text;
-		p_text = dpp::lowercase(remove_last_char(p_text));
-		if (!current_player.has_flag("gamestate_"+ p_text, p.id)) {
-			current_player.add_flag("gamestate_" + p_text, p.id);
-			if (p_text == "steam_copter" && !current_player.has_flag("steamcopter")) {
+		auto args = read_tag_arguments(paragraph_content);
+		if (args.empty()) co_return;
+
+		std::string flag = dpp::lowercase(args[0]);
+		std::string value = "1";
+
+		if (args.size() > 1) {
+			std::string val = dpp::lowercase(args[1]);
+			auto scoremap = get_score_map(current_player);
+			value = (scoremap.contains(val) ? std::to_string(scoremap[val]) : val);
+		}
+
+		std::string full_key = "gamestate_" + flag;
+		if (!current_player.has_flag(full_key) || args.size() > 1) {
+			current_player.set_flag(full_key, p.id, value);
+
+			if (flag == "steam_copter" && !current_player.has_flag("steamcopter")) {
 				current_player.add_flag("steamcopter");
 			}
-			co_await achievement_check("STATE", current_player.event, current_player, {{"flag", p_text}});
+
+			co_await achievement_check("STATE", current_player.event, current_player, {{"flag", flag }, {"value", value}});
 		}
+
 		co_return;
 	}
 };

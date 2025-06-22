@@ -90,3 +90,9 @@ struct parse_end_exception : public std::exception {
 dpp::task<bool> route_tag(paragraph& p, std::string& p_text, std::stringstream& paragraph_content, std::stringstream& output, player& current_player, bool display);
 
 std::unordered_map<std::string, std::string> parse_attributes(std::stringstream& ss);
+
+bool try_parse_long(const std::string& s, long& result);
+
+std::vector<std::string> read_tag_arguments(std::stringstream& in);
+
+std::map<std::string, long> get_score_map(const player& current_player);
