@@ -21,15 +21,26 @@
 #include <ssod/parser.h>
 #include <ssod/database.h>
 
-bool comparison(std::string condition, long c1, const std::string& c2, int g_dice) {
-	long c = c2 == "dice" ? g_dice : atol(c2);
+bool comparison(std::string condition, const std::string& lhs_str, const std::string& rhs_str, int g_dice) {
 	condition = dpp::lowercase(condition);
-	if (condition == "eq") return c1 == c;
-	if (condition == "gt") return c1 > c;
-	if (condition == "gte") return c1 >= c;
-	if (condition == "lt") return c1 < c;
-	if (condition == "lte") return c1 <= c;
-	if (condition == "ne") return c1 != c;
+	std::string rhs_actual = (rhs_str == "dice") ? std::to_string(g_dice) : rhs_str;
+	long lhs_val, rhs_val;
+	if (try_parse_long(lhs_str, lhs_val) && try_parse_long(rhs_actual, rhs_val)) {
+		if (condition == "eq") return lhs_val == rhs_val;
+		if (condition == "ne") return lhs_val != rhs_val;
+		if (condition == "gt") return lhs_val > rhs_val;
+		if (condition == "lt") return lhs_val < rhs_val;
+		if (condition == "gte") return lhs_val >= rhs_val;
+		if (condition == "lte") return lhs_val <= rhs_val;
+	} else {
+		if (condition == "eq") return lhs_str == rhs_actual;
+		if (condition == "ne") return lhs_str != rhs_actual;
+		if (condition == "gt") return lhs_str > rhs_actual;
+		if (condition == "lt") return lhs_str < rhs_actual;
+		if (condition == "gte") return lhs_str >= rhs_actual;
+		if (condition == "lte") return lhs_str <= rhs_actual;
+	}
+
 	return false;
 }
 
@@ -149,27 +160,43 @@ class if_expression_parser {
 		std::string lhs = dpp::lowercase(current.value);
 		advance();
 
+		// Comparison path
 		if (current.type == TOKEN_COMPARISON) {
 			std::string op = current.value;
 			advance();
-			if (current.type != TOKEN_NUMBER && current.value != "dice" && current.type != TOKEN_IDENTIFIER)
-				throw std::runtime_error("Expected number, identifier, or 'dice'");
-			std::string rhs = current.value;
-			advance();
+
+			std::vector<std::string> rhs_tokens;
+			// Accept any token type as RHS (except control tokens)
+			while (current.type != TOKEN_EOF &&
+			       current.type != TOKEN_AND &&
+			       current.type != TOKEN_OR &&
+			       current.type != TOKEN_RPAREN) {
+				rhs_tokens.push_back(current.value);
+				advance();
+			}
+
+			if (rhs_tokens.empty()) {
+				throw std::runtime_error("Expected right-hand side after comparison operator");
+			}
+
+			std::string rhs = join_args(rhs_tokens);
 
 			auto map = get_score_map(current_player);
-			if (map.find(lhs) == map.end()) {
-				co_return false;
-			}
+
+			// Resolve lhs value from map if it exists
+			std::string lhs_val = (map.find(lhs) != map.end()) ? std::to_string(map[lhs]) : lhs;
+
+			// Resolve rhs from scoreboard if it's a stat name
 			if (map.find(rhs) != map.end()) {
-				// If the RHS is in the score map it is a scoreboard identifier
 				rhs = std::to_string(map[rhs]);
 			}
-			co_return comparison(op, map[lhs], rhs, g_dice);
+
+			co_return comparison(op, lhs_val, rhs, g_dice);
 		}
 
+		// Function-style predicate
 		std::vector<std::string> args;
-		while (current.type == TOKEN_IDENTIFIER || current.type == TOKEN_NUMBER) {
+		while (current.type == TOKEN_IDENTIFIER || current.type == TOKEN_NUMBER || current.type == TOKEN_COMPARISON) {
 			args.push_back(current.value);
 			advance();
 		}
@@ -254,21 +281,30 @@ class if_expression_parser {
 		if (name == "mounted") {
 			co_return current_player.has_flag("horse");
 		}
-		if (name == "flag" && !args.empty()) {
-			db::paramlist p = { current_player.event.command.usr.id, "gamestate_" + args[0] + "%" };
+		if ((name == "flag" || name == "!flag") && !args.empty()) {
+			std::string flagname = args[0];
+			std::string full_key = "gamestate_" + flagname + "%";
+			db::paramlist p = { current_player.event.command.usr.id, full_key };
 			auto rs = co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", p);
-			bool global = co_await global_set(args[0]);
-			bool timed = co_await timed_set(current_player.event, args[0]);
-			bool result = !rs.empty() || global || timed;
-			co_return result;
-		}
-		if (name == "!flag" && !args.empty()) {
-			db::paramlist p = { current_player.event.command.usr.id, "gamestate_" + args[0] + "%" };
-			auto rs = co_await db::co_query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", p);
-			bool global = co_await global_set(args[0]);
-			bool timed = co_await timed_set(current_player.event, args[0]);
-			bool result = rs.empty() && !global && !timed;
-			co_return result;
+			std::string value = rs.empty() ? "" : rs[0].at("kv_value");
+			if (args.size() >= 3) {
+				std::string op = dpp::lowercase(args[1]);
+				std::string rhs = args[2];
+
+				auto map = get_score_map(current_player);
+				if (map.find(rhs) != map.end()) {
+					rhs = std::to_string(map[rhs]);
+				}
+
+				bool result = !rs.empty() && comparison(op, value, rhs, g_dice);
+				co_return (name == "flag") ? result : !result;
+			} else {
+				// Legacy truthiness check
+				bool global = co_await global_set(flagname);
+				bool timed = co_await timed_set(current_player.event, flagname);
+				bool result = !rs.empty() || global || timed;
+				co_return (name == "flag") ? result : !result;
+			}
 		}
 		if (name == "premium") {
 			bool has_entitlement = !current_player.event.command.entitlements.empty();
