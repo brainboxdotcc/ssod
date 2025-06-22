@@ -351,6 +351,7 @@ struct player {
 
 	void add_flag(const std::string flag, long paragraph = -1);
 	bool has_flag(const std::string flag, long paragraph = -1);
+	void set_flag(const std::string& flag, long paragraph = -1, const std::string& value = "1");
 
 	bool has_herb(std::string herb_name);
 	bool has_component_herb(const std::string& spell);

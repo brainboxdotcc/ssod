@@ -289,7 +289,7 @@ struct paragraph {
 	 */
 	dpp::task<void> parse(player& current_player, dpp::snowflake user_id, bool step_debug = false);
 
-	std::string get_content();
+	std::string get_content() const;
 
 	/**
 	 * After calling parse(), this steps through the paragraph content one atom at a time

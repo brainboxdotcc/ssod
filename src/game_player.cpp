@@ -1186,3 +1186,12 @@ std::vector<toast> player::get_toasts() {
 	toasts.clear();
 	return return_toast;
 }
+
+void player::set_flag(const std::string& flag, long p, const std::string &value) {
+	std::string store_flag = flag + std::to_string(p);
+	db::query("INSERT INTO kv_store (user_id, kv_key, kv_value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE kv_value = ?", {
+		event.command.usr.id,
+		store_flag,
+		value, value
+	});
+}

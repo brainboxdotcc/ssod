@@ -105,31 +105,6 @@ class if_expression_parser {
 		current = lex.next();
 	}
 
-	std::map<std::string, long> get_score_map() {
-		std::map<std::string, long> defaults = {
-			{ "exp", current_player.experience },
-			{ "dice", current_player.g_dice },
-			{ "stm", current_player.stamina },
-			{ "skl", current_player.skill },
-			{ "arm", current_player.armour.rating },
-			{ "wpn", current_player.weapon.rating },
-			{ "day", current_player.days },
-			{ "spd", current_player.speed },
-			{ "luck", current_player.luck },
-			{ "scrolls", current_player.scrolls },
-			{ "level", current_player.get_level() },
-			{ "mana", current_player.mana },
-			{ "notoriety", current_player.notoriety },
-			{ "gold", current_player.gold },
-			{ "silver", current_player.silver },
-			{ "rations", current_player.rations }
-		};
-		for (uint8_t reg_no = 0; reg_no < 32; ++reg_no) {
-			defaults.emplace("reg" + std::to_string(reg_no), current_player.regs[reg_no]);
-		}
-		return defaults;
-	}
-
 	dpp::task<bool> parse_expression() {
 		bool result = co_await parse_term();
 		while (current.type == TOKEN_OR) {
@@ -182,7 +157,7 @@ class if_expression_parser {
 			std::string rhs = current.value;
 			advance();
 
-			auto map = get_score_map();
+			auto map = get_score_map(current_player);
 			if (map.find(lhs) == map.end()) {
 				co_return false;
 			}
