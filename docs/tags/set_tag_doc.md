@@ -1,54 +1,56 @@
 # `<set>` Tag
 
-The `<set>` tag is used to define persistent game state flags for the player. These flags are remembered per paragraph and are primarily used to track progress, choices, or major quest milestones that should not be repeatable.
-
-## Purpose
-
-- Store that a player has made a choice or triggered an event.
-- Prevent content from repeating by checking with `<if>` tags.
-- Can also be used to trigger achievements.
+The `<set>` tag assigns a permanent key–value pair to the player’s state. This is useful for marking decisions, tracking quest progress, or setting dynamic variables that may influence later logic.
 
 ## Syntax
 
-```
-<set myflag>
-```
-
-This sets a flag called `myflag`. You can later check for it using:
-
-```
-<if flag myflag>
-    (content shown only if flag is set)
-<endif>
+```text
+<set flagname [value]>
 ```
 
-## Special Cases
+- `flagname` — The unique name of the variable or flag to store.
+- `value` — The value to associate with that flag. This can include **whitespace** and does **not** need to be quoted. The value extends to the closing `>` of the tag.
+- If the `value` is omitted entirely, the flag will be stored with a default value of `"1"` (a boolean-style marker).
 
-Some flags trigger secondary logic internally:
+## Behaviour
 
-- If the flag is `steam_copter`, it also sets a general-purpose `steamcopter` flag.
-- All flags of this type can trigger a `"STATE"` achievement if defined.
+- The data is stored in the database and persists permanently.
+- Keys are automatically namespaced with the paragraph ID to avoid accidental collisions.
+- You can overwrite existing values.
+- The stored data can later be used with the `<if>` or `<mod>` tags.
 
-## Example
+## Flags and Values
 
+Unlike `add_flag`, the `<set>` tag stores a **named value**.
+
+Examples:
+
+```text
+<set has_sword yes>
+<set dungeon_code 1234>
+<set companion_name Marigold the Bold>
+<set completed_tutorial>
 ```
-You pull the lever.
-<set vault_opened>
-```
 
-Later in another paragraph:
+These can later be retrieved in `<if>` comparisons like:
 
-```
-<if flag vault_opened>
-The vault door is already open.
-<else>
-The vault door is shut tight.
-<endif>
+```text
+<if flag has_sword eq "yes">...
+<if flag dungeon_code eq "1234">...
+<if flag completed_tutorial eq "1">...
 ```
 
 ## Notes
 
-- Flags are case-insensitive and stored lowercase.
-- Flags are not automatically reset unless the player dies
-- You cannot unset a flag with `<set>`. Use `<unset>` if you need to remove it.
+- Flag values are stored as strings.
+- You can use whitespace in values; everything after the flag name until the closing `>` is treated as part of the value.
+- If the value is numeric and used in a `<mod stat flag flagname>`, the stat will be adjusted accordingly.
+- You cannot nest tags within `<set>` values.
+
+---
+
+See also:
+
+- [`<if>`](if.md)[ tag](if.md) — for comparing stored flags
+- [`<mod>`](mod_tag_doc.md)[ tag](mod_tag_doc.md) — for using flags as numeric inputs
 
