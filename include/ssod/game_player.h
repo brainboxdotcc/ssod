@@ -64,7 +64,7 @@ struct toast {
 
 /**
  * @brief Represents a player. These are loaded from the database, cached to RAM
- * and frequently saved back to the database.
+ * and frequently sgaved back to the database.
  */
 struct player {
 	/**
@@ -351,6 +351,7 @@ struct player {
 
 	void add_flag(const std::string flag, long paragraph = -1);
 	bool has_flag(const std::string flag, long paragraph = -1);
+	std::string get_flag(const std::string& flag);
 	void set_flag(const std::string& flag, long paragraph = -1, const std::string& value = "1");
 
 	bool has_herb(std::string herb_name);

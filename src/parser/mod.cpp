@@ -58,6 +58,7 @@ struct mod_tag : public tag {
 			{"gold", {tr("GOLD", current_player.event), &current_player.gold, current_player.max_gold()}},
 			{"silver", {tr("SILVER", current_player.event), &current_player.silver, current_player.max_silver()}},
 		};
+
 		for (uint8_t reg_no = 0; reg_no < 32; ++reg_no) {
 			modifier_list.emplace("reg" + std::to_string(reg_no), modifier_t{"REGISTER", &current_player.regs[reg_no], 9223372036854775807});
 		}
@@ -67,6 +68,31 @@ struct mod_tag : public tag {
 		bool silent = false;
 		long modifier = 0;
 		mod = dpp::lowercase(mod);
+
+		// Flag assignment form: <mod stat flag flagname>
+		if (mod == "flag") {
+			std::string flagname;
+			paragraph_content >> flagname;
+			flagname = remove_last_char(flagname);
+
+			auto m = modifier_list.find(lhs);
+			if (m != modifier_list.end()) {
+				std::string val = current_player.get_flag(flagname);
+				bool is_numeric = !val.empty() && std::all_of(val.begin(), val.end(), ::isdigit);
+
+				if (is_numeric) {
+					*(m->second.score) = atol(val);
+					*(m->second.score) = std::min(*(m->second.score), m->second.max);
+					*(m->second.score) = std::max(*(m->second.score), 0L);
+					co_return;
+				}
+				current_player.event.owner->log(dpp::ll_debug, "MOD: non-numeric or missing flag '" + flagname + "' in location " + std::to_string(p.id));
+			} else {
+				current_player.event.owner->log(dpp::ll_warning, "Invalid MOD target stat '" + lhs + "' in location " + std::to_string(p.id));
+			}
+			co_return;
+		}
+
 		auto rhs = modifier_list.find(remove_last_char(mod));
 		if (rhs != modifier_list.end()) {
 			assignment = true;
@@ -76,7 +102,6 @@ struct mod_tag : public tag {
 
 		std::string flag = "MOD" + lhs + std::to_string(modifier);
 
-		/* Scratch registers are always repeatable */
 		if (lhs.starts_with("reg") || mod.starts_with("reg")) {
 			repeatable = true;
 			silent = true;
@@ -85,11 +110,12 @@ struct mod_tag : public tag {
 		auto m = modifier_list.find(lhs);
 		if (m != modifier_list.end()) {
 			if (assignment) {
-				// RHS->LHS assignment, this is silent and always repeatable
 				*(m->second.score) = *(rhs->second.score);
+				*(m->second.score) = std::min(*(m->second.score), m->second.max);
+				*(m->second.score) = std::max(*(m->second.score), 0L);
 				co_return;
 			}
-			// No output if the player's been here before
+
 			if (!repeatable) {
 				if (!current_player.has_flag(flag, p.id)) {
 					current_player.add_flag(flag, p.id);
@@ -115,7 +141,6 @@ struct mod_tag : public tag {
 			}
 			p.words++;
 			if (modifier < 0 || lhs == "notoriety" || lhs == "gold" || lhs == "silver") {
-				/* Locations that remove stats or give gold/silver are not safe locations */
 				p.safe = false;
 			}
 		} else {

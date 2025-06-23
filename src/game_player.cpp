@@ -853,14 +853,24 @@ void player::run_inventory_insert_query(std::string &query, const db::paramlist 
 	db::query(query, p);
 }
 
-void player::add_flag(const std::string flag, long paragraph) {
-	std::string store_flag = flag + std::to_string(paragraph);
+void player::add_flag(const std::string flag, long p) {
+	std::string store_flag = flag + std::to_string(p);
 	db::query("INSERT INTO kv_store (user_id, kv_key, kv_value) VALUES(?,?,1) ON DUPLICATE KEY UPDATE kv_value = 1", {event.command.usr.id, store_flag});
 }
 
-bool player::has_flag(const std::string flag, long paragraph) {
-	std::string store_flag = flag + std::to_string(paragraph);
+bool player::has_flag(const std::string flag, long p) {
+	std::string store_flag = flag + std::to_string(p);
 	return !db::query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key = ?", {event.command.usr.id, store_flag}).empty();
+}
+
+std::string player::get_flag(const std::string& flag) {
+	std::string store_flag = "gamestate_" + flag + "%";
+	auto q = db::query("SELECT kv_value FROM kv_store WHERE user_id = ? AND kv_key LIKE ?", {event.command.usr.id, store_flag});
+	if (q.empty()) {
+		return "";
+	} else {
+		return q[0].at("kv_value");
+	}
 }
 
 void player::strike() {
