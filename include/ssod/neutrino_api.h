@@ -54,7 +54,7 @@ class neutrino
 	/**
 	 * @brief Endpoint URL for API
 	 */
-	static constexpr std::string_view endpoint{"https://neutrinoapi.net/bad-word-filter"};
+	static constexpr std::string_view endpoint{"http://127.0.0.1:6970/bad-word-filter"};
         /**
          * @brief D++ cluster
          */
