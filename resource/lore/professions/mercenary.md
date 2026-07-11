@@ -1,7 +1,11 @@
 Mercenaries are professional soldiers without a homeland, banner, or lasting allegiance. They fight not for kings or causes, but for contracts. In Cryptillia, that makes them both indispensable and deeply mistrusted.
+
 Many become mercenaries through necessity rather than ambition. Some are veterans whose kingdoms no longer exist. Others are exiles, failed knights, escaped slaves, disgraced officers, or adventurers who discovered that coin is easier to earn with a sword than a plough. Whatever their past, they eventually arrive at the same conclusion: loyalty does not fill an empty stomach.
 A mercenary's reputation is worth more than their armour. Those who break contracts, abandon comrades, or betray employers rarely survive long. While they may fight for almost anyone, professionalism separates a mercenary from a common bandit. A contract accepted is a contract honoured—at least until it is fulfilled.
+
 Most operate in companies ranging from a handful of hardened veterans to entire private armies. These bands develop their own traditions, rivalries, and identities, often becoming better known than the nations that hire them. Some spend years defending frontier towns. Others march from war to war, selling their blades wherever conflict promises profit.
+
 Mercenaries are pragmatic by nature. They have fought beside paladins one season and tyrants the next. They judge employers less by their morality than by their ability to pay on time. In a world where kingdoms rise and fall with alarming regularity, ideals are often considered a luxury.
+
 Across Cryptillia, the arrival of a mercenary company can mean salvation—or disaster. To frightened villagers they are expensive protectors. To nobles they are useful tools. To generals they are an unavoidable expense. And to one another, they are simply professionals trying to survive long enough to earn the next contract.
 Mercenaries begin the game with superior martial training, allowing them to carry heavier equipment and endure the brutal realities of prolonged combat.
