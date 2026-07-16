@@ -1,9 +1,13 @@
-In the shadowy underbelly of Cryptillia, a realm where survival often teeters on the edge of necessity, a multitude of inhabitants find themselves drawn to a life of crime. Among the various shades of transgression, thieves emerge as the most prevalent, their nimble fingers and clandestine skills making them the quintessential figures of the criminal landscape.
+The Thieves' Guild is one of the oldest criminal organisations in Cryptillia, its influence reaching into almost every city worth stealing from. To outsiders it appears little more than a loose collection of burglars and pickpockets. Those who know better understand it as a business.
 
-Expertise in gaining access to secured domains defines the craft of thieves. Armed with an intimate understanding of lock mechanisms, these nimble infiltrators navigate the intricate dance of tumblers with the finesse of seasoned artisans. Their mastery extends beyond the mundane, delving into the realm of magic as they learn spells like 'open,' unraveling the secrets that lie behind locked doors.
+Membership has its privileges.
 
-Stealth becomes a second nature to thieves, their movements shrouded in the veils of silence and deception. Beyond the realm of lock-picking, many have honed their skills in the clandestine art of pocket-picking, navigating crowded streets with an almost uncanny ability to liberate valuables without arousing suspicion.
+The guild provides fences who can turn stolen goods into clean coin, safe houses where the law rarely ventures, and contacts willing to make inconvenient problems disappear. Corrupt officials can be persuaded to overlook minor offences, provided the guild's dues have been paid. Independent thieves rarely survive long without such protection.
 
-Thieves, however, are not confined to the shadows solely for nefarious purposes. Their agility and cunning make them exceptional scouts, capable of slipping past heavily guarded outposts with the finesse of phantoms. In the chaos of battle, their ability to infiltrate, gather intelligence, and strike swiftly from unexpected angles transforms them into valuable assets.
+A thief's profession is built upon access. Locked doors, trapped vaults, forgotten tunnels and hidden chambers are simply puzzles waiting to be solved. Guild apprentices spend years mastering locks, traps and magical wards, often learning the Open spell alongside more traditional techniques. Violence is discouraged. A successful theft is one that is discovered only after the thief is safely home counting the proceeds.
 
-Beneath the veneer of apparent scarcity, thieves often amass considerable wealth. Their cunning and resourcefulness allow them to uncover hidden treasures, turning the odds in their favor. Thus, what may seem like a humble existence conceals the subtle opulence of those adept at maneuvering through the convoluted tapestry of Cryptillia's criminal landscape.
+The guild's influence extends far beyond burglary. Smuggling, forgery, black-market trade and the movement of stolen artefacts all pass through its hands. Adventurers frequently find themselves dealing with guild brokers when seeking rare items or discreet buyers for treasures that are difficult to explain.
+
+While many members live by a criminal code, the guild itself is ruthlessly pragmatic. Stealing from guild members, withholding the guild's share, or attracting unnecessary attention from the authorities are offences dealt with swiftly. The city watch may imprison you. The guild simply ensures you are never found again.
+
+Not every thief belongs to the guild. Some remain proudly independent, unwilling to surrender a percentage of their earnings. Most eventually discover why the guild has survived for centuries
