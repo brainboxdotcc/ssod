@@ -145,7 +145,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		}
 		sentry::make_new_transaction("component/form/" + custom_id);
 		if (custom_id == "name_character" && p_old.state == state_name_player) {
-			std::string name = std::get<std::string>(event.components[0].components[0].value);
+			std::string name = std::get<std::string>(event.components[0].value);
 			neutrino swear_check(event.owner, config::get("neutrino_user"), config::get("neutrino_password"));
 			auto swear_filter = co_await swear_check.co_contains_bad_word(name);
 			if (!swear_filter.clean) {
