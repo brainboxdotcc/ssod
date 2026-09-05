@@ -1,9 +1,31 @@
-In the distant echoes of Cryptillian history, a coalition of races convened to establish the legendary 'Peace Pact.' Leaders from diverse realms, including the Human Empire, the Elf Tribes, and the Dwarves, gathered with the noble intention of inaugurating an era of harmony across the planet. However, amidst the grandeur of this monumental assembly, a nefarious corruption insinuated itself, casting a shadow over the aspirations of unity.
+Towards the end of the First Age of Magic, representatives of the Human Empire, the Elven tribes, the Dwarves and other peoples of Cryptillia agreed to meet and establish what would become known as the Peace Pact.
 
-As the great vessels of peace set sail across the expanse of the Great Sea, bound for the neutral lands chosen for the pivotal meeting and signing of the pact, dark forces intervened. Unseen and malevolent, these forces disrupted the serene journey, diverting several ships off course with storms, strange monsters, and other unnatural phenomena. Alas, the intended destination on the shores of the designated island witnessed the absence of numerous armadas, forever lost to the unpredictable whims of the mysterious interference.
+The meeting was to take place on neutral ground, requiring many of the delegations to cross the Great Sea. Ships set out from across Cryptillia carrying rulers, diplomats, wizards and others entrusted with negotiating and signing the Pact.
 
-Among the unfortunate victims of this twisted fate was an entire elven tribe, severed from the magical protections promised by the Peace Pact. Isolated and abandoned, the elves harbored resentment, a sentiment that festered over time. Without the pact's mystical shield, they grew to despise the ideals it symbolized, ultimately turning against the very magic that sought to preserve the fragile peace in Cryptillia. This once-noble elven tribe morphed into the 'Dark Elves.'
+Not all of them arrived.
 
-The Dark Elves, now tainted by mistrust and animosity towards outsiders, abandoned the principles of open negotiation. Preferring shadows over the light, they adopted a cunning approach, lurking in the background to observe the world unnoticed. Their dealings became marked by deceit, and the dark undercurrents they introduced subverted the magic intended to safeguard the realm's precarious tranquility.
+Ships vanished during the crossing. Others were driven far from their intended course by violent storms, encounters with strange creatures and phenomena which surviving accounts describe as anything but natural. Demonic interference has long been suspected, although exactly what happened on the Great Sea has never been established.
 
-Today, the Dark Elves epitomize untrustworthiness and hatred, their actions a constant threat to the delicate balance maintained by the remnants of the Peace Pact. With a penchant for silent manipulation and a preference for betrayal over open discourse, the Dark Elves navigate Cryptillia's intricate web of alliances and animosities, leaving an indelible mark on the ever-evolving tapestry of this fantastical world.
+Among those lost was the delegation of an entire Elven tribe.
+
+Their ships never reached the summit. Cut off from the other Elves and believing themselves abandoned by those who went on without them, the survivors came to regard the event as the Severance.
+
+Outsiders would eventually give their descendants another name: the Dark Elves.
+
+They do not call themselves this. Amongst themselves they are simply the Kin. “Dark Elf” is an outsider's description which has accumulated centuries of suspicion and hostility. In much of Cryptillia it is used without deliberate insult, but to the Kin it remains an uncomfortable term at best and a quiet slur at worst: a name given to them by the very peoples from whom their ancestors were severed.
+
+The Peace Pact itself would never be properly ratified. Its supposedly indestructible scrolls were corrupted into the Seven Spells of Destruction before the agreement could be completed. To the Kin, however, this did little to change what had happened. When the peoples of Cryptillia gathered to decide the future of the world, their ancestors disappeared and nobody came for them.
+
+Over generations, isolation became mistrust.
+
+The Kin rarely involve themselves openly in the affairs of other races and have little faith in promises made by distant rulers. They prefer to watch events before becoming involved, gathering information and understanding the intentions of others before revealing their own. This has only reinforced the reputation amongst outsiders that Dark Elves are secretive, deceptive and difficult to trust.
+
+The Kin see matters rather differently.
+
+Their history teaches that trust is easily offered by those who expect somebody else to suffer the consequences when it fails. They remember the ships which never reached the summit, the people who disappeared with them, and a peace which the rest of Cryptillia was prepared to build without them.
+
+That memory survives in the traditions of the Severed, whose followers look to the night sky and preserve the history of those who were lost.
+
+Cryptillia calls them Dark Elves.
+
+They call each other Kin.
