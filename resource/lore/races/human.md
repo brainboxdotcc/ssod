@@ -1,7 +1,23 @@
-Humans, the most abundant and diverse race across the expansive lands of Cryptillia, thrive amidst a society rooted in medieval technologies. While their technological prowess may not match the ingenuity of some other races, humans compensate with an innate resourcefulness and adaptability that transcends the limitations of their tools.
+Humans are the most numerous people in Cryptillia and can be found across much of the known world. They lack some of the natural advantages of other races and their technology is generally less advanced, but they have proven remarkably good at adapting to whatever circumstances they find themselves in.
 
-Passivity and a deep-seated respect for the sanctity of material possessions form the backbone of human ethos. Their homelands are sacred, and humans staunchly defend them against any threat, standing resolute until the point of being overcome. A tapestry woven with threads of honor and pride defines their collective spirit, a commitment that resonates through the generations.
+Most Human technology remains relatively simple. Agriculture, masonry, metalworking and mechanical devices are widespread, but Human engineers rarely rival the accumulated knowledge of the Dwarves, while Human magic lacks the long traditions and natural affinity found amongst the Elves.
 
-In the intricate social mosaic of Cryptillia, humans find solace and strength in small, tight-knit groups. Whether within the warm embrace of familial ties, the structured framework of societies, or the collaborative spirit of guilds, humans forge bonds that transcend the constraints of individual existence. These social units become crucibles of shared experiences, nurturing a sense of belonging and shared purpose.
+This has rarely stopped them trying.
 
-Amidst the medieval landscapes, the human spirit persists, resilient and unwavering in the face of adversity. It is within the intricate dance of familial bonds, societal connections, and guild affiliations that the true essence of humanity unfolds, leaving an indelible mark on the ever-evolving tapestry of Cryptillia's vibrant and diverse cultures.
+Humans are resourceful, quick to adopt useful ideas and particularly good at making do with whatever is available. Where another people might spend generations perfecting a technique, Humans have a tendency to find something that works reasonably well and immediately start using it everywhere.
+
+Humans are not naturally an aggressive people, despite the frequency with which Human kingdoms have found reasons to fight one another. They generally prefer stability and are strongly attached to the things they consider theirs: their homes, land, possessions and communities.
+
+That attachment becomes considerably more apparent when those things are threatened.
+
+A Human may tolerate hardship, poor leadership and circumstances which another race might consider intolerable for a surprisingly long time. Attempt to take their home, however, and that same person may defend it long after doing so has ceased to be sensible. This tendency has frustrated more than one invading army.
+
+Ownership therefore carries considerable importance in Human society. A modest house or patch of land may have little value to anybody else, but to the family which has occupied it for generations its importance cannot easily be measured in gold.
+
+Despite their enormous population, Humans tend to organise their everyday lives around much smaller groups. Family is usually the first of these, but guilds, villages, trades, religious communities and countless other associations provide identities within the larger kingdoms and empires they inhabit.
+
+A Human may therefore be a subject of the Empire of Man, a resident of a particular town, a member of a guild, a practitioner of a trade and part of an extended family, with each loyalty becoming important under different circumstances.
+
+This ability to form communities almost anywhere has contributed greatly to their spread across Cryptillia. Humans do not need to be the strongest warriors, the greatest magicians or the finest engineers to establish themselves somewhere new.
+
+Usually, there simply need to be enough of them willing to stay.
