@@ -1,7 +1,51 @@
-In the urban tapestry of Cryptillia, a web of peacekeeping forces, known as the militia, unfolds as a vital thread mandated by royal decree. Lords and ladies of the realm are bound by law to assemble these independent peacekeepers, a force designed to maintain order within the bustling towns and villages. However, the royal directive confines the militia's duties solely to urban areas, deeming their deployment to the countryside an unneccessary expenditure of time and resources.
+Throughout the Empire of Man, lords and ladies are required by imperial law to maintain a militia in the towns and villages under their control. These forces keep order, pursue criminals and provide the closest thing most Humans will encounter to organised law enforcement.
 
-The scope and authority of each militia unit are shaped by the ruling lord or lady of the city. Yet, beneath the facade of peacekeeping, a nuanced reality often emerges. Many militia forces, tainted by corruption, find themselves under the control of superiors who prioritize the illusion of successfully combating crime over genuine law enforcement. Paid on a per-arrest basis, the militia's motivations may lean more towards financial gain than the pursuit of justice. Brace yourself, for encountering the long arm of the law may be an inevitable chapter in your quest, as your arrest may serve as a coin-filled boon for the men's purses.
+Their responsibility generally ends at the edge of the settlement.
 
-Armed with the authorization to wield deadly force, the militia operates with a sweeping mandate, applying it not only to known criminals but also to suspects and those who resist arrest. The consequences for transgressions in Utopia and similar countries are severe, fostering an environment where crime is curtailed, and a fragile peace reigns over the cities.
+Imperial law does not require lords to police the countryside. Maintaining patrols across miles of farmland, forest and wilderness is considered an expensive way of protecting very few people, particularly when those travelling beyond the safety of a town are expected to understand the risks involved.
 
-Yet, the very force intended to uphold order may, at times, become the harbinger of disorder. Instances of militia uprisings leading to the overthrow of rightful lords have been recorded. In such scenarios, expediency often triumphs, with the emperor declaring the new ruler as the official lord, provided that royal command is upheld. The delicate balance between authority and rebellion shapes the narrative of the militia, painting a complex picture of justice, power, and the pursuit of peace within the urban landscapes of Cryptillia.
+Within towns and cities, however, the militia can exercise considerable authority.
+
+Exactly how considerable depends upon the local ruler. Each lord or lady determines much of the organisation, equipment and day-to-day authority of their militia, producing forces which vary enormously across the Empire. A wealthy city may have a large, disciplined militia with permanent barracks and organised patrols. A small settlement may have considerably fewer people available and a much simpler interpretation of law enforcement.
+
+Some are competent and reasonably honest.
+
+Others are not.
+
+Militia are commonly rewarded for arrests, an arrangement intended to encourage the pursuit of criminals. Predictably, it also encourages arrests.
+
+A superior concerned with demonstrating that crime is being dealt with may be considerably more interested in the number of people brought through the door than whether every one of them actually committed the offence in question. For the individual militiaman, an arrest can also mean additional coin in his purse.
+
+Being innocent is therefore useful.
+
+Being obviously innocent is considerably better.
+
+Militia are authorised to use deadly force against dangerous criminals and may also use it against suspects who violently resist arrest. In places such as Utopia, where punishments for serious crimes are already severe, this gives the authorities considerable power to keep visible disorder under control.
+
+Consequently, many Human cities are relatively safe places to live provided one obeys the law, avoids attracting the attention of the militia and does not give an ambitious officer a particularly convenient opportunity to improve his arrest figures.
+
+The militia's loyalty is supposed to belong to the lord or lady responsible for maintaining it.
+
+Dragonbone City demonstrates what happens when it does not.
+
+The city's militia effectively seized power in a military coup, but rather than dispose of the feudal lord, they kept him. He remains the lawful ruler of Dragonbone City and continues to perform the functions expected of him, albeit while confined under house arrest by the people he supposedly commands.
+
+In practice, Dragonbone City is governed by a militia junta.
+
+The junta determines policy and introduces laws of its own choosing. The lord is then presented with the necessary documents and persuaded to sign them into law. His seal remains legitimate, the feudal chain of authority remains technically unbroken, and the militia can claim that every decree has been issued by the city's lawful ruler.
+
+Few people are under any illusion about who actually governs.
+
+The Emperor has shown little interest in correcting the situation.
+
+Dragonbone City remains orderly, still acknowledges imperial authority and continues to send its required tithe to the imperial treasury. Indeed, under the junta, the tithe has arrived more reliably and efficiently than it did before the coup.
+
+From the imperial court's perspective, intervention would therefore require soldiers, money and political effort to restore a lord who is technically still in office, in a city which continues to obey the Empire and is now better at paying its taxes.
+
+The lord's predicament has so far failed to outweigh these considerations.
+
+The militia therefore occupies a peculiar place within the Empire. It exists because imperial law demands local order, but it is raised, paid and commanded locally. It can protect a town, harass its inhabitants, enforce a lord's authority or, as Dragonbone City discovered, retain the lord while dispensing with his authority entirely.
+
+Beyond the town gates, of course, none of this is much help.
+
+Out there, you are expected to look after yourself.
