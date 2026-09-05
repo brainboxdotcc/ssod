@@ -1,9 +1,27 @@
-In the tumultuous realms of Cryptillia, orcs emerge as a relentless force, embodying a ferocity that reverberates through their every action. Violence is their vernacular, negotiation a foreign concept as they favor the blunt force of combat over the nuances of dialogue. With a language that echoes in guttural tones and a perceived lower level of intelligence, orcs organize themselves into tribal structures, each ruled by a warlord flanked by a cadre of advisors, handpicked by the warlord himself.
+Orcs are the largest and physically strongest of the Orcish peoples. Heavily built and naturally aggressive, they place enormous cultural importance on strength, courage and the ability to impose one's will upon others.
 
-While it is theoretically accepted that the warlord should heed the counsel of these advisers, the reality often hinges on the capricious whims of the warlord. Orcs, driven by their inherently combative nature, spend the majority of their existence in the throes of battle. In the absence of a suitable external adversary, they turn upon themselves in a relentless cycle of internecine conflict. The clash of weapons and the roar of aggression define the rhythm of their daily lives.
+This does not mean that Orcs are incapable of negotiation. They simply tend to regard violence as an entirely legitimate way of settling a disagreement.
 
-When not immersed in combat, orcs transition between periods of repose and feasting, reveling in the aftermath of their conquests. Boar or horse meat is the staple of their carnivorous feasts, supplemented by any other meat that comes within their grasp. The orcish way of life becomes an unending cycle of brutality, alternating between the chaos of battle, restorative slumber, and gluttonous revelry.
+Orcish society is organised into tribes, traditionally ruled by a Warlord. A Warlord is expected to be strong enough to hold the position and is surrounded by advisers chosen to provide whatever skills the Warlord lacks. In theory, these advisers counsel their leader on matters requiring more than brute force.
 
-A visceral disdain defines the orcish perception of elves, an animosity rooted in a profound hatred for the elven reverence of the natural world. If given the choice to unleash their aggression upon any race, orcs would unhesitatingly target elves, the intensity of their animosity palpable. Dwarves, their second most detested adversaries, share a deep-seated enmity that traces back to the earliest ages of magic. In a gruesome chapter of history, ancient Dwarves forcibly expelled the initial orcish inhabitants from their ancestral homeland, igniting a feud that has endured through the ages.
+A sensible Warlord listens to them.
 
-In the savage landscapes of Cryptillia, orcs stand as a formidable testament to the unbridled power of aggression and a hatred that spans generations. Their warlike nature, tribal societies, and blood-soaked history imprint an indelible mark on the tapestry of the fantastical world they inhabit.
+Not every Warlord is sensible.
+
+Status within Orcish society is strongly associated with physical power. Challenges, feuds and outright fighting are common, and a leader unable to defend their position is unlikely to retain it for long. When there is an external enemy, this aggression can be directed with frightening effectiveness. When there isn't, Orcs have a remarkable ability to find enemies amongst themselves.
+
+Orcs sit at the top of a wider social hierarchy which also includes Goblins and Lesser Orcs. Goblins are valued for abilities which Orcs themselves often lack, particularly cunning and planning, but remain socially subordinate to their larger cousins. Lesser Orcs occupy the very bottom of the hierarchy and are widely treated as an inferior servant and slave race.
+
+For all their reputation for constant warfare, Orcs do have lives beyond battle. Feasting is particularly important, and meat dominates the Orcish diet. Boar and horse are favourites, although few Orcs are especially particular when something else is available. Large meals following a successful battle or hunt serve as celebrations as much as opportunities to eat.
+
+Of the other peoples of Cryptillia, Elves attract particular Orcish hostility. Elven reverence for the natural world conflicts strongly with the Orcish tendency to regard land and its resources as things to be taken and used. Centuries of conflict have turned that difference into a hatred which now requires little immediate cause.
+
+Their relationship with the Dwarves is scarcely better.
+
+The hostility between them stretches back to the earliest ages of recorded history, when Dwarven expansion drove Orcish inhabitants from lands they regarded as their own. Neither side has forgotten this. Dwarves tend to remember the wars which followed. Orcs prefer to remember who started them.
+
+Orcs are often dismissed by other peoples as unintelligent brutes. There is some truth behind the reputation: Orcs tend to favour immediate, direct solutions and rarely possess the patience for lengthy study or elaborate planning. But confusing a preference for brute force with an inability to understand anything else has been the last mistake of more than one Orc's opponent.
+
+Orcish civilisation is violent, hierarchical and frequently unstable, but it has survived for generations.
+
+When strength is the foundation of society, Orcs have the considerable advantage of being very strong.
