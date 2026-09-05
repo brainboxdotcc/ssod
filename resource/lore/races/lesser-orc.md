@@ -1,7 +1,23 @@
-In the shadowy lineage of Cryptillia, Lesser Orcs emerge as kin to their larger counterparts, the Orcs, sharing an enigmatic genetic connection whose roots delve into the obscure annals of history. Linked by distinctive features such as blue-green blood flowing with copper, three-jointed legs, and robust ribcages capable of withstanding significant damage, Lesser Orcs bear the indelible marks of their shared ancestry.
+Lesser Orcs are the smallest of the Orcish peoples. Their exact relationship to Orcs is unknown, although their shared anatomy leaves little doubt that the two are closely related.
 
-Despite these shared traits, Lesser Orcs stand apart from their larger kin in terms of size and temperament. Their diminished stature imparts a noticeable timidity and passivity, qualities that, if exhibited by a full-grown Orc, would incur severe consequences. This inherent vulnerability renders them susceptible to enslavement by their more dominant Orc counterparts, a fate from which they seldom resist.
+Like Orcs, they have blue-green, copper-bearing blood, three-jointed legs and unusually strong ribcages capable of surviving injuries which would cause considerably greater damage to a Human. Where the two differ most obviously is size. Lesser Orcs are smaller and slighter even than Dwarves, putting them at an immediate disadvantage in a society where physical strength determines much of a person's status.
 
-In captivity, some Lesser Orcs, against the tide of their passive nature, manage to muster a base level of courage. These outliers defy their shackles, rebelling against their captors and escaping the bonds of servitude. Those who achieve such feats of courage among Lesser Orcs often find themselves destined for roles as soldiers, adventurers, and hired protectors. However, the perilous path ahead tests not only their newfound courage but also their ability to navigate a world that is fraught with danger and uncertainty.
+Most Lesser Orcs live at the bottom of Orcish society, where they have been used as servants and slaves for generations.
 
-As Lesser Orcs tread the precarious line between subjugation and rebellion, their tales weave a narrative of inherent vulnerability, unexpected courage, and the relentless pursuit of freedom within the fantastical tapestry of Cryptillia.
+They have a reputation for being timid and passive, particularly in the presence of Orcs. This is hardly surprising. Behaviour which an Orc might respect as assertive can be extremely dangerous for a Lesser Orc whose owner is considerably larger, stronger and accustomed to answering challenges with violence. Knowing when to lower your head is an effective survival skill.
+
+Orcs encourage the belief that Lesser Orcs are simple creatures suited only to labour. Their treatment suggests that they know otherwise.
+
+Lesser Orcs are forbidden from learning to read or write. Literacy amongst them is actively suppressed, limiting their ability to preserve information or communicate plans beyond individual groups. A Lesser Orc with knowledge can teach those immediately around them; a Lesser Orc who can write can teach somebody they have never met.
+
+Individually, most have little education and few opportunities to acquire it. In groups, however, Lesser Orcs can be remarkably cunning. They cooperate well, share what they know and are quite capable of organising when given the opportunity.
+
+Occasionally, one escapes.
+
+Life beyond Orcish territory is difficult for an escaped Lesser Orc. They may possess few belongings, no ability to read and little understanding of societies in which an Orc is not waiting to punish the wrong answer. Some nevertheless adapt remarkably well.
+
+Freed from the social position imposed upon them, Lesser Orcs have become soldiers, adventurers, labourers and hired protectors. Others simply disappear into communities willing to accept them and attempt to build an ordinary life.
+
+Orcs tend to regard such individuals as aberrations.
+
+Lesser Orcs might reasonably regard them as evidence.
