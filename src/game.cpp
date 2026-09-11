@@ -226,7 +226,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 	if (custom_id == "deposit_gold_amount_modal" && p.in_bank) {
 		auto bank_amount = co_await db::co_query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 		long balance_amount = atol(bank_amount[0].at("gold"));
-		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
+		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].value)));
 		amount = std::min(amount, p.gold);
 		amount = std::min(amount, p.max_gold() - balance_amount);
 		if (p.gold > 0 && amount > 0) {
@@ -237,7 +237,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 		claimed = true;
 	} else if (parts[0] == "answer" && p.stamina > 0 && !p.in_bank && !p.in_inventory) {
 		// id = "answer;" + std::to_string(n.paragraph) + ";" + n.prompt + ";" + n.answer + ";" + std::to_string(++unique);		
-		std::string entered_answer = std::get<std::string>(event.components[0].components[0].value);
+		std::string entered_answer = std::get<std::string>(event.components[0].value);
 		if (dpp::lowercase(entered_answer) == dpp::lowercase(parts[3])) {
 			p.after_fragment = 0; // Resets current combat index and announces travel
 			p.challenged_by = 0ull;
@@ -253,7 +253,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 		bot.log(dpp::ll_debug, "Answered: " + entered_answer);
 		claimed = true;
 	} else if (custom_id == "chat_modal" && p.stamina > 0) {
-		std::string message = std::get<std::string>(event.components[0].components[0].value);
+		std::string message = std::get<std::string>(event.components[0].value);
 		uint64_t guild_id = co_await get_guild_id(p);
 		if (guild_id) {
 			bot.log(dpp::ll_info, p.event.command.locale + " " + " Chat: [G(" + std::to_string(p.paragraph) + "," + std::to_string(guild_id) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
@@ -273,7 +273,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 			claimed = true;
 		}
 	} else if (custom_id == "withdraw_gold_amount_modal" && p.in_bank) {
-		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].components[0].value)));
+		long amount = std::max(0l, atol(std::get<std::string>(event.components[0].value)));
 		auto bank_amount = co_await db::co_query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 		long balance_amount = atol(bank_amount[0].at("gold"));
 		/* Can't withdraw more than is in the bank, or more than you can carry */
