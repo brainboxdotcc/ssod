@@ -22,7 +22,6 @@
 #include <pcre.h>
 #include <string>
 #include <vector>
-#include <ssod/sentry.h>
 
 /**
 * @brief Flags used for keeping expressions sane
@@ -112,7 +111,7 @@ std::string pcre_regex::replace(std::string comparison, const std::string &repla
 			comparison.replace(start, length, replace);
 		}
 		catch (const std::exception& e) {
-			sentry::log_catch(typeid(e).name(), e.what());
+			//sentry::log_catch(typeid(e).name(), e.what());
 			throw regex_exception("Replacement out of range of string length (PCRE error)");
 		}
 	}

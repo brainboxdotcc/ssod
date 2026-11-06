@@ -19,7 +19,6 @@
  ************************************************************************************/
 #include <dpp/dpp.h>
 #include <ssod/command.h>
-#include <ssod/sentry.h>
 
 /**
  * @brief Internal command map
@@ -36,9 +35,9 @@ dpp::task<void> route_command(const dpp::slashcommand_t &event)
 	auto ref = registered_commands.find(event.command.get_command_name());
 	if (ref != registered_commands.end()) {
 		auto ptr = ref->second;
-		sentry::make_new_transaction("/" + event.command.get_command_name());
+		//sentry::make_new_transaction("/" + event.command.get_command_name());
 		co_await (*ptr)(event);
-		sentry::end_user_transaction();
+		//sentry::end_user_transaction();
 	} else {
 		event.owner->log(dpp::ll_error, "Unable to route command: " + event.command.get_command_name());
 	}
