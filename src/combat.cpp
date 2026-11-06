@@ -779,7 +779,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 					output << tr("ATKBONUS", event);
 					SaveRoll -= dice();
 				}
-				if (SaveRoll <= EArmour) {
+				if (SaveRoll <= std::max(0L, EArmour - PWeapon / 3)) {
 					if (d_random(1, 100) > 5) {
 						Saved = true;
 					} else {
@@ -847,7 +847,6 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 
 				output << "** " << tr("AREA", event) << ".";;
 
-
 				switch (D6) {
 					case 1:
 						if (KAttackType == CUTTING) {
@@ -861,6 +860,10 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 							SDamage += dice();
 						}
 						break;
+				}
+
+				if (PAttack >= EAttack) {
+					SDamage += PWeapon / 2;
 				}
 			}
 
