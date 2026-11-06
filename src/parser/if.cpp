@@ -348,8 +348,12 @@ struct if_tag : public tag {
 		if (p.display.empty() || p.display[p.display.size() - 1]) {
 			try {
 				std::string remaining;
-				std::getline(paragraph_content, remaining, '>');
-				std::stringstream ss(p_text + " " + remaining);
+				if (p_text.find('>') == std::string::npos) {
+					std::getline(paragraph_content, remaining, '>');
+				}
+				std::string expression = p_text + " " + remaining;
+				expression = expression.substr(0, expression.find('>'));
+				std::stringstream ss(expression);
 				if_expression_parser parser(ss, current_player);
 				p.display.push_back(co_await parser.parse());
 			} catch (const std::exception& e) {
