@@ -19,7 +19,6 @@
  ************************************************************************************/
 #include <string>
 #include <ssod/neutrino_api.h>
-#include <ssod/sentry.h>
 
 neutrino::neutrino(dpp::cluster* cl, const std::string& userid, const std::string& apikey) : cluster(cl), user_id(userid), api_key(apikey) {
 }
@@ -31,14 +30,14 @@ void neutrino::contains_bad_word(const std::string& text, swear_filter_event_t c
 		{ "catalog", "strict" },
 		{ "output-format", "JSON" },
 	}).dump();
-	void* tx = sentry::get_user_transaction();
-	void* span = sentry::http_span(tx, neutrino::endpoint.data(), "POST");
-	this->cluster->request(neutrino::endpoint.data(), dpp::m_post, [this, text, callback, span](const auto& rv) {
+	//void* tx = sentry::get_user_transaction();
+	//void* span = sentry::http_span(tx, neutrino::endpoint.data(), "POST");
+	this->cluster->request(neutrino::endpoint.data(), dpp::m_post, [this, text, callback](const auto& rv) {
 			swear_filter_t sf;
 			nlohmann::json j;
 			sf.clean = true;
 			sf.censored_content = text;
-			sentry::end_http_span(span, rv.status);
+			//sentry::end_http_span(span, rv.status);
 			if (rv.error == dpp::h_success && !rv.body.empty()) {
 				try {
 					j = nlohmann::json::parse(rv.body);

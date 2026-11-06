@@ -38,7 +38,6 @@
 #include <ssod/campfire.h>
 #include <ssod/game_dice.h>
 #include <ssod/achievement.h>
-#include <ssod/sentry.h>
 #include <ssod/book_reader.h>
 #include <ssod/quest.h>
 #include <ssod/config.h>
@@ -222,7 +221,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 	}
 	bot.log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
-	sentry::make_new_transaction("component/form/" + custom_id);
+	//sentry::make_new_transaction("component/form/" + custom_id);
 	if (custom_id == "deposit_gold_amount_modal" && p.in_bank) {
 		auto bank_amount = co_await db::co_query("SELECT SUM(item_flags) AS gold FROM game_bank WHERE owner_id = ? AND item_desc = ?",{event.command.usr.id, "__GOLD__"});
 		long balance_amount = atol(bank_amount[0].at("gold"));
@@ -293,7 +292,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 		p.save(event.command.usr.id);
 		co_await continue_game(event, p);
 	}
-	sentry::end_user_transaction();
+	//sentry::end_user_transaction();
 	co_return;
 }
 
@@ -309,7 +308,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		co_return;
 	}
 	bot.log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
-	sentry::make_new_transaction("component/select/" + custom_id);
+	//sentry::make_new_transaction("component/select/" + custom_id);
 	if (custom_id == "withdraw" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
 		if (parts.size() < 2) {
@@ -545,7 +544,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		p.save(event.command.usr.id);
 		co_await continue_game(event, p);
 	}
-	sentry::end_user_transaction();
+	//sentry::end_user_transaction();
 	co_return;
 }
 
@@ -570,7 +569,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 			co_return;
 		}
 	}
-	sentry::make_new_transaction("component/button/" + parts[0]);
+	//sentry::make_new_transaction("component/button/" + parts[0]);
 	if (p.reading_book_id != 0) {
 		bot.log(dpp::ll_debug, "CURRENT BOOK ID " + std::to_string(p.reading_book_id));
 		if (co_await book_nav(event, p, parts)) {
@@ -654,7 +653,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 						}
 					}
 					catch (const regex_exception& e) {
-						sentry::log_catch(typeid(e).name(), e.what());
+						//sentry::log_catch(typeid(e).name(), e.what());
 						bot.log(dpp::ll_error, std::string("Regular expression error: ") + e.what());
 					}
 					co_await achievement_check("CURED", event, p, {{"disease", flags}});
@@ -1142,7 +1141,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		p.save(event.command.usr.id);
 		co_await continue_game(event, p);
 	}
-	sentry::end_user_transaction();
+	//sentry::end_user_transaction();
 	co_return;
 }
 
