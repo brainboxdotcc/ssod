@@ -1049,6 +1049,12 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		long paragraph = atol(parts[1]);
 		std::string name = parts[2];
 		std::string flags = parts.size() >= 4 ? parts[3] : "";
+		if (name == "*" && flags.starts_with("B")) {
+			auto book = co_await db::co_query("SELECT title FROM books WHERE id = ?", {flags.substr(1)});
+			if (!book.empty()) {
+				name = book[0].at("title");
+			}
+		}
 		size_t max = p.max_inventory_slots();
 		if (p.possessions.size() < max - 1) {
 			auto rs = co_await db::co_query(
@@ -1756,7 +1762,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 			auto i = tr(dropped_single, "", event);
 			cb.add_component(dpp::component()
 				.set_type(dpp::cot_button)
-				.set_id(security::encrypt("pick;" + std::to_string(p.paragraph) + ";" + dropped.name + ";" + dropped.flags))
+				.set_id(security::encrypt("pick;" + std::to_string(p.paragraph) + ";" + (dropped.flags.starts_with("B") ? "*" : dropped.name) + ";" + dropped.flags))
 				.set_label(tr("PICK", event, dropped.name))
 				.set_style(dpp::cos_secondary)
 				.set_emoji(sprite::backpack.name, sprite::backpack.id)
