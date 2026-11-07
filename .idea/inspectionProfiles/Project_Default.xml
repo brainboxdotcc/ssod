@@ -1,10 +1,53 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
-    <inspection_tool class="ClangTidy" enabled="true" level="WEAK WARNING" enabled_by_default="true" editorAttributes="INFO_ATTRIBUTES" />
-    <inspection_tool class="Clazy" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES" />
+    <inspection_tool class="ClangTidy" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES">
+      <option name="clangTidyChecks" value="-*,bugprone-*,cert-*,cppcoreguidelines-interfaces-global-init,cppcoreguidelines-narrowing-conversions,cppcoreguidelines-pro-type-member-init,cppcoreguidelines-pro-type-static-cast-downcast,cppcoreguidelines-slicing,google-default-arguments,google-runtime-operator,hicpp-exception-baseclass,hicpp-multiway-paths-covered,misc-misplaced-const,misc-new-delete-overloads,misc-non-copyable-objects,misc-throw-by-value-catch-by-reference,misc-unconventional-assign-operator,misc-uniqueptr-reset-release,modernize-avoid-bind,modernize-deprecated-headers,modernize-deprecated-ios-base-aliases,modernize-make-shared,modernize-make-unique,modernize-replace-auto-ptr,modernize-replace-disallow-copy-and-assign-macro,modernize-replace-random-shuffle,modernize-shrink-to-fit,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-nodiscard,modernize-use-noexcept,modernize-use-nullptr,modernize-use-override,modernize-use-uncaught-exceptions,mpi-buffer-deref,mpi-type-mismatch,openmp-use-default-none,performance-*,portability-simd-intrinsics,readability-container-size-empty,readability-delete-null-pointer,readability-deleted-default,readability-misleading-indentation,readability-misplaced-array-index,readability-redundant-control-flow,readability-redundant-declaration,readability-redundant-function-ptr-dereference,readability-redundant-smartptr-get,readability-redundant-string-cstr,readability-redundant-string-init,readability-static-accessed-through-instance,readability-string-compare,readability-uniqueptr-delete-release" />
+    </inspection_tool>
+    <inspection_tool class="Clazy" enabled="false" level="INFORMATION" enabled_by_default="false" editorAttributes="INFORMATION_ATTRIBUTES" />
     <inspection_tool class="ConstantFunctionResult" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES" />
     <inspection_tool class="ConstantParameter" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES" />
+    <inspection_tool class="CppCStyleCast" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppClassNeverUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppConceptNeverUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppConstexprIfDiscardedBranch" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppDeclaratorNeverUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppEnumeratorNeverUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppForLoopCanBeReplacedWithWhile" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppHeaderHasBeenAlreadyIncluded" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppLambdaCaptureNeverUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppLocalVariableMayBeConst" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppParameterMayBeConst" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppParameterNeverUsed" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantAccessSpecifier" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantBaseClassAccessSpecifier" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantCastExpression" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantConstSpecifier" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantControlFlowJump" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantElaboratedTypeSpecifier" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantElseKeyword" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantElseKeywordInsideCompoundStatement" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantEmptyDeclaration" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantEmptyStatement" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantInlineSpecifier" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantLambdaParameterList" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantParentheses" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantQualifier" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantStaticSpecifierOnMemberAllocationFunction" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantStaticSpecifierOnThreadLocalLocalVariable" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantTemplateArguments" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantVoidArgumentList" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppRedundantZeroInitializerInAggregateInitialization" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppTemplateArgumentsCanBeDeduced" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppTemplateParameterNeverUsed" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppTooWideScope" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppTooWideScopeInitStatement" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppTypeAliasNeverUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppUnusedIncludeDirective" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppUseAssociativeContains" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppUseDesignatedInitializers" enabled="false" level="HINT" enabled_by_default="false" />
+    <inspection_tool class="CppUseInternalLinkage" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppUseStructuredBinding" enabled="false" level="HINT" enabled_by_default="false" />
     <inspection_tool class="EndlessLoop" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES" />
     <inspection_tool class="TodoComment" enabled="true" level="TEXT ATTRIBUTES" enabled_by_default="true" editorAttributes="CONSIDERATION_ATTRIBUTES" />
     <inspection_tool class="UnusedLocalVariable" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES" />
