@@ -14,6 +14,8 @@ aux_source_directory("src/parser" coresrc)
 aux_source_directory("src/js" coresrc)
 add_executable(${BOT_NAME} ${coresrc})
 
+target_include_directories(${PROJECT_NAME} PRIVATE /usr/include/jsoncpp)
+
 target_precompile_headers(${BOT_NAME} INTERFACE "/usr/local/include/fmt/format.h")
 
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include/gen/emoji.h)
@@ -57,9 +59,16 @@ target_link_libraries(${BOT_NAME}
 	z
 	pcre
 	sentry
+	drogon
+	jsoncpp
+	trantor
+	uuid
 	${CMAKE_THREAD_LIBS_INIT}
 	${DPP_LIBRARIES}
+	${CMAKE_DL_LIBS}
 )
+
+target_link_options(ssod PRIVATE -Wl,--export-dynamic)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 	WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}

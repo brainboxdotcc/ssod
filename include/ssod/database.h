@@ -226,6 +226,9 @@ namespace db {
 	resultset query(const std::string &format, const paramlist &parameters = {});
 
 #ifdef DPP_CORO
+
+	void query_callback(const std::string& format, const paramlist& parameters, const std::function<void(const resultset)>& callback);
+
 	/**
 	 * @brief Run a mysql query, with automatic escaping of parameters to prevent SQL injection.
 	 * This is the coroutine asynchronous version of db::query. It will complete its dpp::async

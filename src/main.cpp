@@ -27,6 +27,7 @@
 #include <ssod/aes.h>
 #include <ssod/commandline.h>
 #include <ssod/lang.h>
+#include <ssod/standalone.h>
 
 int main(int argc, char const *argv[]) {
 	std::setlocale(LC_ALL, "en_GB.UTF-8");
@@ -76,6 +77,8 @@ int main(int argc, char const *argv[]) {
 	bot.on_ready(&listeners::on_ready);
 
 	db::init(bot);
+
+	ssod::standalone::init(bot, "0.0.0.0", 9090);
 
 	/* Start bot */
 	bot.start(dpp::st_wait);
