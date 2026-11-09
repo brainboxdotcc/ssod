@@ -1028,15 +1028,39 @@ void player::add_silver(long modifier) {
 // Remove a ration point, or subtract 2 stamina if none left -
 // returns false if out of rations (so warnings can be displayed)
 bool player::eat_ration() {
-	if (rations-- < 1) {
-		if (stamina > 3) {
-			add_stamina(-2);
-			add_toast({ .message = tr("HUNGER", event), .image = "food.png" });
-		}
-		rations = 0;
-		return false;
+	if (rations > 0) {
+		--rations;
+		return true;
 	}
-	return true;
+
+	rations = 0;
+
+	/* No rations: eat the least valuable cooked food instead */
+	auto cooked_food = db::query(
+		"SELECT food.name FROM food "
+		"JOIN game_owned_items ON game_owned_items.item_desc = food.name "
+		"WHERE game_owned_items.user_id = ? "
+		"ORDER BY food.value ASC, food.id ASC LIMIT 1",
+		{event.command.usr.id}
+	);
+
+	if (!cooked_food.empty()) {
+		item food_item;
+		food_item.name = cooked_food[0].at("name");
+
+		if (drop_possession(food_item)) {
+			add_toast({ .message = tr("ATE_COOKED_FOOD", event, food_item.name), .image = "food.png" });
+			return true;
+		}
+	}
+
+	/* No rations or cooked food: suffer hunger penalty */
+	if (stamina > 3) {
+		add_stamina(-2);
+		add_toast({ .message = tr("HUNGER", event), .image = "food.png" });
+	}
+
+	return false;
 }
 
 void player::add_rations(long modifier) {
