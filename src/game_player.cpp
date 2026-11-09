@@ -294,7 +294,7 @@ dpp::task<dpp::message> player::get_registration_message(dpp::cluster& cluster, 
 			.proxy_url = "",
 		})
 		.set_colour(EMBED_COLOUR)
-		.set_description(tr("WELCOME_MSG", event, event.command.usr.get_mention()))
+		.set_description(tr("WELCOME_MSG", event))
 		.add_field(tr("STAMINA", event), std::to_string(stamina) + bonuses(1, race, profession), true)
 		.add_field(tr("SKILL", event), std::to_string(skill) + bonuses(2, race, profession), true)
 		.add_field(tr("LUCK", event), std::to_string(luck) + bonuses(3, race, profession), true)

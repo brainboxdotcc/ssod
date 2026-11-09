@@ -151,14 +151,13 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 				bot.log(dpp::ll_warning, "Potty-mouth player name: " + name + " censored for id: " + event.command.usr.id.str());
 				name = swear_filter.censored_content;
 			}
-			auto check = co_await db::co_query("SELECT * FROM game_default_users WHERE name = ?", {name});
-			if (!check.empty()) {
-				event.reply();
-				dpp::message m = co_await p_old.get_magic_selection_message(bot, event);
-				m.embeds[0].description += "\n\n## " + tr("EXISTS", event);
-				p_old.event.edit_original_response(m);
-				//sentry::end_user_transaction();
-				co_return;
+
+			while (true) {
+				auto check = co_await db::co_query("SELECT 1 FROM game_default_users WHERE name = ? LIMIT 1", {name});
+				if (check.empty()) {
+					break;
+				}
+				name += "_";
 			}
 			p_old.event.delete_original_response();
 			p_old.name = name;
