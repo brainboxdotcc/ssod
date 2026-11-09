@@ -406,3 +406,5 @@ void unload_live_player(uint64_t id);
 
 long bonuses_numeric(int type, player_race R, player_profession P);
 std::string bonuses(int type, player_race R, player_profession P);
+
+std::optional<std::string> get_cached_player_name(dpp::snowflake user_id);

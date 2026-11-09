@@ -1205,3 +1205,14 @@ void player::set_flag(const std::string& flag, long p, const std::string &value)
 		value, value
 	});
 }
+
+std::optional<std::string> get_cached_player_name(dpp::snowflake user_id) {
+	std::lock_guard<std::mutex> lock(live_list_lock);
+
+	auto it = live_players.find(user_id);
+	if (it == live_players.end()) {
+		return std::nullopt;
+	}
+
+	return it->second.name;
+}

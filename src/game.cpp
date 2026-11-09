@@ -42,6 +42,7 @@
 #include <ssod/quest.h>
 #include <ssod/config.h>
 #include <ssod/npc.h>
+#include <ssod/neutrino_api.h>
 
 using namespace i18n;
 
@@ -254,6 +255,13 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 	} else if (custom_id == "chat_modal" && p.stamina > 0) {
 		std::string message = std::get<std::string>(event.components[0].value);
 		uint64_t guild_id = co_await get_guild_id(p);
+		neutrino swear_check(event.owner, config::get("neutrino_user"), config::get("neutrino_password"));
+		swear_filter_t swear_filter = co_await swear_check.co_contains_bad_word(message);
+		if (!swear_filter.clean) {
+			bot.log(dpp::ll_warning, "Potty-mouth chat message: " + message + " censored for id: " + event.command.usr.id.str());
+			message = swear_filter.censored_content;
+		}
+
 		if (guild_id) {
 			bot.log(dpp::ll_info, p.event.command.locale + " " + " Chat: [G(" + std::to_string(p.paragraph) + "," + std::to_string(guild_id) + ")] " + event.command.usr.id.str() + " <" + p.name + "> " + message);
 			co_await send_chat(event.command.usr.id, p.paragraph, message, "chat", guild_id);

@@ -8,6 +8,9 @@
 #include <ssod/standalone.h>
 #include <charconv>
 #include <string_view>
+#include <ssod/game_player.h>
+#include <ssod/ssod.h>
+#include <mutex>
 
 using post_request_fn = void (*)(dpp::request_concurrency_queue*, std::unique_ptr<dpp::http_request>);
 
@@ -65,7 +68,13 @@ extern "C" void ssod_post_request(dpp::request_concurrency_queue* self, std::uni
 		}
 
 		try {
-			const auto response = dpp::json::parse(req->postdata);
+			auto response = dpp::json::parse(req->postdata);
+
+			response["ssod_user_id"] = user_id;
+			if (auto username = get_cached_player_name(user_id)) {
+				response["ssod_username"] = *username;
+			}
+
 			ssod::standalone::output(user_id, response);
 			result.status = 204;
 		} catch (const std::exception& e) {
