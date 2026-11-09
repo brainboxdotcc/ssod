@@ -46,8 +46,8 @@
 
 using namespace i18n;
 
-#define RESURRECT_SECS 3600
-#define RESURRECT_SECS_PREMIUM 900
+#define RESURRECT_SECS 900
+#define RESURRECT_SECS_PREMIUM 300
 
 dpp::task<uint64_t> get_guild_id(const player& p);
 
@@ -97,22 +97,37 @@ dpp::task<void> do_toasts(player &p, component_builder& cb) {
 dpp::task<void> death(player& p, component_builder& cb) {
 	p.stamina = 0;
 	p.in_pvp_picker = false;
-	std::string toast;
+
+	const bool standalone = (p.event.command.usr.id >> 32) == 0;
 	time_t when = RESURRECT_SECS;
+	std::string toast;
 
 	toast += "# " + tr("DED", p.event) + "\n\n";
 
-	if (!p.event.command.entitlements.empty()) {
-		when = RESURRECT_SECS_PREMIUM;
-	} else {
-		auto rs = co_await db::co_query("SELECT * FROM premium_credits WHERE user_id = ? AND active = 1", {p.event.command.usr.id});
-		if (!rs.empty()) {
+	if (!standalone) {
+		if (!p.event.command.entitlements.empty()) {
 			when = RESURRECT_SECS_PREMIUM;
+		} else {
+			auto rs = co_await db::co_query(
+				"SELECT * FROM premium_credits WHERE user_id = ? AND active = 1",
+				{p.event.command.usr.id}
+			);
+			if (!rs.empty()) {
+				when = RESURRECT_SECS_PREMIUM;
+			}
 		}
 	}
 
-	if (p.last_resurrect == 0 || time(nullptr) > p.last_resurrect + when) {
-		toast += tr("DEATH_EXPLAIN", p.event);
+	const bool can_resurrect =
+		p.last_resurrect == 0 ||
+		time(nullptr) > p.last_resurrect + when;
+
+	if (can_resurrect) {
+		toast += tr(
+			standalone ? "STANDALONE_DEATH_EXPLAIN" : "DEATH_EXPLAIN",
+			p.event
+		);
+
 		cb.add_component(dpp::component()
 			.set_type(dpp::cot_button)
 			.set_id(security::encrypt("resurrect"))
@@ -121,8 +136,19 @@ dpp::task<void> death(player& p, component_builder& cb) {
 			.set_emoji(sprite::heart.name, sprite::heart.id)
 		);
 	} else {
-		toast += tr("RESURRECT_NOT_AVAILABLE", p.event, dpp::utility::timestamp(p.last_resurrect + when, dpp::utility::tf_relative_time));
-		if (when == RESURRECT_SECS_PREMIUM) {
+		toast += tr(
+			standalone ? "STANDALONE_RESURRECT_NOT_AVAILABLE" : "RESURRECT_NOT_AVAILABLE",
+			p.event,
+			dpp::utility::timestamp(
+				p.last_resurrect + when,
+				dpp::utility::tf_relative_time
+			)
+		);
+
+		if (standalone) {
+			toast += "\n\n";
+			toast += tr("STANDALONE_AD_PLACEHOLDER", p.event);
+		} else if (when == RESURRECT_SECS_PREMIUM) {
 			toast += sprite::diamond.get_mention() + " ";
 			toast += tr("PREMIUM_RESURRECT", p.event);
 		}
@@ -138,24 +164,25 @@ dpp::task<void> death(player& p, component_builder& cb) {
 		.set_emoji(sprite::skull.name, sprite::skull.id)
 	);
 
-	cb.add_component(dpp::component()
-		 .set_type(dpp::cot_button)
-		 .set_id(security::encrypt("vote-topgg"))
-		 .set_label(tr("TOPGG_VOTE", p.event))
-		 .set_url("https://top.gg/bot/620654573547159553/vote")
-		 .set_style(dpp::cos_link)
-	);
+	if (!standalone) {
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("vote-topgg"))
+			.set_label(tr("TOPGG_VOTE", p.event))
+			.set_url("https://top.gg/bot/620654573547159553/vote")
+			.set_style(dpp::cos_link)
+		);
 
-	cb.add_component(dpp::component()
-		 .set_type(dpp::cot_button)
-		 .set_id(security::encrypt("vote-dbl"))
-		 .set_label(tr("DBL_VOTE", p.event))
-		 .set_url("https://discordbotlist.com/bots/the-seven-spells-of-destruction/upvote")
-		 .set_style(dpp::cos_link)
-	);
+		cb.add_component(dpp::component()
+			.set_type(dpp::cot_button)
+			.set_id(security::encrypt("vote-dbl"))
+			.set_label(tr("DBL_VOTE", p.event))
+			.set_url("https://discordbotlist.com/bots/the-seven-spells-of-destruction/upvote")
+			.set_style(dpp::cos_link)
+		);
+	}
 
 	co_await achievement_check("DEATH", p.event, p);
-
 }
 
 dpp::task<void> add_chat(std::string& text, const dpp::interaction_create_t& event, long paragraph_id, uint64_t guild_id) {
