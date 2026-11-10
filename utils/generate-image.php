@@ -105,6 +105,7 @@ INSTRUCTIONS],
     if ($prompt === '') {
         throw new RuntimeException('No illustration prompt returned.');
     }
+    echo "Prompt: $prompt\n";
     echo "Generating PNG...\n";
     $imageResponse = postOpenAI('images/generations', [
         'model' => 'gpt-image-1.5',
@@ -118,8 +119,6 @@ INSTRUCTIONS],
         'output_format' => 'png',
         'n' => 1,
     ], $config->gptkey);
-
-    echo $prompt . "\n";
 
     $encoded = $imageResponse['data'][0]['b64_json'] ?? null;
     if (!$encoded) {
