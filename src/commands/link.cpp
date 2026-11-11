@@ -29,6 +29,22 @@ dpp::task<void> link_command::route(const dpp::slashcommand_t& event) {
 			.add_embed(embed)
 			.set_flags(dpp::m_ephemeral)
 		);
+
+		if (!token.empty()) {
+			try {
+				const auto first = co_await event.owner->co_direct_message_create(event.command.usr.id, dpp::message(tr("LINK_DM", event)));
+				if (first.is_error()) {
+					event.owner->log(dpp::ll_warning, "Unable to deliver link recovery instructions via DM: " + first.get_error().message);
+				} else {
+					const auto second = co_await event.owner->co_direct_message_create(event.command.usr.id, dpp::message(token));
+					if (second.is_error()) {
+						event.owner->log(dpp::ll_warning, "Unable to deliver link recovery token via DM: " + second.get_error().message);
+					}
+				}
+			} catch (const std::exception& e) {
+				event.owner->log(dpp::ll_warning, "Unable to deliver link recovery token via DM: " + std::string(e.what()));
+			}
+		}
 	} catch (const std::exception& e) {
 		event.owner->log(dpp::ll_error, "Unable to link standalone account: " + std::string(e.what()));
 		event.reply(
