@@ -129,6 +129,17 @@ dpp::task<void> paragraph::parse(player& current_player, dpp::snowflake user_id,
 			text = location[0].at("data");
 		}
 		secure_id = location[0].at("secure_id");
+		std::string audio_json = location[0].at("audio_json");
+		if (!audio_json.empty()) {
+			try {
+				const auto audio = json::parse(audio_json);
+				music = audio.value("music", "none");
+				ambience = audio.value("ambience", "none");
+			}
+			catch (...) {
+				/* Invalid audio json */
+			}
+		}
 		combat_disabled = location[0].boolean("combat_disabled");
 		magic_disabled = location[0].boolean("magic_disabled");
 		theft_disabled = location[0].boolean("theft_disabled");

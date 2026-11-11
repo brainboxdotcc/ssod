@@ -249,6 +249,16 @@ struct paragraph {
 	std::stringstream* output{nullptr};
 
 	/**
+	 * Music for the paragraph, when in app
+	 */
+	std::string music{"none"};
+
+	/**
+	 * Ambience audio for the paragraph, when in app
+	 */
+	std::string ambience{"none"};
+
+	/**
 	 * Default constructor
 	 */
 	paragraph() = default;

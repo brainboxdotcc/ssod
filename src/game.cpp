@@ -1488,7 +1488,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 	co_await quests::evaluate_all(p, event);
 
 	/* If the current paragraph is an empty page with nothing but a link, skip over it.
-	 * These link pages are old data and not relavent to gameplay. Basically just a paragraph
+	 * These link pages are old data and not relevant to gameplay. Basically just a paragraph
 	 * that says "Turn to X" which were an anti-cheat holdover from book-form content.
 	 */
 	while (location.words == 0 && !location.navigation_links.empty() && (location.navigation_links[0].type == nav_type_autolink || location.navigation_links[0].type == nav_type_link)) {
@@ -1808,6 +1808,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 
 	cb.add_component(help_button(event));
 	m = cb.get_message();
+	m.nonce = location.ambience + ";" + location.music;
 
 	if (long_response) {
 		event.edit_response(m.set_flags(dpp::m_ephemeral));
