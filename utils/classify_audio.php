@@ -97,8 +97,8 @@ function arguments(array $argv): array {
 }
 
 function configuration(): object {
-    $path = getcwd() . '/config.json';
-    if (!is_file($path)) throw new RuntimeException("Missing config.json in current working directory");
+    $path = getcwd() . '../config.json';
+    if (!is_file($path)) throw new RuntimeException("Missing config.json");
     $config = json_decode((string)file_get_contents($path), false, 512, JSON_THROW_ON_ERROR);
     if (!is_object($config) || !isset($config->database) || !is_object($config->database)) {
         throw new RuntimeException('Missing database settings in config.json');
