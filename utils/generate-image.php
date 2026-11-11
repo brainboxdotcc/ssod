@@ -117,6 +117,7 @@ INSTRUCTIONS],
         'size' => '1536x1024',
         'quality' => 'medium',
         'output_format' => 'png',
+		'moderation' => 'low',
         'n' => 1,
     ], $config->gptkey);
 
