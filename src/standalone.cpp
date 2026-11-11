@@ -7,6 +7,10 @@
 #include <mutex>
 #include <thread>
 #include <unordered_map>
+#include <openssl/rand.h>
+#include <shared_mutex>
+#include <unordered_set>
+#include <stdexcept>
 
 namespace ssod {
 namespace {
@@ -22,6 +26,9 @@ namespace {
 	std::unordered_map<uint64_t, connection_ptr> connections;
 	dpp::cluster *cluster{};
 	std::atomic<uint64_t> serial{0};
+
+	std::shared_mutex linked_users_mutex;
+	std::unordered_set<uint64_t> linked_users;
 
 	uint64_t next_id() {
 		const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -64,78 +71,190 @@ namespace {
 		}
 	}
 
-	void authenticate(const connection_ptr &conn, const std::string &token) {
-		const std::string hash = token_hash(token);
+void finish_authentication(const connection_ptr &conn, uint64_t id) {
+		if (id == 0) {
+			send_error(conn, "Invalid standalone user ID");
+			return;
+		}
 
-		db::query_callback(
-			"INSERT IGNORE INTO standalone_auth (token_hash) VALUES (?)",
-			{hash},
-			[conn, hash](const db::resultset result) {
-				if (!result.error.empty()) {
-					send_error(conn, "Registration unavailable");
-					return;
-				}
+		{
+			std::lock_guard lock(connections_mutex);
+			auto state = conn->getContext<client>();
 
-				db::query_callback(
-					"SELECT user_id FROM standalone_auth WHERE token_hash = ?",
-					{hash},
-					[conn](const db::resultset result) {
-						if (!result.error.empty() || result.rows.empty()) {
-							send_error(conn, "Authentication unavailable");
-							return;
-						}
-
-						uint64_t id;
-						try {
-							id = std::stoull(result[0].at("user_id"));
-						} catch (const std::exception &) {
-							send_error(conn, "Invalid standalone user ID");
-							return;
-						}
-
-						if (id == 0 || id > UINT32_MAX) {
-							send_error(conn, "Invalid standalone user ID");
-							return;
-						}
-
-						{
-							std::lock_guard lock(connections_mutex);
-							auto state = conn->getContext<client>();
-
-							if (!state || !state->authenticating || !conn->connected()) {
-								return;
-							}
-
-							state->user_id = id;
-							state->authenticating = false;
-							connections[id] = conn;
-						}
-
-						if (conn->connected()) {
-							conn->send(json{
-								{"type", "authenticated"},
-								{"user_id", std::to_string(id)}
-							}.dump());
-						}
-
-						standalone::input(id, {
-							{"type", 2},
-							{
-								"data", {
-									{"type", 1},
-									{"name", "start"}
-								}
-							}
-						});
-					}
-				);
+			if (!state || !state->authenticating || !conn->connected()) {
+				return;
 			}
-		);
+
+			state->user_id = id;
+			state->authenticating = false;
+			connections[id] = conn;
+		}
+
+		if (conn->connected()) {
+			conn->send(json{
+			    {"type", "authenticated"},
+			    {"user_id", std::to_string(id)}
+			}.dump());
+		}
+
+		standalone::input(id, {
+		    {"type", 2},
+		    {
+			"data", {
+			    {"type", 1},
+			    {"name", "start"}
+			}
+		    }
+		});
 	}
+
+void authenticate(const connection_ptr &conn, const std::string &token) {
+    const std::string hash = token_hash(token);
+
+    /* First check whether this is a linked Discord account */
+    db::query_callback(
+        "SELECT user_id FROM standalone_discord_auth WHERE token_hash = ?",
+        {hash},
+        [conn, hash](const db::resultset linked) {
+            if (!linked.error.empty()) {
+                send_error(conn, "Authentication unavailable");
+                return;
+            }
+
+            if (!linked.rows.empty()) {
+                try {
+                    finish_authentication(
+                        conn,
+                        std::stoull(linked[0].at("user_id"))
+                    );
+                } catch (const std::exception &) {
+                    send_error(conn, "Invalid linked user ID");
+                }
+                return;
+            }
+
+            /* Existing standalone registration and recovery path */
+            db::query_callback(
+                "INSERT IGNORE INTO standalone_auth (token_hash) VALUES (?)",
+                {hash},
+                [conn, hash](const db::resultset inserted) {
+                    if (!inserted.error.empty()) {
+                        send_error(conn, "Registration unavailable");
+                        return;
+                    }
+
+                    db::query_callback(
+                        "SELECT user_id FROM standalone_auth WHERE token_hash = ?",
+                        {hash},
+                        [conn](const db::resultset result) {
+                            if (!result.error.empty() || result.rows.empty()) {
+                                send_error(conn, "Authentication unavailable");
+                                return;
+                            }
+
+                            uint64_t id;
+
+                            try {
+                                id = std::stoull(result[0].at("user_id"));
+                            } catch (const std::exception &) {
+                                send_error(conn, "Invalid standalone user ID");
+                                return;
+                            }
+
+                            finish_authentication(conn, id);
+                        }
+                    );
+                }
+            );
+        }
+    );
+}
+
+}
+
+bool standalone::is_linked(dpp::snowflake user_id) {
+	std::shared_lock lock(linked_users_mutex);
+	return linked_users.contains(static_cast<uint64_t>(user_id));
+}
+
+bool standalone::is_connected(dpp::snowflake user_id) {
+	std::lock_guard lock(connections_mutex);
+	auto it = connections.find(static_cast<uint64_t>(user_id));
+	return it != connections.end() && it->second->connected();
+}
+
+dpp::task<std::string> standalone::link(dpp::snowflake user_id) {
+	const auto existing = co_await db::co_query(
+	    "SELECT user_id FROM standalone_discord_auth WHERE user_id = ?",
+	    {user_id}
+	);
+
+	if (!existing.error.empty()) {
+		throw std::runtime_error(existing.error);
+	}
+
+	if (!existing.empty()) {
+		co_return "";
+	}
+
+	unsigned char bytes[32];
+
+	if (RAND_bytes(bytes, sizeof(bytes)) != 1) {
+		throw std::runtime_error("Unable to generate recovery token");
+	}
+
+	static constexpr char hex[] = "0123456789abcdef";
+
+	std::string token;
+	token.reserve(64);
+
+	for (unsigned char byte : bytes) {
+		token += hex[byte >> 4];
+		token += hex[byte & 15];
+	}
+
+	const auto result = co_await db::co_query(
+	    "INSERT IGNORE INTO standalone_discord_auth (user_id, token_hash) "
+	    "VALUES (?, ?)",
+	    {user_id, token_hash(token)}
+	);
+
+	if (!result.error.empty()) {
+		throw std::runtime_error(result.error);
+	}
+
+	// Check that our token was actually inserted, rather than ignored
+	// because another /link request created the account concurrently.
+	const auto check = co_await db::co_query(
+	    "SELECT token_hash FROM standalone_discord_auth WHERE user_id = ?",
+	    {user_id}
+	);
+
+	if (!check.error.empty() || check.empty()) {
+		throw std::runtime_error("Unable to verify recovery token");
+	}
+
+	if (check[0].at("token_hash") != token_hash(token)) {
+		co_return "";
+	}
+
+	{
+		std::unique_lock lock(linked_users_mutex);
+		linked_users.insert(static_cast<uint64_t>(user_id));
+	}
+
+	co_return token;
 }
 
 void standalone::init(dpp::cluster &bot, const std::string &address, uint16_t port) {
 	cluster = &bot;
+	auto linked = db::query("SELECT user_id FROM standalone_discord_auth");
+	{
+		std::unique_lock lock(linked_users_mutex);
+		for (const auto& row : linked) {
+			linked_users.insert(std::stoull(row.at("user_id")));
+		}
+	}
 	std::thread([address, port]() {
 		dpp::utility::set_thread_name("app/ws-server");
 		drogon::app()

@@ -16,7 +16,7 @@ using post_request_fn = void (*)(dpp::request_concurrency_queue*, std::unique_pt
 
 extern "C" void ssod_post_request(dpp::request_concurrency_queue* self, std::unique_ptr<dpp::http_request> req) __asm__("_ZN3dpp25request_concurrency_queue12post_requestESt10unique_ptrINS_12http_requestESt14default_deleteIS2_EE");
 
-static uint32_t standalone_user_id(const dpp::http_request& req) {
+static uint64_t standalone_user_id(const dpp::http_request& req) {
 	const std::string_view endpoint = req.endpoint;
 	const std::string_view parameters = req.parameters;
 
@@ -39,7 +39,7 @@ static uint32_t standalone_user_id(const dpp::http_request& req) {
 	}
 
 	const auto id = parameters.substr(5, separator - 5);
-	uint32_t user_id = 0;
+	uint64_t user_id = 0;
 
 	const auto [ptr, ec] = std::from_chars(id.data(), id.data() + id.size(), user_id);
 	if (ec != std::errc{} || ptr != id.data() + id.size()) {
@@ -56,7 +56,7 @@ extern "C" void ssod_post_request(dpp::request_concurrency_queue* self, std::uni
 		std::abort();
 	}
 	if (req->parameters.starts_with("ssod_")) {
-		const uint32_t user_id = standalone_user_id(*req);
+		const uint64_t user_id = standalone_user_id(*req);
 
 		dpp::http_request_completion_t result;
 

@@ -98,7 +98,7 @@ dpp::task<void> death(player& p, component_builder& cb) {
 	p.stamina = 0;
 	p.in_pvp_picker = false;
 
-	const bool standalone = (p.event.command.usr.id >> 32) == 0;
+	const bool standalone = p.event.command.token.starts_with("ssod_");
 	time_t when = RESURRECT_SECS;
 	std::string toast;
 
