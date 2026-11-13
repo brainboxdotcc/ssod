@@ -11,3 +11,7 @@ uploads/*.jpg
 uploads/*.jpeg
 uploads/*.webm
 include/gen
+/resource/paragraph_pictures/
+/resource/profile_matrix/
+/resource/audio/
+/resource/achievements/
