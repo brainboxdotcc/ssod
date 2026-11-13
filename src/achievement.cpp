@@ -24,6 +24,8 @@
 #include <ssod/paragraph.h>
 #include <ssod/game_util.h>
 #include <ssod/database.h>
+#include <ssod/config.h>
+#include <ssod/standalone.h>
 #include <ssod/js.h>
 
 using namespace i18n;
@@ -79,5 +81,17 @@ void unlock_achievement(player& p, const db::row& achievement) {
 
 	p.add_toast(toast{ .message = "# " + tr("ACH_UNLOCK", p.event) + "\n\n" + content.str(), .image = "achievements/" + achievement.at("emoji") });
 	p.blocking_add_experience(xp_bonus);
+
+	const uint64_t steam_id = ssod::standalone::steam_id(p.event.command.usr.id);
+
+	if (steam_id && p.event.owner) {
+		const std::string key = config::get("steam_publisher_key");
+		const std::string app_id = config::get("steam_app_id");
+		p.event.owner->request(
+			"https://partner.steam-api.com/ISteamUserStats/SetUserStatsForGame/v1/", dpp::m_post,
+			{}, "key=" + key + "&steamid=" + std::to_string(steam_id) + "&appid=" + app_id + "&count=1" + "&name%5B0%5D=" + achievement.at("slug") + "&value%5B0%5D=1",
+			"application/x-www-form-urlencoded"
+		);
+	}
 }
 

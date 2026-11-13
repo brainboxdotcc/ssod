@@ -18,6 +18,7 @@ public:
 	static dpp::task<std::string> link(dpp::snowflake user_id);
 	static bool is_linked(dpp::snowflake user_id);
 	static bool is_connected(dpp::snowflake user_id);
+	static uint64_t steam_id(dpp::snowflake user_id);
 
 	void handleNewConnection(const drogon::HttpRequestPtr& request, const drogon::WebSocketConnectionPtr& connection) override;
 	void handleNewMessage(const drogon::WebSocketConnectionPtr& connection, std::string&& message, const drogon::WebSocketMessageType& type) override;

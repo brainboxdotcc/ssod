@@ -19,6 +19,7 @@ namespace {
 
 	struct client {
 		uint64_t user_id{};
+		uint64_t steam_id{};
 		bool authenticating{};
 	};
 
@@ -351,13 +352,11 @@ void standalone::output(dpp::snowflake user_id, const json &response) {
 	}
 }
 
-void standalone::handleNewConnection(const drogon::HttpRequestPtr &,
-					const connection_ptr &conn) {
+void standalone::handleNewConnection(const drogon::HttpRequestPtr &, const connection_ptr &conn) {
 	conn->setContext(std::make_shared<client>());
 }
 
-void standalone::handleNewMessage(const connection_ptr &conn, std::string &&message,
-				const drogon::WebSocketMessageType &type) {
+void standalone::handleNewMessage(const connection_ptr &conn, std::string &&message, const drogon::WebSocketMessageType &type) {
 	if (type != drogon::WebSocketMessageType::Text) {
 		return;
 	}
@@ -388,11 +387,28 @@ void standalone::handleNewMessage(const connection_ptr &conn, std::string &&mess
 			return;
 		}
 
+		uint64_t steam_id = 0;
+
+		if (payload.contains("steam_id") && payload["steam_id"].is_string()) {
+			const std::string value = payload["steam_id"].get<std::string>();
+
+			if (value.size() == 17 && value.find_first_not_of("0123456789") == std::string::npos) {
+				try {
+					steam_id = std::stoull(value);
+				} catch (const std::exception &) {
+					steam_id = 0;
+				}
+			}
+		}
+
 		{
 			std::lock_guard lock(connections_mutex);
+
 			if (state->authenticating) {
 				return;
 			}
+
+			state->steam_id = steam_id;
 			state->authenticating = true;
 		}
 
@@ -403,6 +419,7 @@ void standalone::handleNewMessage(const connection_ptr &conn, std::string &&mess
 	{
 		std::lock_guard lock(connections_mutex);
 		auto it = connections.find(user_id);
+
 		if (it == connections.end() || it->second != conn) {
 			return;
 		}
@@ -425,4 +442,19 @@ void standalone::handleConnectionClosed(const connection_ptr &conn) {
 		connections.erase(it);
 	}
 }
+
+uint64_t standalone::steam_id(dpp::snowflake user_id) {
+	std::lock_guard lock(connections_mutex);
+
+	auto it = connections.find(static_cast<uint64_t>(user_id));
+
+	if (it == connections.end() || !it->second->connected()) {
+		return 0;
+	}
+
+	auto state = it->second->getContext<client>();
+
+	return state ? state->steam_id : 0;
+}
+
 }
