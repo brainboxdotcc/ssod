@@ -83,6 +83,7 @@ void unlock_achievement(player& p, const db::row& achievement) {
 	p.blocking_add_experience(xp_bonus);
 
 	const uint64_t steam_id = ssod::standalone::steam_id(p.event.command.usr.id);
+	p.event.owner->log(dpp::ll_debug, "User steam id: " + std::to_string(steam_id));
 
 	if (steam_id && p.event.owner) {
 		const std::string key = config::get("steam_publisher_key");
