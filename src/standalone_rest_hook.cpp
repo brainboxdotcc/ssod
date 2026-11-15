@@ -12,10 +12,23 @@
 #include <ssod/ssod.h>
 #include <mutex>
 
+/**
+ * Interpose DPP's REST request queue using ELF symbol interposition
+ *
+ * App interactions pass through the normal DPP handlers, but their responses
+ * must be delivered over websocket rather than sent to Discord's REST API,
+ * all other requests are forwarded to the original DPP implementation
+ */
 using post_request_fn = void (*)(dpp::request_concurrency_queue*, std::unique_ptr<dpp::http_request>);
 
 extern "C" void ssod_post_request(dpp::request_concurrency_queue* self, std::unique_ptr<dpp::http_request> req) __asm__("_ZN3dpp25request_concurrency_queue12post_requestESt10unique_ptrINS_12http_requestESt14default_deleteIS2_EE");
 
+/**
+ * Identify synthetic app interaction responses by their ssod_ token
+ *
+ * Only interaction callbacks and webhook message routes are intercepted,
+ * the token embeds the player's user ID, used to locate their websocket
+ */
 static uint64_t standalone_user_id(const dpp::http_request& req) {
 	const std::string_view endpoint = req.endpoint;
 	const std::string_view parameters = req.parameters;
@@ -24,6 +37,9 @@ static uint64_t standalone_user_id(const dpp::http_request& req) {
 		return 0;
 	}
 
+	/* Route synthetic interaction responses to the app, preserving DPP's
+	 * completion callback so its interaction lifecycle works normally
+	 */
 	if (!parameters.starts_with("ssod_")) {
 		return 0;
 	}

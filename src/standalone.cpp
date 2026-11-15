@@ -337,7 +337,6 @@ void standalone::input(dpp::snowflake user_id, const json &payload) {
 
 void standalone::output(dpp::snowflake user_id, const json &response) {
 	connection_ptr conn;
-
 	{
 		std::lock_guard lock(connections_mutex);
 		auto it = connections.find(static_cast<uint64_t>(user_id));
@@ -346,11 +345,15 @@ void standalone::output(dpp::snowflake user_id, const json &response) {
 			conn = it->second;
 		}
 	}
-
 	if (conn && conn->connected()) {
 		conn->send(response.dump());
 	}
 }
+
+void standalone::output_message(dpp::snowflake user_id, const dpp::message &m) {
+	ssod::standalone::output(user_id, {{"type", dpp::ir_update_message}, {"data", json::parse(m.build_json())}});
+}
+
 
 void standalone::handleNewConnection(const drogon::HttpRequestPtr &, const connection_ptr &conn) {
 	conn->setContext(std::make_shared<client>());

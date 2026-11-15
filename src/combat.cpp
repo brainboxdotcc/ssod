@@ -28,6 +28,7 @@
 #include <fmt/format.h>
 #include <ssod/game.h>
 #include <ssod/achievement.h>
+#include <ssod/standalone.h>
 
 using namespace i18n;
 
@@ -144,7 +145,10 @@ dpp::task<void> update_opponent_message(const dpp::interaction_create_t& event, 
 	m.embeds[0].description += output.str();
 	if (has_active_pvp(event.command.usr.id)) {
 		player opponent = get_pvp_opponent(event.command.usr.id, event.from());
-		if (opponent.event.from()) {
+
+		if (ssod::standalone::is_connected(opponent.event.command.usr.id)) {
+			ssod::standalone::output_message(opponent.event.command.usr.id, m);
+		} else if (opponent.event.from()) {
 			auto cc = co_await opponent.event.co_edit_original_response(m);
 			if (cc.is_error()) {
 				player p = get_live_player(event, false);
