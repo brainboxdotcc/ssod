@@ -482,10 +482,9 @@ namespace db {
 			if (result) {
 				log_error(format, mysql_stmt_error(cc.st));
 				rv.error = mysql_stmt_error(cc.st);
-				//sentry::set_span_status(qspan, sentry::STATUS_INVALID_ARGUMENT);
 			} else {
 				rv.affected_rows = rows_affected = mysql_stmt_affected_rows(cc.st);
-				//sentry::set_span_status(qspan, sentry::STATUS_OK);
+				rv.insert_id = mysql_stmt_insert_id(cc.st);
 			}
 		} else {
 			/**

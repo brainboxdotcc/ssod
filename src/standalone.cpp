@@ -13,164 +13,130 @@
 #include <stdexcept>
 
 namespace ssod {
-namespace {
-	using json = nlohmann::json;
-	using connection_ptr = drogon::WebSocketConnectionPtr;
 
-	struct client {
-		uint64_t user_id{};
-		uint64_t steam_id{};
-		bool authenticating{};
-	};
+using json = nlohmann::json;
+using connection_ptr = drogon::WebSocketConnectionPtr;
 
-	std::mutex connections_mutex;
-	std::unordered_map<uint64_t, connection_ptr> connections;
-	dpp::cluster *cluster{};
-	std::atomic<uint64_t> serial{0};
+struct client {
+	uint64_t user_id{};
+	uint64_t steam_id{};
+	bool authenticating{};
+};
 
-	std::shared_mutex linked_users_mutex;
-	std::unordered_set<uint64_t> linked_users;
+std::mutex connections_mutex;
+std::unordered_map<uint64_t, connection_ptr> connections;
+dpp::cluster *cluster{};
+std::atomic<uint64_t> serial{0};
 
-	uint64_t next_id() {
-		const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		return (1ULL << 63) | ((static_cast<uint64_t>(now) & ((1ULL << 41) - 1)) << 22) | (serial.fetch_add(1, std::memory_order_relaxed) & ((1ULL << 22) - 1));
+std::shared_mutex linked_users_mutex;
+std::unordered_set<uint64_t> linked_users;
+
+uint64_t next_id() {
+	const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	return (1ULL << 63) | ((static_cast<uint64_t>(now) & ((1ULL << 41) - 1)) << 22) | (serial.fetch_add(1, std::memory_order_relaxed) & ((1ULL << 22) - 1));
+}
+
+std::string token_hash(const std::string &token) {
+	unsigned char digest[SHA256_DIGEST_LENGTH];
+	SHA256(reinterpret_cast<const unsigned char *>(token.data()), token.size(), digest);
+
+	static constexpr char hex[] = "0123456789abcdef";
+	std::string result;
+	result.reserve(SHA256_DIGEST_LENGTH * 2);
+
+	for (unsigned char c: digest) {
+		result += hex[c >> 4];
+		result += hex[c & 15];
 	}
 
-	std::string token_hash(const std::string &token) {
-		unsigned char digest[SHA256_DIGEST_LENGTH];
-		SHA256(reinterpret_cast<const unsigned char *>(token.data()), token.size(), digest);
+	return result;
+}
 
-		static constexpr char hex[] = "0123456789abcdef";
-		std::string result;
-		result.reserve(SHA256_DIGEST_LENGTH * 2);
-
-		for (unsigned char c: digest) {
-			result += hex[c >> 4];
-			result += hex[c & 15];
-		}
-
-		return result;
+bool valid_token(const std::string &token) {
+	if (token.size() != 64) {
+		return false;
 	}
 
-	bool valid_token(const std::string &token) {
-		if (token.size() != 64) {
+	for (char c: token) {
+		if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
 			return false;
 		}
-
-		for (char c: token) {
-			if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
-	void send_error(const connection_ptr &conn, const std::string &reason) {
-		if (conn->connected()) {
-			conn->send(json{{"error", reason}}.dump());
-		}
+	return true;
+}
+
+void send_error(const connection_ptr &conn, const std::string &reason) {
+	if (conn->connected()) {
+		conn->send(json{{"error", reason}}.dump());
 	}
+}
 
 void finish_authentication(const connection_ptr &conn, uint64_t id) {
-		if (id == 0) {
-			send_error(conn, "Invalid standalone user ID");
+	if (id == 0) {
+		send_error(conn, "Invalid app user ID");
+		return;
+	}
+
+	{
+		std::lock_guard lock(connections_mutex);
+		auto state = conn->getContext<client>();
+
+		if (!state || !state->authenticating || !conn->connected()) {
 			return;
 		}
 
-		{
-			std::lock_guard lock(connections_mutex);
-			auto state = conn->getContext<client>();
+		state->user_id = id;
+		state->authenticating = false;
+		connections[id] = conn;
+	}
 
-			if (!state || !state->authenticating || !conn->connected()) {
+	if (conn->connected()) {
+		conn->send(json{
+		    {"type", "authenticated"},
+		    {"user_id", std::to_string(id)}
+		}.dump());
+	}
+
+	standalone::input(id, {
+	    {"type", 2},
+	    {
+		"data", {
+		    {"type", 1},
+		    {"name", "start"}
+		}
+	    }
+	});
+}
+
+void authenticate(const connection_ptr &conn, const std::string &token) {
+	const std::string hash = token_hash(token);
+
+	/* First check whether this is a linked Discord account */
+	db::query_callback("SELECT user_id FROM standalone_discord_auth WHERE token_hash = ?", {hash},
+	[conn, hash](const db::resultset linked) {
+		if (!linked.error.empty()) {
+			send_error(conn, "Authentication unavailable");
+			return;
+		}
+
+		if (!linked.rows.empty()) {
+			finish_authentication(conn, linked[0].number<uint64_t>("user_id"));
+			return;
+		}
+
+
+		/* Existing app registration and recovery path */
+		db::query_callback("INSERT INTO standalone_auth (token_hash) VALUES (?) ON DUPLICATE KEY UPDATE user_id = LAST_INSERT_ID(user_id)", {hash},
+		[conn](const db::resultset result) {
+			if (!result.error.empty()) {
+				send_error(conn, "Authentication unavailable");
 				return;
 			}
 
-			state->user_id = id;
-			state->authenticating = false;
-			connections[id] = conn;
-		}
-
-		if (conn->connected()) {
-			conn->send(json{
-			    {"type", "authenticated"},
-			    {"user_id", std::to_string(id)}
-			}.dump());
-		}
-
-		standalone::input(id, {
-		    {"type", 2},
-		    {
-			"data", {
-			    {"type", 1},
-			    {"name", "start"}
-			}
-		    }
+			finish_authentication(conn, result.insert_id);
 		});
-	}
-
-void authenticate(const connection_ptr &conn, const std::string &token) {
-    const std::string hash = token_hash(token);
-
-    /* First check whether this is a linked Discord account */
-    db::query_callback(
-        "SELECT user_id FROM standalone_discord_auth WHERE token_hash = ?",
-        {hash},
-        [conn, hash](const db::resultset linked) {
-            if (!linked.error.empty()) {
-                send_error(conn, "Authentication unavailable");
-                return;
-            }
-
-            if (!linked.rows.empty()) {
-                try {
-                    finish_authentication(
-                        conn,
-                        std::stoull(linked[0].at("user_id"))
-                    );
-                } catch (const std::exception &) {
-                    send_error(conn, "Invalid linked user ID");
-                }
-                return;
-            }
-
-            /* Existing standalone registration and recovery path */
-            db::query_callback(
-                "INSERT IGNORE INTO standalone_auth (token_hash) VALUES (?)",
-                {hash},
-                [conn, hash](const db::resultset inserted) {
-                    if (!inserted.error.empty()) {
-                        send_error(conn, "Registration unavailable");
-                        return;
-                    }
-
-                    db::query_callback(
-                        "SELECT user_id FROM standalone_auth WHERE token_hash = ?",
-                        {hash},
-                        [conn](const db::resultset result) {
-                            if (!result.error.empty() || result.rows.empty()) {
-                                send_error(conn, "Authentication unavailable");
-                                return;
-                            }
-
-                            uint64_t id;
-
-                            try {
-                                id = std::stoull(result[0].at("user_id"));
-                            } catch (const std::exception &) {
-                                send_error(conn, "Invalid standalone user ID");
-                                return;
-                            }
-
-                            finish_authentication(conn, id);
-                        }
-                    );
-                }
-            );
-        }
-    );
-}
-
+	});
 }
 
 bool standalone::is_linked(dpp::snowflake user_id) {
@@ -340,7 +306,6 @@ void standalone::output(dpp::snowflake user_id, const json &response) {
 	{
 		std::lock_guard lock(connections_mutex);
 		auto it = connections.find(static_cast<uint64_t>(user_id));
-
 		if (it != connections.end()) {
 			conn = it->second;
 		}
@@ -394,23 +359,18 @@ void standalone::handleNewMessage(const connection_ptr &conn, std::string &&mess
 
 		if (payload.contains("steam_id") && payload["steam_id"].is_string()) {
 			const std::string value = payload["steam_id"].get<std::string>();
-
-			if (value.size() == 17 && value.find_first_not_of("0123456789") == std::string::npos) {
-				try {
-					steam_id = std::stoull(value);
-				} catch (const std::exception &) {
-					steam_id = 0;
-				}
+			try {
+				steam_id = std::stoull(value);
+			} catch (const std::exception &) {
+				steam_id = 0;
 			}
 		}
 
 		{
 			std::lock_guard lock(connections_mutex);
-
 			if (state->authenticating) {
 				return;
 			}
-
 			state->steam_id = steam_id;
 			state->authenticating = true;
 		}
@@ -422,7 +382,6 @@ void standalone::handleNewMessage(const connection_ptr &conn, std::string &&mess
 	{
 		std::lock_guard lock(connections_mutex);
 		auto it = connections.find(user_id);
-
 		if (it == connections.end() || it->second != conn) {
 			return;
 		}

@@ -46,12 +46,18 @@ namespace db {
 			}
 		}
 
-		[[nodiscard]] inline long number(const std::string& index) const {
-			return atol(at(index));
+		template<typename T = long>
+		[[nodiscard]] inline T number(const std::string& index) const {
+			static_assert(std::is_same_v<T, long> || std::is_same_v<T, unsigned long> || std::is_same_v<T, bool>);
+			if constexpr (std::is_unsigned_v<T>) {
+				return std::strtoul(at(index).c_str(), nullptr, 10);
+			} else {
+				return std::strtol(at(index).c_str(), nullptr, 10);
+			}
 		}
 
 		[[nodiscard]] inline bool boolean(const std::string& index) const {
-			return number(index);
+			return number<bool>(index);
 		}
 
 		inline void emplace(const std::string& k, const std::string& v) {
@@ -94,6 +100,11 @@ namespace db {
 		 * Number of affected rows, if an UPDATE, DELETE, INSERT
 		 */
 		size_t affected_rows{};
+
+		/**
+		 * Last insert ID for INSERT
+		 */
+		size_t insert_id{0};
 
 		/**
 		 * Get a row by index
