@@ -941,6 +941,7 @@ dpp::task<void> continue_combat(const dpp::interaction_create_t& event, player p
 		bool CombatEnded = false;
 		if (p.stamina < 1) {
 			co_await achievement_check("COMBAT_PLAYER_DEAD", event, p, {{"enemy", p.combatant.name}});
+			bot.log(dpp::ll_info, event.command.usr.id.str() + " died; lost in PvE combat on paragraph " + std::to_string(p.paragraph));
 			co_await death(p, cb);
 			p.save(event.command.usr.id);
 			update_live_player(event, p);

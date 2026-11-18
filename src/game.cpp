@@ -1493,7 +1493,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 	 * These link pages are old data and not relevant to gameplay. Basically just a paragraph
 	 * that says "Turn to X" which were an anti-cheat holdover from book-form content.
 	 */
-	while (location.words == 0 && !location.navigation_links.empty() && (location.navigation_links[0].type == nav_type_autolink || location.navigation_links[0].type == nav_type_link)) {
+	while (location.current_fragment == 0 && location.words == 0 && !location.navigation_links.empty() && (location.navigation_links[0].type == nav_type_autolink || location.navigation_links[0].type == nav_type_link)) {
 		location = co_await paragraph::create(location.navigation_links[0].paragraph, p, event.command.usr.id);
 		p.paragraph = location.id;
 	}
@@ -1667,6 +1667,7 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 				enabled_links++;
 				break;
 			case nav_type_respawn:
+				bot.log(dpp::ll_info, event.command.usr.id.str() + " died; nav_type_respawn visible on paragraph " + std::to_string(location.id));
 				co_await death(p, cb);
 				p.save(event.command.usr.id);
 				update_live_player(event, p);
@@ -1705,8 +1706,10 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 		}
 	}
 	if (enabled_links == 0 && !respawn_button_shown) {
+		bot.log(dpp::ll_info, event.command.usr.id.str() + " died; enabled_links == 0 && !respawn_button_shown paragraph " + std::to_string(location.id));
 		co_await death(p, cb);
 	} else if (p.stamina < 1) {
+		bot.log(dpp::ll_info, event.command.usr.id.str() + " died; stamina < 1; paragraph " + std::to_string(location.id));
 		co_await death(p, cb);
 	}
 
