@@ -22,6 +22,7 @@ struct client {
 	uint64_t user_id{};
 	uint64_t steam_id{};
 	bool authenticating{};
+	bool started{};
 };
 
 std::mutex connections_mutex;
@@ -449,6 +450,27 @@ void standalone::refresh_chat(uint32_t paragraph, dpp::snowflake sender, const s
 			});
 		}
 	}
+}
+
+bool standalone::first_start(dpp::snowflake user_id) {
+	std::lock_guard lock(connections_mutex);
+
+	auto it = connections.find(static_cast<uint64_t>(user_id));
+	if (it == connections.end()) {
+		return true;
+	}
+
+	auto state = it->second->getContext<client>();
+	if (!state) {
+		return true;
+	}
+
+	if (state->started) {
+		return false;
+	}
+
+	state->started = true;
+	return true;
 }
 
 }

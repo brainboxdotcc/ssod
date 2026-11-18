@@ -263,8 +263,9 @@ dpp::task<void> end_abandoned_pvp() {
 				p = end_pvp_combat(event);
 				/* To the victor go the spoils */
 				co_await opponent.add_experience(p.xp_worth());
+				p.save(event.command.usr.id);
+				opponent.save(pvp.opponent);
 				co_await send_chat(event.command.usr.id, p.paragraph, tr("RAVAGES", event), "death");
-				update_save_opponent(event, opponent);
 				co_await achievement_check("PVP_TIMEOUT", event, p);
 			}
 		}

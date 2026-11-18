@@ -124,6 +124,13 @@ public:
 	 */
 	void handleConnectionClosed(const drogon::WebSocketConnectionPtr& connection) override;
 
+	/**
+	 * @brief Returns true if the user has already started
+	 * @param user_id
+	 * @return
+	 */
+	static bool first_start(dpp::snowflake user_id);
+
 	WS_PATH_LIST_BEGIN
 	WS_PATH_ADD("/api/game");
 	WS_PATH_LIST_END
