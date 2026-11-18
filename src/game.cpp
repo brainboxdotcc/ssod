@@ -1496,8 +1496,6 @@ dpp::task<void> continue_game(const dpp::interaction_create_t& event, player p, 
 		p.paragraph = location.id;
 	}
 
-	bot.log(dpp::ll_debug, "check: " + std::to_string(location.words));
-
 	bool is_fight{};
 	for (const auto & n : location.navigation_links) {
 		if (n.type == nav_type_combat) {

@@ -30,6 +30,8 @@
 #include <ssod/neutrino_api.h>
 #include <ssod/wildcard.h>
 
+#include "ssod/standalone.h"
+
 using namespace i18n;
 
 dpp::slashcommand start_command::register_command(dpp::cluster& bot)
@@ -187,7 +189,7 @@ dpp::task<void> start_command::route(const dpp::slashcommand_t &event)
 {
 	dpp::cluster* bot = event.owner;
 
-	if (config::exists("dev") && config::get("dev") == true) {
+	if (config::exists("dev") && config::get("dev") == true && !ssod::standalone::is_connected(event.command.usr.id)) {
 		auto admin_rs = co_await db::co_query("SELECT * FROM game_admins WHERE user_id = ?", {event.command.usr.id});
 		if (admin_rs.empty()) {
 			event.reply(dpp::message("This is the development copy of Seven Spells Of Destruction. Only developers of the game may play on this instance.").set_flags(dpp::m_ephemeral));

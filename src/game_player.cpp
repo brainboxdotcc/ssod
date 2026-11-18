@@ -346,7 +346,7 @@ dpp::task<dpp::message> player::get_registration_message(dpp::cluster& cluster, 
 			.add_select_option(dpp::select_option(tr("male", event), "male").set_default(gender == "male"))
 			.add_select_option(dpp::select_option(tr("female", event), "female").set_default(gender == "female"));
 
-	co_return dpp::message()
+	dpp::message m = dpp::message()
 		.add_embed(embed)
 		.add_component(dpp::component()
 			.add_component(race_select_menu)
@@ -375,6 +375,8 @@ dpp::task<dpp::message> player::get_registration_message(dpp::cluster& cluster, 
 			)
 			.add_component(help_button(event))
 		).set_flags(dpp::m_ephemeral);
+	m.nonce = "none;dread";
+	co_return m;
 }
 
 bool player::has_herb(std::string herb_name) {
