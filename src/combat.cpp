@@ -101,8 +101,9 @@ dpp::task<void> challenge_pvp(const dpp::interaction_create_t& event, const dpp:
 		)
 	);
 	
-	//event.from->creator->message_create(m);
-	if (p2.event.from()) {
+	if (ssod::standalone::is_connected(opponent)) {
+		ssod::standalone::output_message(opponent, m);
+	} else if (p2.event.from()) {
 		p2.event.edit_original_response(m);
 	}
 }

@@ -11,6 +11,7 @@
 #include <shared_mutex>
 #include <unordered_set>
 #include <stdexcept>
+#include <ssod/game_player.h>
 
 namespace ssod {
 
@@ -417,6 +418,37 @@ uint64_t standalone::steam_id(dpp::snowflake user_id) {
 	auto state = it->second->getContext<client>();
 
 	return state ? state->steam_id : 0;
+}
+
+void standalone::refresh_chat(uint32_t paragraph, dpp::snowflake sender, const std::string& message, const std::string& event_type) {
+	std::vector<dpp::snowflake> recipients;
+
+	{
+		std::lock_guard lock(connections_mutex);
+
+		for (const auto& [user_id, conn] : connections) {
+			if (user_id != sender && conn->connected()) {
+				recipients.push_back(user_id);
+			}
+		}
+	}
+
+	for (dpp::snowflake user_id : recipients) {
+		dpp::interaction_create_t event(cluster, 0, "");
+		event.command.usr.id = user_id;
+
+		player p = get_live_player(event, false);
+
+		if (p.state == state_play && p.paragraph == paragraph) {
+			standalone::output(user_id, {
+				{"type", "chat_refresh"},
+				{"paragraph", paragraph},
+				{"event_type", event_type},
+				{"user_id", sender.str()},
+				{"message", message}
+			});
+		}
+	}
 }
 
 }

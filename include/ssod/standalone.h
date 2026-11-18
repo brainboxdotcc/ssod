@@ -87,6 +87,15 @@ public:
 	static uint64_t steam_id(dpp::snowflake user_id);
 
 	/**
+	 * @brief Force all connected app users on this paragraph to refresh their chats and pick up new chat content
+	 * @param paragraph paragraph id
+	 * @param sender sender snowflake id
+	 * @param message message raw text
+	 * @param event_type chat event type
+	 */
+	static void refresh_chat(uint32_t paragraph, dpp::snowflake sender, const std::string& message, const std::string& event_type);
+
+	/**
 	 * @brief Handle a newly established websocket connection
 	 * @param request The HTTP request initiating the connection
 	 * @param connection The newly established websocket connection

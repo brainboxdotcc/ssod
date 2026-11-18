@@ -43,6 +43,7 @@
 #include <ssod/config.h>
 #include <ssod/npc.h>
 #include <ssod/neutrino_api.h>
+#include <ssod/standalone.h>
 
 using namespace i18n;
 
@@ -60,6 +61,7 @@ dpp::task<void> send_chat(dpp::snowflake user_id, uint32_t paragraph, const std:
 		co_await db::co_query("INSERT INTO game_chat_events (event_type, user_id, location_id, message) VALUES(?,?,?,?)",
 			  {type, user_id, paragraph, dpp::utility::utf8substr(message, 0, 140)});
 	}
+	ssod::standalone::refresh_chat(paragraph, user_id, message, type);
 	co_return;
 }
 
