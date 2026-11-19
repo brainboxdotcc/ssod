@@ -428,7 +428,7 @@ void standalone::refresh_chat(uint32_t paragraph, dpp::snowflake sender, const s
 		std::lock_guard lock(connections_mutex);
 
 		for (const auto& [user_id, conn] : connections) {
-			if (user_id != sender && conn->connected()) {
+			if (conn->connected()) {
 				recipients.push_back(user_id);
 			}
 		}
