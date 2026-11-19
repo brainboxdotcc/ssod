@@ -1,1 +1,0 @@
-## Mapa regional de la ciudad del valle

@@ -33,3 +33,9 @@ The Thing passes the first, still invisible, leaving only a void of dread in its
 Where his comrade once stood now looms a Thing of shadows and despair. Vaguely humanoid, its form ripples like smoke in black water. Thousands of jagged white teeth grin from an abyssal maw, beneath two crimson eyes—vortices of hatred and hunger. The creature opens its mouth wider, and with a wet, slithering sound, a mass of iridescent tendrils lashes out.
 
 The guard has time for a fraction of a scream before the Thing pulls him into the abyss of its mouth—devouring flesh, soul, and sanity in a torment no mortal should ever endure.
+Seconds pass.
+
+The Thing glides through the heavy door the guards once protected, a package cradled beneath what might pass for an arm. Seven scrolls—tattered vellum etched with runes pulsing faintly with eldritch energy. The relics exude power, and corruption.
+
+The Thing pauses. Then, with impossible ease, it turns sharply and vanishes—passing upward, directly through the stone ceiling, scrolls and all.
+

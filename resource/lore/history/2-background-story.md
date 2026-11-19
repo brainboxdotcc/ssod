@@ -1,9 +1,3 @@
-Seconds pass.
-
-The Thing glides through the heavy door the guards once protected, a package cradled beneath what might pass for an arm. Seven scrolls—tattered vellum etched with runes pulsing faintly with eldritch energy. The relics exude power, and corruption.
-
-The Thing pauses. Then, with impossible ease, it turns sharply and vanishes—passing upward, directly through the stone ceiling, scrolls and all.
-
 Moments later, a scream tears through the void. A sound of agony, fury, and denial. The Thing is being pulled back—banished by a force it did not expect. It howls as it is ripped away, flung through the fabric of reality to a place far from here. The scrolls, once gripped tightly, slip loose and vanish into the darkness.
 
 One by one, the seven ancient scrolls fall out of the aether, scattered across Utopia—each landing hundreds of miles apart, unseen, untouched, unknowable.

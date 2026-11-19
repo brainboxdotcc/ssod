@@ -1,1 +1,0 @@
-## Regionální mapa města Valley

@@ -1,1 +1,0 @@
-## Mapa regionalna miasta Valley
