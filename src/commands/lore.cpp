@@ -131,10 +131,22 @@ void page(const dpp::interaction_create_t& event, bool document, std::string pat
 		});
 
 		m = cb.get_message();
-		for (const auto& ext : std::array<std::string, 3>{"webp", "png", "jpg"}) {
-			std::string image_file = replace_string(path, ".md", "") + "." + ext;
-			if (fs::exists(image_file)) {
-				embed.set_image("https://images.ssod.org/" + image_file);
+		std::string image_path = replace_string(path, ".md", "");
+		std::string fallback_path = image_path;
+		if (isdigit(label[0]) && label.find('-') != std::string::npos) {
+			fallback_path = image_path.substr(0, image_path.find_last_of('/') + 1) + label.substr(label.find('-') + 1, label.find(".md") - label.find('-') - 1);
+		}
+		for (const auto& base : {image_path, fallback_path}) {
+			bool found = false;
+			for (const auto& ext : std::array<std::string, 3>{"webp", "png", "jpg"}) {
+				std::string image_file = base + "." + ext;
+				if (fs::exists(image_file)) {
+					embed.set_image("https://images.ssod.org/" + image_file);
+					found = true;
+					break;
+				}
+			}
+			if (found) {
 				break;
 			}
 		}
