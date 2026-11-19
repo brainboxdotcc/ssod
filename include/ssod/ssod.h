@@ -174,3 +174,4 @@ namespace i18n {
 
 };
 
+dpp::cluster& get_bot(dpp::cluster* bot = nullptr);

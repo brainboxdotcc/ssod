@@ -18,11 +18,20 @@ namespace ssod {
 using json = nlohmann::json;
 using connection_ptr = drogon::WebSocketConnectionPtr;
 
+enum app_source_t {
+	src_web,
+	src_android,
+	src_apple,
+	src_steam,
+	src_windows,
+};
+
 struct client {
 	uint64_t user_id{};
 	uint64_t steam_id{};
 	bool authenticating{};
 	bool started{};
+	app_source_t source{src_web};
 };
 
 std::mutex connections_mutex;
@@ -32,6 +41,17 @@ std::atomic<uint64_t> serial{0};
 
 std::shared_mutex linked_users_mutex;
 std::unordered_set<uint64_t> linked_users;
+
+const char *source_name(app_source_t source) {
+	switch (source) {
+		case src_web: return "web";
+		case src_android: return "android";
+		case src_apple: return "ios";
+		case src_steam: return "steam";
+		case src_windows: return "windows";
+	}
+	return "unknown";
+}
 
 uint64_t next_id() {
 	const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -91,6 +111,7 @@ void finish_authentication(const connection_ptr &conn, uint64_t id) {
 		state->user_id = id;
 		state->authenticating = false;
 		connections[id] = conn;
+		get_bot().log(dpp::ll_info, "App login from user id: " + std::to_string(id) + "; source: " + source_name(state->source));
 	}
 
 	if (conn->connected()) {
@@ -368,6 +389,20 @@ void standalone::handleNewMessage(const connection_ptr &conn, std::string &&mess
 			}
 		}
 
+		app_source_t source{src_web};
+		if (payload.contains("platform") && payload["platform"].is_string()) {
+			const std::string platform = payload["platform"].get<std::string>();
+			if (platform == "android") {
+				source = src_android;
+			} else if (platform == "ios") {
+				source = src_apple;
+			} else if (platform == "steam") {
+				source = src_steam;
+			} else if (platform == "windows") {
+				source = src_windows;
+			}
+		}
+
 		{
 			std::lock_guard lock(connections_mutex);
 			if (state->authenticating) {
@@ -375,6 +410,7 @@ void standalone::handleNewMessage(const connection_ptr &conn, std::string &&mess
 			}
 			state->steam_id = steam_id;
 			state->authenticating = true;
+			state->source = source;
 		}
 
 		authenticate(conn, payload["token"].get<std::string>());

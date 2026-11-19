@@ -29,6 +29,16 @@
 #include <ssod/lang.h>
 #include <ssod/standalone.h>
 
+dpp::cluster& get_bot(dpp::cluster* bot) {
+	static dpp::cluster* instance = nullptr;
+
+	if (bot) {
+		instance = bot;
+	}
+
+	return *instance;
+}
+
 int main(int argc, char const *argv[]) {
 	std::setlocale(LC_ALL, "en_GB.UTF-8");
 
@@ -45,6 +55,7 @@ int main(int argc, char const *argv[]) {
 		true,
 		dpp::cache_policy::cpol_none
 	);
+	get_bot(&bot);
 
 	//sentry::init(bot);
 	i18n::load_lang(bot);
