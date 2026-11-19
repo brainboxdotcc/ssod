@@ -33,7 +33,7 @@ dpp::task<bool> npc_chat(const dpp::interaction_create_t& event, player& p, cons
 	}
 
 	db::row selected_npc;
-	bool chosen = true;
+	bool chosen = false;
 	for (const auto& npc : npcs) {
 		std::string npc_flags = npc.at("flags");
 		if (npc_flags.empty()) {
