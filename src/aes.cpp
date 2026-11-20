@@ -73,7 +73,11 @@ void aes256_cbc::encrypt(const std::vector<uint8_t>& key, const std::vector<uint
 }
 
 void aes256_cbc::decrypt(const std::vector<uint8_t>& key, const std::vector<uint8_t>& message, std::vector<uint8_t>& output) const {
-	output.resize(message.size() * 3);
+	output.clear();
+	if (key.size() != 32 || iv.size() != AES_BLOCK_SIZE || message.empty() || message.size() % AES_BLOCK_SIZE != 0) {
+		return;
+	}
+	output.resize(message.size() + AES_BLOCK_SIZE);
 	int outlen = 0;
 	size_t total_out = 0;
 
@@ -87,12 +91,17 @@ void aes256_cbc::decrypt(const std::vector<uint8_t>& key, const std::vector<uint
 
 	int inlen = (int)target_message.size();
 
-	EVP_DecryptInit(ctx.get(), EVP_aes_256_cbc(), enc_key.data(), _iv.data());
-	EVP_DecryptUpdate(ctx.get(), output.data(), &outlen, target_message.data(), inlen);
+	if (!ctx || EVP_DecryptInit_ex(ctx.get(), EVP_aes_256_cbc(), nullptr, enc_key.data(), _iv.data()) != 1 ||
+		EVP_DecryptUpdate(ctx.get(), output.data(), &outlen, target_message.data(), inlen) != 1) {
+		output.clear();
+		return;
+	}
 	total_out += outlen;
-	EVP_DecryptFinal(ctx.get(), output.data()+outlen, &outlen);
+	if (EVP_DecryptFinal_ex(ctx.get(), output.data() + total_out, &outlen) != 1) {
+		output.clear();
+		return;
+	}
 	total_out += outlen;
-
 	output.resize(total_out);
 }
 
@@ -170,20 +179,52 @@ namespace security {
 	}
 
 	std::string decrypt(const std::string& text) {
-		std::string temporal_key{text.substr(0, 4)};
-		std::string ciphertext{text.substr(4, text.length() - 4)};
+		/* Four-character key prefix, followed by padded Base64 AES blocks. */
+		if (text.size() < 28 || text.size() > 100) {
+			return "";
+		}
+		const std::string temporal_key = text.substr(0, 4);
+		const std::string ciphertext = text.substr(4);
+		if (ciphertext.size() % 4 != 0) {
+			return "";
+		}
+		for (char c : temporal_key) {
+			if (c < 'A' || c > 'Z') {
+				return "";
+			}
+		}
+		const size_t padding = (ciphertext.back() == '=') + (ciphertext.size() > 1 && ciphertext[ciphertext.size() - 2] == '=');
+		for (size_t i = 0; i < ciphertext.size(); ++i) {
+			const unsigned char c = static_cast<unsigned char>(ciphertext[i]);
+			if (i >= ciphertext.size() - padding) {
+				if (c != '=') return "";
+			} else if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '+' || c == '/')) {
+				return "";
+			}
+		}
+		const size_t decoded_length = ciphertext.size() / 4 * 3 - padding;
+		if (decoded_length == 0 || decoded_length % AES_BLOCK_SIZE != 0) {
+			return "";
+		}
 		std::vector<uint8_t> dec_result;
 		std::string key = config::get("encryption")["key"];
+		if (key.size() != 32 || !enc) {
+			return "";
+		}
 		for (size_t x = 0; x != 4; ++x) {
 			key[x * 4] ^= temporal_key[x];
 		}
 		std::string decoded = b64decode(ciphertext.data(), ciphertext.length());
-		enc->decrypt(str_to_bytes(key), str_to_bytes(decoded), dec_result);
-		try {
-			return zlib::decompress(bytes_to_str(dec_result));
+		if (decoded.size() != decoded_length) {
+			return "";
 		}
-		catch (const std::exception&) {
-			/* Decompression failure, invalid encrypted ID */
+		enc->decrypt(str_to_bytes(key), str_to_bytes(decoded), dec_result);
+		if (dec_result.empty()) {
+			return "";
+		}
+		try {
+			return zlib::decompress(bytes_to_str(dec_result), 4096);
+		} catch (const std::exception&) {
 			return "";
 		}
 	}

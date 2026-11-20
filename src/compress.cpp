@@ -55,7 +55,7 @@ std::string zlib::compress(const std::string& str, int compressionlevel) {
 	return outstring;
 }
 
-std::string zlib::decompress(const std::string& str) {
+std::string zlib::decompress(const std::string& str, size_t max_output) {
 	z_stream zs;
 	std::memset(&zs, 0, sizeof(zs));
 
@@ -74,15 +74,20 @@ std::string zlib::decompress(const std::string& str) {
 		zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
 		zs.avail_out = sizeof(outbuffer);
 		ret = inflate(&zs, 0);
+		if (max_output && zs.total_out > max_output) {
+			inflateEnd(&zs);
+			throw std::runtime_error("Decompressed data exceeds limit");
+		}
 		if (outstring.size() < zs.total_out) {
 			outstring.append(outbuffer, zs.total_out - outstring.size());
 		}
 	} while (ret == Z_OK);
 
+	const std::string error = zs.msg ? zs.msg : "inflate failed";
 	inflateEnd(&zs);
 
 	if (ret != Z_STREAM_END) {
-		throw std::runtime_error(zs.msg);
+		throw std::runtime_error(error);
 	}
 
 	return outstring;

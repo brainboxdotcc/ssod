@@ -19,6 +19,7 @@
  ************************************************************************************/
 #pragma once
 #include <string>
+#include <cstddef>
 
 /**
  * @brief Simple zlib wrapper for compressing and decompressing strings
@@ -38,5 +39,5 @@ struct zlib {
 	 * @param str String to decompress
 	 * @return std::string Decompressed string
 	 */
-	static std::string decompress(const std::string& str);
+	static std::string decompress(const std::string& str, size_t max_output = 0);
 };
