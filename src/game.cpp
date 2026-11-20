@@ -224,10 +224,10 @@ dpp::task<void> add_chat(std::string& text, const dpp::interaction_create_t& eve
 			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {}\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("player_name")), tr("LEAVES", event));
 		} else  if (row.at("event_type") == "drop") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("player_name"), tr("DROPS", event), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("player_name"), tr("DROPS", event), std::string("aeiou").find(item.empty() ? 0 : tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
 		} else  if (row.at("event_type") == "pickup") {
 			std::string item = row.at("message");
-			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m picks up {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("player_name"), std::string("aeiou").find(tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
+			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m picks up {} \033[2;34m{}\033[0m\n", row.at("message_time"), row.at("player_name"), std::string("aeiou").find(item.empty() ? 0 : tolower(item[0])) != std::string::npos ? "an" : "a", dpp::utility::markdown_escape(item));
 		} else  if (row.at("event_type") == "combat") {
 			std::string item = row.at("message");
 			text += fmt::format("\033[2;31m[{}]\033[0m *** \033[2;34m{}\033[0m {} \033[2;34m{}\033[0m to combat!\n", row.at("message_time"), dpp::utility::markdown_escape(row.at("player_name")), tr("CHALLENGES", event), dpp::utility::markdown_escape(row.at("message")), tr("TO_COMBAT", event));
@@ -267,7 +267,7 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 			co_await achievement_check("BANK_DEPOSIT_GOLD", event, p, {{"amount", std::to_string(amount)}});
 		}
 		claimed = true;
-	} else if (parts[0] == "answer" && p.stamina > 0 && !p.in_bank && !p.in_inventory) {
+	} else if (parts.size() >= 4 && parts[0] == "answer" && p.stamina > 0 && !p.in_bank && !p.in_inventory) {
 		// id = "answer;" + std::to_string(n.paragraph) + ";" + n.prompt + ";" + n.answer + ";" + std::to_string(++unique);		
 		std::string entered_answer = std::get<std::string>(event.components[0].value);
 		if (dpp::lowercase(entered_answer) == dpp::lowercase(parts[3])) {
@@ -351,6 +351,9 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 	//sentry::make_new_transaction("component/select/" + custom_id);
 	if (custom_id == "withdraw" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.empty()) {
+			co_return;
+		}
 		if (parts.size() < 2) {
 			parts.emplace_back("[none]");
 		}
@@ -364,6 +367,9 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		claimed = true;
 	} else if (custom_id == "deposit" && p.in_bank && !event.values.empty()) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.empty()) {
+			co_return;
+		}
 		std::string flags = "";
 		if (parts.size() >= 2) {
 			flags = parts[1];
@@ -402,8 +408,11 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		claimed = true;
 	} else if (custom_id == "cast" && !event.values.empty() && p.in_grimoire && !p.in_combat && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.empty()) {
+			co_return;
+		}
 		spell_info si = get_spell_info(parts[0]);
-		if (!parts.empty() && p.has_spell(parts[0]) && p.has_component_herb(parts[0]) && p.mana >= si.mana_cost) {
+		if (p.has_spell(parts[0]) && p.has_component_herb(parts[0]) && p.mana >= si.mana_cost) {
 			p.add_mana(-si.mana_cost);
 			auto effect = co_await db::co_query("SELECT * FROM passive_effect_types WHERE type = 'Spell' AND requirements = ?", {parts[0]});
 			if (!effect.empty()) {
@@ -442,6 +451,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 				);
 				if (meat.empty()) {
 					bot.log(dpp::ll_debug, event.command.usr.id.str() + ": player lacks ingredients for '" + parts[0] + "'; lag, bug, or hack attempt");
+					co_return;
 				}
 				p.drop_possession(item{ .name = meat[0].at("item_desc"), .flags = "[none]"});
 			} else {
@@ -542,7 +552,7 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		claimed = true;
 	} else if (custom_id == "equip_item" && !event.values.empty() && p.in_inventory && p.stamina > 0) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
-		if (parts.size() >= 2 && p.has_possession(parts[0])) {
+		if (parts.size() >= 2 && !parts[1].empty() && p.has_possession(parts[0])) {
 			co_await achievement_check("EQUIP_ITEM", event, p, {{"name", parts[0]},{"rating", parts[1]}});
 			if (parts[1][0] == 'W') {
 				std::string rating = parts[1].substr(1, parts[1].length());
@@ -555,6 +565,9 @@ dpp::task<void> game_select(const dpp::select_click_t &event) {
 		claimed = true;
 	} else if (custom_id == "sell" && !p.in_inventory && !p.in_bank && !event.values.empty() && !p.in_combat) {
 		std::vector<std::string> parts = dpp::utility::tokenize(event.values[0], ";");
+		if (parts.empty()) {
+			co_return;
+		}
 		sale_info s = co_await get_sale_info(parts[0]);
 		if (p.has_possession(parts[0]) && s.sellable && !s.quest_item && dpp::lowercase(parts[0]) != "scroll") {
 			if (p.armour.name == parts[0]) {
@@ -604,6 +617,9 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 	}
 	event.owner->log(dpp::ll_debug, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id);
 	std::vector<std::string> parts = dpp::utility::tokenize(custom_id, ";");
+	if (parts.empty()) {
+		co_return;
+	}
 	if (p.in_combat) {
 		if (co_await combat_nav(event, p, parts)) {
 			co_return;
@@ -773,7 +789,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		};
 		co_await achievement_check("COMBAT", event, p, {{"enemy", {{"name", monster_name}, {"stamina", parts[3]}, {"skill", parts[3]}, {"armour", parts[3]}, {"weapon", parts[3]}}}});
 		claimed = true;
-	} else if (parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
+	} else if (parts.size() >= 2 && parts[0] == "bank" && !p.in_combat && !p.in_inventory) {
 		if (p.paragraph != atol(parts[1])) {
 			bot.log(dpp::ll_warning, event.command.locale + " " + std::to_string(event.command.usr.id) + ": " + custom_id + " INVALID BANK FROM " + std::to_string(p.paragraph) + " TO " + parts[1]);
 			co_return;
@@ -781,7 +797,7 @@ dpp::task<void> game_nav(const dpp::button_click_t& event) {
 		co_await achievement_check("ENTER_BANK", event, p, {});
 		p.in_bank = true;
 		claimed = true;
-	} else if (parts[0] == "answer" && !p.in_combat && !p.in_inventory) {
+	} else if (parts.size() >= 3 && parts[0] == "answer" && !p.in_combat && !p.in_inventory) {
 		dpp::interaction_modal_response modal(security::encrypt(custom_id), parts[2], {
 			dpp::component()
 			.set_label(parts[2])
