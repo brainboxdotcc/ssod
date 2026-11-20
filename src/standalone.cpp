@@ -12,6 +12,7 @@
 #include <shared_mutex>
 #include <unordered_set>
 #include <stdexcept>
+#include <ssod/aes.h>
 #include <ssod/game_player.h>
 
 namespace ssod {
@@ -258,6 +259,62 @@ void standalone::init(dpp::cluster &bot, const std::string &address, uint16_t po
 	}).detach();
 }
 
+void sign_custom_ids(json &value) {
+	if (value.is_array()) {
+		for (auto &child : value) {
+			sign_custom_ids(child);
+		}
+		return;
+	}
+
+	if (!value.is_object()) {
+		return;
+	}
+
+	for (auto &[key, child] : value.items()) {
+		if (key == "custom_id" && child.is_string()) {
+			child = security::sign(child.get<std::string>());
+		} else {
+			sign_custom_ids(child);
+		}
+	}
+}
+
+bool verify_custom_ids(json &value) {
+	if (value.is_array()) {
+		for (auto &child : value) {
+			if (!verify_custom_ids(child)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	if (!value.is_object()) {
+		return true;
+	}
+
+	for (auto &[key, child] : value.items()) {
+		if (key == "custom_id") {
+			if (!child.is_string()) {
+				return false;
+			}
+
+			const std::string unsigned_id = security::verify_signed(child.get<std::string>());
+
+			if (unsigned_id.empty()) {
+				return false;
+			}
+
+			child = unsigned_id;
+		} else if (!verify_custom_ids(child)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void standalone::input(dpp::snowflake user_id, const json &payload) {
 	if (!cluster || !payload.is_object() || !payload.contains("type") || !payload["type"].is_number_integer() || !payload.contains("data") || !payload["data"].is_object()) {
 		return;
@@ -277,8 +334,16 @@ void standalone::input(dpp::snowflake user_id, const json &payload) {
 		if (!data.contains("custom_id") || !data["custom_id"].is_string() || !data.contains("component_type") || !data["component_type"].is_number_integer()) {
 			return;
 		}
+
+		if (!verify_custom_ids(data)) {
+			return;
+		}
 	} else {
 		if (!data.contains("custom_id") || !data["custom_id"].is_string() || !data.contains("components") || !data["components"].is_array()) {
+			return;
+		}
+
+		if (!verify_custom_ids(data)) {
 			return;
 		}
 	}
@@ -329,15 +394,20 @@ void standalone::input(dpp::snowflake user_id, const json &payload) {
 
 void standalone::output(dpp::snowflake user_id, const json &response) {
 	connection_ptr conn;
+
 	{
 		std::lock_guard lock(connections_mutex);
 		auto it = connections.find(static_cast<uint64_t>(user_id));
+
 		if (it != connections.end()) {
 			conn = it->second;
 		}
 	}
+
 	if (conn && conn->connected()) {
-		conn->send(response.dump());
+		json signed_response = response;
+		sign_custom_ids(signed_response);
+		conn->send(signed_response.dump());
 	}
 }
 

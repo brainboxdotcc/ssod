@@ -24,7 +24,12 @@
 #include <ssod/compress.h>
 #include <vector>
 #include <memory>
-
+#include <cstdint>
+#include <ctime>
+#include <openssl/hmac.h>
+#include <openssl/crypto.h>
+#include <openssl/sha.h>
+#include <openssl/rand.h>
 #include <openssl/aes.h>
 #include <openssl/evp.h>
 
@@ -148,6 +153,73 @@ const std::string b64decode(const void* data, size_t len) {
 namespace security {
 	std::unique_ptr<aes256_cbc> enc{};
 	dpp::cluster* bot{nullptr};
+	static constexpr uint32_t temporal_epoch = 1793491200;
+	static constexpr uint32_t temporal_mask = 0xFFFFFF;
+	static constexpr uint32_t temporal_lifetime = 300;
+
+	static std::string make_temporal_key() {
+		const uint32_t timestamp = static_cast<uint32_t>(std::time(nullptr) - temporal_epoch) & temporal_mask;
+
+		uint8_t random = 0;
+		if (RAND_bytes(&random, sizeof(random)) != 1) {
+			throw std::runtime_error("Unable to generate temporal key");
+		}
+
+		/*
+		 * Eight nibbles, each containing three timestamp bits
+		 * and one random bit.
+		 *
+		 * This gives 24 timestamp bits and 8 random bits.
+		 */
+		uint32_t value = 0;
+
+		for (unsigned int i = 0; i < 8; ++i) {
+			value |= ((timestamp >> (i * 3)) & 7u) << (i * 4 + 1);
+			value |= ((static_cast<uint32_t>(random) >> i) & 1u) << (i * 4);
+		}
+
+		std::string result(4, '\0');
+
+		for (unsigned int i = 0; i < 4; ++i) {
+			result[i] = static_cast<char>((value >> (24 - i * 8)) & 0xFF);
+		}
+
+		return result;
+	}
+
+	static uint32_t temporal_timestamp(const std::string& temporal_key) {
+		uint32_t value = 0;
+
+		for (unsigned int i = 0; i < 4; ++i) {
+			value = (value << 8) | static_cast<uint8_t>(temporal_key[i]);
+		}
+
+		uint32_t timestamp = 0;
+
+		for (unsigned int i = 0; i < 8; ++i) {
+			timestamp |= ((value >> (i * 4 + 1)) & 7u) << (i * 3);
+		}
+
+		return timestamp;
+	}
+
+	static bool valid_temporal_key(const std::string& temporal_key) {
+		if (temporal_key.size() != 4) {
+			return false;
+		}
+
+		const std::time_t now = std::time(nullptr);
+
+		if (now < temporal_epoch) {
+			return false;
+		}
+
+		const uint32_t current = static_cast<uint32_t>(now - temporal_epoch) & temporal_mask;
+		const uint32_t timestamp = temporal_timestamp(temporal_key);
+		const uint32_t age = (current - timestamp) & temporal_mask;
+
+		return age <= temporal_lifetime;
+	}
 
 	std::string random_string(size_t len) {
 		std::string out;
@@ -166,66 +238,170 @@ namespace security {
 	std::string encrypt(const std::string& text) {
 		std::vector<uint8_t> enc_result;
 		std::string key = config::get("encryption")["key"];
-		std::string temporal_key = random_string(4);
+		std::string temporal_key = make_temporal_key();
+
 		for (size_t x = 0; x != 4; ++x) {
 			key[x * 4] ^= temporal_key[x];
 		}
-		enc->encrypt(str_to_bytes(key), str_to_bytes(zlib::compress(text)), enc_result);
-		std::string r = temporal_key + dpp::base64_encode(enc_result.data(), enc_result.size());
+
+		/*
+		 * The temporal key is repeated inside the encrypted content.
+		 * Decryption must confirm that the inner and outer values match.
+		 */
+		enc->encrypt(str_to_bytes(key), str_to_bytes(zlib::compress(temporal_key + text)), enc_result);
+
+		/*
+		 * Base64 encode the complete binary packet:
+		 *
+		 * [4-byte temporal key][AES ciphertext]
+		 */
+		const std::string packet = temporal_key + bytes_to_str(enc_result);
+		const std::string r = dpp::base64_encode(reinterpret_cast<const uint8_t*>(packet.data()), packet.size());
+
 		if (r.length() > 100) {
 			bot->log(dpp::ll_error, "Encrypted component ID [" + text + "] is longer than 100 characters and will not fit in the ID field!");
 		}
+
 		return r;
 	}
 
 	std::string decrypt(const std::string& text) {
-		/* Four-character key prefix, followed by padded Base64 AES blocks. */
-		if (text.size() < 28 || text.size() > 100) {
+		/*
+		 * Entire packet is Base64:
+		 *
+		 * [4-byte temporal key][AES ciphertext]
+		 */
+		if (text.size() < 28 || text.size() > 100 || text.size() % 4 != 0) {
 			return "";
 		}
-		const std::string temporal_key = text.substr(0, 4);
-		const std::string ciphertext = text.substr(4);
-		if (ciphertext.size() % 4 != 0) {
-			return "";
-		}
-		for (char c : temporal_key) {
-			if (c < 'A' || c > 'Z') {
-				return "";
-			}
-		}
-		const size_t padding = (ciphertext.back() == '=') + (ciphertext.size() > 1 && ciphertext[ciphertext.size() - 2] == '=');
-		for (size_t i = 0; i < ciphertext.size(); ++i) {
-			const unsigned char c = static_cast<unsigned char>(ciphertext[i]);
-			if (i >= ciphertext.size() - padding) {
-				if (c != '=') return "";
+
+		const size_t padding = (text.back() == '=') + (text.size() > 1 && text[text.size() - 2] == '=');
+
+		for (size_t i = 0; i < text.size(); ++i) {
+			const unsigned char c = static_cast<unsigned char>(text[i]);
+
+			if (i >= text.size() - padding) {
+				if (c != '=') {
+					return "";
+				}
 			} else if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '+' || c == '/')) {
 				return "";
 			}
 		}
-		const size_t decoded_length = ciphertext.size() / 4 * 3 - padding;
-		if (decoded_length == 0 || decoded_length % AES_BLOCK_SIZE != 0) {
+
+		const size_t decoded_length = text.size() / 4 * 3 - padding;
+
+		if (decoded_length < 4 + AES_BLOCK_SIZE || (decoded_length - 4) % AES_BLOCK_SIZE != 0) {
 			return "";
 		}
-		std::vector<uint8_t> dec_result;
+
+		const std::string packet = b64decode(text.data(), text.length());
+
+		if (packet.size() != decoded_length) {
+			return "";
+		}
+
+		const std::string temporal_key = packet.substr(0, 4);
+
+		if (!valid_temporal_key(temporal_key)) {
+			return "";
+		}
+
 		std::string key = config::get("encryption")["key"];
+
 		if (key.size() != 32 || !enc) {
 			return "";
 		}
+
 		for (size_t x = 0; x != 4; ++x) {
 			key[x * 4] ^= temporal_key[x];
 		}
-		std::string decoded = b64decode(ciphertext.data(), ciphertext.length());
-		if (decoded.size() != decoded_length) {
-			return "";
-		}
-		enc->decrypt(str_to_bytes(key), str_to_bytes(decoded), dec_result);
+
+		const std::string ciphertext = packet.substr(4);
+		std::vector<uint8_t> dec_result;
+
+		enc->decrypt(str_to_bytes(key), str_to_bytes(ciphertext), dec_result);
+
 		if (dec_result.empty()) {
 			return "";
 		}
+
 		try {
-			return zlib::decompress(bytes_to_str(dec_result), 4096);
+			const std::string plaintext = zlib::decompress(bytes_to_str(dec_result), 4096);
+
+			/*
+			 * The timestamp/random bytes inside the ciphertext
+			 * must match the outer temporal key exactly.
+			 */
+			if (plaintext.size() < 4 || plaintext.compare(0, 4, temporal_key) != 0) {
+				return "";
+			}
+
+			return plaintext.substr(4);
 		} catch (const std::exception&) {
 			return "";
 		}
+	}
+
+static std::string hmac_key() {
+		const std::string key = config::get("encryption")["key"];
+		static constexpr char purpose[] = "ssod-app-custom-id-v1";
+
+		unsigned char digest[EVP_MAX_MD_SIZE];
+		unsigned int length = 0;
+
+		if (!HMAC(EVP_sha256(), key.data(), static_cast<int>(key.size()), reinterpret_cast<const unsigned char*>(purpose), sizeof(purpose) - 1, digest, &length)) {
+			return "";
+		}
+
+		return std::string(reinterpret_cast<const char*>(digest), length);
+	}
+
+	std::string sign(const std::string& id) {
+		const std::string key = hmac_key();
+
+		if (key.empty()) {
+			return "";
+		}
+
+		unsigned char digest[EVP_MAX_MD_SIZE];
+		unsigned int length = 0;
+
+		if (!HMAC(EVP_sha256(), key.data(), static_cast<int>(key.size()), reinterpret_cast<const unsigned char*>(id.data()), id.size(), digest, &length)) {
+			return "";
+		}
+
+		static constexpr char hex[] = "0123456789abcdef";
+
+		std::string result = id + ".";
+		result.reserve(id.size() + 1 + length * 2);
+
+		for (unsigned int i = 0; i < length; ++i) {
+			result += hex[digest[i] >> 4];
+			result += hex[digest[i] & 15];
+		}
+
+		return result;
+	}
+
+	std::string verify_signed(const std::string& id) {
+		const size_t separator = id.rfind('.');
+
+		if (separator == std::string::npos || separator == 0 || id.size() - separator - 1 != SHA256_DIGEST_LENGTH * 2) {
+			return "";
+		}
+
+		const std::string unsigned_id = id.substr(0, separator);
+		const std::string expected = sign(unsigned_id);
+
+		if (expected.empty() || expected.size() != id.size()) {
+			return "";
+		}
+
+		if (CRYPTO_memcmp(expected.data(), id.data(), id.size()) != 0) {
+			return "";
+		}
+
+		return unsigned_id;
 	}
 };

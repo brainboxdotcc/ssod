@@ -82,4 +82,15 @@ namespace security {
 	 * @return std::string output decrypted content
 	 */
 	std::string decrypt(const std::string& text);
+
+	/**
+	 * @brief Add an HMAC-SHA256 signature to an encrypted custom ID for app delivery.
+	 */
+	std::string sign(const std::string& id);
+
+	/**
+	 * @brief Verify an app custom ID and return the original encrypted ID.
+	 * @return Empty string if the signature is missing or invalid.
+	 */
+	std::string verify_signed(const std::string& id);
 };
