@@ -245,6 +245,9 @@ dpp::task<void> game_input(const dpp::form_submit_t & event) {
 	player p = get_live_player(event);
 	dpp::cluster& bot = *(event.owner);
 	bool claimed{true};
+	if (event.components.empty() || !std::holds_alternative<std::string>(event.components[0].value)) {
+		co_return;
+	}
 	std::string custom_id = security::decrypt(event.custom_id);
 	if (custom_id.empty()) {
 		co_return;

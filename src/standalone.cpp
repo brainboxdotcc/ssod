@@ -3,6 +3,7 @@
 #include <dpp/dispatcher.h>
 #include <openssl/sha.h>
 #include <atomic>
+#include <algorithm>
 #include <chrono>
 #include <mutex>
 #include <thread>
@@ -31,6 +32,8 @@ struct client {
 	uint64_t steam_id{};
 	bool authenticating{};
 	bool started{};
+	std::chrono::steady_clock::time_point last_interaction{std::chrono::steady_clock::now()};
+	double interaction_tokens{10.0};
 	app_source_t source{src_web};
 };
 
@@ -345,10 +348,29 @@ void standalone::output_message(dpp::snowflake user_id, const dpp::message &m) {
 
 void standalone::handleNewConnection(const drogon::HttpRequestPtr &, const connection_ptr &conn) {
 	conn->setContext(std::make_shared<client>());
+	std::weak_ptr<drogon::WebSocketConnection> weak_conn = conn;
+	drogon::app().getLoop()->runAfter(10.0, [weak_conn]() {
+		if (auto pending = weak_conn.lock()) {
+			auto state = pending->getContext<client>();
+			bool unauthenticated = false;
+			{
+				std::lock_guard lock(connections_mutex);
+				unauthenticated = state && !state->user_id;
+			}
+			if (unauthenticated && pending->connected()) {
+				pending->shutdown();
+			}
+		}
+	});
 }
 
 void standalone::handleNewMessage(const connection_ptr &conn, std::string &&message, const drogon::WebSocketMessageType &type) {
 	if (type != drogon::WebSocketMessageType::Text) {
+		return;
+	}
+
+	if (message.size() > 16384) {
+		conn->shutdown();
 		return;
 	}
 
@@ -423,6 +445,14 @@ void standalone::handleNewMessage(const connection_ptr &conn, std::string &&mess
 		if (it == connections.end() || it->second != conn) {
 			return;
 		}
+		const auto now = std::chrono::steady_clock::now();
+		const double elapsed = std::chrono::duration<double>(now - state->last_interaction).count();
+		state->interaction_tokens = std::min(10.0, state->interaction_tokens + elapsed * 5.0);
+		state->last_interaction = now;
+		if (state->interaction_tokens < 1.0) {
+			return;
+		}
+		state->interaction_tokens -= 1.0;
 	}
 
 	input(user_id, payload);
