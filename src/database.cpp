@@ -25,6 +25,10 @@
 #include <unordered_map>
 #include <mutex>
 #include <chrono>
+#include <array>
+#include <atomic>
+#include <thread>
+#include <condition_variable>
 
 #ifdef MARIADB_VERSION_ID
 	#define CONNECT_STRING "SET @@SESSION.max_statement_time=3000"
@@ -69,47 +73,58 @@ namespace db {
 	};
 
 	/**
-	 * @brief MySQL database connection
-	 */
-	MYSQL connection;
+	* @brief Number of independent MySQL connections in the pool.
+	* Each connection maintains its own prepared statement cache.
+	*/
+	constexpr size_t POOL_SIZE = 5;
+
+	struct sqlconn {
+		/**
+		 * @brief MySQL database connection
+		 */
+		MYSQL connection{};
+
+		/**
+		 * @brief Database mutex
+		 * one connection may only be accessed by one thread at a time!
+		 */
+		std::mutex mutex;
+
+		/**
+		 * @brief Query cache, a map of cached_query
+		 */
+		std::map<std::string, cached_query> cached_queries;
+
+		/**
+		 * @brief Whether this connection is currently established
+		 */
+		bool connected{false};
+	};
 
 	/**
-	 * @brief Database mutex
-	 * one connection may only be accessed by one thread at a time!
+	 * @brief Pool of independent database connections
 	 */
-	std::mutex db_mutex;
+	std::array<sqlconn, POOL_SIZE> connections;
 
 	/**
-	 * @brief Last error string from MySQL
+	 * @brief Atomic round-robin starting index for connection selection
 	 */
-	std::string last_error;
+	std::atomic<size_t> curr_index{0};
 
 	/**
 	 * @brief Total number of queries since connection
 	 */
-	size_t query_total{0};
-
-	/**
-	 * @brief Number of affected rows from last INSERT, UPDATE or DELETE
-	 */
-	size_t rows_affected{0};
+	std::atomic<size_t> query_total{0};
 
 	/**
 	 * @brief Creating D++ cluster, used for logging
 	 */
 	dpp::cluster* creator{nullptr};
 
-	std::atomic<bool> transaction_in_progress = false;
-	std::function<void()> transaction_function = {};
-
-	/**
-	 * @brief Query cache, a map of cached_query
-	 */
-	std::map<std::string, cached_query> cached_queries;
-
 	using sql_query_callback = std::function<void(const resultset)>;
 
 	std::condition_variable sql_worker_cv;
+	std::mutex result_cache_mutex;
 
 	/**
 	 * @brief Cached query result parameters
@@ -182,13 +197,34 @@ namespace db {
 	std::unordered_map<cached_query_results, cached_query_result_set, cached_query_hash, cached_query_equal> cached_query_res;
 
 	size_t cache_size() {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
-		return cached_queries.size();
+		size_t total = 0;
+		for (auto& conn : connections) {
+			std::lock_guard<std::mutex> lock(conn.mutex);
+			total += conn.cached_queries.size();
+		}
+		return total;
 	}
-	
+
 	size_t query_count() {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
-		return query_total;
+		return query_total.load();
+	}
+
+	/**
+	 * @brief Release all prepared statements and their associated
+	 * binding allocations for a single database connection.
+	 *
+	 * Called when closing a connection or before reconnecting,
+	 * since prepared statement handles cannot survive reconnection.
+	 *
+	 * The caller must hold the connection mutex.
+	 */
+	void clear_statements(sqlconn& conn) {
+		for (const auto& cc : conn.cached_queries) {
+			mysql_stmt_close(cc.second.st);
+			delete[] cc.second.bindings;
+			delete[] cc.second.lengths;
+		}
+		conn.cached_queries.clear();
 	}
 
 	/**
@@ -201,22 +237,58 @@ namespace db {
 	 * @param port port
 	 * @param socket unix socket
 	 */
-	bool unsafe_connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port, const std::string &socket) {
-		if (mysql_init(&connection) != nullptr) {
-			mysql_options(&connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
-			int opts = CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS | CLIENT_REMEMBER_OPTIONS | CLIENT_IGNORE_SIGPIPE;
-			bool result = mysql_real_connect(&connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, socket.empty() ? nullptr : socket.c_str(), opts);
-			signal(SIGPIPE, SIG_IGN);
-			return result;
-		} else {
-			last_error = "mysql_init() failed";
+	bool unsafe_connect(sqlconn& conn, const std::string& host, const std::string& user, const std::string& pass, const std::string& db, int port, const std::string& socket) {
+		if (mysql_init(&conn.connection) == nullptr) {
+			creator->log(dpp::ll_error, "SQL: mysql_init() failed");
 			return false;
 		}
+		mysql_options(&conn.connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
+		int opts = CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS | CLIENT_REMEMBER_OPTIONS | CLIENT_IGNORE_SIGPIPE;
+		conn.connected = mysql_real_connect(&conn.connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, socket.empty() ? nullptr : socket.c_str(), opts) != nullptr;
+		if (!conn.connected) {
+			creator->log(dpp::ll_error, mysql_error(&conn.connection));
+		}
+		return conn.connected;
 	}
 
-	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port, const std::string &socket) {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
-		return unsafe_connect(host, user, pass, db, port, socket);
+	bool connect(const std::string& host, const std::string& user, const std::string& pass, const std::string& db, int port, const std::string& socket) {
+		for (auto& conn : connections) {
+			std::lock_guard<std::mutex> lock(conn.mutex);
+			if (!unsafe_connect(conn, host, user, pass, db, port, socket)) {
+				return false;
+			}
+		}
+		signal(SIGPIPE, SIG_IGN);
+		return true;
+	}
+
+	struct selected_connection {
+		sqlconn& conn;
+		std::unique_lock<std::mutex> lock;
+	};
+
+	/**
+	 * @brief Select a database connection from the pool.
+	 *
+	 * Start at the next round-robin connection and attempt to acquire
+	 * an available connection without blocking. If all connections
+	 * are busy, wait for the originally selected connection.
+	 *
+	 * The returned object owns the connection lock, ensuring that
+	 * the connection and its prepared statements remain exclusively
+	 * accessible until the object goes out of scope.
+	 */
+	selected_connection select_connection() {
+		const size_t start = curr_index.fetch_add(1, std::memory_order_relaxed) % POOL_SIZE;
+		for (size_t i = 0; i < POOL_SIZE; ++i) {
+			auto& conn = connections[(start + i) % POOL_SIZE];
+			std::unique_lock<std::mutex> lock(conn.mutex, std::try_to_lock);
+			if (lock.owns_lock()) {
+				return {conn, std::move(lock)};
+			}
+		}
+		auto& conn = connections[start];
+		return {conn, std::unique_lock<std::mutex>(conn.mutex)};
 	}
 
 #ifdef DPP_CORO
@@ -237,38 +309,48 @@ namespace db {
 		creator = &bot;
 		const json dbconf = config::get("database");
 		if (!db::connect(dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"], dbconf.contains("socket") ? dbconf["socket"] : "")) {
-			creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"].get<std::string>(), mysql_error(&connection)));
+			creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"].get<std::string>(), "See preceding SQL error"));
 			exit(2);
 		}
 #ifdef DPP_CORO
-		std::thread([&bot]() {
-			dpp::utility::set_thread_name("sql/coro");
-			while (true) {
-				cached_query_results qr;
-				{
-					std::unique_lock<std::mutex> queue_lock(query_queue_mtx);
-					sql_worker_cv.wait(queue_lock, [] {
-						return !sql_query_queue.empty();
-					});
-					if (sql_query_queue.empty()) {
-						continue;
-					}
-					qr = std::move(sql_query_queue.front());
-					sql_query_queue.pop();
-				}
-				if (!qr.format.empty()) {
-					auto results = query(qr.format, qr.parameters);
-					if (qr.callback) {
-						try {
-							qr.callback(results);
+		/**
+		 * Start one SQL worker per pooled connection.
+		 * Workers consume queries from the shared queue and execute them
+		 * using whichever database connection is available.
+		 *
+		 * Query callbacks run after execution, allowing suspended
+		 * coroutines to resume with their completed resultsets.
+		 */
+		for (size_t worker = 0; worker < POOL_SIZE; ++worker) {
+			std::thread([&bot, worker]() {
+				dpp::utility::set_thread_name("sql/coro/" + std::to_string(worker));
+				while (true) {
+					cached_query_results qr;
+					{
+						std::unique_lock<std::mutex> queue_lock(query_queue_mtx);
+						sql_worker_cv.wait(queue_lock, [] {
+							return !sql_query_queue.empty();
+						});
+						if (sql_query_queue.empty()) {
+							continue;
 						}
-						catch (const std::exception& e) {
-							bot.log(dpp::ll_warning, "Exception in SQL query callback: " + std::string(e.what()));
+						qr = std::move(sql_query_queue.front());
+						sql_query_queue.pop();
+					}
+					if (!qr.format.empty()) {
+						auto results = query(qr.format, qr.parameters);
+						if (qr.callback) {
+							try {
+								qr.callback(results);
+							}
+							catch (const std::exception& e) {
+								bot.log(dpp::ll_warning, "Exception in SQL query callback: " + std::string(e.what()));
+							}
 						}
 					}
 				}
-			}
-		}).detach();
+			}).detach();
+		}
 #endif
 		creator->log(dpp::ll_info, fmt::format("Connected to database: {}", dbconf["database"].get<std::string>()));
 	}
@@ -283,8 +365,8 @@ namespace db {
 	 * @return true query executed
 	 */
 	bool raw_query(const std::string& query) {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
-		return mysql_real_query(&connection, query.c_str(), query.length()) == 0;
+		auto selected = select_connection();
+		return mysql_real_query(&selected.conn.connection, query.c_str(), query.length()) == 0;
 	}
 
 	bool start_transaction() {
@@ -300,91 +382,81 @@ namespace db {
 	}
 
 	void transaction(std::function<bool()> closure) {
+
 	}
 
 	bool close() {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
-		mysql_close(&connection);
-		for (const auto& cc : cached_queries) {
-			mysql_stmt_close(cc.second.st);
-			delete[] cc.second.bindings;
-			delete[] cc.second.lengths;
+		for (auto& conn : connections) {
+			std::lock_guard<std::mutex> lock(conn.mutex);
+			clear_statements(conn);
+			if (conn.connected) {
+				mysql_close(&conn.connection);
+				conn.connected = false;
+			}
 		}
-		cached_queries = {};
 		mysql_library_end();
 		return true;
 	}
 
-	const std::string& error() {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
-		return last_error;
-	}
-
 	void log_error(const std::string& format, const std::string& error) {
-		if (!format.empty()) {
-			last_error = fmt::format("{} (query: {})", error, format);
-			if (error == "Lost connection to MySQL server during query") {
-				db::close();
-				db::init(*creator);
-			}
-		} else {
-			last_error = error;
-		}
-		creator->log(dpp::ll_error, last_error);
-	}
-
-	size_t affected_rows() {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
-		return rows_affected;
+		const std::string message = format.empty() ? error : fmt::format("{} (query: {})", error, format);
+		creator->log(dpp::ll_error, message);
 	}
 
 	resultset query(const std::string &format, const paramlist &parameters, double lifetime) {
 		double now = dpp::utility::time_f();
 		cached_query_results r{ .format = format, .parameters = parameters, .callback = nullptr };
-		auto f = cached_query_res.find(r);
-		if (f != cached_query_res.end()) {
-			if (now < f->second.expiry) {
-				return f->second.results;
+		{
+			std::lock_guard<std::mutex> lock(result_cache_mutex);
+			auto f = cached_query_res.find(r);
+			if (f != cached_query_res.end()) {
+				if (now < f->second.expiry) {
+					return f->second.results;
+				}
+				cached_query_res.erase(f);
 			}
-			cached_query_res.erase(f);
 		}
-		cached_query_result_set rs{ .results = query(format, parameters), .expiry = now + lifetime };
-		cached_query_res.emplace(r, rs);
-		return rs.results;
+		resultset rs = query(format, parameters);
+		{
+			std::lock_guard<std::mutex> lock(result_cache_mutex);
+			cached_query_res.erase(r);
+			cached_query_res.emplace(std::move(r), cached_query_result_set{ .results = rs, .expiry = now + lifetime });
+		}
+		return rs;
 	}
 
 	resultset query(const std::string &format, const paramlist &parameters) {
 
 		/**
-		 * One DB handle can't query the database from multiple threads at the same time.
-		 * To prevent corruption of results, put a lock guard on queries.
+		 * Select and lock a database connection for the entire query.
+		 * Prepared statements and their bindings belong to that connection,
+		 * so they must not be accessed concurrently.
+		 *
+		 * The lock is released automatically when the query returns.
 		 */
-		std::lock_guard<std::mutex> db_lock(db_mutex);
+		auto selected = select_connection();
+		sqlconn& conn = selected.conn;
+		MYSQL& connection = conn.connection;
+		auto& cached_queries = conn.cached_queries;
 		resultset rv;
 
+		/**
+		 * Reconnect only the selected connection if it has failed.
+		 * Its cached prepared statements must be discarded because
+		 * their handles belong to the previous MySQL session.
+		 */
 		if (mysql_ping(&connection)) {
 			creator->log(dpp::ll_error, "SQL: Connection has died, reconnecting...");
-			for (const auto& cc : cached_queries) {
-				mysql_stmt_close(cc.second.st);
-				delete[] cc.second.bindings;
-				delete[] cc.second.lengths;
-			}
-			cached_queries = {};
+			clear_statements(conn);
+			mysql_close(&connection);
+			conn.connected = false;
 			const json dbconf = config::get("database");
-			if (!db::unsafe_connect(dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"], dbconf.contains("socket") ? dbconf["socket"] : "")) {
+			if (!unsafe_connect(conn, dbconf["host"], dbconf["username"], dbconf["password"], dbconf["database"], dbconf["port"], dbconf.contains("socket") ? dbconf["socket"] : "")) {
 				creator->log(dpp::ll_critical, fmt::format("Database connection error connecting to {}: {}", dbconf["database"].get<std::string>(), mysql_error(&connection)));
+				rv.error = mysql_error(&connection);
 				return rv;
 			}
 		}
-
-		/**
-		 * Clear error status
-		 */
-		last_error.clear();
-		/**
-		 * Clear number of affected rows
-		 */
-		rows_affected = 0;
 
 		++query_total;
 
@@ -483,7 +555,7 @@ namespace db {
 				log_error(format, mysql_stmt_error(cc.st));
 				rv.error = mysql_stmt_error(cc.st);
 			} else {
-				rv.affected_rows = rows_affected = mysql_stmt_affected_rows(cc.st);
+				rv.affected_rows = mysql_stmt_affected_rows(cc.st);
 				rv.insert_id = mysql_stmt_insert_id(cc.st);
 			}
 		} else {
@@ -518,7 +590,8 @@ namespace db {
 
 				result = mysql_stmt_bind_result(cc.st, (MYSQL_BIND*)&bindings);
 				if (result) {
-					log_error(format, mysql_stmt_error(cc.st));
+					rv.error = mysql_stmt_error(cc.st);
+					log_error(format, rv.error);
 					for (unsigned long i = 0; i < field_count; ++i) {
 						delete[] string_buffers[i];
 					}
@@ -538,7 +611,8 @@ namespace db {
 							break; 
 						} else if (result != 0) {
 							/* Error retrieving resultset, e.g. disconnected */
-							log_error(format, mysql_stmt_error(cc.st));
+							rv.error = mysql_stmt_error(cc.st);
+							log_error(format, rv.error);
 							break; 
 						}
 
@@ -555,10 +629,14 @@ namespace db {
 							if (!thisrow.empty()) {
 								rv.emplace_back(thisrow);
 							} else {
-								log_error(format, "DB: Spurious empty fieldset");
+								rv.error = "DB: Spurious empty fieldset";
+								log_error(format, rv.error);
 							}
 						}
 					}
+				} else {
+					rv.error = mysql_stmt_error(cc.st);
+					log_error(format, rv.error);
 				}
 				mysql_free_result(a_res);
 				for (unsigned long i = 0; i < field_count; ++i) {

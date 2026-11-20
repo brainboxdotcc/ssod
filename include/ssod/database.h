@@ -37,13 +37,12 @@ namespace db {
 	struct row {
 		std::map<std::string, std::string> fields;
 
-		[[nodiscard]] inline const std::string at(const std::string& index) const {
-			try {
-				return fields.at(index);
+		[[nodiscard]] inline std::string at(const std::string& index) const {
+			auto it = fields.find(index);
+			if (it != fields.end()) {
+				return it->second;
 			}
-			catch (const std::exception&) {
-				return "";
-			}
+			return std::string();
 		}
 
 		template<typename T = long>
@@ -109,24 +108,20 @@ namespace db {
 		/**
 		 * Get a row by index
 		 * @param index row to retrieve
-		 * @return row
+		 * @return row, or an empty row if the index is invalid
 		 */
-		[[nodiscard]] inline const row& operator[] (size_t index) const {
-			return rows[index];
+		[[nodiscard]] inline const row& operator[](size_t index) const {
+			static const row empty_row{};
+			return index < rows.size() ? rows[index] : empty_row;
 		}
 
 		/**
 		 * Get a row by index with range checking
-		 * @param index row to rerieve
-		 * @return row
+		 * @param index row to retrieve
+		 * @return row, or an empty row if the index is invalid
 		 */
-		[[nodiscard]] inline const row at(size_t index) const {
-			try {
-				return rows.at(index);
-			}
-			catch (const std::exception&) {
-				return {};
-			}
+		[[nodiscard]] inline row at(size_t index) const {
+			return (*this)[index];
 		}
 
 		/**
@@ -283,22 +278,6 @@ namespace db {
 	 * ```
 	 */
 	resultset query(const std::string &format, const paramlist &parameters, double lifetime);
-
-	/**
-	 * @brief Returns number of affected rows from an UPDATE, INSERT, DELETE
-	 * 
-	 * @note This value is by any db::query() call. Take a copy!
-	 * @return size_t Number of affected rows
-	 */
-	size_t affected_rows();
-
-	/**
-	 * @brief Returns the last error string.
-	 * 
-	 * @note This value is by any db::query() call. Take a copy!
-	 * @return const std::string& Error mesage
-	 */
-	const std::string& error();
 
 	/**
 	 * @brief Returns the size of the query cache
