@@ -607,6 +607,33 @@ player::player(bool reroll) :
 	challenged_by(0), after_fragment(0), race(player_race::race_error), profession(player_profession::prof_error), stamina(0),
 	skill(0), luck(0), sneak(0), speed(0), silver(0), gold(0), rations(0), experience(0), notoriety(0), days(0), scrolls(0),
 	last_use(0), last_strike(0), pinned(0), muted(0), mana(0), mana_tick(0), inventory_page(0) {
+
+	static constexpr const char* starting_weapons[9][7] = {
+		// Error,      Warrior,              Wizard,              Thief,                Woodsman,            Assassin,             Mercenary
+		{ nullptr,     nullptr,              nullptr,             nullptr,              nullptr,             nullptr,              nullptr },          // Error
+		{ nullptr,     "Rusty Sword",        "Oak Staff",         "Pocket Knife",       "Hunting Spear",     "Stiletto",           "Chipped Mace" },   // Human
+		{ nullptr,     "Elven Shortsword",   "Willow Wand",       "Silver Dagger",      "Ashwood Bow",       "Moonblade",          "Elven Spear" },    // Elf
+		{ nullptr,     "Notched Cleaver",    "Bone Staff",        "Jagged Shiv",        "Boar Spear",        "Gutting Knife",      "Iron Club" },      // Orc
+		{ nullptr,     "Hand Axe",           "Runic Rod",         "Miner's Pick",       "Throwing Axe",      "Beard Knife",        "Smith's Hammer" }, // Dwarf
+		{ nullptr,     "Crude Hatchet",      "Gnawed Bone",       "Sharpened Scrap",    "Pointed Stick",     "Rusty Shank",        "Knotted Cudgel" }, // Lesser Orc
+		{ nullptr,     "Stone Axe",          "Totem Staff",       "Skinning Knife",     "Hunting Javelin",   "Serrated Blade",     "War Club" },       // Barbarian
+		{ nullptr,     "Bent Scimitar",      "Mushroom Staff",    "Filching Knife",     "Rat Spear",         "Poisoner's Needle",  "Scrap Hammer" },   // Goblin
+		{ nullptr,     "Serrated Sabre",     "Ivory Sceptre",     "Slimblade",          "Yew Longbow",       "Needlepoint",        "Barbed Spear" },   // Dark Elf
+	};
+
+	static constexpr const char* starting_armours[9][7] = {
+		// Error,      Warrior,              Wizard,              Thief,                Woodsman,            Assassin,             Mercenary
+		{ nullptr,     nullptr,              nullptr,             nullptr,              nullptr,             nullptr,              nullptr },            // Error
+		{ nullptr,     "Leather Jerkin",     "Scholar's Robe",    "Worn Doublet",       "Ranger's Tunic",    "Fitted Leather",     "Padded Jack" },      // Human
+		{ nullptr,     "Leafweave Vest",     "Linen Robe",        "Soft Leather",       "Forest Cloak",      "Supple Jerkin",      "Reinforced Tunic" }, // Elf
+		{ nullptr,     "Hide Vest",          "Bone-Trimmed Robe", "Ragged Leathers",   "Boarhide Coat",     "Tight Hide",         "Stitched Hides" },    // Orc
+		{ nullptr,     "Riveted Jerkin",     "Woollen Robe",      "Miner's Coat",       "Fur-Lined Vest",    "Leather Waistcoat",  "Workman's Jack" },   // Dwarf
+		{ nullptr,     "Patchwork Hide",     "Tattered Robe",     "Stolen Coat",        "Rough Pelt",        "Scrappy Leather",    "Mismatched Hides" }, // Lesser Orc
+		{ nullptr,     "Wolfskin Vest",      "Shaman's Robe",     "Fur Jerkin",         "Deerskin Coat",     "Hunting Leathers",   "Thick Hide" },       // Barbarian
+		{ nullptr,     "Scrap Leather",      "Moth-Eaten Robe",   "Pilfered Waistcoat", "Ratfur Vest",       "Tight-Fitting Rags", "Patched Jerkin" },   // Goblin
+		{ nullptr,     "Studded Leather",    "Embroidered Robe",  "Fine Doublet",       "Travelling Coat",   "Tailored Jerkin",    "Hardened Leather" }, // Dark Elf
+	};
+
 	if (reroll) {
 		skill = dice() + 5;
 		stamina = dice() + 5;
@@ -625,10 +652,12 @@ player::player(bool reroll) :
 		profession = (player_profession)dice();
 		last_resurrect = 0;
 
-		weapon = { .name = "Hunting Dagger", .rating = 1 };
-		armour = { .name = "Leather Coat", .rating = 1 };
-		possessions.emplace_back(stacked_item{ .name = "Hunting Dagger", .flags = "W1", .qty = 1 });
-		possessions.emplace_back(stacked_item{ .name = "Leather Coat", .flags = "A1", .qty = 1 });
+		const std::string starting_weapon = starting_weapons[race][profession];
+		const std::string starting_armour = starting_armours[race][profession];
+		weapon = { .name = starting_weapon, .rating = 1 };
+		armour = { .name = starting_armour, .rating = 1 };
+		possessions.emplace_back(stacked_item{ .name = starting_weapon, .flags = "W1", .qty = 1 });
+		possessions.emplace_back(stacked_item{ .name = starting_armour, .flags = "A1", .qty = 1 });
 		possessions.emplace_back(stacked_item{ .name = "Stamina Potion", .flags = "ST+4", .qty = 1 });
 		possessions.emplace_back(stacked_item{ .name = "Skill Potion", .flags = "SK+4", .qty = 1 });
 		breadcrumb_trail = {};
