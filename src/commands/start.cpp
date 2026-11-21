@@ -102,6 +102,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 		//sentry::make_new_transaction("component/select/" + custom_id);
 		if (custom_id == "select_player_race" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.race = (player_race)atoi(event.values[0]);
+			p_old.set_starting_equipment();
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(co_await p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_gender" && p_old.state == state_roll_stats && !event.values.empty()) {
@@ -110,6 +111,7 @@ dpp::slashcommand start_command::register_command(dpp::cluster& bot)
 			p_old.event.edit_original_response(co_await p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_profession" && p_old.state == state_roll_stats && !event.values.empty()) {
 			p_old.profession = (player_profession)atoi(event.values[0]);
+			p_old.set_starting_equipment();
 			update_registering_player(event, p_old);
 			p_old.event.edit_original_response(co_await p_old.get_registration_message(bot, event));
 		} else if (custom_id == "select_player_herbs" && p_old.state == state_pick_magic) {

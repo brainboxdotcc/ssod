@@ -315,6 +315,7 @@ struct player {
 	bool is_dead();
 	bool time_up();
 	void add_skill(long modifier);
+	void set_starting_equipment();
 
 	bool test_luck();
 	bool test_stamina();

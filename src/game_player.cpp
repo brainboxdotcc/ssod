@@ -602,12 +602,7 @@ size_t player::max_inventory_slots() {
 	return pages_max * 25;
 }
 
-player::player(bool reroll) :
-	state(state_roll_stats), in_combat(false), in_inventory(false), in_bank(false), in_pvp_picker(false), inv_change(false),
-	challenged_by(0), after_fragment(0), race(player_race::race_error), profession(player_profession::prof_error), stamina(0),
-	skill(0), luck(0), sneak(0), speed(0), silver(0), gold(0), rations(0), experience(0), notoriety(0), days(0), scrolls(0),
-	last_use(0), last_strike(0), pinned(0), muted(0), mana(0), mana_tick(0), inventory_page(0) {
-
+void player::set_starting_equipment() {
 	static constexpr const char* starting_weapons[9][7] = {
 		// Error,      Warrior,              Wizard,              Thief,                Woodsman,            Assassin,             Mercenary
 		{ nullptr,     nullptr,              nullptr,             nullptr,              nullptr,             nullptr,              nullptr },          // Error
@@ -634,6 +629,24 @@ player::player(bool reroll) :
 		{ nullptr,     "Studded Leather",    "Embroidered Robe",  "Fine Doublet",       "Travelling Coat",   "Tailored Jerkin",    "Hardened Leather" }, // Dark Elf
 	};
 
+	std::erase_if(possessions, [](const stacked_item& i) {
+		return i.flags == "W1" || i.flags == "A1";
+	});
+
+	const std::string starting_weapon = starting_weapons[race][profession];
+	const std::string starting_armour = starting_armours[race][profession];
+	weapon = { .name = starting_weapon, .rating = 1 };
+	armour = { .name = starting_armour, .rating = 1 };
+	possessions.emplace_back(stacked_item{ .name = starting_weapon, .flags = "W1", .qty = 1 });
+	possessions.emplace_back(stacked_item{ .name = starting_armour, .flags = "A1", .qty = 1 });
+}
+
+player::player(bool reroll) :
+	state(state_roll_stats), in_combat(false), in_inventory(false), in_bank(false), in_pvp_picker(false), inv_change(false),
+	challenged_by(0), after_fragment(0), race(player_race::race_error), profession(player_profession::prof_error), stamina(0),
+	skill(0), luck(0), sneak(0), speed(0), silver(0), gold(0), rations(0), experience(0), notoriety(0), days(0), scrolls(0),
+	last_use(0), last_strike(0), pinned(0), muted(0), mana(0), mana_tick(0), inventory_page(0) {
+
 	if (reroll) {
 		skill = dice() + 5;
 		stamina = dice() + 5;
@@ -652,12 +665,7 @@ player::player(bool reroll) :
 		profession = (player_profession)dice();
 		last_resurrect = 0;
 
-		const std::string starting_weapon = starting_weapons[race][profession];
-		const std::string starting_armour = starting_armours[race][profession];
-		weapon = { .name = starting_weapon, .rating = 1 };
-		armour = { .name = starting_armour, .rating = 1 };
-		possessions.emplace_back(stacked_item{ .name = starting_weapon, .flags = "W1", .qty = 1 });
-		possessions.emplace_back(stacked_item{ .name = starting_armour, .flags = "A1", .qty = 1 });
+		set_starting_equipment();
 		possessions.emplace_back(stacked_item{ .name = "Stamina Potion", .flags = "ST+4", .qty = 1 });
 		possessions.emplace_back(stacked_item{ .name = "Skill Potion", .flags = "SK+4", .qty = 1 });
 		breadcrumb_trail = {};
