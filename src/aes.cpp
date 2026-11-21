@@ -155,7 +155,7 @@ namespace security {
 	dpp::cluster* bot{nullptr};
 	static constexpr uint32_t temporal_epoch = 1793491200;
 	static constexpr uint32_t temporal_mask = 0xFFFFFF;
-	static constexpr uint32_t temporal_lifetime = 300;
+	static constexpr uint32_t temporal_lifetime = 86400;
 
 	static std::string make_temporal_key() {
 		const uint32_t timestamp = static_cast<uint32_t>(std::time(nullptr) - temporal_epoch) & temporal_mask;
