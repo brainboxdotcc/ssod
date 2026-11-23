@@ -44,42 +44,59 @@ player_list live_players;
 std::mutex reg_list_lock;
 std::mutex live_list_lock;
 
-constexpr long MAX_LEVEL = 34;
-constexpr long levels[MAX_LEVEL] = {
+constexpr long MAX_LEVEL = 50;
+constexpr long levels[MAX_LEVEL + 1] = {
 	-100000000,
-	0,     // 1
-	10,    // 2
-	20,    // 3
-	40,    // 4
-	80,    // 5
-	160,   // 6
-	250,   // 7
-	500,   // 8
-	550,   // 9
-	1000,  // 10
-	1500,  // 11
-	2000,  // 12
-	2500,  // 13
-	3000,  // 14
-	3500,  // 15
-	4000,  // 16
-	4500,  // 17
-	5000,  // 18
-	5500,  // 19
-	6000,  // 20
-	6500,  // 21
-	7500,  // 21
-	8500,  // 22
-	9500,  // 23
-	10000, // 24
-	12000, // 25
-	14000, // 26
-	16000, // 27
-	18000, // 28
-	20000, // 29
-	25000, // 30
-	35000, // 31
-	50000, // 32
+	0,       // 1
+	10,      // 2
+	20,      // 3
+	40,      // 4
+	80,      // 5
+	150,     // 6
+	240,     // 7
+	400,     // 8
+	550,     // 9
+	1000,    // 10
+	1450,    // 11
+	1910,    // 12
+	2380,    // 13
+	2860,    // 14
+	3350,    // 15
+	3850,    // 16
+	4360,    // 17
+	4880,    // 18
+	5410,    // 19
+	5950,    // 20
+	6500,    // 21
+	7500,    // 22
+	8500,    // 23
+	9500,    // 24
+	10000,   // 25
+	12000,   // 26
+	14000,   // 27
+	16000,   // 28
+	18000,   // 29
+	20000,   // 30
+	25000,   // 31
+	35000,   // 32
+	50000,   // 33
+	65000,   // 34
+	85000,   // 35
+	110000,  // 36
+	140000,  // 37
+	175000,  // 38
+	215000,  // 39
+	260000,  // 40
+	310000,  // 41
+	365000,  // 42
+	425000,  // 43
+	490000,  // 44
+	560000,  // 45
+	635000,  // 46
+	715000,  // 47
+	800000,  // 48
+	890000,  // 49
+	985000,  // 50
 };
 
 bool player_is_registering(dpp::snowflake user_id) {
@@ -242,42 +259,31 @@ player get_live_player(const dpp::interaction_create_t& event, bool update_event
 player::~player() = default;
 
 long player::get_level() const {
-	long level = 1;
-	while ((experience >= levels[level]) && (level != MAX_LEVEL)) level++;
-	return std::max(1l, level - 1);
+	return std::clamp(static_cast<long>(std::upper_bound(levels + 1, levels + MAX_LEVEL + 1, experience) - levels - 1), 1L, MAX_LEVEL);
 }
 
-long player::xp_worth() {
-	long level = get_level();
-	if (level >= MAX_LEVEL - 1) {
-		return ((levels[MAX_LEVEL - 1] - levels[MAX_LEVEL - 2]) / 10);
-	}
-	return ((levels[level + 1] - levels[level]) / 10);
+long player::xp_worth() const {
+	long level = std::min(get_level(), MAX_LEVEL - 1);
+	return (levels[level + 1] - levels[level]) / 10;
 }
 
 void player::death_xp_loss() {
 	long level = get_level();
 	if (level > 1) {
-		experience -= ((levels[level + 1] - levels[level]) / 4);
+		long effective_level = std::min(level, MAX_LEVEL - 1);
+		experience -= (levels[effective_level + 1] - levels[effective_level]) / 4;
 		if (experience < levels[level]) {
 			experience = levels[level];
 		}
 	}
 }
 
-double player::get_percent_of_current_level() {
+double player::get_percent_of_current_level() const {
 	long level = get_level();
-	if (level >= MAX_LEVEL - 1) {
-		return 0;
+	if (level == MAX_LEVEL) {
+		return 0.0;
 	}
-	long next_level = levels[level + 1];
-	long total_span = next_level - levels[level];
-	long through_span = experience - levels[level];
-	if (through_span == 0) {
-		return 0;
-	} else {
-		return ((double)through_span / (double)total_span) * 100.0;
-	}
+	return static_cast<double>(experience - levels[level]) / (levels[level + 1] - levels[level]) * 100.0;
 }
 
 dpp::task<dpp::message> player::get_registration_message(dpp::cluster& cluster, const dpp::interaction_create_t &event) {
