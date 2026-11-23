@@ -1,3 +1,11 @@
 ## Spell: Air
 
-The Air spell, an ethereal lifebuoy in the sorcerer's repertoire, generates a resilient bubble of air rather than the conventional protective shield. This mystical air pocket becomes a vital conduit, facilitating prolonged survival beneath water's surface or in the unforgiving void of a vacuum. A strategic invocation of this spell transforms the caster into an amphibious marvel, navigating aquatic depths or extraterrestrial expanses with unparalleled resilience.
+The Air spell allows the caster to conjure a self-contained bubble of breathable air around themselves, providing a precious supply of oxygen in environments where ordinary breathing would be impossible. The size, duration and stability of the bubble depend upon the caster's magical proficiency and the energy expended. Novices may sustain a modest pocket of air for only a short time, while experienced sorcerers can maintain a protective atmosphere for considerably longer periods.
+
+Throughout Cryptillia, Air is particularly valued by explorers, sailors and adventurers who venture into dangerous or inhospitable environments. Beneath the surface of lakes and oceans, it allows the caster to breathe freely while exploring submerged ruins, investigating shipwrecks or escaping the attentions of aquatic predators. The spell can also provide temporary protection against poisonous gases, suffocating fumes and even the airless void beyond the world itself.
+
+Unlike a conventional magical shield, the bubble offers no meaningful defence against physical attacks. Water pressure, extreme temperatures and hostile creatures remain serious threats, and the presence of breathable air does little to protect an unfortunate sorcerer from being crushed, frozen or eaten. The spell preserves an atmosphere around the caster, but does not otherwise make the surrounding environment safe.
+
+The greatest danger lies in the spell's limited duration. Should the enchantment expire while the caster is deep underwater or trapped somewhere without breathable air, the protective bubble vanishes, leaving them immediately exposed to their surroundings. Sensible adventurers therefore take care to reserve sufficient magical energy for their return journey, rather than discovering the limits of their abilities at the bottom of the ocean.
+
+Amongst Cryptillian sailors and explorers, a familiar warning is often repeated: *Being able to breathe underwater is not the same as being able to swim back to the surface.*
