@@ -98,7 +98,7 @@ void send_error(const connection_ptr &conn, const std::string &reason) {
 	}
 }
 
-void finish_authentication(const connection_ptr &conn, uint64_t id, bool ads_enabled) {
+void finish_authentication(const connection_ptr &conn, uint64_t id, bool ads_enabled, bool premium) {
 	if (id == 0) {
 		send_error(conn, "Invalid app user ID");
 		return;
@@ -122,22 +122,23 @@ void finish_authentication(const connection_ptr &conn, uint64_t id, bool ads_ena
 		conn->send(json{
 			{"type", "authenticated"},
 			{"user_id", std::to_string(id)},
-			{"ads_enabled", ads_enabled}
+			{"ads_enabled", ads_enabled},
+			{"premium", premium}
 		}.dump());
 	}
 
 	standalone::input(id, {
-	    {"type", 2},
-	    {
-		"data", {
-		    {"type", 1},
-		    {"name", "start"}
+		{"type", 2},
+		{
+			"data", {
+				{"type", 1},
+				{"name", "start"}
+			}
 		}
-	    }
 	});
 }
 
-void check_advertising(const connection_ptr &conn, uint64_t id) {
+void check_premium(const connection_ptr &conn, uint64_t id) {
 	bool mobile = false;
 
 	{
@@ -151,38 +152,69 @@ void check_advertising(const connection_ptr &conn, uint64_t id) {
 		mobile = state->source == src_android || state->source == src_apple;
 	}
 
-	if (!mobile || id == 0) {
-		finish_authentication(conn, id, false);
+	if (id == 0) {
+		finish_authentication(conn, id, false, false);
 		return;
 	}
 
 	db::query_callback(
-		"SELECT user_id FROM premium_credits WHERE user_id = ? AND active = 1 LIMIT 1",
-		{id},
-		[conn, id](const db::resultset result) {
-			finish_authentication(conn, id, result.error.empty() && result.empty());
+		"SELECT user_id FROM premium_credits WHERE user_id = ? AND active = 1 LIMIT 1", {id},
+		[conn, id, mobile](const db::resultset result) {
+			const bool premium = result.error.empty() && !result.empty();
+			const bool ads_enabled = result.error.empty() && mobile && !premium;
+			finish_authentication(conn, id, ads_enabled, premium);
 		}
 	);
 }
 
-void authenticate(const connection_ptr &conn, const std::string &token) {
+void authenticate(const connection_ptr &conn, const std::string &token, bool recover = false) {
 	const std::string hash = token_hash(token);
 
-	/* First check whether this is a linked Discord account */
 	db::query_callback("SELECT user_id FROM standalone_discord_auth WHERE token_hash = ?", {hash},
-	[conn, hash](const db::resultset linked) {
+	[conn, hash, recover](const db::resultset linked) {
 		if (!linked.error.empty()) {
 			send_error(conn, "Authentication unavailable");
 			return;
 		}
 
-		if (!linked.rows.empty()) {
-			check_advertising(conn, linked[0].number<uint64_t>("user_id"));
+		if (!linked.empty()) {
+			const uint64_t id = linked[0].number<uint64_t>("user_id");
+
+			db::query_callback("SELECT user_id FROM standalone_auth WHERE user_id = ?", {id},
+			[conn, id](const db::resultset existing) {
+				if (!existing.error.empty()) {
+					send_error(conn, "Authentication unavailable");
+					return;
+				}
+
+				if (!existing.empty()) {
+					send_error(conn, "This Discord account is already associated with another app account");
+					return;
+				}
+
+				check_premium(conn, id);
+			});
 			return;
 		}
 
+		if (recover) {
+			db::query_callback("SELECT user_id FROM standalone_auth WHERE token_hash = ?", {hash},
+			[conn](const db::resultset result) {
+				if (!result.error.empty()) {
+					send_error(conn, "Authentication unavailable");
+					return;
+				}
 
-		/* Existing app registration and recovery path */
+				if (result.empty()) {
+					send_error(conn, "Recovery token not recognised");
+					return;
+				}
+
+				check_premium(conn, result[0].number<uint64_t>("user_id"));
+			});
+			return;
+		}
+
 		db::query_callback("INSERT INTO standalone_auth (token_hash) VALUES (?) ON DUPLICATE KEY UPDATE user_id = LAST_INSERT_ID(user_id)", {hash},
 		[conn](const db::resultset result) {
 			if (!result.error.empty()) {
@@ -190,7 +222,7 @@ void authenticate(const connection_ptr &conn, const std::string &token) {
 				return;
 			}
 
-			check_advertising(conn, result.insert_id);
+			check_premium(conn, result.insert_id);
 		});
 	});
 }
@@ -208,8 +240,10 @@ bool standalone::is_connected(dpp::snowflake user_id) {
 
 dpp::task<std::string> standalone::link(dpp::snowflake user_id) {
 	const auto existing = co_await db::co_query(
-	    "SELECT user_id FROM standalone_discord_auth WHERE user_id = ?",
-	    {user_id}
+		"SELECT user_id FROM standalone_discord_auth WHERE user_id = ? "
+		"UNION ALL "
+		"SELECT user_id FROM standalone_auth WHERE user_id = ?",
+		{user_id, user_id}
 	);
 
 	if (!existing.error.empty()) {
@@ -249,8 +283,8 @@ dpp::task<std::string> standalone::link(dpp::snowflake user_id) {
 	// Check that our token was actually inserted, rather than ignored
 	// because another /link request created the account concurrently.
 	const auto check = co_await db::co_query(
-	    "SELECT token_hash FROM standalone_discord_auth WHERE user_id = ?",
-	    {user_id}
+		"SELECT token_hash FROM standalone_discord_auth WHERE user_id = ?",
+		{user_id}
 	);
 
 	if (!check.error.empty() || check.empty()) {
@@ -351,13 +385,13 @@ void standalone::input(dpp::snowflake user_id, const json &payload) {
 
 	const int type = payload["type"].get<int>();
 
-	if (type != 2 && type != 3 && type != 5) {
+	if (type != 2 && type != 3 && type != 4 && type != 5) {
 		return;
 	}
 
 	dpp::json data = payload["data"];
 
-	if (type == 2) {
+	if (type == 2 || type == 4) {
 		data["type"] = 1;
 	} else if (type == 3) {
 		if (!data.contains("custom_id") || !data["custom_id"].is_string() || !data.contains("component_type") || !data["component_type"].is_number_integer()) {
@@ -534,7 +568,7 @@ void standalone::handleNewMessage(const connection_ptr &conn, std::string &&mess
 			state->source = source;
 		}
 
-		authenticate(conn, payload["token"].get<std::string>());
+		authenticate(conn, payload["token"].get<std::string>(), payload.contains("recover") && payload["recover"].is_boolean() && payload["recover"].get<bool>());
 		return;
 	}
 

@@ -35,11 +35,12 @@ static dpp::task<void> autocomplete(dpp::cluster& bot, const dpp::autocomplete_t
 	}
 	player p = get_live_player(event, false);
 	dpp::interaction_response ir(dpp::ir_autocomplete_reply);
+	const std::string search = dpp::lowercase(uservalue);
 	int count = 0;
 	for (const stacked_item& i : p.possessions) {
-		if (i.name.starts_with(uservalue) && i.flags.length() >= 2 && (i.flags[0] == 'W' || i.flags[0] == 'A') && isdigit(i.flags[1])) {
+		if (dpp::lowercase(i.name).starts_with(search) && i.flags.length() >= 2 && (i.flags[0] == 'W' || i.flags[0] == 'A') && isdigit(i.flags[1])) {
 			ir.add_autocomplete_choice(dpp::command_option_choice(i.name, i.name));
-			if (count++ > 24) {
+			if (++count >= 25) {
 				break;
 			}
 		}
