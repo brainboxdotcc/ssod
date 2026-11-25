@@ -147,10 +147,7 @@ dpp::task<void> death(player& p, component_builder& cb) {
 			)
 		);
 
-		if (standalone) {
-			toast += "\n\n";
-			toast += tr("STANDALONE_AD_PLACEHOLDER", p.event);
-		} else if (when == RESURRECT_SECS_PREMIUM) {
+		if (!standalone && when == RESURRECT_SECS_PREMIUM) {
 			toast += sprite::diamond.get_mention() + " ";
 			toast += tr("PREMIUM_RESURRECT", p.event);
 		}
