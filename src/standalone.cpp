@@ -98,7 +98,7 @@ void send_error(const connection_ptr &conn, const std::string &reason) {
 	}
 }
 
-void finish_authentication(const connection_ptr &conn, uint64_t id) {
+void finish_authentication(const connection_ptr &conn, uint64_t id, bool ads_enabled) {
 	if (id == 0) {
 		send_error(conn, "Invalid app user ID");
 		return;
@@ -120,8 +120,9 @@ void finish_authentication(const connection_ptr &conn, uint64_t id) {
 
 	if (conn->connected()) {
 		conn->send(json{
-		    {"type", "authenticated"},
-		    {"user_id", std::to_string(id)}
+			{"type", "authenticated"},
+			{"user_id", std::to_string(id)},
+			{"ads_enabled", ads_enabled}
 		}.dump());
 	}
 
@@ -136,6 +137,34 @@ void finish_authentication(const connection_ptr &conn, uint64_t id) {
 	});
 }
 
+void check_advertising(const connection_ptr &conn, uint64_t id) {
+	bool mobile = false;
+
+	{
+		std::lock_guard lock(connections_mutex);
+		auto state = conn->getContext<client>();
+
+		if (!state || !state->authenticating || !conn->connected()) {
+			return;
+		}
+
+		mobile = state->source == src_android || state->source == src_apple;
+	}
+
+	if (!mobile || id == 0) {
+		finish_authentication(conn, id, false);
+		return;
+	}
+
+	db::query_callback(
+		"SELECT user_id FROM premium_credits WHERE user_id = ? AND active = 1 LIMIT 1",
+		{id},
+		[conn, id](const db::resultset result) {
+			finish_authentication(conn, id, result.error.empty() && result.empty());
+		}
+	);
+}
+
 void authenticate(const connection_ptr &conn, const std::string &token) {
 	const std::string hash = token_hash(token);
 
@@ -148,7 +177,7 @@ void authenticate(const connection_ptr &conn, const std::string &token) {
 		}
 
 		if (!linked.rows.empty()) {
-			finish_authentication(conn, linked[0].number<uint64_t>("user_id"));
+			check_advertising(conn, linked[0].number<uint64_t>("user_id"));
 			return;
 		}
 
@@ -161,7 +190,7 @@ void authenticate(const connection_ptr &conn, const std::string &token) {
 				return;
 			}
 
-			finish_authentication(conn, result.insert_id);
+			check_advertising(conn, result.insert_id);
 		});
 	});
 }
