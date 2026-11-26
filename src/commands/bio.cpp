@@ -82,7 +82,7 @@ dpp::task<void> bio_command::route(const dpp::slashcommand_t &event)
 		std::string filename = event.command.usr.id.str() + fs::path(att.filename).extension().c_str();
 		std::fstream file;
 		dpp::embed e = embed;
-		file.open("../uploads/" + filename, std::ios::app | std::ios::binary);
+		file.open(config::get("upload_dir").get<std::string>() + filename, std::ios::out | std::ios::trunc | std::ios::binary);
 		file.write(data.body.data(), data.body.length());
 		file.close();
 		co_await db::co_query("INSERT INTO character_bio (user_id, image_name) VALUES(?, ?) ON DUPLICATE KEY UPDATE image_name = ?", { event.command.usr.id, filename, filename });

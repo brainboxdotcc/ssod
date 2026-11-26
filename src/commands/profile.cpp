@@ -23,6 +23,8 @@
 #include <ssod/game_player.h>
 #include <gen/emoji.h>
 #include <fmt/format.h>
+#include <filesystem>
+#include <ssod/config.h>
 
 using namespace i18n;
 
@@ -123,7 +125,16 @@ dpp::task<void> profile_command::route(const dpp::slashcommand_t &event)
 			embed.set_description(content + "\n### " + tr("BIOGRAPHY", event) + "\n" + dpp::utility::markdown_escape(bio[0].at("bio")) + "\n\n");
 		}
 		if (!bio[0].at("image_name").empty() && (!event.command.entitlements.empty() || !premium.empty())) {
-			embed.set_image("https://premium.ssod.org/profiles/" + bio[0].at("image_name"));
+			std::string filename = bio[0].at("image_name");
+			std::string path = config::get("upload_dir").get<std::string>() + filename;
+			std::error_code ec;
+			auto modified = std::filesystem::last_write_time(path, ec);
+			if (!ec) {
+				embed.set_image(
+					"https://premium.ssod.org/portraits/" + filename +
+					"?v=" + std::to_string(modified.time_since_epoch().count())
+				);
+			}
 		}
 	}
 	event.reply(dpp::message().add_embed(embed).set_flags(dpp::m_ephemeral));
