@@ -47,7 +47,6 @@ void neutrino::contains_bad_word(const std::string& text, swear_filter_event_t c
 					}
 				}
 				catch (const std::exception &e) {
-					callback(sf);
 				}
 			}
 			callback(sf);

@@ -23,6 +23,7 @@
 #include <ssod/database.h>
 #include <ssod/config.h>
 #include <ssod/npc.h>
+#include <ssod/neutrino_api.h>
 
 using namespace i18n;
 
@@ -98,12 +99,20 @@ dpp::task<bool> npc_chat(const dpp::interaction_create_t& event, player& p, cons
 					return;
 				}
 				std::string npc_reply = reply.at("reply");
-				db::query(
-					"INSERT INTO game_chat_events (event_type, npc_id, location_id, message) VALUES(?,?,?,?)",
-					{"chat", selected_npc.at("id"), p.paragraph, dpp::utility::utf8substr(npc_reply, 0, 512)}
-				);
-				bot.log(dpp::ll_info, "NPC reply: " + selected_npc.at("name") + " -> " + npc_reply);
-				continue_game(event, p, true).sync_wait();
+				neutrino filter(&bot, config::get("neutrino_user"), config::get("neutrino_password"));
+				filter.contains_bad_word(npc_reply, [&bot, p, event, selected_npc, npc_reply](const swear_filter_t& result) {
+					if (!result.clean) {
+						bot.log(dpp::ll_warning, "NPC reply rejected by profanity filter: " + selected_npc.at("name"));
+						continue_game(event, p, true).sync_wait();
+						return;
+					}
+					db::query(
+						"INSERT INTO game_chat_events (event_type, npc_id, location_id, message) VALUES(?,?,?,?)",
+						{"chat", selected_npc.at("id"), p.paragraph, dpp::utility::utf8substr(npc_reply, 0, 512)}
+					);
+					bot.log(dpp::ll_info, "NPC reply: " + selected_npc.at("name") + " -> " + npc_reply);
+					continue_game(event, p, true).sync_wait();
+				});
 			}
 			catch (const std::exception& e) {
 				bot.log(dpp::ll_warning, "NPC Chat API error: " + std::string(e.what()) + ": status=" + std::to_string(response.status) + ": " + response.body);
